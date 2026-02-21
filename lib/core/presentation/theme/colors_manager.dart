@@ -5,9 +5,11 @@ class ColorManager {
   ColorManager._();
 
   // Primary Colors
-  static const Color primary = Color(0xFF667EEA);
-  static const Color primaryDark = Color(0xFF5A67D8);
+  static const Color primary = Color.fromARGB(255, 226, 87, 6);
+
+  static const Color primaryDark = Color.fromARGB(255, 39, 37, 37);
   static const Color primaryLight = Color(0xFF7C8FFF);
+  static const Color defaultYellow = Color(0xFFF59E0B);
 
   // Secondary Colors
   static const Color secondary = Color(0xFF764BA2);
@@ -20,16 +22,16 @@ class ColorManager {
   static const Color accentLight = Color(0xFFFFB3FF);
 
   // Background Colors
-  static const Color background = Color(0xFFF8F9FA);
+  static const Color background = Color.fromARGB(255, 39, 37, 37);
   static const Color backgroundDark = Color(0xFF1A1A2E);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF16213E);
 
   // Text Colors
-  static const Color textPrimary = Color(0xFF2D3436);
+  static const Color textPrimary = Color(0xFFB2BEC3);
   static const Color textSecondary = Color(0xFF636E72);
-  static const Color textLight = Color(0xFFB2BEC3);
-  static const Color textOnPrimary = Color(0xFFFFFFFF);
+  static const Color textColor = Color.fromARGB(255, 196, 207, 212);
+  static const Color titlesColor = Color(0xFFFFFFFF);
 
   // Status Colors
   static const Color success = Color(0xFF00B894);
@@ -38,7 +40,7 @@ class ColorManager {
   static const Color info = Color(0xFF74B9FF);
 
   // Border & Divider Colors
-  static const Color border = Color(0xFFDFE6E9);
+  static const Color borderColor = Color(0xffEAECED);
   static const Color divider = Color(0xFFECF0F1);
 
   // Gradients

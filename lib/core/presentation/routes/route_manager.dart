@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
 // import '../dependency_injection/dependency_injection.dart' as di;
-import '../../../features/splash/splash_screen.dart';
-import '../../../features/onboarding/onboarding_screen.dart';
+import '../../../features/splash/presentation/pages/splash_page.dart';
+import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
 
 /// Application Router
 class AppRouter {
@@ -15,16 +16,14 @@ class AppRouter {
 
     switch (settings.name) {
       case Routes.splash:
-        return _buildRoute(const SplashScreen(), settings);
+        return _buildRoute(const SplashPage(), settings);
 
       case Routes.onboarding:
-        // Example: Auto-inject BLoCs - just pass the bloc factory functions!
-        // return _buildRouteWithBlocs(
-        //   const OnboardingScreen(),
-        //   settings,
-        //   blocs: [() => di.sl<OnboardingBloc>()],
-        // );
-        return _buildRoute(const OnboardingScreen(), settings);
+        return _buildRouteWithBloc(
+          const OnboardingPage(),
+          settings,
+          bloc: () => OnboardingBloc(),
+        );
 
       case Routes.login:
         // Example: Auto-inject single BLoC with parameters (same as old project)

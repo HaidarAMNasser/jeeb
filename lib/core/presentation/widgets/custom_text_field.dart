@@ -1,99 +1,119 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String? label;
-  final String? hint;
+  final String hintText;
   final TextEditingController? controller;
-  final bool obscureText;
-  final TextInputType? keyboardType;
-  final FormFieldValidator<String>? validator;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-  final int maxLines;
-  final bool enabled;
-  final ValueChanged<String>? onChanged;
+  final Function(String)? onChanged;
 
   const CustomTextField({
-    super.key,
-    this.label,
-    this.hint,
+    required this.hintText,
     this.controller,
-    this.obscureText = false,
-    this.keyboardType,
-    this.validator,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.maxLines = 1,
-    this.enabled = true,
     this.onChanged,
+    required UniqueKey key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      textDirection: TextDirection.rtl,
+      controller: controller,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        hintText: hintText,
+        enabledBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+        hintStyle: getRegularStyle(color: Colors.grey, fontSize: AppFontSize.s13),
+        hintTextDirection: TextDirection.rtl,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24.r),
+            borderSide: BorderSide(color: ColorManager.borderColor)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24.r),
+          borderSide: BorderSide(color: ColorManager.primaryDark),
+        ),
+      ),
+      style: getRegularStyle(fontSize: AppFontSize.s14),
+    );
+  }
+}
+
+class CustomDropdownField<T> extends StatelessWidget {
+  final String label;
+  final List<DropdownMenuItem<T>> items;
+  final Function(T?)? onChanged;
+
+  const CustomDropdownField({
+    required this.label,
+    required this.items,
+    this.onChanged,
+    required UniqueKey key,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      textDirection: TextDirection.rtl,
       children: [
-        if (label != null) ...[
-          Text(
-            label!,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: ColorManager.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          validator: validator,
-          maxLines: maxLines,
-          enabled: enabled,
-          onChanged: onChanged,
-          style: const TextStyle(fontSize: 16, color: ColorManager.textPrimary),
+        CustomText(
+          text: label,
+        ),
+        SizedBox(height: 8.h),
+        DropdownButtonFormField<T>(
           decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: ColorManager.textSecondary.withOpacity(0.6),
-              fontSize: 14,
-            ),
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
-            filled: true,
-            fillColor: ColorManager.surface,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 18,
-            ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: ColorManager.border),
+              borderRadius: BorderRadius.circular(24.r),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: ColorManager.border),
-            ),
+            enabledBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: ColorManager.primary,
-                width: 2,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: ColorManager.error),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: ColorManager.error, width: 2),
+              borderRadius: BorderRadius.circular(24.r),
+              borderSide: BorderSide(color: ColorManager.primaryDark),
             ),
           ),
+          items: items,
+          onChanged: onChanged,
         ),
       ],
+    );
+  }
+}
+
+class CustomButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final Color color;
+  final Color textcolor;
+  final double? elevation;
+  const CustomButton(
+      {required this.text,
+      required this.onPressed,
+      this.elevation,
+      required this.color,
+      required this.textcolor});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        elevation: this.elevation ?? 0,
+        backgroundColor: color,
+        foregroundColor: textcolor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.r),
+        ),
+        textStyle: getRegularStyle(
+          color: Colors.white,
+          fontSize: AppFontSize.s16,
+        ),
+      ),
+      child: CustomText(text: text),
     );
   }
 }

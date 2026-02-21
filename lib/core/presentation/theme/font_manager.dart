@@ -1,117 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// Application Typography
-/// Centralized text style definitions
-class FontManager {
-  // Private constructor to prevent instantiation
-  FontManager._();
+class FontConstant {
+  static const String fontTajwal = "Tajawal";
+    static const String fontSFPro = 'SF Pro Display';
+}
 
-  // Base Font Family
-  static String get fontFamily => GoogleFonts.inter().fontFamily!;
+class FontWeightManager {
+  static const FontWeight bold = FontWeight.w700;
+  static const FontWeight thin = FontWeight.w100;
+  static const FontWeight semiBold = FontWeight.w600;
+  static const FontWeight extraBold = FontWeight.w800;
+  static const FontWeight medium = FontWeight.w500;
+  static const FontWeight regular = FontWeight.w400;
+  static const FontWeight light = FontWeight.w300;
+  static const FontWeight extraLight = FontWeight.w200;
+  static const FontWeight black = FontWeight.w900;
+}
 
-  // Heading Styles
-  static TextStyle h1 = GoogleFonts.inter(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.5,
-    height: 1.2,
-  );
-
-  static TextStyle h2 = GoogleFonts.inter(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.3,
-    height: 1.3,
-  );
-
-  static TextStyle h3 = GoogleFonts.inter(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    letterSpacing: -0.2,
-    height: 1.4,
-  );
-
-  static TextStyle h4 = GoogleFonts.inter(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    letterSpacing: -0.1,
-    height: 1.4,
-  );
-
-  static TextStyle h5 = GoogleFonts.inter(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    height: 1.5,
-  );
-
-  static TextStyle h6 = GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    height: 1.5,
-  );
-
-  // Body Text Styles
-  static TextStyle bodyLarge = GoogleFonts.inter(
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    height: 1.5,
-    letterSpacing: 0.15,
-  );
-
-  static TextStyle bodyMedium = GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    height: 1.5,
-    letterSpacing: 0.25,
-  );
-
-  static TextStyle bodySmall = GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    height: 1.5,
-    letterSpacing: 0.4,
-  );
-
-  // Button Text Style
-  static TextStyle button = GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-  );
-
-  // Caption Text Style
-  static TextStyle caption = GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.4,
-    height: 1.3,
-  );
-
-  // Overline Text Style
-  static TextStyle overline = GoogleFonts.inter(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 1.5,
-    height: 1.6,
-  );
-
-  // Label Text Styles
-  static TextStyle labelLarge = GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-  );
-
-  static TextStyle labelMedium = GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-  );
-
-  static TextStyle labelSmall = GoogleFonts.inter(
-    fontSize: 11,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-  );
+class AppFontSize {
+  static double s6 = 6.0.sp;
+  static double s8 = 8.0.sp;
+  static double s10 = 10.0.sp;
+  static double s11 = 11.0.sp;
+  static double s12 = 12.0.sp;
+  static double s14 = 13.0.sp;
+  static double s13 = 14.0.sp;
+  static double s16 = 16.0.sp;
+  static double s18 = 18.0.sp;
+  static double s20 = 20.0.sp;
+  static double s22 = 22.0.sp;
+  static double s24 = 24.0.sp;
+  static double s26 = 26.0.sp;
+  static double s28 = 28.0.sp;
+  static double s30 = 30.0.sp;
+  static double s50 = 50.0.sp;
 }
