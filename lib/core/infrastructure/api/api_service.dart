@@ -24,6 +24,45 @@ abstract class AppApiServiceClient {
     @Field('is_mobile_pass') bool directLogin,
   );
 
+  @POST("auth/register")
+  Future<Response> register(Map<String, dynamic> body);
+
+  @POST("auth/verify")
+  Future<Response> verify({required String email, required String otp});
+
+  @POST("auth/resend-otp")
+  Future<Response> resendOtp({required String email});
+
+  @POST("auth/forgot-password")
+  Future<Response> forgotPassword({required String email});
+
+  @POST("auth/reset-password")
+  Future<Response> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+  });
+
+  @GET("auth/profile")
+  Future<Response> getProfile();
+
+  @PATCH("auth/profile")
+  Future<Response> updateProfile(Map<String, dynamic> body);
+
+  // Countries & Cities endpoints
+  @GET("countries")
+  Future<Response> getCountries(
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+  );
+
+  @GET("cities")
+  Future<Response> getCities(
+    @Query('countryId') int countryId,
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+  );
+
   // Add more endpoints as needed
   // Example:
   // @GET("apiAdmin/User/all")
@@ -74,4 +113,3 @@ class Path {
   final String name;
   const Path(this.name);
 }
-

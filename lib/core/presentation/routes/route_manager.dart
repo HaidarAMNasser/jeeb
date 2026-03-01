@@ -2,9 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
-// import '../dependency_injection/dependency_injection.dart' as di;
-import '../../../features/splash/splash_screen.dart';
-import '../../../features/onboarding/onboarding_screen.dart';
+import '../../infrastructure/di/dependency_injection.dart' as di;
+import '../../../features/splash/presentation/pages/splash_page.dart';
+import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import '../../../features/auth/login/presentation/pages/login_page.dart';
+import '../../../features/auth/login/presentation/bloc/login_bloc.dart';
+import '../../../features/auth/register/presentation/pages/register_page.dart';
+import '../../../features/auth/register/presentation/bloc/register_bloc.dart';
+import '../../../features/auth/forgot_password/presentation/pages/forgot_password_page.dart';
+import '../../../features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
+import '../../../features/auth/reset_password/presentation/pages/reset_password_page.dart';
+import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
+import '../../../features/auth/verify/presentation/pages/verify_page.dart';
+import '../../../features/auth/verify/presentation/bloc/verify_bloc.dart';
+import '../../../features/auth/profile/presentation/pages/profile_page.dart';
+import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
+import '../../../features/country/presentation/bloc/country_bloc.dart';
+import '../../../features/city/presentation/bloc/city_bloc.dart';
 
 /// Application Router
 class AppRouter {
@@ -15,46 +30,56 @@ class AppRouter {
 
     switch (settings.name) {
       case Routes.splash:
-        return _buildRoute(const SplashScreen(), settings);
+        return _buildRoute(const SplashPage(), settings);
 
       case Routes.onboarding:
-        // Example: Auto-inject BLoCs - just pass the bloc factory functions!
-        // return _buildRouteWithBlocs(
-        //   const OnboardingScreen(),
-        //   settings,
-        //   blocs: [() => di.sl<OnboardingBloc>()],
-        // );
-        return _buildRoute(const OnboardingScreen(), settings);
-
-      case Routes.login:
-        // Example: Auto-inject single BLoC with parameters (same as old project)
-        // return _buildRouteWithBlocs(
-        //   LoginScreen(
-        //     userId: args?['userId'] as String?,
-        //     email: args?['email'] as String?,
-        //   ),
-        //   settings,
-        //   blocs: [() => di.sl<LoginBloc>()],
-        // );
-        return _buildRoute(
-          Scaffold(body: Center(child: Text('Login Screen'))),
+        return _buildRouteWithBloc<OnboardingBloc>(
+          const OnboardingPage(),
           settings,
+          bloc: () => di.sl<OnboardingBloc>(),
         );
 
-      // Example: Route with parameters and multiple BLoCs (same as old project)
-      // case Routes.profile:
-      //   return _buildRouteWithBlocs(
-      //     ProfileScreen(
-      //       userId: args?['userId'] as String,
-      //       userName: args?['userName'] as String?,
-      //       canEdit: args?['canEdit'] as bool? ?? false,
-      //     ),
-      //     settings,
-      //     blocs: [
-      //       () => di.sl<ProfileBloc>(),
-      //       () => di.sl<SettingsBloc>(),
-      //     ],
-      //   );
+      case Routes.login:
+        return _buildRouteWithBloc<LoginBloc>(
+          const LoginPage(),
+          settings,
+          bloc: () => di.sl<LoginBloc>(),
+        );
+
+      case Routes.register:
+        return _buildRouteWithAuthCountryCityBlocs<RegisterBloc>(
+          const RegisterPage(),
+          settings,
+          authBloc: () => di.sl<RegisterBloc>(),
+        );
+
+      case Routes.forgotPassword:
+        return _buildRouteWithBloc<ForgotPasswordBloc>(
+          const ForgotPasswordPage(),
+          settings,
+          bloc: () => di.sl<ForgotPasswordBloc>(),
+        );
+
+      case Routes.resetPassword:
+        return _buildRouteWithBloc<ResetPasswordBloc>(
+          const ResetPasswordPage(),
+          settings,
+          bloc: () => di.sl<ResetPasswordBloc>(),
+        );
+
+      case Routes.verify:
+        return _buildRouteWithBloc<VerifyBloc>(
+          const VerifyPage(),
+          settings,
+          bloc: () => di.sl<VerifyBloc>(),
+        );
+
+      case Routes.profile:
+        return _buildRouteWithAuthCountryCityBlocs<ProfileBloc>(
+          const ProfilePage(),
+          settings,
+          authBloc: () => di.sl<ProfileBloc>(),
+        );
 
       default:
         return _buildRoute(
@@ -86,9 +111,36 @@ class AppRouter {
     );
   }
 
+  /// Build route with auth screen that needs Country + City blocs (e.g. register, profile)
+  static PageRouteBuilder _buildRouteWithAuthCountryCityBlocs<T extends StateStreamableSource<Object?>>(
+    Widget page,
+    RouteSettings settings, {
+    required T Function() authBloc,
+  }) {
+    return PageRouteBuilder(
+      settings: settings,
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          MultiBlocProvider(
+        providers: [
+          BlocProvider<T>(create: (_) => authBloc()),
+          BlocProvider<CountryBloc>(create: (_) => di.sl<CountryBloc>()),
+          BlocProvider<CityBloc>(create: (_) => di.sl<CityBloc>()),
+        ],
+        child: page,
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutCubic;
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(position: animation.drive(tween), child: child);
+      },
+      transitionDuration: const Duration(milliseconds: 300),
+    );
+  }
+
   /// Build route with a single BLoC provider
   /// Usage: _buildRouteWithBloc(MyScreen(), settings, bloc: () => di.sl<MyBloc>())
-  // ignore: unused_element
   static PageRouteBuilder _buildRouteWithBloc<
     T extends StateStreamableSource<Object?>
   >(Widget page, RouteSettings settings, {required T Function() bloc}) {

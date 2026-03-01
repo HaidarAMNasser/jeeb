@@ -1,10 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Simple storage service for token and language
+/// Simple storage service for token, role, and language
 /// Can be extended later with flutter_secure_storage for tokens
 abstract class StorageService {
   Future<String> getUserToken();
   Future<void> setUserToken(String token);
+  Future<String> getUserRole();
+  Future<void> setUserRole(String role);
   String getAppLanguage();
   Future<void> setAppLanguage(String lang);
   Future<void> clearStorage({bool clearAuthParams = false});
@@ -13,6 +15,7 @@ abstract class StorageService {
 class StorageServiceImpl implements StorageService {
   final SharedPreferences _sharedPreferences;
   static const String _tokenKey = 'access_token';
+  static const String _roleKey = 'user_role';
   static const String _languageKey = 'language_code';
 
   StorageServiceImpl(this._sharedPreferences);
@@ -25,6 +28,16 @@ class StorageServiceImpl implements StorageService {
   @override
   Future<void> setUserToken(String token) async {
     await _sharedPreferences.setString(_tokenKey, token);
+  }
+
+  @override
+  Future<String> getUserRole() async {
+    return _sharedPreferences.getString(_roleKey) ?? '';
+  }
+
+  @override
+  Future<void> setUserRole(String role) async {
+    await _sharedPreferences.setString(_roleKey, role);
   }
 
   @override
@@ -41,6 +54,7 @@ class StorageServiceImpl implements StorageService {
   Future<void> clearStorage({bool clearAuthParams = false}) async {
     if (clearAuthParams) {
       await _sharedPreferences.remove(_tokenKey);
+      await _sharedPreferences.remove(_roleKey);
     }
   }
 }
