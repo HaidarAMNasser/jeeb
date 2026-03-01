@@ -1,4 +1,6 @@
-import 'package:jeeb_app/features/auth/domain/entities/user_entity.dart';
+import '../../domain/entities/user_entity.dart';
+import 'package:jeeb_app/features/country/data/models/country_model.dart';
+import 'package:jeeb_app/features/city/data/models/city_model.dart';
 
 class UserModel {
   final int id;
@@ -14,7 +16,9 @@ class UserModel {
   final double? currentLat;
   final double? currentLng;
   final int countryId;
+  final CountryModel? country;
   final int cityId;
+  final CityModel? city;
   final String createdAt;
   final String updatedAt;
 
@@ -32,7 +36,9 @@ class UserModel {
     this.currentLat,
     this.currentLng,
     required this.countryId,
+    this.country,
     required this.cityId,
+    this.city,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -56,7 +62,13 @@ class UserModel {
           ? (json['currentLng'] as num).toDouble()
           : null,
       countryId: json['countryId'] as int? ?? 0,
+      country: json['country'] != null
+          ? CountryModel.fromJson(json['country'] as Map<String, dynamic>)
+          : null,
       cityId: json['cityId'] as int? ?? 0,
+      city: json['city'] != null
+          ? CityModel.fromJson(json['city'] as Map<String, dynamic>)
+          : null,
       createdAt: json['createdAt'] as String? ?? '',
       updatedAt: json['updatedAt'] as String? ?? '',
     );
@@ -77,7 +89,9 @@ class UserModel {
       'currentLat': currentLat,
       'currentLng': currentLng,
       'countryId': countryId,
+      'country': country?.toJson(),
       'cityId': cityId,
+      'city': city?.toJson(),
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -128,9 +142,12 @@ class UserModel {
       currentLat: currentLat,
       currentLng: currentLng,
       countryId: countryId,
+      country: country?.toDomain(),
       cityId: cityId,
+      city: city?.toDomain(),
       createdAt: DateTime.tryParse(createdAt) ?? DateTime.now(),
       updatedAt: DateTime.tryParse(updatedAt) ?? DateTime.now(),
     );
   }
 }
+

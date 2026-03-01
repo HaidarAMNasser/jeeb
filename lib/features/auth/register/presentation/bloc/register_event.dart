@@ -2,6 +2,7 @@ part of 'register_bloc.dart';
 
 abstract class RegisterEvent extends Equatable {
   const RegisterEvent();
+
   @override
   List<Object?> get props => [];
 }
@@ -15,8 +16,8 @@ class RegisterSubmitted extends RegisterEvent {
   final String role;
   final int countryId;
   final int cityId;
-  final String? address;
   final String notificationChannel;
+  final String? address;
 
   const RegisterSubmitted({
     required this.firstName,
@@ -27,8 +28,8 @@ class RegisterSubmitted extends RegisterEvent {
     required this.role,
     required this.countryId,
     required this.cityId,
-    this.address,
     required this.notificationChannel,
+    this.address,
   });
 
   @override
@@ -41,7 +42,8 @@ class RegisterSubmitted extends RegisterEvent {
         role,
         countryId,
         cityId,
-        address,
         notificationChannel,
+        address,
       ];
 }
+

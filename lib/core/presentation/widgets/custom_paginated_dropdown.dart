@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/animated_border_wrapper.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/core/presentation/widgets/animated_border_wrapper.dart';
 
+/// A reusable paginated dropdown widget with scroll detection
+/// 
+/// Generic type T should be the entity/model type
+/// displayText function extracts the display text from the item
+/// onLoadMore is called when user scrolls near bottom (90% threshold)
 class CustomPaginatedDropdown<T> extends StatefulWidget {
   final String title;
   final String hintText;
@@ -192,7 +197,9 @@ class _CustomPaginatedDropdownState<T>
           ),
         if (_isExpanded && !widget.isReadOnly && widget.items.isNotEmpty)
           Container(
-            constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 250),
+            constraints: BoxConstraints(
+              maxHeight: widget.maxHeight ?? 250,
+            ),
             decoration: BoxDecoration(
               color: ColorManager.defaultWhite,
               border: Border(
@@ -270,3 +277,4 @@ class _CustomPaginatedDropdownState<T>
     );
   }
 }
+

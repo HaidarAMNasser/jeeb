@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 
 /// A widget that wraps a child with an animated gradient border when loading
 class AnimatedBorderWrapper extends StatefulWidget {
@@ -134,3 +134,4 @@ class _AnimatedGradientBorderPainter extends CustomPainter {
   bool shouldRepaint(covariant _AnimatedGradientBorderPainter oldDelegate) =>
       oldDelegate.animationValue != animationValue;
 }
+

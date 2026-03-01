@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import '../../../../core/presentation/theme/colors_manager.dart';
 import '../../../../core/presentation/theme/values_manager.dart';
 import '../../../../core/presentation/localization/app_translation.dart';
 import '../../../../core/presentation/widgets/custom_button.dart';
@@ -53,7 +53,9 @@ class OnboardingBottomSection extends StatelessWidget {
         SizedBox(height: AppHeight.s16),
         // Next/Get Started button
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppPadding.p27),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppPadding.p27,
+          ),
           child: Column(
             children: [
               // Always reserve space for notification button to keep layout consistent
@@ -61,7 +63,9 @@ class OnboardingBottomSection extends StatelessWidget {
                 height: AppHeight.s56 + AppPadding.p16,
                 child: state.currentPageIndex == 2
                     ? Padding(
-                        padding: EdgeInsets.only(bottom: AppPadding.p16),
+                        padding: EdgeInsets.only(
+                          bottom: AppPadding.p16,
+                        ),
                         child: CustomButton(
                           text: AppTranslation.allowNotifications,
                           onPressed: () {
@@ -88,3 +92,4 @@ class OnboardingBottomSection extends StatelessWidget {
     );
   }
 }
+

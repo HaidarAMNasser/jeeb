@@ -4,6 +4,8 @@ import 'package:dio/io.dart';
 import '../../config/app_config.dart';
 import '../../presentation/routes/navigation_service.dart';
 import '../../presentation/routes/routes.dart';
+import '../../common/utils/toast_util.dart';
+import '../../presentation/localization/app_translation.dart';
 import 'dio_cache_interceptor.dart';
 import 'storage_service.dart';
 
@@ -115,11 +117,15 @@ class AppInterceptors extends Interceptor {
       final isLoginRequest =
           err.requestOptions.path.contains('login') ||
           err.requestOptions.path.contains('Login') ||
-          err.requestOptions.path.contains('Auth_general');
+          err.requestOptions.path.contains('Auth_general') ||
+          err.requestOptions.path.contains('auth/login') ||
+          err.requestOptions.path.contains('auth/register');
 
       if (!isLoginRequest) {
         _cacheInterceptor.clearCache();
         _storageService.clearStorage(clearAuthParams: true).then((val) {
+          // Show not authorized message
+          customToast(msg: AppTranslation.notAuthorized);
           // Navigate to login on auth error
           _navigationService.pushNamedAndRemoveUntil(Routes.login);
         });

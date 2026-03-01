@@ -1,30 +1,30 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/auth/reset_password/data/repositories/reset_password_repository.dart';
+import '../../data/repositories/reset_password_repository.dart';
 
 part 'reset_password_event.dart';
 part 'reset_password_state.dart';
 
 class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
-  final ResetPasswordRepository _repository;
+  final ResetPasswordRepository _resetPasswordRepository;
 
-  ResetPasswordBloc(this._repository) : super(const ResetPasswordInitial()) {
-    on<ResetPasswordEvent>(_onEvent);
-  }
+  ResetPasswordBloc(this._resetPasswordRepository)
+      : super(const ResetPasswordInitial()) {
+    on<ResetPasswordEvent>((event, emit) async {
+      if (event is ResetPasswordSubmitted) {
+        emit(const ResetPasswordLoading());
+        final result = await _resetPasswordRepository.resetPassword(
+          email: event.email,
+          otp: event.otp,
+          password: event.password,
+        );
 
-  Future<void> _onEvent(
-      ResetPasswordEvent event, Emitter<ResetPasswordState> emit) async {
-    if (event is ResetPasswordSubmitted) {
-      emit(const ResetPasswordLoading());
-      final result = await _repository.resetPassword(
-        email: event.email,
-        otp: event.otp,
-        password: event.password,
-      );
-      result.fold(
-        (f) => emit(ResetPasswordError(message: f.message)),
-        (_) => emit(const ResetPasswordSuccess()),
-      );
-    }
+        result.fold(
+          (failure) => emit(ResetPasswordError(message: failure.message)),
+          (_) => emit(const ResetPasswordSuccess()),
+        );
+      }
+    });
   }
 }
+

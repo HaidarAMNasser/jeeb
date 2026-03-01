@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
-import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import '../bloc/verify_bloc.dart';
+import '../widgets/verify_header.dart';
+import '../widgets/verify_form.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class VerifyPage extends StatefulWidget {
-  const VerifyPage({super.key});
+  final String email;
+
+  const VerifyPage({super.key, required this.email});
 
   @override
   State<VerifyPage> createState() => _VerifyPageState();
@@ -18,25 +24,30 @@ class VerifyPage extends StatefulWidget {
 
 class _VerifyPageState extends State<VerifyPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
   final _otpController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
     _otpController.dispose();
     super.dispose();
   }
 
-  void _handleSubmit() {
-    if (_formKey.currentState?.validate() ?? false) {
+  void _handleVerify() {
+    if (_formKey.currentState!.validate()) {
+      final otp = _otpController.text.trim();
+      if (otp.isEmpty) {
+        customToast(msg: AppTranslation.pleaseEnterOtp);
+        return;
+      }
+
       context.read<VerifyBloc>().add(
-            VerifySubmitted(
-              email: _emailController.text.trim(),
-              otp: _otpController.text.trim(),
-            ),
-          );
+        VerifySubmitted(email: widget.email, otp: otp),
+      );
     }
+  }
+
+  void _handleResendOtp() {
+    context.read<VerifyBloc>().add(ResendOtpSubmitted(email: widget.email));
   }
 
   @override
@@ -44,70 +55,43 @@ class _VerifyPageState extends State<VerifyPage> {
     return BlocConsumer<VerifyBloc, VerifyState>(
       listener: (context, state) {
         if (state is VerifySuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Account verified successfully')),
+          customToast(msg: AppTranslation.accountVerifiedSuccess);
+          context.pushNamedAndRemoveUntil(
+            Routes.login,
+            predicate: (route) => false,
           );
-          NavigationService().pushNamedAndRemoveUntil(Routes.login);
+        } else if (state is VerifyOtpResent) {
+          customToast(msg: AppTranslation.otpSentSuccess);
         } else if (state is VerifyError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          customToast(msg: state.message);
         }
       },
       builder: (context, state) {
-        final isLoading = state is VerifyLoading;
-        return Scaffold(
-          backgroundColor: ColorManager.background,
-          appBar: AppBar(
+        return ModalProgressHUD(
+          progressIndicator: const CustomCircleIndicator(),
+          inAsyncCall: state is VerifyLoading,
+          child: Scaffold(
             backgroundColor: ColorManager.background,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            title: Text(
-              AppTranslation.verifyAccount,
-              style: TextStyle(
-                color: ColorManager.titlesColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            appBar: CustomAppBar(title: AppTranslation.verifyAccount),
+
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(AppPadding.p24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    VerifyHeader(email: widget.email),
+                    VerifyForm(
+                      formKey: _formKey,
+                      otpController: _otpController,
+                      onVerify: _handleVerify,
+                      onResendOtp: _handleResendOtp,
+                      isLoading: state is VerifyLoading,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          body: SafeArea(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: EdgeInsets.all(AppPadding.p24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          CustomTextField(
-                            label: AppTranslation.email,
-                            hint: AppTranslation.enterEmail,
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          SizedBox(height: AppHeight.s16),
-                          CustomTextField(
-                            label: AppTranslation.enterOtp,
-                            hint: AppTranslation.enterOtp,
-                            controller: _otpController,
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: AppHeight.s32),
-                          CustomButton(
-                            text: AppTranslation.verifyAccount,
-                            onPressed: _handleSubmit,
-                            isLoading: isLoading,
-                            color: ColorManager.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
           ),
         );
       },

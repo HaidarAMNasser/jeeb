@@ -1,4 +1,4 @@
-import 'package:jeeb_app/features/auth/domain/entities/token_entity.dart';
+import '../../domain/entities/token_entity.dart';
 import 'user_model.dart';
 
 class TokenModel {
@@ -33,3 +33,4 @@ class TokenModel {
     );
   }
 }
+

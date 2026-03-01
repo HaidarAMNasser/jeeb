@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FontConstant {
   static const String fontTajwal = "Tajawal";
-  static const String fontSFPro = 'SF Pro Display';
+    static const String fontSFPro = 'SF Pro Display';
 }
 
 class FontWeightManager {

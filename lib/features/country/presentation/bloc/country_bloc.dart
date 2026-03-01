@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/country/data/repositories/country_repository.dart';
 import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
+import 'package:jeeb_app/features/country/data/repositories/country_repository.dart';
 
 part 'country_event.dart';
 part 'country_state.dart';
@@ -39,23 +39,22 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
       limit: _pageSize,
     );
 
-    result.fold((failure) => emit(CountryError(message: failure.message)), (
-      countries,
-    ) {
-      _accumulatedCountries.addAll(countries);
-      _hasNextPage = countries.length >= _pageSize;
+    result.fold(
+      (failure) => emit(CountryError(message: failure.message)),
+      (countries) {
+        _accumulatedCountries.addAll(countries);
+        _hasNextPage = countries.length >= _pageSize;
 
-      emit(
-        CountryLoaded(
+        emit(CountryLoaded(
           countries: List.from(_accumulatedCountries),
           isLoadingMore: false,
           hasReachedMax: !_hasNextPage,
           page: _page,
           isFiltered: event.isFiltered ?? false,
           currentSearchText: _currentSearchText,
-        ),
-      );
-    });
+        ));
+      },
+    );
   }
 
   Future<void> _onLoadMoreCountries(
@@ -88,15 +87,14 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
         _accumulatedCountries.addAll(countries);
         _hasNextPage = countries.length >= _pageSize;
 
-        emit(
-          currentState.copyWith(
-            countries: List.from(_accumulatedCountries),
-            isLoadingMore: false,
-            hasReachedMax: !_hasNextPage,
-            page: _page,
-          ),
-        );
+        emit(currentState.copyWith(
+          countries: List.from(_accumulatedCountries),
+          isLoadingMore: false,
+          hasReachedMax: !_hasNextPage,
+          page: _page,
+        ));
       },
     );
   }
 }
+

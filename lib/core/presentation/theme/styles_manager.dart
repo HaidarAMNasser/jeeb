@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'font_manager.dart';
 
 TextStyle _getTextStyle({

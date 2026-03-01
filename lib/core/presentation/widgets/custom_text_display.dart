@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 
 class CustomTextDisplay extends StatelessWidget {
@@ -37,3 +37,4 @@ class CustomTextDisplay extends StatelessWidget {
     );
   }
 }
+

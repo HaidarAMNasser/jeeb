@@ -2,6 +2,7 @@ part of 'verify_bloc.dart';
 
 abstract class VerifyState extends Equatable {
   const VerifyState();
+
   @override
   List<Object?> get props => [];
 }
@@ -18,9 +19,16 @@ class VerifySuccess extends VerifyState {
   const VerifySuccess();
 }
 
+class VerifyOtpResent extends VerifyState {
+  const VerifyOtpResent();
+}
+
 class VerifyError extends VerifyState {
   final String message;
+
   const VerifyError({required this.message});
+
   @override
   List<Object> get props => [message];
 }
+

@@ -2,6 +2,7 @@ part of 'profile_bloc.dart';
 
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
+
   @override
   List<Object?> get props => [];
 }
@@ -28,5 +29,13 @@ class UpdateProfile extends ProfileEvent {
   });
 
   @override
-  List<Object?> get props => [firstName, lastName, phone, countryId, cityId, address];
+  List<Object?> get props => [
+        firstName,
+        lastName,
+        phone,
+        countryId,
+        cityId,
+        address,
+      ];
 }
+

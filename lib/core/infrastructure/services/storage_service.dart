@@ -1,22 +1,22 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Simple storage service for token, role, and language
+/// Simple storage service for token and language
 /// Can be extended later with flutter_secure_storage for tokens
 abstract class StorageService {
   Future<String> getUserToken();
   Future<void> setUserToken(String token);
-  Future<String> getUserRole();
-  Future<void> setUserRole(String role);
   String getAppLanguage();
   Future<void> setAppLanguage(String lang);
+  Future<String?> getUserRole();
+  Future<void> setUserRole(String role);
   Future<void> clearStorage({bool clearAuthParams = false});
 }
 
 class StorageServiceImpl implements StorageService {
   final SharedPreferences _sharedPreferences;
   static const String _tokenKey = 'access_token';
-  static const String _roleKey = 'user_role';
   static const String _languageKey = 'language_code';
+  static const String _userRoleKey = 'user_role';
 
   StorageServiceImpl(this._sharedPreferences);
 
@@ -31,18 +31,8 @@ class StorageServiceImpl implements StorageService {
   }
 
   @override
-  Future<String> getUserRole() async {
-    return _sharedPreferences.getString(_roleKey) ?? '';
-  }
-
-  @override
-  Future<void> setUserRole(String role) async {
-    await _sharedPreferences.setString(_roleKey, role);
-  }
-
-  @override
   String getAppLanguage() {
-    return _sharedPreferences.getString(_languageKey) ?? 'en';
+    return _sharedPreferences.getString(_languageKey) ?? '';
   }
 
   @override
@@ -51,10 +41,20 @@ class StorageServiceImpl implements StorageService {
   }
 
   @override
+  Future<String?> getUserRole() async {
+    return _sharedPreferences.getString(_userRoleKey);
+  }
+
+  @override
+  Future<void> setUserRole(String role) async {
+    await _sharedPreferences.setString(_userRoleKey, role);
+  }
+
+  @override
   Future<void> clearStorage({bool clearAuthParams = false}) async {
     if (clearAuthParams) {
       await _sharedPreferences.remove(_tokenKey);
-      await _sharedPreferences.remove(_roleKey);
+      await _sharedPreferences.remove(_userRoleKey);
     }
   }
 }

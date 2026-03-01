@@ -1,29 +1,25 @@
 import 'package:dio/dio.dart';
+import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class ForgotPasswordRemoteDataSource {
-  Future<Response> forgotPassword({required String email});
+  Future<Response> forgotPassword({
+    required String email,
+  });
 }
 
 class ForgotPasswordRemoteDataSourceImpl
     implements ForgotPasswordRemoteDataSource {
-  static const bool _useFakeData = true;
+  final AppApiServiceClient _appApiServiceClient;
 
-  ForgotPasswordRemoteDataSourceImpl();
+  ForgotPasswordRemoteDataSourceImpl(this._appApiServiceClient);
 
   @override
-  Future<Response> forgotPassword({required String email}) async {
-    if (_useFakeData) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      return Response(
-        requestOptions: RequestOptions(path: 'auth/forgot-password'),
-        data: {
-          'statusCode': 200,
-          'message': 'OTP sent successfully.',
-          'data': {'message': 'OTP sent successfully.'},
-        },
-        statusCode: 200,
-      );
-    }
-    throw UnimplementedError('Real API not wired');
+  Future<Response> forgotPassword({
+    required String email,
+  }) {
+    return _appApiServiceClient.forgotPassword(
+      email,
+    );
   }
 }
+

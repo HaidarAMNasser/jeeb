@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import '../../../../core/presentation/theme/colors_manager.dart';
 import '../../../../core/presentation/theme/values_manager.dart';
 import '../../../../core/presentation/theme/styles_manager.dart';
 import '../../../../core/presentation/theme/font_manager.dart';

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
-import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import '../bloc/login_bloc.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_form.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,12 +32,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
-      if (email.isEmpty || password.isEmpty) return;
+
+      if (email.isEmpty) {
+        customToast(msg: AppTranslation.pleaseEnterEmail);
+        return;
+      }
+      if (password.isEmpty) {
+        customToast(msg: AppTranslation.pleaseEnterPassword);
+        return;
+      }
+
       context.read<LoginBloc>().add(
-            LoginSubmitted(email: email, password: password),
+            LoginSubmitted(
+              email: email,
+              password: password,
+            ),
           );
     }
   }
@@ -45,42 +59,43 @@ class _LoginPageState extends State<LoginPage> {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppTranslation.loginSuccess)),
+          customToast(msg: AppTranslation.loginSuccess);
+          context.pushNamedAndRemoveUntil(
+            Routes.mainNavigation,
+            predicate: (route) => false,
           );
-          NavigationService().pushNamedAndRemoveUntil(Routes.mainNavigation);
         } else if (state is LoginError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          customToast(msg: state.message);
         }
       },
       builder: (context, state) {
-        final isLoading = state is LoginLoading;
-        return Scaffold(
-          backgroundColor: ColorManager.background,
-          body: SafeArea(
-            child: isLoading
-                ? const Center(child: CustomCircleIndicator())
-                : SingleChildScrollView(
-                    padding: EdgeInsets.all(AppPadding.p24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const LoginHeader(),
-                        LoginForm(
-                          formKey: _formKey,
-                          emailController: _emailController,
-                          passwordController: _passwordController,
-                          onLogin: _handleLogin,
-                          isLoading: isLoading,
-                        ),
-                      ],
+        return ModalProgressHUD(
+          progressIndicator: const CustomCircleIndicator(),
+          inAsyncCall: state is LoginLoading,
+          child: Scaffold(
+            backgroundColor: ColorManager.background,
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(AppPadding.p24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const LoginHeader(),
+                    LoginForm(
+                      formKey: _formKey,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      onLogin: _handleLogin,
+                      isLoading: state is LoginLoading,
                     ),
-                  ),
+                  ],
+                ),
+              ),
+            ),
           ),
         );
       },
     );
   }
 }
+

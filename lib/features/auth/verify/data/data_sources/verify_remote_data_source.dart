@@ -1,29 +1,40 @@
 import 'package:dio/dio.dart';
+import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class VerifyRemoteDataSource {
-  Future<Response> verify({required String email, required String otp});
+  Future<Response> verify({
+    required String email,
+    required String otp,
+  });
+
+  Future<Response> resendOtp({
+    required String email,
+  });
 }
 
 class VerifyRemoteDataSourceImpl implements VerifyRemoteDataSource {
-  static const bool _useFakeData = true;
+  final AppApiServiceClient _appApiServiceClient;
 
-  VerifyRemoteDataSourceImpl();
+  VerifyRemoteDataSourceImpl(this._appApiServiceClient);
 
   @override
-  Future<Response> verify(
-      {required String email, required String otp}) async {
-    if (_useFakeData) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      return Response(
-        requestOptions: RequestOptions(path: 'auth/verify'),
-        data: {
-          'statusCode': 200,
-          'message': 'Account verified successfully.',
-          'data': {'message': 'Account verified successfully.'},
-        },
-        statusCode: 200,
-      );
-    }
-    throw UnimplementedError('Real API not wired');
+  Future<Response> verify({
+    required String email,
+    required String otp,
+  }) {
+    return _appApiServiceClient.verify(
+      email,
+      otp,
+    );
+  }
+
+  @override
+  Future<Response> resendOtp({
+    required String email,
+  }) {
+    return _appApiServiceClient.resendOtp(
+      email,
+    );
   }
 }
+

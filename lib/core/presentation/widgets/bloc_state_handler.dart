@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
-import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
+import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 
-class BlocStateHandler<B extends StateStreamable<S>, S>
-    extends StatelessWidget {
+/// A generic widget that handles BlocBuilder states automatically
+/// Works with any bloc that follows the common state pattern:
+/// - Loading state (ends with "Loading" or has isLoading property)
+/// - Error state (ends with "Error" or has errorMessage/message property)
+/// - Success/Loaded state (ends with "Loaded" or "Success")
+/// - Empty state (optional)
+class BlocStateHandler<B extends StateStreamable<S>, S> extends StatelessWidget {
   /// The bloc to listen to
   final B bloc;
 
@@ -17,12 +22,7 @@ class BlocStateHandler<B extends StateStreamable<S>, S>
   final Widget? loadingWidget;
 
   /// Optional custom error widget builder
-  final Widget Function(
-    BuildContext context,
-    String message,
-    VoidCallback? onRetry,
-  )?
-  errorBuilder;
+  final Widget Function(BuildContext context, String message, VoidCallback? onRetry)? errorBuilder;
 
   /// Optional custom empty state widget builder
   final Widget Function(BuildContext context)? emptyBuilder;
@@ -79,10 +79,10 @@ class BlocStateHandler<B extends StateStreamable<S>, S>
           final errorMsg = _getErrorMessage(state);
           final onRetry = _getRetryCallback(state);
           final isNetworkError = _isNetworkError(errorMsg);
-          final displayMessage = isNetworkError
-              ? AppTranslation.noInternetConnection
+          final displayMessage = isNetworkError 
+              ? AppTranslation.noInternetConnection 
               : errorMsg;
-
+          
           if (errorBuilder != null) {
             return errorBuilder!(context, displayMessage, onRetry);
           }
@@ -98,7 +98,9 @@ class BlocStateHandler<B extends StateStreamable<S>, S>
           if (emptyBuilder != null) {
             return emptyBuilder!(context);
           }
-          return EmptyStateWidget(message: emptyMessage ?? 'No data available');
+          return EmptyStateWidget(
+            message: emptyMessage ?? 'No data available',
+          );
         }
 
         // Check success state
@@ -157,9 +159,7 @@ class BlocStateHandler<B extends StateStreamable<S>, S>
     // Try to get error message from state
     try {
       final dynamic stateDynamic = state;
-      return stateDynamic.message ??
-          stateDynamic.errorMessage ??
-          'An error occurred';
+      return stateDynamic.message ?? stateDynamic.errorMessage ?? 'An error occurred';
     } catch (_) {
       return 'An error occurred';
     }
@@ -195,3 +195,4 @@ class BlocStateHandler<B extends StateStreamable<S>, S>
         lowerMessage.contains('check your network');
   }
 }
+

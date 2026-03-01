@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 
+/// A reusable confirmation dialog widget
+///
+/// Usage:
+/// ```dart
+/// ConfirmationDialog.show(
+///   context: context,
+///   title: AppTranslation.deleteProduct,
+///   onConfirm: () {
+///     // Handle confirmation
+///   },
+/// );
+/// ```
 class ConfirmationDialog extends StatelessWidget {
   final String title;
   final VoidCallback onConfirm;
@@ -47,10 +59,7 @@ class ConfirmationDialog extends StatelessWidget {
       backgroundColor: ColorManager.surface,
       title: Text(
         title,
-        style: getMediumStyle(
-          fontSize: AppFontSize.s20,
-          color: ColorManager.textDarkColor,
-        ),
+        style: getMediumStyle(fontSize: AppFontSize.s20, color: ColorManager.textDarkColor),
       ),
       actions: [
         TextButton(

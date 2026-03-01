@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/city/data/repositories/city_repository.dart';
 import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
+import 'package:jeeb_app/features/city/data/repositories/city_repository.dart';
 
 part 'city_event.dart';
 part 'city_state.dart';
@@ -22,7 +22,10 @@ class CityBloc extends Bloc<CityEvent, CityState> {
     on<ResetCities>(_onResetCities);
   }
 
-  Future<void> _onLoadCities(LoadCities event, Emitter<CityState> emit) async {
+  Future<void> _onLoadCities(
+    LoadCities event,
+    Emitter<CityState> emit,
+  ) async {
     if (event.withLoading) {
       emit(CityLoading());
     }
@@ -40,23 +43,22 @@ class CityBloc extends Bloc<CityEvent, CityState> {
       limit: _pageSize,
     );
 
-    result.fold((failure) => emit(CityError(message: failure.message)), (
-      cities,
-    ) {
-      _accumulatedCities.addAll(cities);
-      _hasNextPage = cities.length >= _pageSize;
+    result.fold(
+      (failure) => emit(CityError(message: failure.message)),
+      (cities) {
+        _accumulatedCities.addAll(cities);
+        _hasNextPage = cities.length >= _pageSize;
 
-      emit(
-        CityLoaded(
+        emit(CityLoaded(
           cities: List.from(_accumulatedCities),
           isLoadingMore: false,
           hasReachedMax: !_hasNextPage,
           page: _page,
           isFiltered: event.isFiltered ?? false,
           currentSearchText: _currentSearchText,
-        ),
-      );
-    });
+        ));
+      },
+    );
   }
 
   Future<void> _onLoadMoreCities(
@@ -93,19 +95,20 @@ class CityBloc extends Bloc<CityEvent, CityState> {
         _accumulatedCities.addAll(cities);
         _hasNextPage = cities.length >= _pageSize;
 
-        emit(
-          currentState.copyWith(
-            cities: List.from(_accumulatedCities),
-            isLoadingMore: false,
-            hasReachedMax: !_hasNextPage,
-            page: _page,
-          ),
-        );
+        emit(currentState.copyWith(
+          cities: List.from(_accumulatedCities),
+          isLoadingMore: false,
+          hasReachedMax: !_hasNextPage,
+          page: _page,
+        ));
       },
     );
   }
 
-  void _onResetCities(ResetCities event, Emitter<CityState> emit) {
+  void _onResetCities(
+    ResetCities event,
+    Emitter<CityState> emit,
+  ) {
     _page = 1;
     _hasNextPage = true;
     _isLoadingMore = false;
@@ -115,3 +118,4 @@ class CityBloc extends Bloc<CityEvent, CityState> {
     emit(CityInitial());
   }
 }
+

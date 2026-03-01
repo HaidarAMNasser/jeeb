@@ -82,6 +82,8 @@ class AppTranslation {
   static String get areYouSureWantToDeleteThisProduct => 'are_you_sure_want_to_delete_this_product'.tr();
   static String get delete => 'delete'.tr();
   static String get edit => 'edit'.tr();
+  static String get merchantDeletedSuccessfully => 'merchant_deleted_successfully'.tr();
+  static String get areYouSureDeleteMerchant => 'are_you_sure_delete_merchant'.tr();
   static String get save => 'save'.tr();
   static String get cancel => 'cancel'.tr();
   static String get confirm => 'confirm'.tr();
@@ -136,6 +138,8 @@ class AppTranslation {
   static String get sendOtp => 'send_otp'.tr();
   static String get passwordsDoNotMatch => 'passwords_do_not_match'.tr();
   static String get profileUpdatedSuccess => 'profile_updated_success'.tr();
+  static String get logoutSuccess => 'logout_success'.tr();
+  static String get logoutError => 'logout_error'.tr();
   static String get forgotPasswordDescription => 'forgot_password_description'.tr();
   static String get pleaseSelectCountryFirst => 'please_select_country_first'.tr();
   static String get noCitiesAvailable => 'no_cities_available'.tr();
@@ -144,6 +148,8 @@ class AppTranslation {
   static String get merchants => 'merchants'.tr();
   static String get merchantDetails => 'merchant_details'.tr();
   static String get noMerchantsFound => 'no_merchants_found'.tr();
+  static String get searchMerchants => 'search_merchants'.tr();
+  static String get searchMerchantsHint => 'search_merchants_hint'.tr();
   static String get location => 'location'.tr();
 
   // Delivery
@@ -154,5 +160,41 @@ class AppTranslation {
   static String get noDeliveryMenFound => 'no_delivery_men_found'.tr();
   static String get vehicleType => 'vehicle_type'.tr();
   static String get status => 'status'.tr();
+  static String get searchDeliveryMen => 'search_delivery_men'.tr();
+  static String get searchDeliveryMenHint => 'search_delivery_men_hint'.tr();
+  static String get deliveryManCreatedSuccessfully => 'delivery_man_created_successfully'.tr();
+  static String get deliveryManUpdatedSuccessfully => 'delivery_man_updated_successfully'.tr();
+  static String get deliveryManDeletedSuccessfully => 'delivery_man_deleted_successfully'.tr();
+  static String get areYouSureDeleteDeliveryMan => 'are_you_sure_delete_delivery_man'.tr();
+  static String get enterFirstName => 'enter_first_name'.tr();
+  static String get enterLastName => 'enter_last_name'.tr();
+  static String get pleaseEnterFirstName => 'please_enter_first_name'.tr();
+  static String get pleaseEnterLastName => 'please_enter_last_name'.tr();
+  static String get pleaseEnterPhone => 'please_enter_phone'.tr();
+  static String get passwordMustBeAtLeast6Characters => 'password_must_be_at_least_6_characters'.tr();
+  static String get selectLanguage => 'select_language'.tr();
+  static String get changeLanguage => 'change_language'.tr();
+  static String get close => 'close'.tr();
+  static String get languageChangedSuccessfully => 'language_changed_successfully'.tr();
+
+  // Order
+  static String get orders => 'orders'.tr();
+  static String get orderDetails => 'order_details'.tr();
+  static String get noOrdersFound => 'no_orders_found'.tr();
+  static String get searchOrders => 'search_orders'.tr();
+  static String get searchOrdersHint => 'search_orders_hint'.tr();
+  static String get orderCompletedSuccessfully => 'order_completed_successfully'.tr();
+  static String get orderCancelledSuccessfully => 'order_cancelled_successfully'.tr();
+  static String get order => 'order'.tr();
+  static String get productsCount => 'products_count'.tr();
+  static String get people => 'people'.tr();
+  static String get latitude => 'latitude'.tr();
+  static String get longitude => 'longitude'.tr();
+  static String get numberOfPeople => 'number_of_people'.tr();
+  static String get deliveryMan => 'delivery_man'.tr();
+  static String get areYouSureCompleteOrder => 'are_you_sure_complete_order'.tr();
+  static String get areYouSureCancelOrder => 'are_you_sure_cancel_order'.tr();
+  static String get completeOrder => 'complete_order'.tr();
+  static String get cancelOrder => 'cancel_order'.tr();
 }
 

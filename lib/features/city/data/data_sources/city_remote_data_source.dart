@@ -20,6 +20,11 @@ class CityRemoteDataSourceImpl implements CityRemoteDataSource {
     int page = 1,
     int limit = 100,
   }) {
-    return _appApiServiceClient.getCities(countryId, page, limit);
+    return _appApiServiceClient.getCities(
+      countryId,
+      page,
+      limit,
+    );
   }
 }
+

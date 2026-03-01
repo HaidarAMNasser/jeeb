@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_localization;
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/features/country/presentation/bloc/country_bloc.dart';
+import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 
 class CountryDropdown extends StatefulWidget {
   final int? selectedCountryId;
@@ -80,7 +80,9 @@ class _CountryDropdownState extends State<CountryDropdown> {
                   borderRadius: BorderRadius.circular(AppRadius.r18),
                   border: Border.all(color: ColorManager.borderColor),
                 ),
-                child: const Center(child: CustomCircleIndicator()),
+                child: const Center(
+                  child: CustomCircleIndicator(),
+                ),
               ),
             ],
           );
@@ -221,9 +223,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
                       }
 
                       final country = countries[index];
-                      final countryName = isRTL
-                          ? country.name.ar
-                          : country.name.en;
+                      final countryName = isRTL ? country.name.ar : country.name.en;
                       final isSelected = country.id == widget.selectedCountryId;
 
                       return InkWell(

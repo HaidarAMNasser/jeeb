@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class ResetPasswordRemoteDataSource {
   Future<Response> resetPassword({
@@ -10,28 +11,16 @@ abstract class ResetPasswordRemoteDataSource {
 
 class ResetPasswordRemoteDataSourceImpl
     implements ResetPasswordRemoteDataSource {
-  static const bool _useFakeData = true;
+  final AppApiServiceClient _appApiServiceClient;
 
-  ResetPasswordRemoteDataSourceImpl();
+  ResetPasswordRemoteDataSourceImpl(this._appApiServiceClient);
 
   @override
   Future<Response> resetPassword({
     required String email,
     required String otp,
     required String password,
-  }) async {
-    if (_useFakeData) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      return Response(
-        requestOptions: RequestOptions(path: 'auth/reset-password'),
-        data: {
-          'statusCode': 200,
-          'message': 'Password reset successfully.',
-          'data': {'message': 'Password reset successfully.'},
-        },
-        statusCode: 200,
-      );
-    }
-    throw UnimplementedError('Real API not wired');
+  }) {
+    return _appApiServiceClient.resetPassword(email, otp, password);
   }
 }

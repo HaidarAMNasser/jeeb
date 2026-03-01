@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_display.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -33,18 +33,18 @@ class LoginForm extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomTextField(
-            label: AppTranslation.email,
-            hint: AppTranslation.enterEmail,
+            title: AppTranslation.email,
+            hintText: AppTranslation.enterEmail,
             controller: emailController,
-            keyboardType: TextInputType.emailAddress,
           ),
           SizedBox(height: AppHeight.s24),
           CustomTextField(
-            label: AppTranslation.password,
-            hint: AppTranslation.enterPassword,
+            obscureText:  true,
+            title: AppTranslation.password,
+            hintText: AppTranslation.enterPassword,
             controller: passwordController,
-            obscureText: true,
           ),
+       
           SizedBox(height: AppHeight.s16),
           Align(
             alignment: Alignment.centerRight,
@@ -52,12 +52,10 @@ class LoginForm extends StatelessWidget {
               onPressed: () {
                 context.pushNamed(Routes.forgotPassword);
               },
-              child: CustomText(
+              child: CustomTextDisplay(
                 text: AppTranslation.forgotPassword,
-                textStyle: TextStyle(
-                  fontSize: AppFontSize.s14,
-                  color: ColorManager.primary,
-                ),
+                fontSize: AppFontSize.s14,
+                color: ColorManager.primary,
               ),
             ),
           ),
@@ -72,24 +70,20 @@ class LoginForm extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomText(
+              CustomTextDisplay(
                 text: AppTranslation.dontHaveAccount,
-                textStyle: TextStyle(
-                  fontSize: AppFontSize.s14,
-                  color: ColorManager.textColor,
-                ),
+                fontSize: AppFontSize.s14,
+                color: ColorManager.textColor,
               ),
               TextButton(
                 onPressed: () {
                   context.pushNamed(Routes.register);
                 },
-                child: CustomText(
+                child: CustomTextDisplay(
                   text: AppTranslation.register,
-                  textStyle: TextStyle(
-                    fontSize: AppFontSize.s14,
-                    color: ColorManager.primary,
-                    fontWeight: FontWeightManager.semiBold,
-                  ),
+                  fontSize: AppFontSize.s14,
+                  color: ColorManager.primary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

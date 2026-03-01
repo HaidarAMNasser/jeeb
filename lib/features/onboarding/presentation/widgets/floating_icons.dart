@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import '../../../../core/presentation/theme/colors_manager.dart';
 import '../../../../core/presentation/theme/values_manager.dart';
 
 class FloatingIcons extends StatefulWidget {
@@ -69,7 +69,7 @@ class _FloatingIconsState extends State<FloatingIcons>
       // Random position starting from top of screen and going upward
       final startY =
           0.05 + (random.nextDouble() * 0.35); // 5-40% from top (higher reach)
-
+      
       // For page index 1, distribute icons more on left and right sides
       double x;
       if (widget.pageIndex == 1) {
@@ -85,7 +85,7 @@ class _FloatingIconsState extends State<FloatingIcons>
         // For other pages, distribute evenly across the entire width
         x = (i / iconCount) * 0.9 + (random.nextDouble() * 0.1);
       }
-
+      
       _positions.add(Offset(x, startY));
     }
   }

@@ -1,28 +1,41 @@
-/// API response model matching Postman shape: statusCode, message, data.
-/// Supports both camelCase (statusCode) and snake_case (status_code) from API.
+/// API Response Model for the new backend structure
+/// {
+///   "statusCode": 200,
+///   "message": "...",
+///   "data": {...},
+///   "timestamp": "...",
+///   "path": "..."
+/// }
 class ApiResponseModel<T> {
-  final int? statusCode;
-  final String? message;
+  final int statusCode;
+  final String message;
   final T? data;
+  final String? timestamp;
+  final String? path;
 
   ApiResponseModel({
-    this.statusCode,
-    this.message,
+    required this.statusCode,
+    required this.message,
     this.data,
+    this.timestamp,
+    this.path,
   });
-
-  bool get isSuccess =>
-      statusCode == 200 || statusCode == 201;
 
   factory ApiResponseModel.fromJson(
     Map<String, dynamic> json,
-    T Function(Object? json) fromJsonT,
+    T Function(Object? json)? fromJsonT,
   ) {
-    final code = json['statusCode'] as int? ?? json['status_code'] as int?;
     return ApiResponseModel<T>(
-      statusCode: code,
-      message: json['message'] as String?,
-      data: json['data'] != null ? fromJsonT(json['data']) : null,
+      statusCode: json['statusCode'] as int? ?? 200,
+      message: json['message'] as String? ?? '',
+      data: json['data'] != null && fromJsonT != null
+          ? fromJsonT(json['data'])
+          : json['data'] as T?,
+      timestamp: json['timestamp'] as String?,
+      path: json['path'] as String?,
     );
   }
+
+  bool get isSuccess => statusCode >= 200 && statusCode < 300;
 }
+

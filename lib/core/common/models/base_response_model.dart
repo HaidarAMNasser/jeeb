@@ -21,7 +21,7 @@ class BaseResponseModel<T> {
       success: json['success'] as bool?,
       status: json['status'] as int?,
       message: json['message'] as String?,
-      statusCode: json['status_code'] as int?,
+      statusCode: (json['statusCode'] ?? json['status_code']) as int?,
       data: json['data'] != null ? fromJsonT(json['data']) : null,
     );
   }

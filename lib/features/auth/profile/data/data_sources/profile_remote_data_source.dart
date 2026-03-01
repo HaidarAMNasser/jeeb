@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class ProfileRemoteDataSource {
   Future<Response> getProfile();
+
   Future<Response> updateProfile({
     String? firstName,
     String? lastName,
@@ -13,43 +15,13 @@ abstract class ProfileRemoteDataSource {
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
-  static const bool _useFakeData = true;
+  final AppApiServiceClient _appApiServiceClient;
 
-  ProfileRemoteDataSourceImpl();
+  ProfileRemoteDataSourceImpl(this._appApiServiceClient);
 
   @override
-  Future<Response> getProfile() async {
-    if (_useFakeData) {
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      final fakeUser = {
-        'id': 1,
-        'firstName': 'Test',
-        'lastName': 'User',
-        'email': 'customer@example.com',
-        'phone': '+963994636381',
-        'role': 'CUSTOMER',
-        'notificationChannel': 'EMAIL',
-        'countryId': 1,
-        'cityId': 1,
-        'address': 'Damascus, Street 1',
-        'isOnline': false,
-        'verifiedAt': '2026-02-21T14:24:35.612Z',
-        'currentLat': null,
-        'currentLng': null,
-        'createdAt': '2026-02-21T14:17:13.299Z',
-        'updatedAt': '2026-02-21T22:07:21.076Z',
-      };
-      return Response(
-        requestOptions: RequestOptions(path: 'auth/profile'),
-        data: {
-          'statusCode': 200,
-          'message': 'Operation successful',
-          'data': fakeUser,
-        },
-        statusCode: 200,
-      );
-    }
-    throw UnimplementedError('Real API not wired');
+  Future<Response> getProfile() {
+    return _appApiServiceClient.getProfile();
   }
 
   @override
@@ -60,37 +32,15 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     int? countryId,
     int? cityId,
     String? address,
-  }) async {
-    if (_useFakeData) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      final fakeUser = {
-        'id': 1,
-        'firstName': firstName ?? 'Test',
-        'lastName': lastName ?? 'User',
-        'email': 'customer@example.com',
-        'phone': phone ?? '+963994636381',
-        'role': 'CUSTOMER',
-        'notificationChannel': 'EMAIL',
-        'countryId': countryId ?? 1,
-        'cityId': cityId ?? 1,
-        'address': address ?? 'Damascus, Street 1',
-        'isOnline': false,
-        'verifiedAt': '2026-02-21T14:24:35.612Z',
-        'currentLat': null,
-        'currentLng': null,
-        'createdAt': '2026-02-21T14:17:13.299Z',
-        'updatedAt': '2026-02-21T22:07:21.076Z',
-      };
-      return Response(
-        requestOptions: RequestOptions(path: 'auth/profile'),
-        data: {
-          'statusCode': 200,
-          'message': 'Operation successful',
-          'data': fakeUser,
-        },
-        statusCode: 200,
-      );
-    }
-    throw UnimplementedError('Real API not wired');
+  }) {
+    return _appApiServiceClient.updateProfile(
+      firstName,
+      lastName,
+      phone,
+      countryId,
+      cityId,
+      address,
+    );
   }
 }
+

@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
-import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import '../bloc/reset_password_bloc.dart';
+import '../widgets/reset_password_form.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class ResetPasswordPage extends StatefulWidget {
-  const ResetPasswordPage({super.key});
+  final String email;
+
+  const ResetPasswordPage({super.key, required this.email});
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
@@ -20,33 +25,42 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _otpController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _email = '';
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is Map && args['email'] != null) {
-      _email = args['email'] as String;
-    }
-  }
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _otpController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _handleSubmit() {
-    if (_formKey.currentState?.validate() ?? false) {
+  void _handleResetPassword() {
+    if (_formKey.currentState!.validate()) {
+      final otp = _otpController.text.trim();
+      final password = _passwordController.text.trim();
+      final confirmPassword = _confirmPasswordController.text.trim();
+
+      if (otp.isEmpty) {
+        customToast(msg: AppTranslation.pleaseEnterOtp);
+        return;
+      }
+      if (password.isEmpty) {
+        customToast(msg: AppTranslation.pleaseEnterPassword);
+        return;
+      }
+      if (password != confirmPassword) {
+        customToast(msg: AppTranslation.passwordsDoNotMatch);
+        return;
+      }
+
       context.read<ResetPasswordBloc>().add(
-            ResetPasswordSubmitted(
-              email: _email,
-              otp: _otpController.text.trim(),
-              password: _passwordController.text.trim(),
-            ),
-          );
+        ResetPasswordSubmitted(
+          email: widget.email,
+          otp: otp,
+          password: password,
+        ),
+      );
     }
   }
 
@@ -55,74 +69,36 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     return BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
       listener: (context, state) {
         if (state is ResetPasswordSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Password reset successfully')),
+          customToast(msg: AppTranslation.passwordResetSuccess);
+          context.pushNamedAndRemoveUntil(
+            Routes.login,
+            predicate: (route) => false,
           );
-          NavigationService().pushNamedAndRemoveUntil(Routes.login);
         } else if (state is ResetPasswordError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          customToast(msg: state.message);
         }
       },
       builder: (context, state) {
-        final isLoading = state is ResetPasswordLoading;
-        return Scaffold(
-          backgroundColor: ColorManager.background,
-          appBar: AppBar(
+        return ModalProgressHUD(
+          progressIndicator: const CustomCircleIndicator(),
+          inAsyncCall: state is ResetPasswordLoading,
+          child: Scaffold(
             backgroundColor: ColorManager.background,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
+            appBar: CustomAppBar(title: AppTranslation.resetPassword),
+
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(AppPadding.p24),
+                child: ResetPasswordForm(
+                  formKey: _formKey,
+                  otpController: _otpController,
+                  passwordController: _passwordController,
+                  confirmPasswordController: _confirmPasswordController,
+                  onReset: _handleResetPassword,
+                  isLoading: state is ResetPasswordLoading,
+                ),
+              ),
             ),
-            title: const Text('Reset Password'),
-          ),
-          body: SafeArea(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: EdgeInsets.all(AppPadding.p24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (_email.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: Text(
-                                'Email: $_email',
-                                style: TextStyle(
-                                  color: ColorManager.textColor,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          CustomTextField(
-                            label: AppTranslation.enterOtp,
-                            hint: AppTranslation.enterOtp,
-                            controller: _otpController,
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: AppHeight.s16),
-                          CustomTextField(
-                            label: AppTranslation.password,
-                            hint: AppTranslation.enterPassword,
-                            controller: _passwordController,
-                            obscureText: true,
-                          ),
-                          SizedBox(height: AppHeight.s32),
-                          CustomButton(
-                            text: 'Reset Password',
-                            onPressed: _handleSubmit,
-                            isLoading: isLoading,
-                            color: ColorManager.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
           ),
         );
       },

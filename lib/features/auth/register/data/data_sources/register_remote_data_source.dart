@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class RegisterRemoteDataSource {
   Future<Response> register({
@@ -10,15 +11,15 @@ abstract class RegisterRemoteDataSource {
     required String role,
     required int countryId,
     required int cityId,
-    String? address,
     required String notificationChannel,
+    String? address,
   });
 }
 
 class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
-  static const bool _useFakeData = true;
+  final AppApiServiceClient _appApiServiceClient;
 
-  RegisterRemoteDataSourceImpl();
+  RegisterRemoteDataSourceImpl(this._appApiServiceClient);
 
   @override
   Future<Response> register({
@@ -30,21 +31,21 @@ class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
     required String role,
     required int countryId,
     required int cityId,
-    String? address,
     required String notificationChannel,
-  }) async {
-    if (_useFakeData) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      return Response(
-        requestOptions: RequestOptions(path: 'auth/register'),
-        data: {
-          'statusCode': 201,
-          'message': 'User registered successfully.',
-          'data': {'userId': 1, 'message': 'User registered successfully.'},
-        },
-        statusCode: 201,
-      );
-    }
-    throw UnimplementedError('Real API not wired');
+    String? address,
+  }) {
+    return _appApiServiceClient.register(
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      role,
+      countryId,
+      cityId,
+      notificationChannel,
+      address,
+    );
   }
 }
+
