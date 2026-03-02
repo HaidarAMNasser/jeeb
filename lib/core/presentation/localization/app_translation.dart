@@ -118,6 +118,9 @@ class AppTranslation {
   static String get selectCountry => 'select_country'.tr();
   static String get selectCity => 'select_city'.tr();
   static String get notificationChannel => 'notification_channel'.tr();
+  static String get verifyAccountMethodTitle => 'verify_account_method_title'.tr();
+  static String get verifyEmailOtp => 'verify_email_otp'.tr();
+  static String get verifyWhatsAppOtp => 'verify_whatsapp_otp'.tr();
   static String get verifyAccount => 'verify_account'.tr();
   static String get enterOtp => 'enter_otp'.tr();
   static String get otp => 'otp'.tr();

@@ -11,6 +11,7 @@ import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
+import 'package:jeeb_app/core/presentation/widgets/verification_method_selection_dialog.dart';
 import 'package:jeeb_app/features/auth/login/domain/entities/user_entity.dart';
 import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
 import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
@@ -33,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
-  String? _selectedRole = 'MERCHANT';
+  String? _selectedRole = UserRole.merchant.name;
   String? _selectedNotificationChannel = 'EMAIL';
   CountryEntity? _selectedCountry;
   CityEntity? _selectedCity;
@@ -60,6 +61,29 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() {
       _selectedCity = city;
     });
+  }
+
+  /// On Register tap: validate form, show verification method dialog, then submit.
+  Future<void> _onRegisterTapped() async {
+    if (!_formKey.currentState!.validate()) return;
+    // TODO: uncomment for production – country/city required
+    // if (_selectedCountry == null) {
+    //   customToast(msg: AppTranslation.pleaseSelectCountry);
+    //   return;
+    // }
+    // if (_selectedCity == null) {
+    //   customToast(msg: AppTranslation.pleaseSelectCity);
+    //   return;
+    // }
+    final channel = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const VerificationMethodSelectionDialog(),
+    );
+    if (channel != null && mounted) {
+      setState(() => _selectedNotificationChannel = channel);
+      await _handleFakeRegister();
+    }
   }
 
   // Fake register function for testing - bypasses actual registration
@@ -142,6 +166,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(AppPadding.p24),
                 child: RegisterForm(
+                  onNotificationChannelChanged: (channel) =>
+                      setState(() => _selectedNotificationChannel = channel),
                   formKey: _formKey,
                   firstNameController: _firstNameController,
                   lastNameController: _lastNameController,
@@ -150,16 +176,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   phoneController: _phoneController,
                   addressController: _addressController,
                   selectedRole: _selectedRole,
-                  selectedNotificationChannel: _selectedNotificationChannel,
                   selectedCountry: _selectedCountry,
                   selectedCity: _selectedCity,
                   onCountryChanged: _onCountryChanged,
                   onCityChanged: _onCityChanged,
                   onRoleChanged: (role) => setState(() => _selectedRole = role),
-                  onNotificationChannelChanged: (channel) =>
-                      setState(() => _selectedNotificationChannel = channel),
-                  onRegister:
-                      _handleFakeRegister, // Using fake register for testing
+                  onRegister: _onRegisterTapped,
                   isLoading: state is RegisterLoading,
                 ),
               ),

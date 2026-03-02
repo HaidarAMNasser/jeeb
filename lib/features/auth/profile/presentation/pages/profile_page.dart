@@ -4,22 +4,22 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/language_selection_dialog.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
+    as di;
 import 'package:easy_localization/easy_localization.dart';
-import '../bloc/profile_bloc.dart';
-import '../../../logout/presentation/bloc/logout_bloc.dart';
-import '../widgets/profile_header.dart';
-import '../widgets/profile_form.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-
+import '../../../../city/domain/entities/city_entity.dart';
+import '../../../../country/domain/entities/country_entity.dart';
+import '../../../login/domain/entities/user_entity.dart';
+import '../../../logout/presentation/bloc/logout_bloc.dart';
+import '../bloc/profile_bloc.dart';
+import '../widgets/profile_page_content.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -33,7 +33,11 @@ class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController _lastNameController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
+  // Used when BlocStateHandler is uncommented
+  // ignore: unused_field
   bool _isProfileLoaded = false;
+  // ignore: unused_field
+  bool _wasUpdating = false;
 
   @override
   void initState() {
@@ -43,11 +47,50 @@ class _ProfilePageState extends State<ProfilePage> {
     _phoneController = TextEditingController();
     _addressController = TextEditingController();
 
+    // TODO: uncomment for real profile – testing with fake data below
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (mounted) {
+    //     context.read<ProfileBloc>().add(const GetProfile());
+    //   }
+    // });
+    // Init form with fake user for testing
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<ProfileBloc>().add(const GetProfile());
-      }
+      if (mounted) _initFormValuesFromUser(_getFakeUser());
     });
+  }
+
+  /// Fake user for testing – so we can see the profile screen without bloc.
+  UserEntity _getFakeUser() {
+    return UserEntity(
+      id: 1,
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@example.com',
+      phone: '+961 1 234567',
+      role: UserRole.merchant,
+      notificationChannel: NotificationChannel.email,
+      address: 'Beirut, Lebanon',
+      countryId: 1,
+      country: const CountryEntity(
+        id: 1,
+        name: CountryName(ar: 'لبنان', en: 'Lebanon'),
+        code: 'LB',
+        callingCode: '+961',
+        currencyCode: 'LBP',
+        currencySymbol: 'ل.ل',
+        currencySmallestUnit: '1',
+        currencyFactor: 1,
+        isActive: true,
+      ),
+      cityId: 1,
+      city: const CityEntity(
+        id: 1,
+        name: CityName(ar: 'بيروت', en: 'Beirut'),
+        countryId: 1,
+      ),
+      createdAt: DateTime.now().subtract(const Duration(days: 30)),
+      updatedAt: DateTime.now(),
+    );
   }
 
   @override
@@ -59,29 +102,37 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void _handleUpdateProfile() {
+  void _onUpdateProfile() {
     if (_formKey.currentState!.validate()) {
+      _wasUpdating = true;
       context.read<ProfileBloc>().add(
-            UpdateProfile(
-              firstName: _firstNameController.text.trim(),
-              lastName: _lastNameController.text.trim(),
-              phone: _phoneController.text.trim(),
-              address: _addressController.text.trim().isEmpty
-                  ? null
-                  : _addressController.text.trim(),
-            ),
-          );
+        UpdateProfile(
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          phone: _phoneController.text.trim(),
+          address: _addressController.text.trim().isEmpty
+              ? null
+              : _addressController.text.trim(),
+        ),
+      );
     }
   }
 
-  void _handleLogout() {
+  void _onLogout() {
     context.read<LogoutBloc>().add(const LogoutSubmitted());
   }
 
-  Future<void> _handleChangeLanguage() async {
+  void _initFormValuesFromUser(UserEntity user) {
+    _firstNameController.text = user.firstName;
+    _lastNameController.text = user.lastName;
+    _phoneController.text = user.phone;
+    _addressController.text = user.address ?? '';
+  }
+
+  Future<void> _onChangeLanguage() async {
     final storageService = di.sl<StorageService>();
     final currentLanguage = storageService.getAppLanguage();
-    
+
     final selectedLanguage = await showDialog<String>(
       context: context,
       builder: (context) => LanguageSelectionDialog(
@@ -89,19 +140,12 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
 
-    if (selectedLanguage != null && selectedLanguage != currentLanguage && mounted) {
-      // Save selected language
+    if (selectedLanguage != null &&
+        selectedLanguage != currentLanguage &&
+        mounted) {
       await storageService.setAppLanguage(selectedLanguage);
-      
-      // Update app locale
       await context.setLocale(Locale(selectedLanguage));
-      
-      // Show success message
       customToast(msg: AppTranslation.languageChangedSuccessfully);
-      
-      // Restart the app to apply language changes
-      // Note: In a real app, you might want to use a package like flutter_restart
-      // For now, we'll just show a toast and the language will change on next app restart
     }
   }
 
@@ -111,8 +155,6 @@ class _ProfilePageState extends State<ProfilePage> {
       listener: (context, logoutState) {
         if (logoutState is LogoutSuccess) {
           customToast(msg: AppTranslation.logoutSuccess);
-          // Navigate to login screen after clearing storage
-          // Storage is already cleared in the logout bloc before emitting success
           WidgetsBinding.instance.addPostFrameCallback((_) {
             NavigationService().pushNamedAndRemoveUntil(Routes.login);
           });
@@ -121,94 +163,100 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       },
       builder: (context, logoutState) {
-        return BlocConsumer<ProfileBloc, ProfileState>(
-          listener: (context, state) {
-            if (state is ProfileLoaded) {
-              if (!_isProfileLoaded) {
-                // Initial load - update controllers
-                _firstNameController.text = state.user.firstName;
-                _lastNameController.text = state.user.lastName;
-                _phoneController.text = state.user.phone;
-                _addressController.text = state.user.address ?? '';
-                _isProfileLoaded = true;
-              } else {
-                // This is an update after initial load, show success toast
-                customToast(msg: AppTranslation.profileUpdatedSuccess);
-              }
-            } else if (state is ProfileError) {
-              customToast(msg: state.message);
-            }
-          },
-          builder: (context, state) {
-            // Use ModalProgressHUD only for update (PATCH) and logout (POST) operations
-            // Initial profile fetch (GET) uses BlocStateHandler
-            final isUpdateLoading = state is ProfileLoading && _isProfileLoaded;
-            final isLogoutLoading = logoutState is LogoutLoading;
-            final showProgressHUD = isUpdateLoading || isLogoutLoading;
+        final isLogoutLoading = logoutState is LogoutLoading;
 
-            return ModalProgressHUD(
-              progressIndicator: const CustomCircleIndicator(),
-              inAsyncCall: showProgressHUD,
-              child: Scaffold(
-                backgroundColor: ColorManager.background,
-                appBar: CustomAppBar(
-                  title: AppTranslation.profile,
-                ),
-                body: BlocStateHandler<ProfileBloc, ProfileState>(
-                  bloc: context.read<ProfileBloc>(),
-                  isLoading: (state) => state is ProfileLoading && !_isProfileLoaded,
-                  isError: (state) => state is ProfileError && !_isProfileLoaded,
-                  getErrorMessage: (state) => (state as ProfileError).message,
-                  isSuccess: (state) => state is ProfileLoaded,
-                  getRetryCallback: (state) => () {
-                    context.read<ProfileBloc>().add(const GetProfile());
-                  },
-                  successBuilder: (context, profileState) {
-                    final loadedState = profileState as ProfileLoaded;
+        // TODO: uncomment for real profile – BlocStateHandler + ProfileBloc
+        // return BlocConsumer<ProfileBloc, ProfileState>(
+        //   listener: (context, state) {
+        //     if (state is ProfileLoaded) {
+        //       if (!state.formValuesInitialized) {
+        //         _initFormValuesFromUser(state.user);
+        //         context.read<ProfileBloc>().add(const FormValuesInitialized());
+        //       } else if (_wasUpdating) {
+        //         customToast(msg: AppTranslation.profileUpdatedSuccess);
+        //         _wasUpdating = false;
+        //       }
+        //       _isProfileLoaded = true;
+        //     } else if (state is ProfileError) {
+        //       customToast(msg: state.message);
+        //     }
+        //   },
+        //   builder: (context, state) {
+        //     final isUpdateLoading =
+        //         state is ProfileLoading && _isProfileLoaded;
+        //     final showProgressHUD = isUpdateLoading || isLogoutLoading;
+        //     return ModalProgressHUD(
+        //       progressIndicator: const CustomCircleIndicator(),
+        //       inAsyncCall: showProgressHUD,
+        //       child: Scaffold(
+        //         backgroundColor: ColorManager.background,
+        //         appBar: CustomAppBar(title: AppTranslation.profile),
+        //         body: BlocStateHandler<ProfileBloc, ProfileState>(
+        //           bloc: context.read<ProfileBloc>(),
+        //           isLoading: (s) => s is ProfileLoading && !_isProfileLoaded,
+        //           isError: (s) => s is ProfileError && !_isProfileLoaded,
+        //           getErrorMessage: (s) => (s as ProfileError).message,
+        //           isSuccess: (s) => s is ProfileLoaded,
+        //           getRetryCallback: (_) => () {
+        //             context.read<ProfileBloc>().add(const GetProfile());
+        //           },
+        //           successBuilder: (context, profileState) {
+        //             final user = getProfileUserFromState(profileState);
+        //             if (user == null) return const SizedBox.shrink();
+        //             return ProfilePageContent(
+        //               user: user,
+        //               formKey: _formKey,
+        //               firstNameController: _firstNameController,
+        //               lastNameController: _lastNameController,
+        //               phoneController: _phoneController,
+        //               addressController: _addressController,
+        //               onUpdate: _onUpdateProfile,
+        //               isUpdateLoading: isUpdateLoading,
+        //               onChangeLanguage: () => _onChangeLanguage(),
+        //               onLogout: _onLogout,
+        //               isLogoutLoading: isLogoutLoading,
+        //             );
+        //           },
+        //         ),
+        //       ),
+        //     );
+        //   },
+        // );
 
-                    return SingleChildScrollView(
-                      padding: EdgeInsets.all(AppPadding.p24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ProfileHeader(user: loadedState.user),
-                          SizedBox(height: AppHeight.s32),
-                          ProfileForm(
-                            formKey: _formKey,
-                            firstNameController: _firstNameController,
-                            lastNameController: _lastNameController,
-                            phoneController: _phoneController,
-                            addressController: _addressController,
-                            onUpdate: _handleUpdateProfile,
-                            isLoading: isUpdateLoading,
-                          ),
-                          SizedBox(height: AppHeight.s24),
-                          CustomButton(
-                            text: AppTranslation.changeLanguage,
-                            onPressed: _handleChangeLanguage,
-                            isLoading: false,
-                            color: ColorManager.primary,
-                            isOutlined: true,
-                          ),
-                          SizedBox(height: AppHeight.s16),
-                          CustomButton(
-                            text: AppTranslation.logout,
-                            onPressed: _handleLogout,
-                            isLoading: isLogoutLoading,
-                            color: ColorManager.error,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+        // Testing: fake data so we can see the profile screen
+        return ModalProgressHUD(
+          progressIndicator: const CustomCircleIndicator(),
+          inAsyncCall: isLogoutLoading,
+          child: Scaffold(
+            backgroundColor: ColorManager.background,
+            appBar: CustomAppBar(
+              title: AppTranslation.profile,
+              actions: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppPadding.p10),
+                  child: IconButton(
+                    icon: Icon(Icons.logout, color: ColorManager.primary),
+                    onPressed: () {},
+                  ),
                 ),
-              ),
-            );
-          },
+              ],
+            ),
+            body: ProfilePageContent(
+              user: _getFakeUser(),
+              formKey: _formKey,
+              firstNameController: _firstNameController,
+              lastNameController: _lastNameController,
+              phoneController: _phoneController,
+              addressController: _addressController,
+              onUpdate: _onUpdateProfile,
+              isUpdateLoading: false,
+              onChangeLanguage: () => _onChangeLanguage(),
+              onLogout: _onLogout,
+              isLogoutLoading: isLogoutLoading,
+            ),
+          ),
         );
       },
     );
   }
-
 }
-
