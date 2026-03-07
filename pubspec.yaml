@@ -52,9 +52,14 @@ dependencies:
   lottie: ^3.3.2
   intl: ^0.20.2
   flutter_screenutil: ^5.9.3
+  provider: ^6.1.5+1
+  get_it: ^9.2.1
   flutter_bloc: ^9.1.1
   bloc: ^9.2.0
-  get_it: ^9.2.1
+  permission_handler: ^11.3.1
+  image_picker: ^1.1.2
+  modal_progress_hud_nsn: ^0.5.1
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
@@ -82,9 +87,49 @@ flutter:
     - assets/fonts/
     - assets/icons/
 
-  # fonts:
-  #   - family: CustomFont
-  #     fonts:
-  #       - asset: assets/fonts/CustomFont-Regular.ttf
-  #       - asset: assets/fonts/CustomFont-Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Tajawal-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Tajawal-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Tajawal-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Tajawal-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Tajawal-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Tajawal-Regular.ttf
+          weight: 400
+    - family: SF Pro Display
+      fonts:
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYBLACKITALIC.OTF
+          weight: 900
+          style: italic
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYHEAVYITALIC.OTF
+          weight: 900
+          style: italic
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYLIGHTITALIC.OTF
+          weight: 300
+          style: italic
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYBOLD.OTF
+          weight: 700
+          style: normal
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYMEDIUM.OTF
+          weight: 500
+          style: normal
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYREGULAR.OTF
+          weight: 400
+          style: normal
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYSEMIBOLDITALIC.OTF
+          weight: 600
+          style: italic
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYTHINITALIC.OTF
+          weight: 100
+          style: italic
+        - asset: assets/fonts/sf_pro_display/SFPRODISPLAYULTRALIGHTITALIC.OTF
+          weight: 200
+          style: italic

@@ -1,0 +1,79 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/features/order/list_order/data/repositories/list_order_repository.dart';
+
+part 'list_order_event.dart';
+part 'list_order_state.dart';
+
+class ListOrderBloc extends Bloc<ListOrderEvent, ListOrderState> {
+  final ListOrderRepository _repository;
+  static const int _pageSize = 20;
+
+  ListOrderBloc(this._repository) : super(const ListOrderInitial()) {
+    on<ListOrderEvent>((event, emit) async {
+      if (event is GetOrdersEvent) {
+        if (event.loadMore) {
+          // Load more orders
+          final currentState = state;
+          if (currentState is ListOrderLoaded) {
+            emit(ListOrderLoadingMore(
+              orders: currentState.orders,
+              currentPage: currentState.currentPage,
+              search: currentState.search,
+              merchantId: currentState.merchantId,
+            ));
+
+            final nextPage = currentState.currentPage + 1;
+            final searchQuery = event.search ?? currentState.search;
+            final merchantId = event.merchantId ?? currentState.merchantId;
+            final result = await _repository.getOrders(
+              page: nextPage,
+              limit: _pageSize,
+              search: searchQuery,
+              merchantId: merchantId,
+            );
+
+            result.fold(
+              (failure) => emit(ListOrderError(message: failure.message)),
+              (newOrders) {
+                final updatedOrders = [
+                  ...currentState.orders,
+                  ...newOrders,
+                ];
+                emit(ListOrderLoaded(
+                  orders: updatedOrders,
+                  hasMore: newOrders.length == _pageSize,
+                  currentPage: nextPage,
+                  search: searchQuery,
+                  merchantId: merchantId,
+                ));
+              },
+            );
+          }
+        } else {
+          // Initial load or refresh
+          emit(const ListOrderLoading());
+          final result = await _repository.getOrders(
+            page: 1,
+            limit: _pageSize,
+            search: event.search,
+            merchantId: event.merchantId,
+          );
+
+          result.fold(
+            (failure) => emit(ListOrderError(message: failure.message)),
+            (orders) => emit(ListOrderLoaded(
+              orders: orders,
+              hasMore: orders.length == _pageSize,
+              currentPage: 1,
+              search: event.search,
+              merchantId: event.merchantId,
+            )),
+          );
+        }
+      }
+    });
+  }
+}
+

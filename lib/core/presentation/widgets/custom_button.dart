@@ -1,43 +1,47 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final bool isOutlined;
   final Color? color;
   final double? width;
-  final double height;
-  final double borderRadius;
+  final double? height;
+  final double? borderRadius;
 
   const CustomButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.isLoading = false,
     this.isOutlined = false,
     this.color,
     this.width,
-    this.height = 56,
-    this.borderRadius = 16,
+    this.height,
+    this.borderRadius,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? double.infinity,
-      height: height,
+      height: height ?? AppHeight.s56,
       child: isOutlined
           ? OutlinedButton(
               onPressed: isLoading ? null : onPressed,
               style: OutlinedButton.styleFrom(
                 side: BorderSide(
                   color: color ?? ColorManager.primary,
-                  width: 2,
+                  width: AppSize.s2_5,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(borderRadius),
+                  borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.r16),
                 ),
               ),
               child: _buildChild(),
@@ -46,11 +50,11 @@ class CustomButton extends StatelessWidget {
               onPressed: isLoading ? null : onPressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: color ?? ColorManager.primary,
-                foregroundColor: ColorManager.primary,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(borderRadius),
+                  borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.r16),
                 ),
-                elevation: 4,
+                elevation: AppSize.s5,
                 shadowColor: (color ?? ColorManager.primary).withOpacity(0.4),
               ),
               child: _buildChild(),
@@ -60,21 +64,24 @@ class CustomButton extends StatelessWidget {
 
   Widget _buildChild() {
     if (isLoading) {
-      return const SizedBox(
-        width: 24,
-        height: 24,
+      return SizedBox(
+        width: AppSize.s24,
+        height: AppSize.s24,
         child: CircularProgressIndicator(
-          color: ColorManager.primary,
-          strokeWidth: 2.5,
+          color: isOutlined
+              ? (color ?? ColorManager.primary)
+              : Colors.white,
+          strokeWidth: AppSize.s2_5,
         ),
       );
     }
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w900,
-        color: ColorManager.primary,
+    return CustomText(
+      text: text,
+      textStyle: getBlackStyle(
+        fontSize: AppFontSize.s16,
+        color: isOutlined
+            ? (color ?? ColorManager.primary)
+            : Colors.white,
       ),
     );
   }

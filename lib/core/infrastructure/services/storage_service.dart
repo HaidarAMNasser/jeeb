@@ -7,6 +7,8 @@ abstract class StorageService {
   Future<void> setUserToken(String token);
   String getAppLanguage();
   Future<void> setAppLanguage(String lang);
+  Future<String?> getUserRole();
+  Future<void> setUserRole(String role);
   Future<void> clearStorage({bool clearAuthParams = false});
 }
 
@@ -14,6 +16,7 @@ class StorageServiceImpl implements StorageService {
   final SharedPreferences _sharedPreferences;
   static const String _tokenKey = 'access_token';
   static const String _languageKey = 'language_code';
+  static const String _userRoleKey = 'user_role';
 
   StorageServiceImpl(this._sharedPreferences);
 
@@ -29,7 +32,7 @@ class StorageServiceImpl implements StorageService {
 
   @override
   String getAppLanguage() {
-    return _sharedPreferences.getString(_languageKey) ?? 'en';
+    return _sharedPreferences.getString(_languageKey) ?? '';
   }
 
   @override
@@ -38,9 +41,20 @@ class StorageServiceImpl implements StorageService {
   }
 
   @override
+  Future<String?> getUserRole() async {
+    return _sharedPreferences.getString(_userRoleKey);
+  }
+
+  @override
+  Future<void> setUserRole(String role) async {
+    await _sharedPreferences.setString(_userRoleKey, role);
+  }
+
+  @override
   Future<void> clearStorage({bool clearAuthParams = false}) async {
     if (clearAuthParams) {
       await _sharedPreferences.remove(_tokenKey);
+      await _sharedPreferences.remove(_userRoleKey);
     }
   }
 }
