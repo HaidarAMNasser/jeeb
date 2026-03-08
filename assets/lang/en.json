@@ -174,5 +174,10 @@
   "select_language": "Select Language",
   "change_language": "Change Language",
   "close": "Close",
-  "language_changed_successfully": "Language changed successfully"
+
+  "language_changed_successfully": "Language changed successfully",
+  "verify_account_method_title": "How do you prefer to verify your account?",
+  "verify_email_otp": "Email OTP",
+  "verify_whatsapp_otp": "WhatsApp OTP"
+
 }

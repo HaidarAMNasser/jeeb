@@ -1,6 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:jeeb_app/features/auth/profile/data/data_sources/profile_remote_data_source.dart';
+import 'package:jeeb_app/features/auth/profile/data/repositories/profile_repository.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../network/network_info.dart';
 import '../../presentation/routes/navigation_service.dart';
@@ -29,9 +32,6 @@ import '../../../features/auth/forgot_password/presentation/bloc/forgot_password
 import '../../../features/auth/reset_password/data/data_sources/reset_password_remote_data_source.dart';
 import '../../../features/auth/reset_password/data/repositories/reset_password_repository.dart';
 import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
-import '../../../features/auth/profile/data/data_sources/profile_remote_data_source.dart';
-import '../../../features/auth/profile/data/repositories/profile_repository.dart';
-import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/data/data_sources/logout_remote_data_source.dart';
 import '../../../features/auth/logout/data/repositories/logout_repository.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
@@ -48,6 +48,11 @@ import '../../../features/merchant/merchant_details/data/repositories/merchant_d
 
 import '../../../features/order/list_order/data/data_sources/list_order_data_source.dart';
 import '../../../features/order/list_order/data/repositories/list_order_repository.dart';
+import '../../../features/offers/data/data_sources/offers_remote_data_source.dart';
+import '../../../features/offers/data/data_sources/offers_remote_data_source_impl.dart';
+import '../../../features/offers/data/repositories/offers_repository_impl.dart';
+import '../../../features/offers/presentation/bloc/offers_bloc.dart';
+import '../../../features/client_home/presentation/cubit/client_home_cubit.dart';
 import '../../../features/order/order_details/data/data_sources/order_details_data_source.dart';
 import '../../../features/order/order_details/data/repositories/order_details_repository.dart';
 
@@ -191,4 +196,19 @@ Future<void> init() async {
   );
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(() => OrderDetailsBloc(sl()));
+
+  //! Offers Dependencies
+  sl.registerFactory<OffersRemoteDataSource>(
+    () => OffersRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => OffersRepositoryImpl(sl()));
+  sl.registerFactory(() => OffersBloc(sl()));
+
+  //! Client Home (unified home screen)
+  sl.registerFactory(() => ClientHomeCubit(
+        categoryRepository: sl<ListCategoryRepository>(),
+        merchantRepository: sl<ListMerchantRepository>(),
+        productRepository: sl<ListProductRepository>(),
+        offersRepository: sl<OffersRepositoryImpl>(),
+      ));
 }

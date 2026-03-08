@@ -142,6 +142,16 @@ abstract class AppApiServiceClient {
   @DELETE("users/merchants/{id}")
   Future<Response> deleteMerchant(@Path('id') String id);
 
+  // Offers endpoints
+  @GET("offers")
+  Future<Response> getOffers({
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+    @Query('search') String? search,
+    @Query('isActive') bool? isActive,
+    @Query('merchantId') String? merchantId,
+  });
+
   // Merchant Review endpoints
   @GET("merchants/{merchantId}/reviews")
   Future<Response> getMerchantReviews({

@@ -26,16 +26,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: ColorManager.background,
       elevation: 0,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      leading: leading ??
-          (automaticallyImplyLeading
-              ? IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: ColorManager.titlesColor,
-                  ),
-                  onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
-                )
-              : null),
       iconTheme: IconThemeData(
         color: ColorManager.titlesColor,
       ),
@@ -53,4 +43,3 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-

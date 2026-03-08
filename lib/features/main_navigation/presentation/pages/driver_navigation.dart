@@ -5,24 +5,26 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
-import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/pages/list_order_page.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/bloc/list_order_bloc.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/data/repositories/list_merchant_repository.dart';
+import 'package:jeeb_app/features/offers/presentation/pages/offers_page.dart';
+import 'package:jeeb_app/features/offers/presentation/bloc/offers_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 
-class AdminNavigation extends StatefulWidget {
-  const AdminNavigation({super.key});
+class DriverNavigation extends StatefulWidget {
+  const DriverNavigation({super.key});
 
   @override
-  State<AdminNavigation> createState() => _AdminNavigationState();
+  State<DriverNavigation> createState() => _DriverNavigationState();
 }
 
-class _AdminNavigationState extends State<AdminNavigation> {
+class _DriverNavigationState extends State<DriverNavigation> {
   int _currentIndex = 0;
 
   Widget _buildScreen(int index) {
@@ -35,19 +37,14 @@ class _AdminNavigationState extends State<AdminNavigation> {
           child: const ListMerchantPage(),
         );
       case 1:
+        return BlocProvider<OffersBloc>(
+          create: (_) => di.sl<OffersBloc>(),
+          child: const OffersPage(),
+        );
+      case 2:
         return BlocProvider<ListOrderBloc>(
           create: (_) => di.sl<ListOrderBloc>()..add(const GetOrdersEvent()),
           child: const ListOrderPage(),
-        );
-      case 2:
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider<ProfileBloc>(
-              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
-            ),
-            BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
-          ],
-          child: const ProfilePage(),
         );
       case 3:
         return MultiBlocProvider(
@@ -106,14 +103,14 @@ class _AdminNavigationState extends State<AdminNavigation> {
               label: AppTranslation.merchants,
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.local_offer_outlined),
+              activeIcon: Icon(Icons.local_offer),
+              label: 'Offers',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.shopping_bag_outlined),
               activeIcon: Icon(Icons.shopping_bag),
               label: AppTranslation.orders,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.delivery_dining_outlined),
-              activeIcon: Icon(Icons.delivery_dining),
-              label: AppTranslation.deliveryMen,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),

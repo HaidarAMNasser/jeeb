@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 
 class ProfileForm extends StatelessWidget {
@@ -13,6 +17,7 @@ class ProfileForm extends StatelessWidget {
   final TextEditingController addressController;
   final VoidCallback onUpdate;
   final bool isLoading;
+  final VoidCallback onChangeLanguage;
 
   const ProfileForm({
     super.key,
@@ -23,6 +28,7 @@ class ProfileForm extends StatelessWidget {
     required this.addressController,
     required this.onUpdate,
     required this.isLoading,
+    required this.onChangeLanguage,
   });
 
   @override
@@ -30,6 +36,7 @@ class ProfileForm extends StatelessWidget {
     return Form(
       key: formKey,
       child: Column(
+        spacing: AppSize.s24.h,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomTextField(
@@ -37,25 +44,43 @@ class ProfileForm extends StatelessWidget {
             hintText: AppTranslation.firstName,
             controller: firstNameController,
           ),
-          SizedBox(height: AppHeight.s24),
           CustomTextField(
             title: AppTranslation.lastName,
             hintText: AppTranslation.lastName,
             controller: lastNameController,
           ),
-          SizedBox(height: AppHeight.s24),
           CustomTextField(
             title: AppTranslation.phone,
             hintText: AppTranslation.enterPhone,
             controller: phoneController,
           ),
-          SizedBox(height: AppHeight.s24),
           CustomTextField(
             title: AppTranslation.address,
             hintText: AppTranslation.enterAddress,
             controller: addressController,
           ),
-          SizedBox(height: AppHeight.s32),
+          InkWell(
+            onTap: onChangeLanguage,
+            borderRadius: BorderRadius.circular(4),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: AppPadding.p8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.language, size: 20, color: ColorManager.primary),
+                  SizedBox(width: AppWidth.s8),
+                  CustomText(
+                    text: AppTranslation.changeLanguage,
+                    textStyle: getMediumStyle(
+                      color: ColorManager.primary,
+                      fontSize: AppFontSize.s15,
+                    ),
+                  ),
+                  SizedBox(width: AppWidth.s8),
+                ],
+              ),
+            ),
+          ),
           CustomButton(
             text: AppTranslation.save,
             onPressed: onUpdate,
@@ -67,4 +92,3 @@ class ProfileForm extends StatelessWidget {
     );
   }
 }
-

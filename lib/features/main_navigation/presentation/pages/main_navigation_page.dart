@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/features/main_navigation/presentation/pages/merchant_navigation.dart';
-import 'package:jeeb_app/features/main_navigation/presentation/pages/admin_navigation.dart';
+import 'package:jeeb_app/features/main_navigation/presentation/pages/client_navigation.dart';
+import 'package:jeeb_app/features/main_navigation/presentation/pages/driver_navigation.dart';
 import '../../../../core/infrastructure/di/dependency_injection.dart' as di;
 import '../../../../core/common/classes/user_roles.dart';
 import '../../../../core/presentation/routes/routes.dart';
@@ -45,10 +45,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     }
 
     // Route based on user role
-    if (_userRole == UserRoles.merchant.name) {
-      return const MerchantNavigation();
-    } else if (_userRole == UserRoles.admin.name) {
-      return const AdminNavigation();
+    if (_userRole == UserRoles.customer.name) {
+      return const ClientNavigation();
+    } else if (_userRole == UserRoles.delivery.name) {
+      return const DriverNavigation();
     } else {
       // If no role found or unsupported role, redirect to login
       WidgetsBinding.instance.addPostFrameCallback((_) {

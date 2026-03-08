@@ -90,8 +90,8 @@ class _CustomPaginatedDropdownState<T>
           children: [
             CustomText(
               text: widget.title,
-              textStyle: getSemiBoldStyle(
-                fontSize: AppFontSize.s16,
+              textStyle: getMediumStyle(
+                fontSize: AppFontSize.s15,
                 color: ColorManager.defaultWhite,
               ),
             ),
@@ -277,4 +277,3 @@ class _CustomPaginatedDropdownState<T>
     );
   }
 }
-

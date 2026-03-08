@@ -174,5 +174,10 @@
   "select_language": "اختر اللغة",
   "change_language": "تغيير اللغة",
   "close": "إغلاق",
-  "language_changed_successfully": "تم تغيير اللغة بنجاح"
+
+  "language_changed_successfully": "تم تغيير اللغة بنجاح",
+  "verify_account_method_title": "كيف تفضّل التحقق من حسابك؟",
+  "verify_email_otp": "رمز التحقق عبر البريد الإلكتروني",
+  "verify_whatsapp_otp": "رمز التحقق عبر واتساب"
+
 }

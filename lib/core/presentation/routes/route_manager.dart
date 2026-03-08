@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
 // import '../dependency_injection/dependency_injection.dart' as di;
@@ -22,8 +24,6 @@ import '../../../features/auth/forgot_password/presentation/pages/forgot_passwor
 import '../../../features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import '../../../features/auth/reset_password/presentation/pages/reset_password_page.dart';
 import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
-import '../../../features/auth/profile/presentation/pages/profile_page.dart';
-import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
@@ -35,6 +35,8 @@ import '../../../features/main_navigation/presentation/pages/main_navigation_pag
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
 import '../../../features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import '../../../features/merchant/list_merchant/data/repositories/list_merchant_repository.dart';
+import '../../../features/offers/presentation/pages/offers_page.dart';
+import '../../../features/offers/presentation/bloc/offers_bloc.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
 
@@ -173,6 +175,13 @@ class AppRouter {
                   di.sl<OrderDetailsBloc>()..add(GetOrderDetailsEvent(orderId)),
             ),
           ],
+        );
+
+      case Routes.offers:
+        return _buildRouteWithBloc(
+          const OffersPage(),
+          settings,
+          bloc: () => di.sl<OffersBloc>(),
         );
 
       default:

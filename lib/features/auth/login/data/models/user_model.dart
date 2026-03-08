@@ -106,12 +106,6 @@ class UserModel {
       case 'DELIVERY':
         userRole = UserRole.delivery;
         break;
-      case 'MERCHANT':
-        userRole = UserRole.merchant;
-        break;
-      case 'ADMIN':
-        userRole = UserRole.admin;
-        break;
       default:
         userRole = UserRole.customer;
     }
@@ -150,4 +144,3 @@ class UserModel {
     );
   }
 }
-

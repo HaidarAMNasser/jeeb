@@ -38,4 +38,3 @@ class UpdateProfile extends ProfileEvent {
         address,
       ];
 }
-

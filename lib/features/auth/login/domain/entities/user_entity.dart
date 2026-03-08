@@ -2,17 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
 import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
 
-enum UserRole {
-  customer,
-  delivery,
-  merchant,
-  admin,
-}
+enum UserRole { customer, delivery }
 
-enum NotificationChannel {
-  email,
-  whatsapp,
-}
+enum NotificationChannel { email, whatsapp }
 
 class UserEntity extends Equatable {
   final int id;
@@ -59,24 +51,23 @@ class UserEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        firstName,
-        lastName,
-        email,
-        phone,
-        role,
-        notificationChannel,
-        address,
-        isOnline,
-        verifiedAt,
-        currentLat,
-        currentLng,
-        countryId,
-        country,
-        cityId,
-        city,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    firstName,
+    lastName,
+    email,
+    phone,
+    role,
+    notificationChannel,
+    address,
+    isOnline,
+    verifiedAt,
+    currentLat,
+    currentLng,
+    countryId,
+    country,
+    cityId,
+    city,
+    createdAt,
+    updatedAt,
+  ];
 }
-

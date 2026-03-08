@@ -8,37 +8,33 @@ import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
-import 'package:jeeb_app/features/product/list_product/presentation/pages/list_product_page.dart';
-import 'package:jeeb_app/features/product/list_product/presentation/bloc/list_product_bloc.dart';
-import 'package:jeeb_app/features/product/list_product/data/repositories/list_product_repository.dart';
-import 'package:jeeb_app/features/order/list_order/presentation/pages/list_order_page.dart';
-import 'package:jeeb_app/features/order/list_order/presentation/bloc/list_order_bloc.dart';
+import 'package:jeeb_app/features/client_home/presentation/pages/client_home_page.dart';
+import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_cubit.dart';
+import 'package:jeeb_app/features/cart/presentation/pages/cart_page.dart';
+import 'package:jeeb_app/features/pages/orders_page.dart';
 
-class MerchantNavigation extends StatefulWidget {
-  const MerchantNavigation({super.key});
+class ClientNavigation extends StatefulWidget {
+  const ClientNavigation({super.key});
 
   @override
-  State<MerchantNavigation> createState() => _MerchantNavigationState();
+  State<ClientNavigation> createState() => _ClientNavigationState();
 }
 
-class _MerchantNavigationState extends State<MerchantNavigation> {
+class _ClientNavigationState extends State<ClientNavigation> {
   int _currentIndex = 0;
 
   Widget _buildScreen(int index) {
     switch (index) {
       case 0:
-        return BlocProvider<ListProductBloc>(
-          create: (_) =>
-              ListProductBloc(di.sl<ListProductRepository>())
-                ..add(const GetProductsEvent()),
-          child: const ListProductPage(),
+        return BlocProvider<ClientHomeCubit>(
+          create: (_) => di.sl<ClientHomeCubit>(),
+          child: const ClientHomePage(),
         );
       case 1:
-        return BlocProvider<ListOrderBloc>(
-          create: (_) => di.sl<ListOrderBloc>()..add(const GetOrdersEvent()),
-          child: const ListOrderPage(),
-        );
+        return const CartPage();
       case 2:
+        return const OrdersPage();
+      case 3:
         return MultiBlocProvider(
           providers: [
             BlocProvider<ProfileBloc>(
@@ -90,13 +86,18 @@ class _MerchantNavigationState extends State<MerchantNavigation> {
           ),
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2),
-              label: 'Products',
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined),
-              activeIcon: Icon(Icons.shopping_bag),
+              icon: Icon(Icons.shopping_cart_outlined),
+              activeIcon: Icon(Icons.shopping_cart),
+              label: 'Cart',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long_outlined),
+              activeIcon: Icon(Icons.receipt_long),
               label: 'Orders',
             ),
             BottomNavigationBarItem(
