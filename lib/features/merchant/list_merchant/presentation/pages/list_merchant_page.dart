@@ -158,7 +158,19 @@ class _ListMerchantPageState extends State<ListMerchantPage> {
                     itemCount: filteredMerchants.length,
                     itemBuilder: (context, index) {
                       final merchant = filteredMerchants[index];
-                      return MerchantListItem(merchant: merchant);
+                      final favIds = state is ListMerchantLoaded
+                          ? (state as ListMerchantLoaded).favoriteMerchantIds
+                          : state is ListMerchantLoadingMore
+                              ? (state as ListMerchantLoadingMore)
+                                  .favoriteMerchantIds
+                              : <String>{};
+                      return MerchantListItem(
+                        merchant: merchant,
+                        isFavorite: favIds.contains(merchant.id),
+                        onFavoriteTap: () => context
+                            .read<ListMerchantBloc>()
+                            .add(ToggleFavoriteMerchantEvent(merchant.id)),
+                      );
                     },
                   ),
                 ),

@@ -83,6 +83,11 @@ class _ListProductPageState extends State<ListProductPage> {
               final hasMore = productState is ListProductLoaded
                   ? productState.hasMore
                   : false;
+              final favIds = productState is ListProductLoaded
+                  ? (productState as ListProductLoaded).favoriteProductIds
+                  : productState is ListProductLoadingMore
+                      ? (productState as ListProductLoadingMore).favoriteProductIds
+                      : <String>{};
 
               return RefreshIndicator(
                 onRefresh: () async {
@@ -102,7 +107,13 @@ class _ListProductPageState extends State<ListProductPage> {
                     }
 
                     final product = products[index];
-                    return ProductListItem(product: product);
+                    return ProductListItem(
+                      product: product,
+                      isFavorite: favIds.contains(product.id),
+                      onFavoriteTap: () => context.read<ListProductBloc>().add(
+                            ToggleFavoriteProductEvent(product.id),
+                          ),
+                    );
                   },
                 ),
               );

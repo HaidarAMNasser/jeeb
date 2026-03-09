@@ -184,6 +184,35 @@ abstract class AppApiServiceClient {
   @DELETE("users/deliveries/{id}")
   Future<Response> deleteDeliveryMan(@Path('id') String id);
 
+  // Favorites endpoints
+  @POST("favorites/toggle")
+  Future<Response> toggleFavorites({
+    List<int>? restaurants,
+    List<int>? products,
+  });
+
+  // Reviews endpoints (product/order reviews by customer)
+  @POST("reviews")
+  Future<Response> createReview({
+    required String entityType,
+    required int entityId,
+    required int rating,
+    required String comment,
+  });
+
+  @GET("reviews/{id}")
+  Future<Response> getReview(@Path('id') String id);
+
+  @PATCH("reviews/{id}")
+  Future<Response> updateReview(
+    @Path('id') String id, {
+    int? rating,
+    String? comment,
+  });
+
+  @DELETE("reviews/{id}")
+  Future<Response> deleteReview(@Path('id') String id);
+
   // Order endpoints
   @GET("orders")
   Future<Response> getOrders({

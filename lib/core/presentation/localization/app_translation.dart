@@ -110,6 +110,21 @@ class AppTranslation {
   static String get somethingWentWrong => 'something_went_wrong'.tr();
   static String get productDetails => 'product_details'.tr();
 
+  // Reviews
+  static String get writeReview => 'write_review'.tr();
+  static String get yourReview => 'your_review'.tr();
+  static String get comment => 'comment'.tr();
+  static String get commentHint => 'comment_hint'.tr();
+  static String get submitReview => 'submit_review'.tr();
+  static String get editReview => 'edit_review'.tr();
+  static String get deleteReview => 'delete_review'.tr();
+  static String get reviewSubmitted => 'review_submitted'.tr();
+  static String get reviewUpdated => 'review_updated'.tr();
+  static String get reviewDeleted => 'review_deleted'.tr();
+  static String get areYouSureDeleteReview => 'are_you_sure_delete_review'.tr();
+  static String get pleaseSelectRating => 'please_select_rating'.tr();
+  static String get pleaseEnterComment => 'please_enter_comment'.tr();
+
   // Auth
   static String get login => 'login'.tr();
   static String get register => 'register'.tr();

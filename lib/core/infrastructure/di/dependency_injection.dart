@@ -4,6 +4,10 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:jeeb_app/features/auth/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:jeeb_app/features/auth/profile/data/repositories/profile_repository.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
+import 'package:jeeb_app/features/merchant/favorites/data/data_sources/favorites_remote_data_source.dart';
+import 'package:jeeb_app/features/merchant/favorites/data/repositories/favorites_repository.dart';
+import 'package:jeeb_app/features/merchant/reviews/data/data_sources/reviews_remote_data_source.dart';
+import 'package:jeeb_app/features/merchant/reviews/data/repositories/reviews_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../network/network_info.dart';
 import '../../presentation/routes/navigation_service.dart';
@@ -177,6 +181,21 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ListMerchantRepository(sl(), sl()));
 
+  //! Favorites (toggle under merchant feature)
+  sl.registerFactory<FavoritesRemoteDataSource>(
+    () => FavoritesRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(
+      () => FavoritesRepository(sl<FavoritesRemoteDataSource>(), sl<NetworkInfo>()));
+
+  //! Reviews (create/get/update/delete)
+  sl.registerFactory<ReviewsRemoteDataSource>(
+    () => ReviewsRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(
+    () => ReviewsRepository(sl<ReviewsRemoteDataSource>(), sl<NetworkInfo>()),
+  );
+
   //! Merchant Details Dependencies
   sl.registerFactory<MerchantDetailsRemoteDataSource>(
     () => MerchantDetailsRemoteDataSourceImpl(sl()),
@@ -205,10 +224,12 @@ Future<void> init() async {
   sl.registerFactory(() => OffersBloc(sl()));
 
   //! Client Home (unified home screen)
-  sl.registerFactory(() => ClientHomeCubit(
-        categoryRepository: sl<ListCategoryRepository>(),
-        merchantRepository: sl<ListMerchantRepository>(),
-        productRepository: sl<ListProductRepository>(),
-        offersRepository: sl<OffersRepositoryImpl>(),
-      ));
+  sl.registerFactory(
+    () => ClientHomeCubit(
+      categoryRepository: sl<ListCategoryRepository>(),
+      merchantRepository: sl<ListMerchantRepository>(),
+      productRepository: sl<ListProductRepository>(),
+      offersRepository: sl<OffersRepositoryImpl>(),
+    ),
+  );
 }

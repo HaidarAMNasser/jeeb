@@ -35,6 +35,9 @@ import '../../../features/main_navigation/presentation/pages/main_navigation_pag
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
 import '../../../features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import '../../../features/merchant/list_merchant/data/repositories/list_merchant_repository.dart';
+import '../../../features/merchant/favorites/data/repositories/favorites_repository.dart';
+import '../../../features/merchant/reviews/data/repositories/reviews_repository.dart';
+import '../../../features/merchant/reviews/presentation/bloc/reviews_bloc.dart';
 import '../../../features/offers/presentation/pages/offers_page.dart';
 import '../../../features/offers/presentation/bloc/offers_bloc.dart';
 
@@ -118,7 +121,9 @@ class AppRouter {
           const ListProductPage(),
           settings,
           bloc: () =>
-              ListProductBloc(di.sl<ListProductRepository>())
+              ListProductBloc(
+                  di.sl<ListProductRepository>(),
+                  di.sl<FavoritesRepository>())
                 ..add(const GetProductsEvent()),
         );
 
@@ -133,6 +138,9 @@ class AppRouter {
               create: (_) =>
                   ProductDetailsBloc(di.sl<ProductDetailsRepository>()),
             ),
+            BlocProvider<ReviewsBloc>(
+              create: (_) => ReviewsBloc(di.sl<ReviewsRepository>()),
+            ),
           ],
         );
 
@@ -144,7 +152,9 @@ class AppRouter {
           const ListMerchantPage(),
           settings,
           bloc: () =>
-              ListMerchantBloc(di.sl<ListMerchantRepository>())
+              ListMerchantBloc(
+                  di.sl<ListMerchantRepository>(),
+                  di.sl<FavoritesRepository>())
                 ..add(const GetMerchantsEvent()),
         );
 

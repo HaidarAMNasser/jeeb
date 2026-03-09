@@ -17,3 +17,12 @@ class GetProductsEvent extends ListProductEvent {
   List<Object> get props => [loadMore, merchantId ?? ''];
 }
 
+class ToggleFavoriteProductEvent extends ListProductEvent {
+  final String productId;
+
+  const ToggleFavoriteProductEvent(this.productId);
+
+  @override
+  List<Object> get props => [productId];
+}
+

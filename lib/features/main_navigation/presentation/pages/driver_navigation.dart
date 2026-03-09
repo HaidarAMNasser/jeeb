@@ -32,7 +32,9 @@ class _DriverNavigationState extends State<DriverNavigation> {
       case 0:
         return BlocProvider<ListMerchantBloc>(
           create: (_) =>
-              ListMerchantBloc(di.sl<ListMerchantRepository>())
+              ListMerchantBloc(
+                      di.sl<ListMerchantRepository>(),
+                      di.sl<FavoritesRepository>())
                 ..add(const GetMerchantsEvent()),
           child: const ListMerchantPage(),
         );

@@ -3,16 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_image_entity.dart';
 import 'package:jeeb_app/features/product/list_product/data/repositories/list_product_repository.dart';
+import 'package:jeeb_app/features/merchant/favorites/data/repositories/favorites_repository.dart';
 part 'list_product_event.dart';
 part 'list_product_state.dart';
 
 class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
   // ignore: unused_field
-  final ListProductRepository
-  _repository; // Will be used when uncommenting API calls
+  final ListProductRepository _repository;
+  final FavoritesRepository _favoritesRepository;
   static const int _pageSize = 20;
 
-  ListProductBloc(this._repository) : super(const ListProductInitial()) {
+  ListProductBloc(this._repository, this._favoritesRepository)
+      : super(const ListProductInitial()) {
     on<ListProductEvent>((event, emit) async {
       if (event is GetProductsEvent) {
         if (event.loadMore) {
@@ -23,6 +25,7 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
               ListProductLoadingMore(
                 products: currentState.products,
                 currentPage: currentState.currentPage,
+                favoriteProductIds: currentState.favoriteProductIds,
               ),
             );
 
@@ -65,29 +68,13 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
                 hasMore: fakeProducts.length == _pageSize,
                 currentPage: nextPage,
                 merchantId: currentState.merchantId,
+                favoriteProductIds: currentState.favoriteProductIds,
               ),
             );
           }
         } else {
           // Initial load or refresh
           emit(const ListProductLoading());
-
-          // FAKE DATA - Commented out real API call
-          // final result = await _repository.getProducts(
-          //   page: 1,
-          //   limit: _pageSize,
-          //   restaurantId: event.merchantId,
-          // );
-
-          // result.fold(
-          //   (failure) => emit(ListProductError(message: failure.message)),
-          //   (products) => emit(ListProductLoaded(
-          //     products: products,
-          //     hasMore: products.length == _pageSize,
-          //     currentPage: 1,
-          //     merchantId: event.merchantId,
-          //   )),
-          // );
 
           // Fake data for initial load
           await Future.delayed(const Duration(milliseconds: 800));
@@ -105,6 +92,32 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
             ),
           );
         }
+      } else if (event is ToggleFavoriteProductEvent) {
+        final currentState = state;
+        if (currentState is! ListProductLoaded &&
+            currentState is! ListProductLoadingMore) return;
+        var productIdInt = int.tryParse(event.productId);
+        productIdInt ??= int.tryParse(
+            event.productId.replaceFirst(RegExp(r'^product_'), ''));
+        if (productIdInt == null) return;
+        final result = await _favoritesRepository.toggleFavorites(
+          productIds: [productIdInt],
+        );
+        result.fold(
+          (_) => {},
+          (favResult) {
+            final ids = favResult.productIds;
+            if (currentState is ListProductLoaded) {
+              emit(currentState.copyWith(favoriteProductIds: ids));
+            } else if (currentState is ListProductLoadingMore) {
+              emit(ListProductLoadingMore(
+                products: currentState.products,
+                currentPage: currentState.currentPage,
+                favoriteProductIds: ids,
+              ));
+            }
+          },
+        );
       }
     });
   }

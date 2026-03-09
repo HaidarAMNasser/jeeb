@@ -20,16 +20,18 @@ class ListMerchantLoaded extends ListMerchantState {
   final bool hasMore;
   final int currentPage;
   final String? search;
+  final Set<String> favoriteMerchantIds;
 
   const ListMerchantLoaded({
     required this.merchants,
     this.hasMore = true,
     this.currentPage = 1,
     this.search,
+    this.favoriteMerchantIds = const {},
   });
 
   @override
-  List<Object?> get props => [merchants, hasMore, currentPage, search];
+  List<Object?> get props => [merchants, hasMore, currentPage, search, favoriteMerchantIds];
 }
 
 class ListMerchantError extends ListMerchantState {
@@ -45,14 +47,16 @@ class ListMerchantLoadingMore extends ListMerchantState {
   final List<MerchantEntity> merchants;
   final int currentPage;
   final String? search;
+  final Set<String> favoriteMerchantIds;
 
   const ListMerchantLoadingMore({
     required this.merchants,
     required this.currentPage,
     this.search,
+    this.favoriteMerchantIds = const {},
   });
 
   @override
-  List<Object?> get props => [merchants, currentPage, search];
+  List<Object?> get props => [merchants, currentPage, search, favoriteMerchantIds];
 }
 

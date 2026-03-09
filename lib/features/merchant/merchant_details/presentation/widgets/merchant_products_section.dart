@@ -166,7 +166,19 @@ class _MerchantProductsSectionState extends State<MerchantProductsSection> {
           itemCount: fakeProducts.length,
           itemBuilder: (context, index) {
             final product = fakeProducts[index];
-            return ProductListItem(product: product);
+            final state = context.read<ListProductBloc>().state;
+            final favIds = state is ListProductLoaded
+                ? state.favoriteProductIds
+                : state is ListProductLoadingMore
+                    ? state.favoriteProductIds
+                    : <String>{};
+            return ProductListItem(
+              product: product,
+              isFavorite: favIds.contains(product.id),
+              onFavoriteTap: () => context.read<ListProductBloc>().add(
+                    ToggleFavoriteProductEvent(product.id),
+                  ),
+            );
           },
         ),
       ],

@@ -10,8 +10,15 @@ import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merc
 
 class MerchantListItem extends StatelessWidget {
   final MerchantEntity merchant;
+  final bool isFavorite;
+  final VoidCallback? onFavoriteTap;
 
-  const MerchantListItem({super.key, required this.merchant});
+  const MerchantListItem({
+    super.key,
+    required this.merchant,
+    this.isFavorite = false,
+    this.onFavoriteTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +46,9 @@ class MerchantListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
+                  Expanded(
+                    child: Row(
+                      children: [
                       if (merchant.image != null)
                         ClipRRect(
                           borderRadius: BorderRadius.all(
@@ -107,6 +115,20 @@ class MerchantListItem extends StatelessWidget {
                       ),
                     ],
                   ),
+                  ),
+                  if (onFavoriteTap != null)
+                    IconButton(
+                      onPressed: onFavoriteTap,
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite
+                            ? ColorManager.error
+                            : ColorManager.descriptionColor,
+                        size: AppSize.s24,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
                 ],
               ),
               if (merchant.cityName != null || merchant.countryName != null) ...[

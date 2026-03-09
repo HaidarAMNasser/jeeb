@@ -11,8 +11,15 @@ import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 
 class ProductListItem extends StatelessWidget {
   final ProductEntity product;
+  final bool isFavorite;
+  final VoidCallback? onFavoriteTap;
 
-  const ProductListItem({super.key, required this.product});
+  const ProductListItem({
+    super.key,
+    required this.product,
+    this.isFavorite = false,
+    this.onFavoriteTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +48,10 @@ class ProductListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       if (product.images.isNotEmpty)
                         ClipRRect(
                           borderRadius: BorderRadius.all(
@@ -91,6 +98,7 @@ class ProductListItem extends StatelessWidget {
                       ),
                     ],
                   ),
+                  ),
 
                   if (product.rating != null)
                     Container(
@@ -120,6 +128,19 @@ class ProductListItem extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
+                  if (onFavoriteTap != null)
+                    IconButton(
+                      onPressed: onFavoriteTap,
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite
+                            ? ColorManager.error
+                            : ColorManager.descriptionColor,
+                        size: AppSize.s24,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
                 ],
               ),

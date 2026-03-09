@@ -4,6 +4,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/widgets.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/features/product/product_details/presentation/bloc/product_details_bloc.dart';
+import 'package:jeeb_app/features/merchant/reviews/presentation/widgets/review_form_section.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final String productId;
@@ -159,6 +160,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(height: 24),
+                // Review section (write / view edit delete my review)
+                ReviewFormSection(
+                  productId: widget.productId,
                 ),
               ],
             ),
