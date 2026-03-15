@@ -61,6 +61,10 @@ import '../../../features/offer/offer_details/data/data_sources/offer_details_da
 import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
 
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
+import '../../../features/client_home/presentation/cubit/client_home_cubit.dart';
+import '../../../features/favorites/data/data_sources/favorites_remote_data_source.dart';
+import '../../../features/favorites/data/repositories/favorites_repository.dart';
+import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
 
 
 final sl = GetIt.instance;
@@ -222,5 +226,20 @@ Future<void> init() async {
   );
   sl.registerFactory(() => OfferDetailsRepository(sl(), sl()));
 
- 
+  //! Favorites (customer role; singleton so product list/details share state)
+  sl.registerFactory<FavoritesRemoteDataSource>(
+    () => FavoritesRemoteDataSourceImpl(sl()),
+  );
+  sl.registerFactory(() => FavoritesRepository(sl(), sl()));
+  sl.registerLazySingleton<FavoritesBloc>(() => FavoritesBloc(sl()));
+
+  //! Client Home (customer role)
+  sl.registerFactory<ClientHomeCubit>(
+    () => ClientHomeCubit(
+      categoryRepository: sl<ListCategoryRepository>(),
+      merchantRepository: sl<ListMerchantRepository>(),
+      productRepository: sl<ListProductRepository>(),
+      offersRepository: sl<ListOfferRepository>(),
+    ),
+  );
 }

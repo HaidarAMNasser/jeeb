@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
-    as di;
-import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
-import 'package:jeeb_app/features/auth/login/domain/entities/user_entity.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/bloc/list_product_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/widgets/product_list_item.dart';
+import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ListProductPage extends StatefulWidget {
   final String? merchantId;
@@ -91,6 +87,60 @@ class _ListProductPageState extends State<ListProductPage> {
                   ? productState.hasMore
                   : false;
 
+              Widget listView;
+              try {
+                final favBloc = context.read<FavoritesBloc>();
+                listView = BlocBuilder<FavoritesBloc, FavoritesState>(
+                  bloc: favBloc,
+                  buildWhen: (a, b) => a != b,
+                  builder: (context, favState) {
+                    final favoriteIds = favState is FavoritesLoaded
+                        ? favState.favoriteProductIds
+                        : <String>{};
+                    final togglingIds = favState is FavoritesLoaded
+                        ? favState.togglingProductIds
+                        : <String>{};
+                    return ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.all(AppPadding.p16),
+                      itemCount: products.length + (hasMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == products.length) {
+                          return Padding(
+                            padding: EdgeInsets.all(AppPadding.p16),
+                            child: const CustomCircleIndicator(),
+                          );
+                        }
+                        final product = products[index];
+                        return ProductListItem(
+                          product: product,
+                          isFavorite: favoriteIds.contains(product.id),
+                          isTogglingFavorite: togglingIds.contains(product.id),
+                          onToggleFavorite: () => favBloc.add(
+                                ToggleFavoriteEvent(product.id),
+                              ),
+                        );
+                      },
+                    );
+                  },
+                );
+              } catch (_) {
+                listView = ListView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.all(AppPadding.p16),
+                  itemCount: products.length + (hasMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == products.length) {
+                      return Padding(
+                        padding: EdgeInsets.all(AppPadding.p16),
+                        child: const CustomCircleIndicator(),
+                      );
+                    }
+                    return ProductListItem(product: products[index]);
+                  },
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: () async {
                   final args =
@@ -101,39 +151,9 @@ class _ListProductPageState extends State<ListProductPage> {
                     GetProductsEvent(merchantId: merchantId),
                   );
                 },
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: EdgeInsets.all(AppPadding.p16),
-                  itemCount: products.length + (hasMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == products.length) {
-                      // Loading more indicator
-                      return Padding(
-                        padding: EdgeInsets.all(AppPadding.p16),
-                        child: const CustomCircleIndicator(),
-                      );
-                    }
-
-                    final product = products[index];
-                    return ProductListItem(product: product);
-                  },
-                ),
+                child: listView,
               );
             },
-          );
-        },
-      ),
-      floatingActionButton: FutureBuilder<String?>(
-        future: di.sl<StorageService>().getUserRole(),
-        builder: (context, snapshot) {
-          final isAdmin = snapshot.data?.toLowerCase() == UserRole.admin.name;
-          if (isAdmin) return const SizedBox.shrink();
-          return FloatingActionButton(
-            backgroundColor: ColorManager.primary,
-            onPressed: () {
-              Navigator.pushNamed(context, Routes.addProduct);
-            },
-            child: Icon(Icons.add, color: ColorManager.surface),
           );
         },
       ),

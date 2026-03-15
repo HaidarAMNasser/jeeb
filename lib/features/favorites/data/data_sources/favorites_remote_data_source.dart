@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class FavoritesRemoteDataSource {
+  Future<Response> getFavorites({int? page, int? limit});
   Future<Response> toggleFavorites({
     List<int>? restaurantIds,
     List<int>? productIds,
@@ -12,6 +13,11 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
   final AppApiServiceClient _api;
 
   FavoritesRemoteDataSourceImpl(this._api);
+
+  @override
+  Future<Response> getFavorites({int? page, int? limit}) {
+    return _api.getFavorites(page: page, limit: limit);
+  }
 
   @override
   Future<Response> toggleFavorites({

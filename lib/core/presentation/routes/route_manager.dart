@@ -45,6 +45,8 @@ import '../../../features/offer/list_offer/data/repositories/list_offer_reposito
 import '../../../features/offer/offer_details/presentation/pages/offer_details_page.dart';
 import '../../../features/offer/offer_details/presentation/bloc/offer_details_bloc.dart';
 import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
+import '../../../features/favorites/presentation/pages/favorites_page.dart';
+import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
 
@@ -263,6 +265,16 @@ class AppRouter {
             ),
           ],
         );
+
+      case Routes.favorites: {
+        final favBloc = di.sl<FavoritesBloc>();
+        favBloc.add(const LoadFavoritesEvent());
+        return _buildRouteWithBlocValue<FavoritesBloc>(
+          const FavoritesPage(),
+          settings,
+          bloc: favBloc,
+        );
+      }
 
       default:
         return _buildRoute(

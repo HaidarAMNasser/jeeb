@@ -125,7 +125,9 @@ class AppInterceptors extends Interceptor {
       print('HTTP Error: status=$status, path=${err.requestOptions.path}');
       print('Response data: ${err.response?.data}');
     }
-    if (status == 401 || status == 403) {
+    // 401 = Unauthorized (invalid/expired token) → clear session and redirect to login.
+    // 403 = Forbidden (valid token but no permission for this resource) → do NOT clear session.
+    if (status == 401) {
       final isAuthRequest =
           err.requestOptions.path.contains('login') ||
           err.requestOptions.path.contains('Login') ||
@@ -133,8 +135,6 @@ class AppInterceptors extends Interceptor {
           err.requestOptions.path.contains('auth/login') ||
           err.requestOptions.path.contains('auth/register');
 
-      // Only do session-expired redirect for authenticated requests (invalid/expired token).
-      // For login/register, let the real error through so the UI can show the backend message.
       if (!isAuthRequest) {
         _cacheInterceptor.clearCache();
         _storageService.clearStorage(clearAuthParams: true).then((_) {
@@ -142,9 +142,13 @@ class AppInterceptors extends Interceptor {
           _navigationService.pushNamedAndRemoveUntil(Routes.login);
         });
       }
-      // Pass the real error through so backend message is shown (and Chucker sees real response)
       return handler.next(err);
-    } else if (err.response?.statusCode == 404) {
+    }
+    if (status == 403) {
+      // Forbidden: token is valid but user has no permission for this endpoint. Do not logout.
+      return handler.next(err);
+    }
+    if (err.response?.statusCode == 404) {
       // Handle not found errors if needed
     }
 

@@ -6,6 +6,7 @@ import 'package:jeeb_app/features/product/list_product/domain/entities/product_e
 
 class ClientHomeState extends Equatable {
   final bool isLoading;
+  final bool isProductsLoading;
   final String? errorMessage;
   final List<CategoryEntity> categories;
   final List<MerchantEntity> merchants;
@@ -16,6 +17,7 @@ class ClientHomeState extends Equatable {
 
   const ClientHomeState({
     this.isLoading = true,
+    this.isProductsLoading = false,
     this.errorMessage,
     this.categories = const [],
     this.merchants = const [],
@@ -27,6 +29,7 @@ class ClientHomeState extends Equatable {
 
   ClientHomeState copyWith({
     bool? isLoading,
+    bool? isProductsLoading,
     String? errorMessage,
     List<CategoryEntity>? categories,
     List<MerchantEntity>? merchants,
@@ -37,6 +40,7 @@ class ClientHomeState extends Equatable {
   }) {
     return ClientHomeState(
       isLoading: isLoading ?? this.isLoading,
+      isProductsLoading: isProductsLoading ?? this.isProductsLoading,
       errorMessage: errorMessage,
       categories: categories ?? this.categories,
       merchants: merchants ?? this.merchants,
@@ -50,6 +54,7 @@ class ClientHomeState extends Equatable {
   @override
   List<Object?> get props => [
     isLoading,
+    isProductsLoading,
     errorMessage,
     categories,
     merchants,

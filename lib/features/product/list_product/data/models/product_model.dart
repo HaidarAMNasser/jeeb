@@ -5,13 +5,14 @@ class ProductModel {
   final String name;
   final String? description;
   final String? shortDescription;
-  final int price; // Price in smallest currency unit (e.g., 1299 for 12.99)
+  final int price;
   final int? priceAfterDiscount;
+  final int? finalPrice;
   final String? restaurantId;
   final String? categoryId;
   final String? categoryName;
   final int? discount;
-  final String? discountType; // 'PERCENTAGE' or 'FIXED'
+  final String? discountType;
   final bool? hasStock;
   final int? stockQuantity;
   final bool? isAvailable;
@@ -19,6 +20,14 @@ class ProductModel {
   final String? externalProvider;
   final String? externalId;
   final String? merchantId;
+  final String? merchantName;
+  final String? merchantAddress;
+  final String? merchantPhone;
+  final String? merchantEmail;
+  final int? personCount;
+  final double? commissionRate;
+  final int? commissionAmount;
+  final bool? commissionConfirmed;
   final List<ProductImageModel> images;
   final double? rating;
   final DateTime? createdAt;
@@ -31,6 +40,7 @@ class ProductModel {
     this.shortDescription,
     required this.price,
     this.priceAfterDiscount,
+    this.finalPrice,
     this.restaurantId,
     this.categoryId,
     this.categoryName,
@@ -43,44 +53,90 @@ class ProductModel {
     this.externalProvider,
     this.externalId,
     this.merchantId,
+    this.merchantName,
+    this.merchantAddress,
+    this.merchantPhone,
+    this.merchantEmail,
+    this.personCount,
+    this.commissionRate,
+    this.commissionAmount,
+    this.commissionConfirmed,
     required this.images,
     this.rating,
     this.createdAt,
     this.updatedAt,
   });
 
+  static String? _stringFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value.isEmpty ? null : value;
+    if (value is Map) {
+      if (value.isEmpty) return null;
+    }
+    return value.toString();
+  }
+
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    // Nested category (details response)
+    String? categoryId = json['categoryId']?.toString();
+    String? categoryName = json['categoryName']?.toString();
+    final cat = json['category'];
+    if (cat is Map<String, dynamic>) {
+      categoryId ??= cat['id']?.toString();
+      categoryName ??= cat['name']?.toString();
+    }
+
+    // Nested merchant (details response)
+    String? merchantName;
+    String? merchantAddress;
+    String? merchantPhone;
+    String? merchantEmail;
+    final mer = json['merchant'];
+    if (mer is Map<String, dynamic>) {
+      final first = mer['firstName']?.toString() ?? '';
+      final last = mer['lastName']?.toString() ?? '';
+      merchantName = '$first $last'.trim().isEmpty ? null : '$first $last'.trim();
+      merchantAddress = mer['address']?.toString();
+      merchantPhone = mer['phone']?.toString();
+      merchantEmail = mer['email']?.toString();
+    }
+
     return ProductModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      description: json['description']?.toString(),
-      shortDescription: json['shortDescription']?.toString(),
-      price: json['price'] as int? ?? 0,
-      priceAfterDiscount: json['priceAfterDiscount'] as int?,
+      description: _stringFromJson(json['description']),
+      shortDescription: _stringFromJson(json['shortDescription']),
+      price: json['price'] is num ? (json['price'] as num).toInt() : 0,
+      priceAfterDiscount: json['priceAfterDiscount'] is num ? (json['priceAfterDiscount'] as num).toInt() : null,
+      finalPrice: json['finalPrice'] is num ? (json['finalPrice'] as num).toInt() : null,
       restaurantId: json['restaurantId']?.toString(),
-      categoryId: json['categoryId']?.toString(),
-      categoryName: json['categoryName']?.toString(),
-      discount: json['discount'] as int?,
+      categoryId: categoryId,
+      categoryName: categoryName,
+      discount: json['discount'] is num ? (json['discount'] as num).toInt() : null,
       discountType: json['discountType']?.toString(),
       hasStock: json['hasStock'] as bool?,
-      stockQuantity: json['stockQuantity'] as int?,
+      stockQuantity: json['stockQuantity'] is num ? (json['stockQuantity'] as num).toInt() : null,
       isAvailable: json['isAvailable'] as bool?,
       isExternal: json['isExternal'] as bool?,
       externalProvider: json['externalProvider']?.toString(),
       externalId: json['externalId']?.toString(),
       merchantId: json['merchantId']?.toString(),
+      merchantName: merchantName,
+      merchantAddress: merchantAddress,
+      merchantPhone: merchantPhone,
+      merchantEmail: merchantEmail,
+      personCount: json['personCount'] is num ? (json['personCount'] as num).toInt() : null,
+      commissionRate: json['commissionRate'] is num ? (json['commissionRate'] as num).toDouble() : null,
+      commissionAmount: json['commissionAmount'] is num ? (json['commissionAmount'] as num).toInt() : null,
+      commissionConfirmed: json['commissionConfirmed'] as bool?,
       images: json['images'] != null
           ? (json['images'] as List)
               .map((item) => ProductImageModel.fromJson(item as Map<String, dynamic>))
               .toList()
           : [],
       rating: json['rating'] != null ? (json['rating'] as num).toDouble() : null,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : null,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
-          : null,
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
     );
   }
 
@@ -92,6 +148,7 @@ class ProductModel {
       'shortDescription': shortDescription,
       'price': price,
       'priceAfterDiscount': priceAfterDiscount,
+      'finalPrice': finalPrice,
       'restaurantId': restaurantId,
       'categoryId': categoryId,
       'categoryName': categoryName,
@@ -100,10 +157,15 @@ class ProductModel {
       'hasStock': hasStock,
       'stockQuantity': stockQuantity,
       'isAvailable': isAvailable,
-      'isExternal': isExternal,
-      'externalProvider': externalProvider,
-      'externalId': externalId,
       'merchantId': merchantId,
+      'merchantName': merchantName,
+      'merchantAddress': merchantAddress,
+      'merchantPhone': merchantPhone,
+      'merchantEmail': merchantEmail,
+      'personCount': personCount,
+      'commissionRate': commissionRate,
+      'commissionAmount': commissionAmount,
+      'commissionConfirmed': commissionConfirmed,
       'images': images.map((img) => img.toJson()).toList(),
       'rating': rating,
       'createdAt': createdAt?.toIso8601String(),

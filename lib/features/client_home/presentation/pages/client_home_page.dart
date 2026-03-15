@@ -11,6 +11,7 @@ import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_c
 import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_merchants_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_offers_slider.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_products_list.dart';
+import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key});
@@ -24,6 +25,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   void initState() {
     super.initState();
     context.read<ClientHomeCubit>().load();
+    context.read<FavoritesBloc>().add(const LoadFavoritesEvent());
   }
 
   @override
@@ -33,9 +35,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
       body: SafeArea(
         child: BlocBuilder<ClientHomeCubit, ClientHomeState>(
           builder: (context, state) {
-            if (state == null) {
-              return const Center(child: CustomCircleIndicator());
-            }
+        
             if (state.isLoading && state.categories.isEmpty) {
               return const Center(child: CustomCircleIndicator());
             }

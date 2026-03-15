@@ -27,4 +27,5 @@ class Routes {
   static const String offers = '/offers';
   static const String addOffer = '/add-offer';
   static const String offerDetails = '/offer-details';
+  static const String favorites = '/favorites';
 }

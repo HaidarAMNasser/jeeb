@@ -1,5 +1,8 @@
 part of 'api_service.dart';
 
+/// All requests use the shared [dio] instance. The access token (Authorization header)
+/// is added automatically by [AppInterceptors] in dio_factory.dart for every request
+/// when the user is logged in (token from storage). No need to set it per endpoint here.
 class _AppApiServiceClientImpl implements AppApiServiceClient {
   _AppApiServiceClientImpl({required this.dio, required this.baseUrlApi});
 
@@ -412,6 +415,28 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
       ),
     );
 
+    return result;
+  }
+
+  @override
+  Future<Response> getFavorites({int? page, int? limit}) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    if (page != null) queryParameters['page'] = page;
+    if (limit != null) queryParameters['limit'] = limit;
+    final headers = <String, dynamic>{};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'GET', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'favorites',
+              queryParameters: queryParameters,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
     return result;
   }
 

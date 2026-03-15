@@ -32,7 +32,7 @@ class ColorManager {
   // Text Colors
   static const Color textPrimary = Color(0xFFB2BEC3);
   static const Color textSecondary = Color(0xFF636E72);
-  static const Color textColor = Color.fromARGB(255, 196, 207, 212);
+  static const Color textColor = Color(0xFF6B7280);
   static const Color textDarkColor = Color.fromARGB(255, 64, 68, 70);
   static const Color titlesColor = Color(0xFFFFFFFF);
   static const Color productNameColor = Color(0xFF1A1A1A);
