@@ -1,17 +1,19 @@
 import 'package:equatable/equatable.dart';
 import 'product_image_entity.dart';
+
 class ProductEntity extends Equatable {
   final String id;
   final String name;
   final String? description;
   final String? shortDescription;
-  final int price; // Price in smallest currency unit (e.g., 1299 for 12.99)
+  final int price;
   final int? priceAfterDiscount;
+  final int? finalPrice;
   final String? restaurantId;
   final String? categoryId;
   final String? categoryName;
   final int? discount;
-  final String? discountType; // 'PERCENTAGE' or 'FIXED'
+  final String? discountType;
   final bool? hasStock;
   final int? stockQuantity;
   final bool? isAvailable;
@@ -19,6 +21,14 @@ class ProductEntity extends Equatable {
   final String? externalProvider;
   final String? externalId;
   final String? merchantId;
+  final String? merchantName;
+  final String? merchantAddress;
+  final String? merchantPhone;
+  final String? merchantEmail;
+  final int? personCount;
+  final double? commissionRate;
+  final int? commissionAmount;
+  final bool? commissionConfirmed;
   final List<ProductImageEntity> images;
   final double? rating;
   final DateTime? createdAt;
@@ -31,6 +41,7 @@ class ProductEntity extends Equatable {
     this.shortDescription,
     required this.price,
     this.priceAfterDiscount,
+    this.finalPrice,
     this.restaurantId,
     this.categoryId,
     this.categoryName,
@@ -43,11 +54,22 @@ class ProductEntity extends Equatable {
     this.externalProvider,
     this.externalId,
     this.merchantId,
+    this.merchantName,
+    this.merchantAddress,
+    this.merchantPhone,
+    this.merchantEmail,
+    this.personCount,
+    this.commissionRate,
+    this.commissionAmount,
+    this.commissionConfirmed,
     required this.images,
     this.rating,
     this.createdAt,
     this.updatedAt,
   });
+
+  /// Display price: finalPrice if set, else priceAfterDiscount, else price.
+  int get displayPrice => finalPrice ?? priceAfterDiscount ?? price;
 
   @override
   List<Object?> get props => [
@@ -57,6 +79,7 @@ class ProductEntity extends Equatable {
         shortDescription,
         price,
         priceAfterDiscount,
+        finalPrice,
         restaurantId,
         categoryId,
         categoryName,
@@ -65,10 +88,15 @@ class ProductEntity extends Equatable {
         hasStock,
         stockQuantity,
         isAvailable,
-        isExternal,
-        externalProvider,
-        externalId,
         merchantId,
+        merchantName,
+        merchantAddress,
+        merchantPhone,
+        merchantEmail,
+        personCount,
+        commissionRate,
+        commissionAmount,
+        commissionConfirmed,
         images,
         rating,
         createdAt,

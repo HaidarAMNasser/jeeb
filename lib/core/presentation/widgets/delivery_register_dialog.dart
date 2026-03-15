@@ -120,13 +120,14 @@ class _DeliveryRegisterDialogState extends State<DeliveryRegisterDialog> {
               isLoading: _isLoading,
               color: ColorManager.primary,
             ),
-            SizedBox(height: AppHeight.s12),
-            CustomButton(
-              text: AppTranslation.registerManually,
-              onPressed: () => Navigator.of(context).pop('manual'),
-              isOutlined: true,
-              color: ColorManager.primary,
-            ),
+            // Register manually button commented for now
+            // SizedBox(height: AppHeight.s12),
+            // CustomButton(
+            //   text: AppTranslation.registerManually,
+            //   onPressed: () => Navigator.of(context).pop('manual'),
+            //   isOutlined: true,
+            //   color: ColorManager.primary,
+            // ),
           ],
         ),
       ),

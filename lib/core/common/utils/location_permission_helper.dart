@@ -6,8 +6,8 @@ class LocationPermissionHelper {
   LocationPermissionHelper._();
 
   /// Request location permission (when in use).
+  /// Re-asks for permission when denied; opens app settings when permanently denied.
   /// Returns true if granted, false otherwise.
-  /// If permanently denied, opens app settings.
   static Future<bool> requestLocationPermission() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -22,12 +22,12 @@ class LocationPermissionHelper {
         return true;
       }
 
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.always ||
-            permission == LocationPermission.whileInUse) {
-          return true;
-        }
+      // Re-ask for permission (works for denied; for deniedForever the system
+      // may show "open settings" or we open settings below)
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        return true;
       }
 
       if (permission == LocationPermission.deniedForever) {

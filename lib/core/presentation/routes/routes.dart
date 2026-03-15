@@ -17,6 +17,7 @@ class Routes {
   static const String addProduct = '/add-product';
   static const String productDetails = '/product-details';
   static const String mainNavigation = '/main-navigation';
+  static const String clientHome = '/client-home';
   static const String merchants = '/merchants';
   static const String merchantDetails = '/merchant-details';
   static const String delivery = '/delivery';
@@ -27,4 +28,5 @@ class Routes {
   static const String offers = '/offers';
   static const String addOffer = '/add-offer';
   static const String offerDetails = '/offer-details';
+  static const String favorites = '/favorites';
 }

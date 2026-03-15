@@ -116,6 +116,21 @@ class AppTranslation {
   static String get noDataFound => 'no_data_found'.tr();
   static String get somethingWentWrong => 'something_went_wrong'.tr();
   static String get productDetails => 'product_details'.tr();
+  static String get summary => 'summary'.tr();
+  static String get availability => 'availability'.tr();
+  static String get inStock => 'in_stock'.tr();
+  static String get outOfStock => 'out_of_stock'.tr();
+  static String get availableForOrder => 'available_for_order'.tr();
+  static String get notAvailable => 'not_available'.tr();
+  static String get merchant => 'merchant'.tr();
+  static String get servesCount => 'serves_count'.tr();
+  static String get basePricePercentAdded => 'base_price_percent_added'.tr();
+  static String get percentOff => 'percent_off'.tr();
+  static String inStockCount(int n) => 'in_stock'.tr(args: [n.toString()]);
+  static String servesCountN(int n) => 'serves_count'.tr(args: [n.toString()]);
+  static String basePricePercentAddedN(String price, String percent) =>
+      'base_price_percent_added'.tr(args: [price, percent]);
+  static String percentOffN(int n) => 'percent_off'.tr(args: [n.toString()]);
 
   // Reviews
   static String get writeReview => 'write_review'.tr();
@@ -219,6 +234,8 @@ class AppTranslation {
       'please_select_country_or_location'.tr();
   static String get locationPermissionDenied =>
       'location_permission_denied'.tr();
+  static String get locationPermissionEnableInSettings =>
+      'location_permission_enable_in_settings'.tr();
   static String get locationUnavailable => 'location_unavailable'.tr();
   static String get chooseLocationOnMap => 'choose_location_on_map'.tr();
   static String get updateLocation => 'update_location'.tr();
@@ -318,4 +335,11 @@ class AppTranslation {
   static String get selectDate => 'select_date'.tr();
   static String get showAll => 'show_all'.tr();
   static String get backToLogin => 'back_to_login'.tr();
+  static String productsCountN(int n) =>
+      'products_count_n'.tr(args: [n.toString()]);
+  static String amountOffN(String value) =>
+      'amount_off'.tr(args: [value]);
+
+  static String get favorites => 'favorites'.tr();
+  static String get noFavoritesFound => 'no_favorites_found'.tr();
 }

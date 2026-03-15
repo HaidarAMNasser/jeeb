@@ -4,6 +4,8 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_cubit.dart';
 
 /// Search bar for products with filter button. Filter opens empty bottom sheet.
@@ -71,6 +73,25 @@ class _ClientHomeSearchBarState extends State<ClientHomeSearchBar> {
             onSubmitted: _onSearchSubmitted,
             prefixIcon: Icon(Icons.search, color: ColorManager.primary),
             filledColor: ColorManager.surface,
+          ),
+        ),
+        SizedBox(width: AppPadding.p8),
+        Material(
+          color: ColorManager.surface,
+          borderRadius: BorderRadius.circular(AppRadius.r12),
+          child: InkWell(
+            onTap: () => AppRouter.navigateTo(context, Routes.favorites),
+            borderRadius: BorderRadius.circular(AppRadius.r12),
+            child: Container(
+              height: 48,
+              width: 48,
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.favorite_border,
+                color: ColorManager.primary,
+                size: 24,
+              ),
+            ),
           ),
         ),
         SizedBox(width: AppPadding.p12),

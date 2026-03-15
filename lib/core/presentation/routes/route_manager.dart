@@ -32,6 +32,8 @@ import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dar
 import '../../../features/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
+import '../../../features/client_home/presentation/cubit/client_home_cubit.dart';
+import '../../../features/client_home/presentation/pages/client_home_page.dart';
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
 import '../../../features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import '../../../features/merchant/list_merchant/data/repositories/list_merchant_repository.dart';
@@ -45,6 +47,8 @@ import '../../../features/offer/list_offer/data/repositories/list_offer_reposito
 import '../../../features/offer/offer_details/presentation/pages/offer_details_page.dart';
 import '../../../features/offer/offer_details/presentation/bloc/offer_details_bloc.dart';
 import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
+import '../../../features/favorites/presentation/pages/favorites_page.dart';
+import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
 
@@ -170,6 +174,18 @@ class AppRouter {
       case Routes.mainNavigation:
         return _buildRoute(const MainNavigationPage(), settings);
 
+      case Routes.clientHome:
+        return _buildRoute(
+          BlocProvider<FavoritesBloc>.value(
+            value: di.sl<FavoritesBloc>(),
+            child: BlocProvider<ClientHomeCubit>(
+              create: (_) => di.sl<ClientHomeCubit>(),
+              child: const ClientHomePage(),
+            ),
+          ),
+          settings,
+        );
+
       case Routes.merchants:
         return _buildRouteWithBloc(
           const ListMerchantPage(),
@@ -263,6 +279,16 @@ class AppRouter {
             ),
           ],
         );
+
+      case Routes.favorites: {
+        final favBloc = di.sl<FavoritesBloc>();
+        favBloc.add(const LoadFavoritesEvent());
+        return _buildRouteWithBlocValue<FavoritesBloc>(
+          const FavoritesPage(),
+          settings,
+          bloc: favBloc,
+        );
+      }
 
       default:
         return _buildRoute(

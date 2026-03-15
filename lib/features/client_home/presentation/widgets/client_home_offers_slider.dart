@@ -2,15 +2,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_cubit.dart';
 import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_state.dart';
-import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/offer/offer_card.dart';
 
-/// Slider showing 3 offer cards at a time; middle one is bigger. Auto-advances.
+/// Slider showing offer cards; middle one is bigger. Auto-advances.
 class ClientHomeOffersSlider extends StatefulWidget {
   const ClientHomeOffersSlider({super.key});
 
@@ -59,12 +62,29 @@ class _ClientHomeOffersSliderState extends State<ClientHomeOffersSlider> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomText(
-              text: 'Offers',
-              textStyle: getBoldStyle(
-                fontSize: AppFontSize.s18,
-                color: ColorManager.titlesColor,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(
+                  text: AppTranslation.offers,
+                  textStyle: getBoldStyle(
+                    fontSize: AppFontSize.s18,
+                    color: ColorManager.titlesColor,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    AppRouter.navigateTo(context, Routes.offers);
+                  },
+                  child: CustomText(
+                    text: AppTranslation.showAll,
+                    textStyle: getSemiBoldStyle(
+                      fontSize: AppFontSize.s14,
+                      color: ColorManager.primary,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: AppHeight.s16),
             SizedBox(
@@ -86,7 +106,16 @@ class _ClientHomeOffersSliderState extends State<ClientHomeOffersSlider> {
                         child: child,
                       );
                     },
-                    child: _OfferCard(offer: offers[index]),
+                    child: OfferCard(
+                      offer: offers[index],
+                      onTap: () {
+                        AppRouter.navigateTo(
+                          context,
+                          Routes.offerDetails,
+                          arguments: {'offerId': offers[index].id},
+                        );
+                      },
+                    ),
                   );
                 },
               ),
@@ -94,87 +123,6 @@ class _ClientHomeOffersSliderState extends State<ClientHomeOffersSlider> {
           ],
         );
       },
-    );
-  }
-}
-
-class _OfferCard extends StatelessWidget {
-  final OfferEntity offer;
-
-  const _OfferCard({required this.offer});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppPadding.p6),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              ColorManager.primary.withValues(alpha: 0.9),
-              ColorManager.secondary.withValues(alpha: 0.8),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(AppRadius.r16),
-          boxShadow: [
-            BoxShadow(
-              color: ColorManager.primary.withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        padding: EdgeInsets.all(AppPadding.p16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomText(
-              text: offer.shortDescription ?? offer.longDescription ?? 'Offer',
-              textStyle: getBoldStyle(
-                fontSize: AppFontSize.s16,
-                color: ColorManager.defaultWhite,
-              ),
-              maxLines: 2,
-              textOverflow: TextOverflow.ellipsis,
-            ),
-            if (offer.longDescription != null && offer.longDescription != offer.shortDescription) ...[
-              SizedBox(height: AppHeight.s4),
-              CustomText(
-                text: offer.longDescription!,
-                textStyle: getRegularStyle(
-                  fontSize: AppFontSize.s12,
-                  color: ColorManager.defaultWhite.withValues(alpha: 0.9),
-                ),
-                maxLines: 1,
-                textOverflow: TextOverflow.ellipsis,
-              ),
-            ],
-            SizedBox(height: AppHeight.s8),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppPadding.p12,
-                vertical: AppPadding.p4,
-              ),
-              decoration: BoxDecoration(
-                color: ColorManager.defaultWhite.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(AppRadius.r8),
-              ),
-              child: CustomText(
-                text: (offer.discountType ?? 'PERCENTAGE').toUpperCase() == 'PERCENTAGE'
-                    ? '${(offer.discountValue ?? 0).toInt()}% off'
-                    : '${(offer.discountValue ?? 0).toInt()} off',
-                textStyle: getSemiBoldStyle(
-                  fontSize: AppFontSize.s12,
-                  color: ColorManager.defaultWhite,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

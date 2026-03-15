@@ -9,6 +9,12 @@ abstract class AppApiServiceClient {
       _AppApiServiceClientImpl;
 
   // Favorites endpoints
+  @GET("favorites")
+  Future<Response> getFavorites({
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+  });
+
   @POST("favorites/toggle")
   Future<Response> toggleFavorites({
     List<int>? restaurants,

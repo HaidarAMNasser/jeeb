@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
@@ -67,6 +68,7 @@ class ClientHomeCategoriesSection extends StatelessWidget {
                   final category = categories[index - 1];
                   return _CategoryChip(
                     label: category.name,
+                    imageUrl: category.imageUrl,
                     isSelected: selectedId == category.id,
                     onTap: () => context.read<ClientHomeCubit>().selectCategory(
                       category.id,
@@ -84,11 +86,13 @@ class ClientHomeCategoriesSection extends StatelessWidget {
 
 class _CategoryChip extends StatelessWidget {
   final String label;
+  final String? imageUrl;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _CategoryChip({
     required this.label,
+    this.imageUrl,
     required this.isSelected,
     required this.onTap,
   });
@@ -120,18 +124,26 @@ class _CategoryChip extends StatelessWidget {
                 ),
               ],
             ),
-            child: Center(
-              child: CustomText(
-                text: label.length > 8 ? '${label.substring(0, 7)}…' : label,
-                textStyle: getSemiBoldStyle(
-                  fontSize: AppFontSize.s12,
-                  color: isSelected
-                      ? ColorManager.defaultWhite
-                      : ColorManager.productNameColor,
-                ),
-                maxLines: 2,
-                textAlign: TextAlign.center,
-              ),
+            child: ClipOval(
+              child: imageUrl != null && imageUrl!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl!,
+                      fit: BoxFit.cover,
+                      width: AppHeight.s66,
+                      height: AppHeight.s66,
+                      placeholder: (_, __) => Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: ColorManager.primary,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (_, __, ___) => _buildLabelContent(),
+                    )
+                  : _buildLabelContent(),
             ),
           ),
           SizedBox(height: AppHeight.s5),
@@ -145,6 +157,22 @@ class _CategoryChip extends StatelessWidget {
             textOverflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLabelContent() {
+    return Center(
+      child: CustomText(
+        text: label.length > 8 ? '${label.substring(0, 7)}…' : label,
+        textStyle: getSemiBoldStyle(
+          fontSize: AppFontSize.s12,
+          color: isSelected
+              ? ColorManager.defaultWhite
+              : ColorManager.productNameColor,
+        ),
+        maxLines: 2,
+        textAlign: TextAlign.center,
       ),
     );
   }

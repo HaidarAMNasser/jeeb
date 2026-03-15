@@ -84,11 +84,8 @@ class RegisterPage extends StatelessWidget {
       return;
     }
 
-    if (result.permissionGranted) {
-      customToast(msg: AppTranslation.locationUnavailable);
-    } else {
-      customToast(msg: AppTranslation.locationPermissionDenied);
-    }
+    // Permission denied or unavailable: we already re-asked and may have opened settings.
+    customToast(msg: AppTranslation.locationPermissionEnableInSettings);
   }
 
   @override
