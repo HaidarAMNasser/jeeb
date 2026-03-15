@@ -5,10 +5,10 @@ import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/common/models/base_response_model.dart';
 import 'package:jeeb_app/core/common/utils/error_handler.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
-import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/data/data_sources/merchant_details_data_source.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/data/mappers/merchant_mapper.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/data/models/merchant_model.dart';
+import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
 
 class MerchantDetailsRepository {
   final MerchantDetailsRemoteDataSource _remoteDataSource;

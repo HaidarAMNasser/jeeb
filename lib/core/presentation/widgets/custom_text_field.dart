@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+
 import 'package:easy_localization/easy_localization.dart' as easy_localization;
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 class CustomTextField extends StatelessWidget {
   final String? title;
@@ -15,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onSubmitted;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final TextInputType? keyboardType;
   final Color? filledColor;
   final bool? obscureText;
   const CustomTextField({
@@ -28,7 +30,8 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.filledColor,
     this.obscureText = false,
-          });
+    this.keyboardType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +44,14 @@ class CustomTextField extends StatelessWidget {
         if (title != null)
           CustomText(
             text: title!,
-            textStyle: getSemiBoldStyle(
-              fontSize: AppFontSize.s16,
+            textStyle: getMediumStyle(
+              fontSize: AppFontSize.s15,
               color: ColorManager.defaultWhite,
             ),
           ),
         SizedBox(height: AppHeight.s8),
         TextField(
+          keyboardType: keyboardType,
           obscureText: obscureText ?? false,
           textDirection: textDirection,
           textAlign: isRTL ? TextAlign.right : TextAlign.left,

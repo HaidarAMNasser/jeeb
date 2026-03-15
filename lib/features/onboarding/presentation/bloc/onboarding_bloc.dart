@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/presentation/theme/colors_manager.dart';
-import '../../../../core/presentation/localization/app_translation.dart';
 import '../../../../core/common/utils/helper_functions.dart';
+import '../onboarding_strings.dart';
 import '../widgets/onboarding_content.dart';
 
 part 'onboarding_event.dart';
@@ -18,28 +18,29 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<OnboardingRequestNotificationPermission>(_onRequestNotificationPermission);
   }
 
+  /// Onboarding content is always in English (never translated to Arabic).
   final List<OnboardingContent> _pages = [
     OnboardingContent(
-      title: AppTranslation.onboardingTitle1,
-      description: AppTranslation.onboardingDesc1,
+      title: OnboardingStrings.onboardingTitle1,
+      description: OnboardingStrings.onboardingDesc1,
       icon: Icons.restaurant_menu,
       color: ColorManager.defaultYellow,
     ),
     OnboardingContent(
-      title: AppTranslation.onboardingTitle2,
-      description: AppTranslation.onboardingDesc2,
+      title: OnboardingStrings.onboardingTitle2,
+      description: OnboardingStrings.onboardingDesc2,
       icon: Icons.delivery_dining,
       color: ColorManager.defaultYellow,
     ),
     OnboardingContent(
-      title: AppTranslation.onboardingTitle3,
-      description: AppTranslation.onboardingDesc3,
+      title: OnboardingStrings.onboardingTitle3,
+      description: OnboardingStrings.onboardingDesc3,
       icon: Icons.notifications_active,
       color: ColorManager.defaultYellow,
     ),
     OnboardingContent(
-      title: AppTranslation.onboardingTitle4,
-      description: AppTranslation.onboardingDesc4,
+      title: OnboardingStrings.onboardingTitle4,
+      description: OnboardingStrings.onboardingDesc4,
       icon: Icons.celebration,
       color: ColorManager.defaultYellow,
     ),

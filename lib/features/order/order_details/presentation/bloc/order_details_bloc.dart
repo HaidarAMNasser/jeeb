@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/order/order_details/data/repositories/order_details_repository.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
 
 part 'order_details_event.dart';
 part 'order_details_state.dart';

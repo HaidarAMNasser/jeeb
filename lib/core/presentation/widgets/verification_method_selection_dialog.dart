@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+
 
 /// Dialog to choose how to verify account: Email OTP or WhatsApp OTP.
 /// Returns 'EMAIL' or 'WHATSAPP' when an option is selected.
@@ -86,7 +88,10 @@ class _VerificationOption extends StatelessWidget {
         padding: EdgeInsets.all(AppPadding.p16),
         decoration: BoxDecoration(
           color: ColorManager.background,
-          border: Border.all(color: ColorManager.borderColor, width: 1),
+          border: Border.all(
+            color: ColorManager.borderColor,
+            width: 1,
+          ),
           borderRadius: BorderRadius.circular(AppRadius.r12),
         ),
         child: Row(

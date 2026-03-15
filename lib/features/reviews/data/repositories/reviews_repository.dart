@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
-import 'package:jeeb_app/features/merchant/reviews/data/data_sources/reviews_remote_data_source.dart';
-import 'package:jeeb_app/features/merchant/reviews/data/models/review_model.dart';
-import 'package:jeeb_app/features/merchant/reviews/domain/entities/review_entity.dart';
+import 'package:jeeb_app/features/reviews/data/data_sources/reviews_remote_data_source.dart';
+import 'package:jeeb_app/features/reviews/data/models/review_model.dart';
+import 'package:jeeb_app/features/reviews/domain/entities/review_entity.dart';
 
 class ReviewsRepository {
   final ReviewsRemoteDataSource _remote;

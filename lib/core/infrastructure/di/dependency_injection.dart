@@ -1,13 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:jeeb_app/features/auth/profile/data/data_sources/profile_remote_data_source.dart';
-import 'package:jeeb_app/features/auth/profile/data/repositories/profile_repository.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
-import 'package:jeeb_app/features/merchant/favorites/data/data_sources/favorites_remote_data_source.dart';
-import 'package:jeeb_app/features/merchant/favorites/data/repositories/favorites_repository.dart';
-import 'package:jeeb_app/features/merchant/reviews/data/data_sources/reviews_remote_data_source.dart';
-import 'package:jeeb_app/features/merchant/reviews/data/repositories/reviews_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../network/network_info.dart';
 import '../../presentation/routes/navigation_service.dart';
@@ -21,6 +14,7 @@ import '../../../features/product/product_details/data/data_sources/product_deta
 import '../../../features/product/product_details/data/repositories/product_details_repository.dart';
 import '../../../features/category/list_category/data/data_sources/list_category_data_source.dart';
 import '../../../features/category/list_category/data/repositories/list_category_repository.dart';
+import '../../../features/category/list_category/presentation/bloc/list_category_bloc.dart';
 import '../../../features/auth/login/data/data_sources/login_remote_data_source.dart';
 import '../../../features/auth/login/data/repositories/login_repository.dart';
 import '../../../features/auth/login/presentation/bloc/login_bloc.dart';
@@ -36,9 +30,14 @@ import '../../../features/auth/forgot_password/presentation/bloc/forgot_password
 import '../../../features/auth/reset_password/data/data_sources/reset_password_remote_data_source.dart';
 import '../../../features/auth/reset_password/data/repositories/reset_password_repository.dart';
 import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
+import '../../../features/auth/profile/data/data_sources/profile_remote_data_source.dart';
+import '../../../features/auth/profile/data/repositories/profile_repository.dart';
+import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/data/data_sources/logout_remote_data_source.dart';
 import '../../../features/auth/logout/data/repositories/logout_repository.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
+import '../../../features/get_settings/data/data_sources/get_settings_data_source.dart';
+import '../../../features/get_settings/data/repositories/get_settings_repository.dart';
 import '../../../features/country/data/data_sources/country_remote_data_source.dart';
 import '../../../features/country/data/repositories/country_repository.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
@@ -52,16 +51,17 @@ import '../../../features/merchant/merchant_details/data/repositories/merchant_d
 
 import '../../../features/order/list_order/data/data_sources/list_order_data_source.dart';
 import '../../../features/order/list_order/data/repositories/list_order_repository.dart';
-import '../../../features/offers/data/data_sources/offers_remote_data_source.dart';
-import '../../../features/offers/data/data_sources/offers_remote_data_source_impl.dart';
-import '../../../features/offers/data/repositories/offers_repository_impl.dart';
-import '../../../features/offers/presentation/bloc/offers_bloc.dart';
-import '../../../features/client_home/presentation/cubit/client_home_cubit.dart';
 import '../../../features/order/order_details/data/data_sources/order_details_data_source.dart';
 import '../../../features/order/order_details/data/repositories/order_details_repository.dart';
 
 import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dart';
+import '../../../features/offer/list_offer/data/data_sources/list_offer_data_source.dart';
+import '../../../features/offer/list_offer/data/repositories/list_offer_repository.dart';
+import '../../../features/offer/offer_details/data/data_sources/offer_details_data_source.dart';
+import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
+
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
+
 
 final sl = GetIt.instance;
 
@@ -99,6 +99,7 @@ Future<void> init() async {
     () => ListCategoryRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => ListCategoryRepository(sl(), sl()));
+  sl.registerFactory(() => ListCategoryBloc(sl()));
 
   //! Product List Dependencies
   sl.registerFactory<ListProductRemoteDataSource>(
@@ -106,11 +107,14 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ListProductRepository(sl(), sl()));
 
+ 
   //! Product Details Dependencies
   sl.registerFactory<ProductDetailsRemoteDataSource>(
     () => ProductDetailsRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => ProductDetailsRepository(sl(), sl()));
+
+  //!
 
   //! Auth Dependencies - Login
   sl.registerFactory<LoginRemoteDataSource>(
@@ -124,14 +128,15 @@ Future<void> init() async {
     () => RegisterRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => RegisterRepository(sl(), sl()));
-  sl.registerFactory(() => RegisterBloc(sl()));
+  sl.registerFactory(() => RegisterBloc(sl(), sl<StorageService>()));
 
   //! Auth Dependencies - Verify
   sl.registerFactory<VerifyRemoteDataSource>(
     () => VerifyRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => VerifyRepository(sl(), sl()));
-  sl.registerFactory(() => VerifyBloc(sl()));
+  sl.registerFactory(
+      () => VerifyBloc(sl(), sl<StorageService>(), sl<ProfileRepository>()));
 
   //! Auth Dependencies - Forgot Password
   sl.registerFactory<ForgotPasswordRemoteDataSource>(
@@ -152,7 +157,7 @@ Future<void> init() async {
     () => ProfileRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => ProfileRepository(sl(), sl()));
-  sl.registerFactory(() => ProfileBloc(sl()));
+  sl.registerFactory(() => ProfileBloc(sl<ProfileRepository>(), sl<StorageService>()));
 
   //! Auth Dependencies - Logout
   sl.registerFactory<LogoutRemoteDataSource>(
@@ -160,6 +165,11 @@ Future<void> init() async {
   );
   sl.registerFactory(() => LogoutRepository(sl(), sl()));
   sl.registerFactory(() => LogoutBloc(sl(), sl()));
+
+  sl.registerFactory<GetSettingsRemoteDataSource>(
+    () => GetSettingsRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => GetSettingsRepository(sl(), sl()));
 
   //! Country Dependencies
   sl.registerFactory<CountryRemoteDataSource>(
@@ -181,28 +191,12 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ListMerchantRepository(sl(), sl()));
 
-  //! Favorites (toggle under merchant feature)
-  sl.registerFactory<FavoritesRemoteDataSource>(
-    () => FavoritesRemoteDataSourceImpl(sl<AppApiServiceClient>()),
-  );
-  sl.registerFactory(
-      () => FavoritesRepository(sl<FavoritesRemoteDataSource>(), sl<NetworkInfo>()));
-
-  //! Reviews (create/get/update/delete)
-  sl.registerFactory<ReviewsRemoteDataSource>(
-    () => ReviewsRemoteDataSourceImpl(sl<AppApiServiceClient>()),
-  );
-  sl.registerFactory(
-    () => ReviewsRepository(sl<ReviewsRemoteDataSource>(), sl<NetworkInfo>()),
-  );
-
   //! Merchant Details Dependencies
   sl.registerFactory<MerchantDetailsRemoteDataSource>(
     () => MerchantDetailsRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => MerchantDetailsRepository(sl(), sl()));
 
-  //! Order List Dependencies
   sl.registerFactory<ListOrderRemoteDataSource>(
     () => ListOrderRemoteDataSourceImpl(sl()),
   );
@@ -216,20 +210,17 @@ Future<void> init() async {
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(() => OrderDetailsBloc(sl()));
 
-  //! Offers Dependencies
-  sl.registerFactory<OffersRemoteDataSource>(
-    () => OffersRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+ 
+  sl.registerFactory<ListOfferRemoteDataSource>(
+    () => ListOfferRemoteDataSourceImpl(sl()),
   );
-  sl.registerFactory(() => OffersRepositoryImpl(sl()));
-  sl.registerFactory(() => OffersBloc(sl()));
+  sl.registerFactory(() => ListOfferRepository(sl(), sl()));
 
-  //! Client Home (unified home screen)
-  sl.registerFactory(
-    () => ClientHomeCubit(
-      categoryRepository: sl<ListCategoryRepository>(),
-      merchantRepository: sl<ListMerchantRepository>(),
-      productRepository: sl<ListProductRepository>(),
-      offersRepository: sl<OffersRepositoryImpl>(),
-    ),
+  //! Offer Details
+  sl.registerFactory<OfferDetailsRemoteDataSource>(
+    () => OfferDetailsRemoteDataSourceImpl(sl()),
   );
+  sl.registerFactory(() => OfferDetailsRepository(sl(), sl()));
+
+ 
 }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/order/list_order/data/repositories/list_order_repository.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
 
 part 'list_order_event.dart';
 part 'list_order_state.dart';
@@ -35,7 +35,8 @@ class ListOrderBloc extends Bloc<ListOrderEvent, ListOrderState> {
             );
 
             result.fold(
-              (failure) => emit(ListOrderError(message: failure.message)),
+              (l) => emit(ListOrderError(
+                  message: l is Exception ? l.toString() : (l as dynamic).message?.toString() ?? 'Unknown error')),
               (newOrders) {
                 final updatedOrders = [
                   ...currentState.orders,
@@ -62,7 +63,8 @@ class ListOrderBloc extends Bloc<ListOrderEvent, ListOrderState> {
           );
 
           result.fold(
-            (failure) => emit(ListOrderError(message: failure.message)),
+            (l) => emit(ListOrderError(
+                message: l is Exception ? l.toString() : (l as dynamic).message?.toString() ?? 'Unknown error')),
             (orders) => emit(ListOrderLoaded(
               orders: orders,
               hasMore: orders.length == _pageSize,

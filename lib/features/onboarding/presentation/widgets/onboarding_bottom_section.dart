@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/presentation/theme/colors_manager.dart';
 import '../../../../core/presentation/theme/values_manager.dart';
-import '../../../../core/presentation/localization/app_translation.dart';
 import '../../../../core/presentation/widgets/custom_button.dart';
 import '../../../../core/presentation/widgets/text_widget.dart';
 import '../../../../core/presentation/theme/styles_manager.dart';
 import '../../../../core/presentation/theme/font_manager.dart';
 import '../bloc/onboarding_bloc.dart';
+import '../onboarding_strings.dart';
 import 'onboarding_indicator.dart';
 
 class OnboardingBottomSection extends StatelessWidget {
@@ -36,7 +36,7 @@ class OnboardingBottomSection extends StatelessWidget {
           ),
           child: state.currentPageIndex == 0
               ? CustomText(
-                  text: AppTranslation.termsAndConditions,
+                  text: OnboardingStrings.termsAndConditions,
                   textAlign: TextAlign.center,
                   textStyle: getRegularStyle(
                     fontSize: AppFontSize.s14,
@@ -50,7 +50,7 @@ class OnboardingBottomSection extends StatelessWidget {
           currentIndex: state.currentPageIndex,
           totalPages: state.pages.length,
         ),
-        SizedBox(height: AppHeight.s16),
+        SizedBox(height: AppHeight.s24),
         // Next/Get Started button
         Padding(
           padding: EdgeInsets.symmetric(
@@ -67,7 +67,7 @@ class OnboardingBottomSection extends StatelessWidget {
                           bottom: AppPadding.p16,
                         ),
                         child: CustomButton(
-                          text: AppTranslation.allowNotifications,
+                          text: OnboardingStrings.allowNotifications,
                           onPressed: () {
                             context.read<OnboardingBloc>().add(
                               const OnboardingRequestNotificationPermission(),
@@ -80,8 +80,8 @@ class OnboardingBottomSection extends StatelessWidget {
 
               CustomButton(
                 text: state.isLastPage
-                    ? AppTranslation.getStarted
-                    : AppTranslation.next,
+                    ? OnboardingStrings.getStarted
+                    : OnboardingStrings.next,
                 onPressed: state.isLastPage ? onGetStarted : onNext,
               ),
             ],

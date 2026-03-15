@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
 
 class MerchantListItem extends StatelessWidget {
   final MerchantEntity merchant;
-  final bool isFavorite;
-  final VoidCallback? onFavoriteTap;
 
-  const MerchantListItem({
-    super.key,
-    required this.merchant,
-    this.isFavorite = false,
-    this.onFavoriteTap,
-  });
+  const MerchantListItem({super.key, required this.merchant});
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +39,8 @@ class MerchantListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Row(
-                      children: [
+                  Row(
+                    children: [
                       if (merchant.image != null)
                         ClipRRect(
                           borderRadius: BorderRadius.all(
@@ -115,20 +107,6 @@ class MerchantListItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                  ),
-                  if (onFavoriteTap != null)
-                    IconButton(
-                      onPressed: onFavoriteTap,
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite
-                            ? ColorManager.error
-                            : ColorManager.descriptionColor,
-                        size: AppSize.s24,
-                      ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
                 ],
               ),
               if (merchant.cityName != null || merchant.countryName != null) ...[

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/merchant/reviews/data/repositories/reviews_repository.dart';
-import 'package:jeeb_app/features/merchant/reviews/domain/entities/review_entity.dart';
+import 'package:jeeb_app/features/reviews/data/repositories/reviews_repository.dart';
+import 'package:jeeb_app/features/reviews/domain/entities/review_entity.dart';
 
 part 'reviews_event.dart';
 part 'reviews_state.dart';

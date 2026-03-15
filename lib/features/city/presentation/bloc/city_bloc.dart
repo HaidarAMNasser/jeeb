@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
 import 'package:jeeb_app/features/city/data/repositories/city_repository.dart';
+import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
 
 part 'city_event.dart';
 part 'city_state.dart';

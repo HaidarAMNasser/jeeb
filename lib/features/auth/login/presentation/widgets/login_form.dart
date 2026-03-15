@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_display.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart'
+    show AppTranslation;
 import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/core/presentation/widgets/delivery_register_dialog.dart';
 
 class LoginForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -39,12 +42,12 @@ class LoginForm extends StatelessWidget {
           ),
           SizedBox(height: AppHeight.s24),
           CustomTextField(
-            obscureText:  true,
+            obscureText: true,
             title: AppTranslation.password,
             hintText: AppTranslation.enterPassword,
             controller: passwordController,
           ),
-       
+
           SizedBox(height: AppHeight.s16),
           Align(
             alignment: Alignment.centerRight,
@@ -52,10 +55,12 @@ class LoginForm extends StatelessWidget {
               onPressed: () {
                 context.pushNamed(Routes.forgotPassword);
               },
-              child: CustomTextDisplay(
+              child: CustomText(
                 text: AppTranslation.forgotPassword,
-                fontSize: AppFontSize.s14,
-                color: ColorManager.primary,
+                textStyle: getMediumStyle(
+                  fontSize: AppFontSize.s14,
+                  color: ColorManager.primary,
+                ),
               ),
             ),
           ),
@@ -63,30 +68,54 @@ class LoginForm extends StatelessWidget {
           CustomButton(
             text: AppTranslation.login,
             onPressed: onLogin,
-            isLoading: isLoading,
             color: ColorManager.primary,
           ),
           SizedBox(height: AppHeight.s24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomTextDisplay(
+              CustomText(
                 text: AppTranslation.dontHaveAccount,
-                fontSize: AppFontSize.s14,
-                color: ColorManager.textColor,
+                textStyle: getRegularStyle(
+                  fontSize: AppFontSize.s14,
+                  color: ColorManager.textColor,
+                ),
               ),
               TextButton(
                 onPressed: () {
                   context.pushNamed(Routes.register);
                 },
-                child: CustomTextDisplay(
+                child: CustomText(
                   text: AppTranslation.register,
-                  fontSize: AppFontSize.s14,
-                  color: ColorManager.primary,
-                  fontWeight: FontWeight.w600,
+                  textStyle: getMediumStyle(
+                    fontSize: AppFontSize.s14,
+                    color: ColorManager.primary,
+                  ),
                 ),
               ),
             ],
+          ),
+          SizedBox(height: AppHeight.s16),
+          TextButton(
+            onPressed: () async {
+              final result = await showDialog<String>(
+                context: context,
+                builder: (dialogContext) => const DeliveryRegisterDialog(),
+              );
+              if (result == 'manual') {
+                context.pushNamed(
+                  Routes.register,
+                  arguments: {'initialRole': 'DELIVERY'},
+                );
+              }
+            },
+            child: CustomText(
+              text: AppTranslation.joinAsDelivery,
+              textStyle: getMediumStyle(
+                fontSize: AppFontSize.s14,
+                color: ColorManager.primary,
+              ),
+            ),
           ),
         ],
       ),

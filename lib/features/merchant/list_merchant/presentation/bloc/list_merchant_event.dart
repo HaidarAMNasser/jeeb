@@ -20,12 +20,3 @@ class GetMerchantsEvent extends ListMerchantEvent {
   List<Object> get props => [loadMore, search ?? ''];
 }
 
-class ToggleFavoriteMerchantEvent extends ListMerchantEvent {
-  final String merchantId;
-
-  const ToggleFavoriteMerchantEvent(this.merchantId);
-
-  @override
-  List<Object> get props => [merchantId];
-}
-

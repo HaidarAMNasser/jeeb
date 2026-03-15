@@ -4,13 +4,13 @@ import 'package:easy_localization/easy_localization.dart' as el;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/features/onboarding/presentation/onboarding_strings.dart';
 import '../../../../core/presentation/routes/routes.dart';
 import '../../../../core/presentation/theme/colors_manager.dart';
 import '../../../../core/presentation/widgets/language_selection_dialog.dart';
 import '../../../../core/infrastructure/services/storage_service.dart';
 import '../../../../core/infrastructure/di/dependency_injection.dart' as di;
 import '../bloc/onboarding_bloc.dart';
+import '../onboarding_strings.dart';
 import '../widgets/onboarding_content.dart';
 import '../widgets/onboarding_bottom_section.dart';
 
@@ -31,11 +31,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _navigateToAuth() async {
-    // Check if language is set in SharedPreferences
     final storageService = di.sl<StorageService>();
+    await storageService.setFirstLaunchCompleted();
+
     final storedLanguage = storageService.getAppLanguage();
 
-    // Only show language dialog if language is not set (empty)
     if (storedLanguage.isEmpty) {
       // Show language dialog and wait for selection
       final selectedLanguage = await showDialog<String>(

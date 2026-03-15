@@ -1,162 +1,287 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_display.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_dropdown.dart';
+import 'dart:io' show File;
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
-import 'package:jeeb_app/features/country/presentation/widgets/country_city_widget.dart';
-import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/avatar_image_picker.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/auth/register/presentation/bloc/register_bloc.dart';
+import 'package:jeeb_app/features/auth/register/presentation/widgets/location_source_selector.dart';
 import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
+import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
+import 'package:jeeb_app/features/country/presentation/widgets/country_city_widget.dart';
 
 class RegisterForm extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final TextEditingController phoneController;
-  final TextEditingController addressController;
-  final String? selectedRole;
-  final String? selectedNotificationChannel;
-  final CountryEntity? selectedCountry;
-  final CityEntity? selectedCity;
-  final ValueChanged<CountryEntity?> onCountryChanged;
-  final ValueChanged<CityEntity?> onCityChanged;
-  final ValueChanged<String?> onRoleChanged;
-  final ValueChanged<String?> onNotificationChannelChanged;
   final VoidCallback onRegister;
-  final bool isLoading;
+  final Future<void> Function() onUseMyLocation;
+  final VoidCallback onPickImage;
+  final VoidCallback onPickIdFront;
+  final VoidCallback onPickIdBack;
 
   const RegisterForm({
     super.key,
-    required this.formKey,
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.emailController,
-    required this.passwordController,
-    required this.phoneController,
-    required this.addressController,
-    this.selectedRole,
-    this.selectedNotificationChannel,
-    this.selectedCountry,
-    this.selectedCity,
-    required this.onCountryChanged,
-    required this.onCityChanged,
-    required this.onRoleChanged,
-    required this.onNotificationChannelChanged,
     required this.onRegister,
-    required this.isLoading,
+    required this.onUseMyLocation,
+    required this.onPickImage,
+    required this.onPickIdFront,
+    required this.onPickIdBack,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        spacing: AppHeight.s24,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CustomTextField(
-            title: AppTranslation.firstName,
-            hintText: AppTranslation.firstName,
-            controller: firstNameController,
-          ),
-          CustomTextField(
-            title: AppTranslation.lastName,
-            hintText: AppTranslation.lastName,
-            controller: lastNameController,
-          ),
-          CustomTextField(
-            title: AppTranslation.email,
-            hintText: AppTranslation.enterEmail,
-            controller: emailController,
-          ),
-          CustomTextField(
-            title: AppTranslation.phone,
-            hintText: AppTranslation.enterPhone,
-            controller: phoneController,
-          ),
-          CustomTextField(
-            obscureText: true,
-            title: AppTranslation.password,
-            hintText: AppTranslation.enterPassword,
-            controller: passwordController,
-          ),
+    final bloc = context.read<RegisterBloc>();
 
-          CustomTextField(
-            title: AppTranslation.address,
-            hintText: AppTranslation.enterAddress,
-            controller: addressController,
-          ),
-          CountryCityWidget(
-            selectedCountry: selectedCountry,
-            selectedCity: selectedCity,
-            onSelectCountry: onCountryChanged,
-            onSelectCity: onCityChanged,
-            isRequired: true,
-          ),
-          CustomDropdown<String>(
-            title: AppTranslation.notificationChannel,
-            value: selectedNotificationChannel,
-            hintText: AppTranslation.notificationChannel,
-            items: const [
-              DropdownMenuItem<String>(value: 'EMAIL', child: Text('EMAIL')),
-              DropdownMenuItem<String>(
-                value: 'WHATSAPP',
-                child: Text('WHATSAPP'),
-              ),
-            ],
-            onChanged: onNotificationChannelChanged,
-          ),
-          SizedBox(height: AppHeight.s8),
-          CustomButton(
-            text: AppTranslation.register,
-            onPressed: onRegister,
-            isLoading: isLoading,
-            color: ColorManager.primary,
-          ),
+    return BlocBuilder<RegisterBloc, RegisterState>(
+      builder: (context, state) {
+        String? imagePath;
+        final imageFile = bloc.selectedImageFile;
+        if (imageFile != null) {
+          if (imageFile is String) {
+            imagePath = imageFile;
+          } else {
+            final dynamic dynamicFile = imageFile;
+            final path = dynamicFile.path as String?;
+            if (path != null && path.isNotEmpty) {
+              imagePath = path;
+            }
+          }
+        }
+        String? initial;
+        if (bloc.firstNameController.text.isNotEmpty) {
+          initial = bloc.firstNameController.text[0].toUpperCase();
+        }
 
-          // CustomDropdown<String>(
-          //   title: 'Role (Admin or Merchant)',
-          //   value: selectedRole,
-          //   hintText: 'Select Role',
-          //   items: const [
-          //     DropdownMenuItem<String>(
-          //       value: 'MERCHANT',
-          //       child: Text('MERCHANT'),
-          //     ),
-          //     DropdownMenuItem<String>(value: 'ADMIN', child: Text('ADMIN')),
-          //   ],
-          //   onChanged: onRoleChanged,
-          // ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        String? idFrontPath;
+        final idFrontFile = bloc.idFrontImageFile;
+        if (idFrontFile != null) {
+          final dynamic dynamicFile = idFrontFile;
+          final path = dynamicFile is String
+              ? dynamicFile
+              : dynamicFile.path as String?;
+          if (path != null && path.isNotEmpty) {
+            idFrontPath = path;
+          }
+        }
+
+        String? idBackPath;
+        final idBackFile = bloc.idBackImageFile;
+        if (idBackFile != null) {
+          final dynamic dynamicFile = idBackFile;
+          final path = dynamicFile is String
+              ? dynamicFile
+              : dynamicFile.path as String?;
+          if (path != null && path.isNotEmpty) {
+            idBackPath = path;
+          }
+        }
+
+        return Form(
+          key: bloc.formKey,
+          child: Column(
+            spacing: AppHeight.s24,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomTextDisplay(
-                text: AppTranslation.alreadyHaveAccount,
-                fontSize: AppFontSize.s14,
-                color: ColorManager.textColor,
+              AvatarImagePicker(
+                imagePath: imagePath,
+                fallbackInitial: initial,
+                onTap: onPickImage,
               ),
-              TextButton(
-                onPressed: () {
-                  context.pushNamed(Routes.login);
-                },
-                child: CustomTextDisplay(
-                  text: AppTranslation.login,
-                  fontSize: AppFontSize.s14,
-                  color: ColorManager.primary,
-                  fontWeight: FontWeight.w600,
+              CustomTextField(
+                title: AppTranslation.firstName,
+                hintText: AppTranslation.firstName,
+                controller: bloc.firstNameController,
+              ),
+              CustomTextField(
+                title: AppTranslation.lastName,
+                hintText: AppTranslation.lastName,
+                controller: bloc.lastNameController,
+              ),
+              CustomTextField(
+                title: AppTranslation.email,
+                hintText: AppTranslation.enterEmail,
+                controller: bloc.emailController,
+              ),
+              CustomTextField(
+                keyboardType: TextInputType.phone,
+                title: AppTranslation.phone,
+                hintText: AppTranslation.enterPhone,
+                controller: bloc.phoneController,
+              ),
+              CustomTextField(
+                obscureText: true,
+                title: AppTranslation.password,
+                hintText: AppTranslation.enterPassword,
+                controller: bloc.passwordController,
+              ),
+              CustomTextField(
+                title: AppTranslation.address,
+                hintText: AppTranslation.enterAddress,
+                controller: bloc.addressController,
+              ),
+              CustomTextField(
+                title: AppTranslation.birthday,
+                hintText: AppTranslation.birthdayHint,
+                controller: bloc.birthdayController,
+                keyboardType: TextInputType.datetime,
+              ),
+              if ((bloc.selectedRole ?? 'CUSTOMER') == 'DELIVERY')
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          CustomText(
+                            text: 'ID Front',
+                            textStyle: getMediumStyle(
+                              fontSize: AppFontSize.s15,
+                              color: ColorManager.defaultWhite,
+                            ),
+                          ),
+                          SizedBox(height: AppHeight.s8),
+                          GestureDetector(
+                            onTap: onPickIdFront,
+                            child: Container(
+                              height: AppHeight.s78,
+                              decoration: BoxDecoration(
+                                color: ColorManager.background,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.r18,
+                                ),
+                                border: Border.all(color: ColorManager.primary),
+                              ),
+                              child: idFrontPath == null
+                                  ? Icon(
+                                      Icons.add_a_photo,
+                                      color: ColorManager.primary,
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.r18,
+                                      ),
+                                      child: Image.file(
+                                        File(idFrontPath),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: AppWidth.s16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          CustomText(
+                            text: 'ID Back',
+                            textStyle: getMediumStyle(
+                              fontSize: AppFontSize.s15,
+                              color: ColorManager.defaultWhite,
+                            ),
+                          ),
+                          SizedBox(height: AppHeight.s8),
+                          GestureDetector(
+                            onTap: onPickIdBack,
+                            child: Container(
+                              height: AppHeight.s78,
+                              decoration: BoxDecoration(
+                                color: ColorManager.background,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.r18,
+                                ),
+                                border: Border.all(color: ColorManager.primary),
+                              ),
+                              child: idBackPath == null
+                                  ? Icon(
+                                      Icons.add_a_photo,
+                                      color: ColorManager.primary,
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.r18,
+                                      ),
+                                      child: Image.file(
+                                        File(idBackPath),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+              LocationSourceSelector(
+                title: AppTranslation.location,
+                useMyLocationHint: AppTranslation.useMyLocation,
+                locationSetHint: AppTranslation.locationSetFormat,
+                latitude: state.useLocationLat,
+                longitude: state.useLocationLng,
+                isRequired: true,
+                onUseMyLocation: onUseMyLocation,
+                onClearLocation:
+                    (state.useLocationLat != null ||
+                        state.useLocationLng != null)
+                    ? () => bloc.add(const RegisterLocationCleared())
+                    : null,
+                isLoading: state.isLocationLoading,
+              ),
+              CountryCityWidget(
+                selectedCountry: state.selectedCountry,
+                selectedCity: state.selectedCity,
+                onSelectCountry: (country) {
+                  bloc.add(RegisterCountryChanged(country as CountryEntity?));
+                },
+                onSelectCity: (city) {
+                  bloc.add(RegisterCityChanged(city as CityEntity?));
+                },
+                isRequired: true,
+                isReadOnly: false,
+              ),
+              CustomButton(
+                text: AppTranslation.register,
+                onPressed: onRegister,
+                color: ColorManager.primary,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(
+                    text: AppTranslation.alreadyHaveAccount,
+                    textStyle: getRegularStyle(
+                      fontSize: AppFontSize.s14,
+                      color: ColorManager.textColor,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.pushNamed(Routes.login);
+                    },
+                    child: CustomText(
+                      text: AppTranslation.login,
+                      textStyle: getMediumStyle(
+                        fontSize: AppFontSize.s14,
+                        color: ColorManager.primary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

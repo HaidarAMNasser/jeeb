@@ -3,11 +3,11 @@ import 'package:jeeb_app/features/category/list_category/data/repositories/list_
 import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/data/repositories/list_merchant_repository.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
+import 'package:jeeb_app/features/offer/list_offer/data/repositories/list_offer_repository.dart';
+import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
 import 'package:jeeb_app/features/product/list_product/data/repositories/list_product_repository.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_image_entity.dart';
-import 'package:jeeb_app/features/offers/data/repositories/offers_repository_impl.dart';
-import 'package:jeeb_app/features/offers/domain/entities/offer_entity.dart';
 import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_state.dart';
 
 /// Set to true to use local fake data so you can see the design without API.
@@ -17,7 +17,7 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
   final ListCategoryRepository _categoryRepository;
   final ListMerchantRepository _merchantRepository;
   final ListProductRepository _productRepository;
-  final OffersRepositoryImpl _offersRepository;
+  final ListOfferRepository _offersRepository;
 
   static const int _merchantsLimit = 6;
   static const int _productsLimit = 20;
@@ -27,27 +27,29 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
     required ListCategoryRepository categoryRepository,
     required ListMerchantRepository merchantRepository,
     required ListProductRepository productRepository,
-    required OffersRepositoryImpl offersRepository,
-  })  : _categoryRepository = categoryRepository,
-        _merchantRepository = merchantRepository,
-        _productRepository = productRepository,
-        _offersRepository = offersRepository,
-        super(const ClientHomeState());
+    required ListOfferRepository offersRepository,
+  }) : _categoryRepository = categoryRepository,
+       _merchantRepository = merchantRepository,
+       _productRepository = productRepository,
+       _offersRepository = offersRepository,
+       super(const ClientHomeState());
 
   Future<void> load() async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
 
     if (_useLocalData) {
       await Future.delayed(const Duration(milliseconds: 600));
-      emit(ClientHomeState(
-        isLoading: false,
-        categories: _localCategories,
-        merchants: _localMerchants,
-        products: _localProducts(state.selectedCategoryId, state.searchQuery),
-        offers: _localOffers,
-        selectedCategoryId: state.selectedCategoryId,
-        searchQuery: state.searchQuery,
-      ));
+      emit(
+        ClientHomeState(
+          isLoading: false,
+          categories: _localCategories,
+          merchants: _localMerchants,
+          products: _localProducts(state.selectedCategoryId, state.searchQuery),
+          offers: _localOffers,
+          selectedCategoryId: state.selectedCategoryId,
+          searchQuery: state.searchQuery,
+        ),
+      );
       return;
     }
 
@@ -65,42 +67,31 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
     final offersResult = await _offersRepository.getOffers(
       page: 1,
       limit: _offersLimit,
-      isActive: true,
     );
 
     String? errorMsg;
     List<CategoryEntity> categories = [];
     List<MerchantEntity> merchants = [];
     List<ProductEntity> products = [];
-    List<OfferEntity> offers = [];
+    List<OfferEntity>? offers = [];
 
-    categoryResult.fold(
-      (f) => errorMsg = f.message,
-      (r) => categories = r,
-    );
-    merchantsResult.fold(
-      (f) => errorMsg ??= f.message,
-      (r) => merchants = r,
-    );
-    productsResult.fold(
-      (f) => errorMsg ??= f.message,
-      (r) => products = r,
-    );
-    offersResult.fold(
-      (f) => errorMsg ??= f.message,
-      (r) => offers = r.data,
-    );
+    categoryResult.fold((f) => errorMsg = f.message, (r) => categories = r);
+    merchantsResult.fold((f) => errorMsg ??= f.message, (r) => merchants = r);
+    productsResult.fold((f) => errorMsg ??= f.message, (r) => products = r);
+    offersResult.fold((f) => errorMsg ??= f.message, (r) => offers = r.data);
 
-    emit(ClientHomeState(
-      isLoading: false,
-      errorMessage: errorMsg,
-      categories: categories,
-      merchants: merchants,
-      products: products,
-      offers: offers,
-      selectedCategoryId: state.selectedCategoryId,
-      searchQuery: state.searchQuery,
-    ));
+    emit(
+      ClientHomeState(
+        isLoading: false,
+        errorMessage: errorMsg,
+        categories: categories,
+        merchants: merchants,
+        products: products,
+        offers: offers,
+        selectedCategoryId: state.selectedCategoryId,
+        searchQuery: state.searchQuery,
+      ),
+    );
   }
 
   Future<void> selectCategory(String? categoryId) async {
@@ -108,10 +99,12 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
 
     if (_useLocalData) {
       await Future.delayed(const Duration(milliseconds: 300));
-      emit(state.copyWith(
-        isLoading: false,
-        products: _localProducts(categoryId, state.searchQuery),
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          products: _localProducts(categoryId, state.searchQuery),
+        ),
+      );
       return;
     }
 
@@ -124,10 +117,7 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
 
     result.fold(
       (_) => emit(state.copyWith(isLoading: false)),
-      (products) => emit(state.copyWith(
-            isLoading: false,
-            products: products,
-          )),
+      (products) => emit(state.copyWith(isLoading: false, products: products)),
     );
   }
 
@@ -139,8 +129,10 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
       final filtered = query == null || query.isEmpty
           ? _localProducts(state.selectedCategoryId, null)
           : _localProducts(state.selectedCategoryId, null)
-              .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
-              .toList();
+                .where(
+                  (p) => p.name.toLowerCase().contains(query.toLowerCase()),
+                )
+                .toList();
       emit(state.copyWith(isLoading: false, products: filtered));
       return;
     }
@@ -154,10 +146,7 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
 
     result.fold(
       (_) => emit(state.copyWith(isLoading: false)),
-      (products) => emit(state.copyWith(
-            isLoading: false,
-            products: products,
-          )),
+      (products) => emit(state.copyWith(isLoading: false, products: products)),
     );
   }
 
@@ -224,7 +213,10 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
     ),
   ];
 
-  static List<ProductEntity> _localProducts(String? categoryId, String? search) {
+  static List<ProductEntity> _localProducts(
+    String? categoryId,
+    String? search,
+  ) {
     final list = <ProductEntity>[
       ProductEntity(
         id: '1',
@@ -395,54 +387,28 @@ class ClientHomeCubit extends Cubit<ClientHomeState> {
   static final List<OfferEntity> _localOffers = [
     OfferEntity(
       id: '1',
-      name: 'Weekend Pizza Deal',
-      description: 'Buy 2 large pizzas, get 1 medium free.',
-      discountType: DiscountType.PERCENTAGE,
+
       discountValue: 33,
       startDate: DateTime.now(),
       endDate: DateTime.now().add(const Duration(days: 7)),
-      isActive: true,
-      merchantId: '1',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      merchant: const OfferMerchantEntity(
-        id: '1',
-        restaurantName: 'Al-Rashid Restaurant',
-      ),
     ),
     OfferEntity(
       id: '2',
-      name: 'Lunch Combo',
-      description: 'Main + drink + dessert at fixed price.',
-      discountType: DiscountType.FIXED,
+
       discountValue: 5000,
       startDate: DateTime.now(),
       endDate: DateTime.now().add(const Duration(days: 14)),
-      isActive: true,
-      merchantId: '2',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      merchant: const OfferMerchantEntity(
-        id: '2',
-        restaurantName: 'Golden Fork Cafe',
-      ),
     ),
     OfferEntity(
       id: '3',
-      name: 'Seafood Special',
-      description: '20% off all seafood dishes.',
-      discountType: DiscountType.PERCENTAGE,
+
       discountValue: 20,
       startDate: DateTime.now(),
       endDate: DateTime.now().add(const Duration(days: 5)),
-      isActive: true,
-      merchantId: '5',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      merchant: const OfferMerchantEntity(
-        id: '5',
-        restaurantName: 'Ocean View Seafood',
-      ),
     ),
   ];
+}
+
+extension on List<OfferEntity> {
+  List<OfferEntity>? get data => null;
 }

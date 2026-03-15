@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
-
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
 class OrderHeaderCard extends StatelessWidget {
   final OrderEntity order;
 
@@ -14,6 +14,7 @@ class OrderHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = OrderStatus.fromString(order.status);
     return Card(
       color: ColorManager.defaultWhite,
       child: Padding(
@@ -36,14 +37,14 @@ class OrderHeaderCard extends StatelessWidget {
                   vertical: AppPadding.p4,
                 ),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(order.status!).withOpacity(0.1),
+                  color: status.color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(AppRadius.r8),
                 ),
                 child: CustomText(
-                  text: order.status!,
+                  text: status.displayLabel,
                   textStyle: getSemiBoldStyle(
                     fontSize: AppFontSize.s12,
-                    color: _getStatusColor(order.status!),
+                    color: status.color,
                   ),
                 ),
               ),
@@ -53,17 +54,5 @@ class OrderHeaderCard extends StatelessWidget {
       ),
     );
   }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      case 'pending':
-        return Colors.orange;
-      default:
-        return ColorManager.primary;
-    }
-  }
 }
+

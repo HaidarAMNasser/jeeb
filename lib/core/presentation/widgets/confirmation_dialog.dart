@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
-/// A reusable confirmation dialog widget
+/// Reusable confirmation dialog matching OTP / language selection dialog UI.
 ///
 /// Usage:
 /// ```dart
 /// ConfirmationDialog.show(
 ///   context: context,
-///   title: AppTranslation.deleteProduct,
-///   onConfirm: () {
-///     // Handle confirmation
-///   },
+///   title: AppTranslation.areYouSureDeleteOffer,
+///   onConfirm: () { ... },
 /// );
 /// ```
 class ConfirmationDialog extends StatelessWidget {
@@ -32,7 +33,6 @@ class ConfirmationDialog extends StatelessWidget {
     this.confirmColor,
   });
 
-  /// Static method to show the confirmation dialog
   static void show({
     required BuildContext context,
     required String title,
@@ -55,31 +55,47 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: ColorManager.surface,
-      title: Text(
-        title,
-        style: getMediumStyle(fontSize: AppFontSize.s20, color: ColorManager.textDarkColor),
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.r20),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            cancelText ?? AppTranslation.cancel,
-            style: TextStyle(color: ColorManager.textSecondary),
-          ),
+      child: Container(
+        padding: EdgeInsets.all(AppPadding.p24),
+        decoration: BoxDecoration(
+          color: ColorManager.background,
+          borderRadius: BorderRadius.circular(AppRadius.r20),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            onConfirm();
-          },
-          style: TextButton.styleFrom(
-            foregroundColor: confirmColor ?? Colors.red,
-          ),
-          child: Text(confirmText ?? AppTranslation.confirm),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CustomText(
+              text: title,
+              textStyle: getBoldStyle(
+                fontSize: AppFontSize.s18,
+                color: ColorManager.titlesColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: AppHeight.s24),
+            CustomButton(
+              text: cancelText ?? AppTranslation.cancel,
+              onPressed: () => Navigator.of(context).pop(),
+              isOutlined: true,
+              color: ColorManager.primary,
+            ),
+            SizedBox(height: AppHeight.s16),
+            CustomButton(
+              text: confirmText ?? AppTranslation.confirm,
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+              color: confirmColor ?? ColorManager.primary,
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

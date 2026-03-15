@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_checkbox.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/features/auth/login/domain/entities/user_entity.dart';
 
 class ProfileForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
+  final UserEntity user;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController phoneController;
@@ -18,10 +21,14 @@ class ProfileForm extends StatelessWidget {
   final VoidCallback onUpdate;
   final bool isLoading;
   final VoidCallback onChangeLanguage;
+  final bool isMerchant;
+  final VoidCallback onUpdateLocation;
+  final ValueChanged<bool> onAccountStatusChanged;
 
   const ProfileForm({
     super.key,
     required this.formKey,
+    required this.user,
     required this.firstNameController,
     required this.lastNameController,
     required this.phoneController,
@@ -29,6 +36,9 @@ class ProfileForm extends StatelessWidget {
     required this.onUpdate,
     required this.isLoading,
     required this.onChangeLanguage,
+    required this.isMerchant,
+    required this.onUpdateLocation,
+    required this.onAccountStatusChanged,
   });
 
   @override
@@ -39,6 +49,16 @@ class ProfileForm extends StatelessWidget {
         spacing: AppSize.s24.h,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (isMerchant)
+            CustomCheckbox(
+              value: user.isActive ?? true,
+              onChanged: (value) {
+                if (value != null) {
+                  onAccountStatusChanged(value);
+                }
+              },
+              label: AppTranslation.accountStatus,
+            ),
           CustomTextField(
             title: AppTranslation.firstName,
             hintText: AppTranslation.firstName,
@@ -81,10 +101,36 @@ class ProfileForm extends StatelessWidget {
               ),
             ),
           ),
+          if (isMerchant) ...[
+            InkWell(
+              onTap: onUpdateLocation,
+              borderRadius: BorderRadius.circular(4),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: AppPadding.p8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      size: 20,
+                      color: ColorManager.primary,
+                    ),
+                    SizedBox(width: AppWidth.s8),
+                    CustomText(
+                      text: AppTranslation.updateLocation,
+                      textStyle: getMediumStyle(
+                        color: ColorManager.primary,
+                        fontSize: AppFontSize.s15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           CustomButton(
             text: AppTranslation.save,
-            onPressed: onUpdate,
-            isLoading: isLoading,
+            onPressed: isLoading ? null : onUpdate,
             color: ColorManager.primary,
           ),
         ],

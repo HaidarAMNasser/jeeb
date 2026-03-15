@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_localization;
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_paginated_dropdown.dart';
-import 'package:jeeb_app/features/country/presentation/bloc/country_bloc.dart';
-import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
-import 'package:jeeb_app/features/city/presentation/bloc/city_bloc.dart';
 import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/features/city/presentation/bloc/city_bloc.dart';
+import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
+import 'package:jeeb_app/features/country/presentation/bloc/country_bloc.dart';
 
-/// A widget that combines Country and City dropdowns
-/// Automatically handles the dependency: selecting a country loads cities
 class CountryCityWidget extends StatefulWidget {
   final Function(CountryEntity?) onSelectCountry;
   final Function(CityEntity?) onSelectCity;
@@ -34,8 +32,6 @@ class CountryCityWidget extends StatefulWidget {
 }
 
 class _CountryCityWidgetState extends State<CountryCityWidget> {
-  final Key _cityKey = UniqueKey();
-
   @override
   void initState() {
     super.initState();
@@ -48,22 +44,24 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
     super.didUpdateWidget(oldWidget);
     // If country changed, reset city
     if (widget.selectedCountry?.id != oldWidget.selectedCountry?.id) {
-      setState(() {
-        // Reset city when country changes
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
+        // Reset city when country changes after the current build completes.
         widget.onSelectCity(null);
+
+        if (widget.selectedCountry != null) {
+          context.read<CityBloc>().add(const ResetCities());
+          context.read<CityBloc>().add(
+            LoadCities(
+              countryId: widget.selectedCountry!.id,
+              withLoading: true,
+            ),
+          );
+        } else {
+          context.read<CityBloc>().add(const ResetCities());
+        }
       });
-      // Load cities for new country
-      if (widget.selectedCountry != null) {
-        context.read<CityBloc>().add(const ResetCities());
-        context.read<CityBloc>().add(
-              LoadCities(
-                countryId: widget.selectedCountry!.id,
-                withLoading: true,
-              ),
-            );
-      } else {
-        context.read<CityBloc>().add(const ResetCities());
-      }
     }
   }
 
@@ -75,11 +73,8 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
       // Reset and load cities for selected country
       context.read<CityBloc>().add(const ResetCities());
       context.read<CityBloc>().add(
-            LoadCities(
-              countryId: country.id,
-              withLoading: true,
-            ),
-          );
+        LoadCities(countryId: country.id, withLoading: true),
+      );
     } else {
       // Reset cities if no country selected
       context.read<CityBloc>().add(const ResetCities());
@@ -118,7 +113,8 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
               hintText: AppTranslation.selectCountry,
               items: countries,
               selectedItem: widget.selectedCountry,
-              displayText: (country) => isRTL ? country.name.ar : country.name.en,
+              displayText: (country) =>
+                  isRTL ? country.name.ar : country.name.en,
               onChanged: _onCountrySelected,
               onLoadMore: () {
                 if (!isLoadingMore && hasMoreData) {
@@ -138,7 +134,6 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
         SizedBox(height: AppHeight.s24),
         // City Dropdown
         BlocBuilder<CityBloc, CityState>(
-          key: _cityKey,
           builder: (context, state) {
             List<CityEntity> cities = [];
             bool isLoading = false;
@@ -186,7 +181,9 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
               displayText: (city) => isRTL ? city.name.ar : city.name.en,
               onChanged: widget.onSelectCity,
               onLoadMore: () {
-                if (!isLoadingMore && hasMoreData && widget.selectedCountry != null) {
+                if (!isLoadingMore &&
+                    hasMoreData &&
+                    widget.selectedCountry != null) {
                   context.read<CityBloc>().add(const LoadMoreCities());
                 }
               },
@@ -204,4 +201,3 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
     );
   }
 }
-

@@ -1,10 +1,18 @@
 import 'package:equatable/equatable.dart';
-import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
 import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
+import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
 
-enum UserRole { customer, delivery }
+enum UserRole {
+  customer,
+  delivery,
+  merchant,
+  admin,
+}
 
-enum NotificationChannel { email, whatsapp }
+enum NotificationChannel {
+  email,
+  whatsapp,
+}
 
 class UserEntity extends Equatable {
   final int id;
@@ -16,7 +24,9 @@ class UserEntity extends Equatable {
   final NotificationChannel notificationChannel;
   final String? address;
   final bool? isOnline;
+  final bool? isActive;
   final DateTime? verifiedAt;
+  final bool isVerified;
   final double? currentLat;
   final double? currentLng;
   final int countryId;
@@ -25,6 +35,8 @@ class UserEntity extends Equatable {
   final CityEntity? city;
   final DateTime createdAt;
   final DateTime updatedAt;
+  /// Profile image URL from backend (user.image.url / thumbnailUrl / mobileUrl). May be relative.
+  final String? profileImageUrl;
 
   const UserEntity({
     required this.id,
@@ -36,7 +48,9 @@ class UserEntity extends Equatable {
     required this.notificationChannel,
     this.address,
     this.isOnline,
+    this.isActive,
     this.verifiedAt,
+    this.isVerified = false,
     this.currentLat,
     this.currentLng,
     required this.countryId,
@@ -45,29 +59,34 @@ class UserEntity extends Equatable {
     this.city,
     required this.createdAt,
     required this.updatedAt,
+    this.profileImageUrl,
   });
 
   String get fullName => '$firstName $lastName';
 
   @override
   List<Object?> get props => [
-    id,
-    firstName,
-    lastName,
-    email,
-    phone,
-    role,
-    notificationChannel,
-    address,
-    isOnline,
-    verifiedAt,
-    currentLat,
-    currentLng,
-    countryId,
-    country,
-    cityId,
-    city,
-    createdAt,
-    updatedAt,
-  ];
+        id,
+        firstName,
+        lastName,
+        email,
+        phone,
+        role,
+        notificationChannel,
+        address,
+        isOnline,
+        isActive,
+        verifiedAt,
+        isVerified,
+        currentLat,
+        currentLng,
+        countryId,
+        country,
+        cityId,
+        city,
+        createdAt,
+        updatedAt,
+        profileImageUrl,
+      ];
 }
+

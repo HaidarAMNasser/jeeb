@@ -1,45 +1,49 @@
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
+import 'package:jeeb_app/features/category/list_category/data/data_sources/list_category_data_source.dart';
+import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
+import 'package:jeeb_app/features/category/list_category/data/models/category_model.dart';
+import 'package:jeeb_app/features/category/list_category/data/mappers/category_mapper.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/common/models/base_response_model.dart';
 import 'package:jeeb_app/core/common/utils/error_handler.dart';
-import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
-import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
-import 'package:jeeb_app/features/category/list_category/data/data_sources/list_category_data_source.dart';
-import 'package:jeeb_app/features/category/list_category/data/mappers/category_mapper.dart';
-import 'package:jeeb_app/features/category/list_category/data/models/category_model.dart';
 
 class ListCategoryRepository {
   final ListCategoryRemoteDataSource _remoteDataSource;
   final NetworkInfo _networkInfo;
 
-  const ListCategoryRepository(
-    this._remoteDataSource,
-    this._networkInfo,
-  );
+  const ListCategoryRepository(this._remoteDataSource, this._networkInfo);
 
   Future<Either<Failure, List<CategoryEntity>>> getCategories() async {
     if (await _networkInfo.isConnected) {
       try {
         final response = await _remoteDataSource.getCategories();
 
-        BaseResponseModel<List<CategoryModel>> baseResponseModel =
-            BaseResponseModel<List<CategoryModel>>.fromJson(
+        BaseResponseModel<List<CategoryModel>>
+        baseResponseModel = BaseResponseModel<List<CategoryModel>>.fromJson(
           response.data!,
           (json) {
             if (json is String) {
               final parsedJson = jsonDecode(json) as List<dynamic>;
               return parsedJson
-                  .map((item) => CategoryModel.fromJson(item as Map<String, dynamic>))
+                  .map(
+                    (item) =>
+                        CategoryModel.fromJson(item as Map<String, dynamic>),
+                  )
                   .toList();
             } else if (json is List) {
               return json
-                  .map((item) => CategoryModel.fromJson(item as Map<String, dynamic>))
+                  .map(
+                    (item) =>
+                        CategoryModel.fromJson(item as Map<String, dynamic>),
+                  )
                   .toList();
             } else {
               throw FormatException(
-                  'Expected data to be String or List, but got ${json.runtimeType}');
+                'Expected data to be String or List, but got ${json.runtimeType}',
+              );
             }
           },
         );
@@ -48,11 +52,15 @@ class ListCategoryRepository {
             baseResponseModel.success == true ||
             baseResponseModel.statusCode == 200) {
           if (baseResponseModel.data == null) {
-            return Left(ErrorHandler.handle(DioException(
-              type: DioExceptionType.badResponse,
-              response: response,
-              requestOptions: RequestOptions(),
-            )));
+            return Left(
+              ErrorHandler.handle(
+                DioException(
+                  type: DioExceptionType.badResponse,
+                  response: response,
+                  requestOptions: RequestOptions(),
+                ),
+              ),
+            );
           }
 
           try {
@@ -61,11 +69,15 @@ class ListCategoryRepository {
             return Left(ErrorHandler.handle(domainError));
           }
         } else {
-          return Left(ErrorHandler.handle(DioException(
-            type: DioExceptionType.badResponse,
-            response: response,
-            requestOptions: RequestOptions(),
-          )));
+          return Left(
+            ErrorHandler.handle(
+              DioException(
+                type: DioExceptionType.badResponse,
+                response: response,
+                requestOptions: RequestOptions(),
+              ),
+            ),
+          );
         }
       } catch (error) {
         return Left(ErrorHandler.handle(error));
@@ -75,4 +87,3 @@ class ListCategoryRepository {
     }
   }
 }
-

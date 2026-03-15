@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_localization;
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
-import 'package:jeeb_app/features/city/presentation/bloc/city_bloc.dart';
-import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart'
+    show CustomCircleIndicator;
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
+import 'package:jeeb_app/features/city/presentation/bloc/city_bloc.dart';
 
 class CityDropdown extends StatefulWidget {
   final int? selectedCityId;
@@ -47,9 +48,7 @@ class _CityDropdownState extends State<CityDropdown> {
             _scrollController.position.maxScrollExtent * 0.9 &&
         !_scrollController.position.outOfRange) {
       final state = context.read<CityBloc>().state;
-      if (state is CityLoaded &&
-          !state.isLoadingMore &&
-          !state.hasReachedMax) {
+      if (state is CityLoaded && !state.isLoadingMore && !state.hasReachedMax) {
         context.read<CityBloc>().add(const LoadMoreCities());
       }
     }
@@ -80,9 +79,7 @@ class _CityDropdownState extends State<CityDropdown> {
                   borderRadius: BorderRadius.circular(AppRadius.r18),
                   border: Border.all(color: ColorManager.borderColor),
                 ),
-                child: const Center(
-                  child: CustomCircleIndicator(),
-                ),
+                child: const Center(child: CustomCircleIndicator()),
               ),
             ],
           );
@@ -226,7 +223,7 @@ class _CityDropdownState extends State<CityDropdown> {
               ),
               if (_isExpanded && cities.isNotEmpty)
                 Container(
-                  constraints:  BoxConstraints(maxHeight: 250),
+                  constraints: BoxConstraints(maxHeight: 250),
                   decoration: BoxDecoration(
                     color: ColorManager.defaultWhite,
                     border: Border(

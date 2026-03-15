@@ -5,10 +5,10 @@ import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/common/models/base_response_model.dart';
 import 'package:jeeb_app/core/common/utils/error_handler.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
-import 'package:jeeb_app/features/product/product_details/data/data_sources/product_details_data_source.dart';
 import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
 import 'package:jeeb_app/features/product/list_product/data/models/product_model.dart';
+import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
+import 'package:jeeb_app/features/product/product_details/data/data_sources/product_details_data_source.dart';
 
 class ProductDetailsRepository {
   final ProductDetailsRemoteDataSource _remoteDataSource;

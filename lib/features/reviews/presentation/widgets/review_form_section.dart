@@ -10,8 +10,8 @@ import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/features/merchant/reviews/domain/entities/review_entity.dart';
-import 'package:jeeb_app/features/merchant/reviews/presentation/bloc/reviews_bloc.dart';
+import 'package:jeeb_app/features/reviews/domain/entities/review_entity.dart';
+import 'package:jeeb_app/features/reviews/presentation/bloc/reviews_bloc.dart';
 
 /// Review section for product details: create form or display my review with edit/delete.
 class ReviewFormSection extends StatefulWidget {

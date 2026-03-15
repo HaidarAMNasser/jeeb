@@ -33,11 +33,20 @@ class ErrorHandler {
   static Failure _handleResponse(int? statusCode, dynamic data) {
     switch (statusCode) {
       case 400:
-        return const ServerFailure(message: 'Bad request.', code: 400);
+        return ServerFailure(
+          message: _extractMessage(data) ?? 'Bad request.',
+          code: 400,
+        );
       case 401:
-        return const UnauthorizedFailure();
+        return UnauthorizedFailure(
+          message: _extractMessage(data) ?? 'Unauthorized. Please login again.',
+          code: 401,
+        );
       case 403:
-        return const ForbiddenFailure();
+        return ForbiddenFailure(
+          message: _extractMessage(data) ?? 'Access forbidden.',
+          code: 403,
+        );
       case 404:
         return const NotFoundFailure();
       case 422:
@@ -56,8 +65,27 @@ class ErrorHandler {
   }
 
   static String? _extractMessage(dynamic data) {
+    if (data == null) return null;
     if (data is Map) {
-      return data['message'] as String? ?? data['error'] as String?;
+      // Top-level message/error (e.g. { "message": "Email is not valid" })
+      final msg = data['message'] as String? ?? data['error'] as String?;
+      if (msg != null && msg.isNotEmpty) return msg;
+      // Nested in data (e.g. { "data": { "message": "..." } })
+      final inner = data['data'];
+      if (inner is Map) {
+        final innerMsg = inner['message'] as String? ?? inner['error'] as String?;
+        if (innerMsg != null && innerMsg.isNotEmpty) return innerMsg;
+      }
+      // Array of errors (e.g. { "errors": [{ "message": "..." }] })
+      final errors = data['errors'];
+      if (errors is List && errors.isNotEmpty) {
+        final first = errors.first;
+        if (first is Map) {
+          final m = first['message'] as String? ?? first['msg'] as String? ?? first['error'] as String?;
+          if (m != null && m.isNotEmpty) return m;
+        }
+        if (first is String) return first;
+      }
     }
     return null;
   }

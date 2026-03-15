@@ -1,295 +1,147 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/bloc/list_product_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/widgets/product_list_item.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/product_image_entity.dart';
 
-class MerchantProductsSection extends StatefulWidget {
+/// Maximum number of products to show in the merchant details preview.
+const int _kMerchantProductsPreviewLimit = 3;
+
+class MerchantProductsSection extends StatelessWidget {
   final String merchantId;
-  final ScrollController? scrollController;
 
-  const MerchantProductsSection({
-    super.key,
-    required this.merchantId,
-    this.scrollController,
-  });
-
-  @override
-  State<MerchantProductsSection> createState() => _MerchantProductsSectionState();
-}
-
-class _MerchantProductsSectionState extends State<MerchantProductsSection> {
-  bool _isLoadingMore = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.scrollController != null) {
-      widget.scrollController!.addListener(_onScroll);
-    }
-  }
-
-  @override
-  void dispose() {
-    if (widget.scrollController != null) {
-      widget.scrollController!.removeListener(_onScroll);
-    }
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_isLoadingMore) return;
-    if (widget.scrollController == null) return;
-
-    if (widget.scrollController!.position.pixels >=
-        widget.scrollController!.position.maxScrollExtent * 0.8) {
-      final state = context.read<ListProductBloc>().state;
-      if (state is ListProductLoaded && state.hasMore) {
-        setState(() {
-          _isLoadingMore = true;
-        });
-        context.read<ListProductBloc>().add(
-              GetProductsEvent(
-                loadMore: true,
-                merchantId: widget.merchantId,
-              ),
-            );
-      }
-    }
-  }
+  const MerchantProductsSection({super.key, required this.merchantId});
 
   @override
   Widget build(BuildContext context) {
-    // Commented out BlocStateHandler for fake data display
-    // return BlocConsumer<ListProductBloc, ListProductState>(
-    //   listener: (context, state) {
-    //     if (state is ListProductLoaded) {
-    //       setState(() {
-    //         _isLoadingMore = false;
-    //       });
-    //     }
-    //     if (state is ListProductError) {
-    //       setState(() {
-    //         _isLoadingMore = false;
-    //       });
-    //     }
-    //   },
-    //   builder: (context, state) {
-    //     return BlocStateHandler<ListProductBloc, ListProductState>(
-    //       bloc: context.read<ListProductBloc>(),
-    //       isLoading: (state) => state is ListProductLoading,
-    //       isError: (state) => state is ListProductError,
-    //       getErrorMessage: (state) => (state as ListProductError).message,
-    //       isSuccess: (state) => state is ListProductLoaded || state is ListProductLoadingMore,
-    //       isEmpty: (state) {
-    //         if (state is ListProductLoaded) {
-    //           return state.products.isEmpty;
-    //         }
-    //         if (state is ListProductLoadingMore) {
-    //           return state.products.isEmpty;
-    //         }
-    //         return false;
-    //       },
-    //       emptyMessage: AppTranslation.noProductsFound,
-    //       getRetryCallback: (state) => () {
-    //         context.read<ListProductBloc>().add(
-    //               GetProductsEvent(merchantId: widget.merchantId),
-    //             );
-    //       },
-    //       successBuilder: (context, productState) {
-    //         final products = productState is ListProductLoaded
-    //             ? productState.products
-    //             : (productState as ListProductLoadingMore).products;
-    //         final hasMore = productState is ListProductLoaded ? productState.hasMore : false;
+    return BlocBuilder<ListProductBloc, ListProductState>(
+      builder: (context, state) {
+        if (state is ListProductLoading || state is ListProductInitial) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                text: AppTranslation.products,
+                textStyle: getBoldStyle(
+                  fontSize: AppFontSize.s20,
+                  color: ColorManager.titlesColor,
+                ),
+              ),
+              SizedBox(height: AppHeight.s16),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.all(AppPadding.p24),
+                  child: CustomCircleIndicator(),
+                ),
+              ),
+            ],
+          );
+        }
 
-    //         return Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: [
-    //             CustomText(
-    //               text: AppTranslation.products,
-    //               textStyle: getBoldStyle(
-    //                 fontSize: AppFontSize.s20,
-    //                 color: ColorManager.titlesColor,
-    //               ),
-    //             ),
-    //             SizedBox(height: AppHeight.s16),
-    //             ListView.builder(
-    //               controller: widget.scrollController,
-    //               shrinkWrap: true,
-    //               physics: const NeverScrollableScrollPhysics(),
-    //               itemCount: products.length + (hasMore ? 1 : 0),
-    //               itemBuilder: (context, index) {
-    //                 if (index == products.length) {
-    //                   // Loading more indicator
-    //                   return Padding(
-    //                     padding: EdgeInsets.all(AppPadding.p16),
-    //                     child: const CustomCircleIndicator(),
-    //                   );
-    //                 }
+        if (state is ListProductError) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                text: AppTranslation.products,
+                textStyle: getBoldStyle(
+                  fontSize: AppFontSize.s20,
+                  color: ColorManager.titlesColor,
+                ),
+              ),
+              SizedBox(height: AppHeight.s16),
+              CustomText(
+                text: state.message,
+                textStyle: getRegularStyle(
+                  fontSize: AppFontSize.s14,
+                  color: ColorManager.error,
+                ),
+              ),
+            ],
+          );
+        }
 
-    //                 final product = products[index];
-    //                 return ProductListItem(product: product);
-    //               },
-    //             ),
-    //           ],
-    //         );
-    //       },
-    //     );
-    //   },
-    // );
+        final productList = state is ListProductLoaded
+            ? state.products
+            : (state is ListProductLoadingMore)
+            ? state.products
+            : <ProductEntity>[];
 
-    // Fake data for UI testing
-    final fakeProducts = _generateFakeProducts();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomText(
-          text: AppTranslation.products,
-          textStyle: getBoldStyle(
-            fontSize: AppFontSize.s20,
-            color: ColorManager.titlesColor,
-          ),
-        ),
-        SizedBox(height: AppHeight.s16),
-        ListView.builder(
-          controller: widget.scrollController,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: fakeProducts.length,
-          itemBuilder: (context, index) {
-            final product = fakeProducts[index];
-            final state = context.read<ListProductBloc>().state;
-            final favIds = state is ListProductLoaded
-                ? state.favoriteProductIds
-                : state is ListProductLoadingMore
-                    ? state.favoriteProductIds
-                    : <String>{};
-            return ProductListItem(
-              product: product,
-              isFavorite: favIds.contains(product.id),
-              onFavoriteTap: () => context.read<ListProductBloc>().add(
-                    ToggleFavoriteProductEvent(product.id),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomText(
+                  text: AppTranslation.products,
+                  textStyle: getBoldStyle(
+                    fontSize: AppFontSize.s20,
+                    color: ColorManager.titlesColor,
                   ),
-            );
-          },
-        ),
-      ],
+                ),
+                if (productList.isNotEmpty)
+                  InkWell(
+                    onTap: () {
+                      context.pushNamed(
+                        Routes.products,
+                        arguments: {'merchantId': merchantId},
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(AppRadius.r8),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppPadding.p8,
+                        vertical: AppPadding.p4,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomText(
+                            text: AppTranslation.showAll,
+                            textStyle: getRegularStyle(
+                              fontSize: AppFontSize.s14,
+                              color: ColorManager.defaultWhite,
+                            ),
+                          ),
+                          SizedBox(width: AppWidth.s4),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            size: AppSize.s20,
+                            color: ColorManager.defaultWhite,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(height: AppHeight.s16),
+            if (productList.isEmpty)
+              CustomText(
+                text: AppTranslation.noProductsFound,
+                textStyle: getRegularStyle(
+                  fontSize: AppFontSize.s14,
+                  color: ColorManager.descriptionColor,
+                ),
+              )
+            else
+              ...productList
+                  .take(_kMerchantProductsPreviewLimit)
+                  .map((p) => ProductListItem(product: p)),
+          ],
+        );
+      },
     );
   }
-
-  List<ProductEntity> _generateFakeProducts() {
-    return [
-      ProductEntity(
-        id: '1',
-        name: 'Chicken Shawarma',
-        description: 'Delicious chicken shawarma with garlic sauce',
-        price: 15000, // 150.00 in smallest unit
-        stockQuantity: 50,
-        categoryName: 'Fast Food',
-        rating: 4.5,
-        images: [
-          ProductImageEntity(
-            id: 1,
-            url: 'https://picsum.photos/seed/product1/300/300',
-            isMain: true,
-            displayOrder: 0,
-          ),
-        ],
-      ),
-      ProductEntity(
-        id: '2',
-        name: 'Beef Burger',
-        description: 'Juicy beef burger with special sauce',
-        price: 25000,
-        stockQuantity: 30,
-        categoryName: 'Burgers',
-        rating: 4.8,
-        images: [
-          ProductImageEntity(
-            id: 2,
-            url: 'https://picsum.photos/seed/product2/300/300',
-            isMain: true,
-            displayOrder: 0,
-          ),
-        ],
-      ),
-      ProductEntity(
-        id: '3',
-        name: 'Pizza Margherita',
-        description: 'Classic Italian pizza with fresh mozzarella',
-        price: 35000,
-        stockQuantity: 25,
-        categoryName: 'Pizza',
-        rating: 4.7,
-        images: [
-          ProductImageEntity(
-            id: 3,
-            url: 'https://picsum.photos/seed/product3/300/300',
-            isMain: true,
-            displayOrder: 0,
-          ),
-        ],
-      ),
-      ProductEntity(
-        id: '4',
-        name: 'Caesar Salad',
-        description: 'Fresh romaine lettuce with caesar dressing',
-        price: 18000,
-        stockQuantity: 40,
-        categoryName: 'Salads',
-        rating: 4.3,
-        images: [
-          ProductImageEntity(
-            id: 4,
-            url: 'https://picsum.photos/seed/product4/300/300',
-            isMain: true,
-            displayOrder: 0,
-          ),
-        ],
-      ),
-      ProductEntity(
-        id: '5',
-        name: 'Grilled Chicken',
-        description: 'Tender grilled chicken breast',
-        price: 28000,
-        stockQuantity: 35,
-        categoryName: 'Main Course',
-        rating: 4.6,
-        images: [
-          ProductImageEntity(
-            id: 5,
-            url: 'https://picsum.photos/seed/product5/300/300',
-            isMain: true,
-            displayOrder: 0,
-          ),
-        ],
-      ),
-      ProductEntity(
-        id: '6',
-        name: 'French Fries',
-        description: 'Crispy golden french fries',
-        price: 8000,
-        stockQuantity: 100,
-        categoryName: 'Sides',
-        rating: 4.4,
-        images: [
-          ProductImageEntity(
-            id: 6,
-            url: 'https://picsum.photos/seed/product6/300/300',
-            isMain: true,
-            displayOrder: 0,
-          ),
-        ],
-      ),
-    ];
-  }
 }
-

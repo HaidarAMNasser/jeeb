@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
-// import '../dependency_injection/dependency_injection.dart' as di;
 import '../../../features/splash/presentation/pages/splash_page.dart';
 import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -17,6 +14,7 @@ import '../../../features/product/product_details/data/repositories/product_deta
 import '../../../features/auth/login/presentation/pages/login_page.dart';
 import '../../../features/auth/login/presentation/bloc/login_bloc.dart';
 import '../../../features/auth/register/presentation/pages/register_page.dart';
+import '../../../features/auth/register/presentation/pages/delivery_waiting_page.dart';
 import '../../../features/auth/register/presentation/bloc/register_bloc.dart';
 import '../../../features/auth/verify/presentation/pages/verify_page.dart';
 import '../../../features/auth/verify/presentation/bloc/verify_bloc.dart';
@@ -24,6 +22,8 @@ import '../../../features/auth/forgot_password/presentation/pages/forgot_passwor
 import '../../../features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import '../../../features/auth/reset_password/presentation/pages/reset_password_page.dart';
 import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
+import '../../../features/auth/profile/presentation/pages/profile_page.dart';
+import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
@@ -35,11 +35,16 @@ import '../../../features/main_navigation/presentation/pages/main_navigation_pag
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
 import '../../../features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import '../../../features/merchant/list_merchant/data/repositories/list_merchant_repository.dart';
-import '../../../features/merchant/favorites/data/repositories/favorites_repository.dart';
-import '../../../features/merchant/reviews/data/repositories/reviews_repository.dart';
-import '../../../features/merchant/reviews/presentation/bloc/reviews_bloc.dart';
-import '../../../features/offers/presentation/pages/offers_page.dart';
-import '../../../features/offers/presentation/bloc/offers_bloc.dart';
+import '../../../features/merchant/merchant_details/presentation/pages/merchant_details_page.dart';
+import '../../../features/merchant/merchant_details/presentation/bloc/merchant_details_bloc.dart';
+import '../../../features/merchant/merchant_details/data/repositories/merchant_details_repository.dart';
+
+import '../../../features/offer/list_offer/presentation/pages/list_offer_page.dart';
+import '../../../features/offer/list_offer/presentation/bloc/list_offer_bloc.dart';
+import '../../../features/offer/list_offer/data/repositories/list_offer_repository.dart';
+import '../../../features/offer/offer_details/presentation/pages/offer_details_page.dart';
+import '../../../features/offer/offer_details/presentation/bloc/offer_details_bloc.dart';
+import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
 
@@ -82,11 +87,19 @@ class AppRouter {
       case Routes.verify:
         final args = settings.arguments as Map<String, dynamic>?;
         final email = args?['email'] as String? ?? '';
-        return _buildRouteWithBloc(
+        final registerBloc = args?['registerBloc'] as RegisterBloc?;
+        return _buildRouteWithBlocs(
           VerifyPage(email: email),
           settings,
-          bloc: () => di.sl<VerifyBloc>(),
+          providers: [
+            BlocProvider<VerifyBloc>(create: (_) => di.sl<VerifyBloc>()),
+            if (registerBloc != null)
+              BlocProvider<RegisterBloc>.value(value: registerBloc),
+          ],
         );
+
+      case Routes.deliveryWaiting:
+        return _buildRoute(const DeliveryWaitingPage(), settings);
 
       case Routes.forgotPassword:
         return _buildRouteWithBloc(
@@ -117,14 +130,27 @@ class AppRouter {
         );
 
       case Routes.products:
-        return _buildRouteWithBloc(
-          const ListProductPage(),
+        // <<<<<<< HEAD
+        final productArgs = settings.arguments as Map<String, dynamic>?;
+        final productMerchantId = productArgs?['merchantId'] as String?;
+        //         return _buildRouteWithBloc(
+        //           const ListProductPage(),
+        //           settings,
+        //           bloc: () =>
+        //               ListProductBloc(di.sl<ListProductRepository>())
+        //                 ..add(GetProductsEvent(merchantId: productMerchantId)),
+        // =======
+        return _buildRouteWithBlocs(
+          ListProductPage(merchantId: productMerchantId),
           settings,
-          bloc: () =>
-              ListProductBloc(
-                  di.sl<ListProductRepository>(),
-                  di.sl<FavoritesRepository>())
-                ..add(const GetProductsEvent()),
+          providers: [
+            BlocProvider<ListProductBloc>(
+              create: (_) =>
+                  ListProductBloc(di.sl<ListProductRepository>())
+                    ..add(GetProductsEvent(merchantId: productMerchantId)),
+            ),
+          ],
+          // >>>>>>> 01548bdab41b53e5162e3d8617375f258e8805f2
         );
 
       case Routes.productDetails:
@@ -138,9 +164,6 @@ class AppRouter {
               create: (_) =>
                   ProductDetailsBloc(di.sl<ProductDetailsRepository>()),
             ),
-            BlocProvider<ReviewsBloc>(
-              create: (_) => ReviewsBloc(di.sl<ReviewsRepository>()),
-            ),
           ],
         );
 
@@ -152,10 +175,34 @@ class AppRouter {
           const ListMerchantPage(),
           settings,
           bloc: () =>
-              ListMerchantBloc(
-                  di.sl<ListMerchantRepository>(),
-                  di.sl<FavoritesRepository>())
+              ListMerchantBloc(di.sl<ListMerchantRepository>())
                 ..add(const GetMerchantsEvent()),
+        );
+
+      case Routes.merchantDetails:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final merchantId = args?['merchantId'] as String? ?? '';
+        if (merchantId.isEmpty) {
+          return _buildRoute(
+            Scaffold(body: Center(child: Text('Merchant ID not provided'))),
+            settings,
+          );
+        }
+        return _buildRouteWithBlocs(
+          MerchantDetailsPage(merchantId: merchantId),
+          settings,
+          providers: [
+            BlocProvider<MerchantDetailsBloc>(
+              create: (_) =>
+                  MerchantDetailsBloc(di.sl<MerchantDetailsRepository>()),
+            ),
+            BlocProvider<ListProductBloc>(
+              create: (_) => ListProductBloc(di.sl<ListProductRepository>()),
+            ),
+            BlocProvider<ListOfferBloc>(
+              create: (_) => ListOfferBloc(di.sl<ListOfferRepository>()),
+            ),
+          ],
         );
 
       case Routes.orders:
@@ -188,10 +235,33 @@ class AppRouter {
         );
 
       case Routes.offers:
+        final offerArgs = settings.arguments as Map<String, dynamic>?;
+        final offerMerchantId = offerArgs?['merchantId'] as String?;
         return _buildRouteWithBloc(
-          const OffersPage(),
+          const ListOfferPage(),
           settings,
-          bloc: () => di.sl<OffersBloc>(),
+          bloc: () =>
+              ListOfferBloc(di.sl<ListOfferRepository>())
+                ..add(GetOffersEvent(merchantId: offerMerchantId)),
+        );
+
+      case Routes.offerDetails:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final offerId = args?['offerId'] as String? ?? '';
+        if (offerId.isEmpty) {
+          return _buildRoute(
+            Scaffold(body: Center(child: Text('Offer ID not provided'))),
+            settings,
+          );
+        }
+        return _buildRouteWithBlocs(
+          OfferDetailsPage(offerId: offerId),
+          settings,
+          providers: [
+            BlocProvider<OfferDetailsBloc>(
+              create: (_) => OfferDetailsBloc(di.sl<OfferDetailsRepository>()),
+            ),
+          ],
         );
 
       default:

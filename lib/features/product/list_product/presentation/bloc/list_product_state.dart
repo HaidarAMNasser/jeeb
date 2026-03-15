@@ -21,7 +21,6 @@ class ListProductLoaded extends ListProductState {
   final int currentPage;
   final bool isLoadingMore;
   final String? merchantId;
-  final Set<String> favoriteProductIds;
 
   const ListProductLoaded({
     required this.products,
@@ -29,7 +28,6 @@ class ListProductLoaded extends ListProductState {
     this.currentPage = 1,
     this.isLoadingMore = false,
     this.merchantId,
-    this.favoriteProductIds = const {},
   });
 
   ListProductLoaded copyWith({
@@ -38,7 +36,6 @@ class ListProductLoaded extends ListProductState {
     int? currentPage,
     bool? isLoadingMore,
     String? merchantId,
-    Set<String>? favoriteProductIds,
   }) {
     return ListProductLoaded(
       products: products ?? this.products,
@@ -46,28 +43,24 @@ class ListProductLoaded extends ListProductState {
       currentPage: currentPage ?? this.currentPage,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       merchantId: merchantId ?? this.merchantId,
-      favoriteProductIds: favoriteProductIds ?? this.favoriteProductIds,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [products, hasMore, currentPage, isLoadingMore, merchantId, favoriteProductIds];
+  List<Object?> get props => [products, hasMore, currentPage, isLoadingMore, merchantId];
 }
 
 class ListProductLoadingMore extends ListProductState {
   final List<ProductEntity> products;
   final int currentPage;
-  final Set<String> favoriteProductIds;
 
   const ListProductLoadingMore({
     required this.products,
     required this.currentPage,
-    this.favoriteProductIds = const {},
   });
 
   @override
-  List<Object?> get props => [products, currentPage, favoriteProductIds];
+  List<Object?> get props => [products, currentPage];
 }
 
 class ListProductError extends ListProductState {

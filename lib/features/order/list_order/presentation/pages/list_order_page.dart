@@ -1,15 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/bloc/list_order_bloc.dart';
-import 'package:jeeb_app/features/order/list_order/presentation/widgets/search_order_widget.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/widgets/order_list_item.dart';
+import 'package:jeeb_app/features/order/list_order/presentation/widgets/search_order_widget.dart';
 import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_image_entity.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+
+class OrderHeaderCard extends StatelessWidget {
+  final OrderEntity order;
+
+  const OrderHeaderCard({super.key, required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: ColorManager.defaultWhite,
+      child: Padding(
+        padding: EdgeInsets.all(AppPadding.p16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomText(
+              text: '${AppTranslation.order} #${order.id}',
+              textStyle: getBoldStyle(
+                fontSize: AppFontSize.s20,
+                color: ColorManager.productNameColor,
+              ),
+            ),
+            if (order.status != null) ...[
+              SizedBox(height: AppHeight.s8),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppPadding.p8,
+                  vertical: AppPadding.p4,
+                ),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(order.status!).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.r8),
+                ),
+                child: CustomText(
+                  text: order.status!,
+                  textStyle: getSemiBoldStyle(
+                    fontSize: AppFontSize.s12,
+                    color: _getStatusColor(order.status!),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      default:
+        return ColorManager.primary;
+    }
+  }
+}
+
 
 class ListOrderPage extends StatefulWidget {
   const ListOrderPage({super.key});
@@ -172,7 +239,7 @@ class _ListOrderPageState extends State<ListOrderPage> {
         longitude: 35.5018 + (index * 0.01),
         latitude: 33.8938 + (index * 0.01),
         numberOfPeople: 2 + (index % 5),
-        status: ['pending', 'completed', 'cancelled'][index % 3],
+        status: [OrderStatus.pending, OrderStatus.completed, OrderStatus.cancelled][index % 3].name,
         merchantId: 'merchant_${(index % 5) + 1}',
         createdAt: DateTime.now().subtract(Duration(days: index)),
         updatedAt: DateTime.now().subtract(Duration(hours: index)),

@@ -1,14 +1,17 @@
+
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/routes/routes.dart';
-import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
+
 import 'package:intl/intl.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart' show AppTranslation;
+import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
 
 class OrderListItem extends StatelessWidget {
   final OrderEntity order;
@@ -70,28 +73,31 @@ class OrderListItem extends StatelessWidget {
                             textOverflow: TextOverflow.ellipsis,
                           ),
                           SizedBox(height: AppHeight.s4),
-                          if (order.status != null)
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppPadding.p8,
-                                vertical: AppPadding.p4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getStatusColor(
-                                  order.status!,
-                                ).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.r8,
-                                ),
-                              ),
-                              child: CustomText(
-                                text: order.status!,
-                                textStyle: getSemiBoldStyle(
-                                  fontSize: AppFontSize.s10,
-                                  color: _getStatusColor(order.status!),
-                                ),
-                              ),
+                          if (order.status != null) ...[
+                            Builder(
+                              builder: (context) {
+                                final status = OrderStatus.fromString(order.status);
+                                return Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: AppPadding.p8,
+                                    vertical: AppPadding.p4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: status.color.withOpacity(0.1),
+                                    borderRadius:
+                                        BorderRadius.circular(AppRadius.r8),
+                                  ),
+                                  child: CustomText(
+                                    text: status.displayLabel,
+                                    textStyle: getSemiBoldStyle(
+                                      fontSize: AppFontSize.s10,
+                                      color: status.color,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
+                          ],
                         ],
                       ),
                     ],
@@ -109,9 +115,8 @@ class OrderListItem extends StatelessWidget {
                     ),
                     SizedBox(width: AppWidth.s4),
                     CustomText(
-                      text: DateFormat(
-                        'MMM dd, yyyy - HH:mm',
-                      ).format(order.date!),
+                      text: DateFormat('MMM dd, yyyy - HH:mm')
+                          .format(order.date!),
                       textStyle: getRegularStyle(
                         fontSize: AppFontSize.s12,
                         color: ColorManager.descriptionColor,
@@ -123,8 +128,7 @@ class OrderListItem extends StatelessWidget {
               if (order.products.isNotEmpty) ...[
                 SizedBox(height: AppHeight.s8),
                 CustomText(
-                  text:
-                      '${order.products.length} ${AppTranslation.productsCount}',
+                  text: '${order.products.length} ${AppTranslation.productsCount}',
                   textStyle: getRegularStyle(
                     fontSize: AppFontSize.s12,
                     color: ColorManager.descriptionColor,
@@ -158,16 +162,5 @@ class OrderListItem extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      case 'pending':
-        return Colors.orange;
-      default:
-        return ColorManager.primary;
-    }
-  }
 }
+

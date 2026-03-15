@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/common/utils/toast_util.dart';
-import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
-import 'package:jeeb_app/core/presentation/routes/routes.dart';
+
 import '../bloc/login_bloc.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_form.dart';
@@ -63,6 +64,12 @@ class _LoginPageState extends State<LoginPage> {
           context.pushNamedAndRemoveUntil(
             Routes.mainNavigation,
             predicate: (route) => false,
+          );
+        } else if (state is LoginNeedsVerification) {
+          context.pushNamedAndRemoveUntil(
+            Routes.verify,
+            predicate: (route) => false,
+            arguments: {'email': state.email},
           );
         } else if (state is LoginError) {
           customToast(msg: state.message);

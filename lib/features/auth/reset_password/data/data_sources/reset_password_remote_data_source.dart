@@ -21,6 +21,11 @@ class ResetPasswordRemoteDataSourceImpl
     required String otp,
     required String password,
   }) {
-    return _appApiServiceClient.resetPassword(email, otp, password);
+    return _appApiServiceClient.resetPassword(
+      email,
+      otp,
+      password,
+    );
   }
 }
+

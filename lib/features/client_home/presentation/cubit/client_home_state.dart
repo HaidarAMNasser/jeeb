@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
+import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
-import 'package:jeeb_app/features/offers/domain/entities/offer_entity.dart';
 
 class ClientHomeState extends Equatable {
   final bool isLoading;
@@ -10,7 +10,7 @@ class ClientHomeState extends Equatable {
   final List<CategoryEntity> categories;
   final List<MerchantEntity> merchants;
   final List<ProductEntity> products;
-  final List<OfferEntity> offers;
+  final List<OfferEntity>? offers;
   final String? selectedCategoryId;
   final String? searchQuery;
 
@@ -49,13 +49,13 @@ class ClientHomeState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isLoading,
-        errorMessage,
-        categories,
-        merchants,
-        products,
-        offers,
-        selectedCategoryId,
-        searchQuery,
-      ];
+    isLoading,
+    errorMessage,
+    categories,
+    merchants,
+    products,
+    offers,
+    selectedCategoryId,
+    searchQuery,
+  ];
 }

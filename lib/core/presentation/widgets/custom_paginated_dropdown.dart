@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/animated_border_wrapper.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 /// A reusable paginated dropdown widget with scroll detection
 /// 
@@ -114,9 +115,18 @@ class _CustomPaginatedDropdownState<T>
             borderWidth: 3.0,
             child: Container(
               height: AppHeight.s56,
+              padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
               decoration: BoxDecoration(
                 color: ColorManager.defaultWhite,
                 borderRadius: BorderRadius.circular(AppRadius.r18),
+              ),
+              alignment: Alignment.centerLeft,
+              child: CustomText(
+                text: widget.hintText,
+                textStyle: getRegularStyle(
+                  fontSize: AppFontSize.s14,
+                  color: ColorManager.descriptionColor,
+                ),
               ),
             ),
           )
@@ -277,3 +287,4 @@ class _CustomPaginatedDropdownState<T>
     );
   }
 }
+

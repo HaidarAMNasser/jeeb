@@ -132,6 +132,10 @@
   "please_enter_otp": "Please enter the OTP",
   "send_otp": "Send OTP",
   "passwords_do_not_match": "Passwords do not match",
+  "customer": "Customer",
+  "delivery": "Delivery",
+  "birthday": "Birthday",
+  "birthday_hint": "YYYY-MM-DD",
   "profile_updated_success": "Profile updated successfully",
   "logout_success": "Logged out successfully",
   "logout_error": "Failed to logout. Please try again",
@@ -191,6 +195,22 @@
   "language_changed_successfully": "Language changed successfully",
   "verify_account_method_title": "How do you prefer to verify your account?",
   "verify_email_otp": "Email OTP",
-  "verify_whatsapp_otp": "WhatsApp OTP"
+  "verify_whatsapp_otp": "WhatsApp OTP",
+
+  "restaurant_name": "Restaurant Name",
+  "enter_restaurant_name": "Enter restaurant name",
+  "please_enter_restaurant_name": "Please enter restaurant name",
+  "use_my_location": "Use my location",
+  "location_set_format": "Location set",
+  "location_permission_denied": "Location permission denied",
+  "join_as_delivery": "Do you want to join us as a delivery?",
+  "delivery_register_dialog_text": "Do you want to register manually or contact management to get yourself registered?",
+  "contact_management": "Contact Management",
+  "register_manually": "Register Manually",
+  "delivery_waiting_title": "Waiting for confirmation",
+  "delivery_waiting_subtitle": "Your account is under review. We will notify you once it is approved.",
+  "refresh_page": "Refresh page",
+  "delivery_pending_toast": "Your account is still under review.",
+  "whatsapp_not_available": "WhatsApp number is not available."
 
 }

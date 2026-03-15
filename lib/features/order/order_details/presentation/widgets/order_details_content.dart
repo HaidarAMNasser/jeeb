@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
-import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_header_card.dart';
 import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_date_card.dart';
+import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_delivery_man_card.dart';
+import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_header_card.dart';
 import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_location_card.dart';
 import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_people_card.dart';
-import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_delivery_man_card.dart';
 import 'package:jeeb_app/features/order/order_details/presentation/widgets/order_products_section.dart';
-
 class OrderDetailsContent extends StatelessWidget {
   final OrderEntity order;
 

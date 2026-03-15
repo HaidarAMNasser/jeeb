@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
-import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_input_dialog.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 class ProductListItem extends StatelessWidget {
   final ProductEntity product;
-  final bool isFavorite;
-  final VoidCallback? onFavoriteTap;
+
+  /// When true, shows the "Confirm product" button (admin only).
+  final bool showConfirmProduct;
 
   const ProductListItem({
     super.key,
     required this.product,
-    this.isFavorite = false,
-    this.onFavoriteTap,
+    this.showConfirmProduct = false,
   });
 
   @override
@@ -48,10 +50,10 @@ class ProductListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
                       if (product.images.isNotEmpty)
                         ClipRRect(
                           borderRadius: BorderRadius.all(
@@ -98,7 +100,6 @@ class ProductListItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                  ),
 
                   if (product.rating != null)
                     Container(
@@ -128,19 +129,6 @@ class ProductListItem extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                  if (onFavoriteTap != null)
-                    IconButton(
-                      onPressed: onFavoriteTap,
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite
-                            ? ColorManager.error
-                            : ColorManager.descriptionColor,
-                        size: AppSize.s24,
-                      ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
                     ),
                 ],
               ),
@@ -173,7 +161,8 @@ class ProductListItem extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomText(
-                      text: '\$${product.price.toStringAsFixed(2)}',
+                      text:
+                          '\$${(product.price / 100).toStringAsFixed(2)}', // convert smallest unit
                       textStyle: getBoldStyle(
                         fontSize: AppFontSize.s20,
                         color: ColorManager.primary,

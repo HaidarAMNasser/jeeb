@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
 import 'package:jeeb_app/features/category/list_category/data/repositories/list_category_repository.dart';
-
+import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
 part 'list_category_event.dart';
 part 'list_category_state.dart';
 
@@ -22,4 +21,3 @@ class ListCategoryBloc extends Bloc<ListCategoryEvent, ListCategoryState> {
     });
   }
 }
-

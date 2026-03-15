@@ -17,11 +17,39 @@ class ProfileLoading extends ProfileState {
 
 class ProfileLoaded extends ProfileState {
   final UserEntity user;
+  final bool formValuesInitialized;
+  final bool updateSuccess;
+  final bool isUpdating;
+  final Locale? localeToApply;
 
-  const ProfileLoaded({required this.user});
+  const ProfileLoaded({
+    required this.user,
+    this.formValuesInitialized = false,
+    this.updateSuccess = false,
+    this.isUpdating = false,
+    this.localeToApply,
+  });
+
+  bool get isMerchant => user.role == UserRole.merchant;
+
+  ProfileLoaded copyWith({
+    UserEntity? user,
+    bool? formValuesInitialized,
+    bool? updateSuccess,
+    bool? isUpdating,
+    Locale? localeToApply,
+  }) {
+    return ProfileLoaded(
+      user: user ?? this.user,
+      formValuesInitialized: formValuesInitialized ?? this.formValuesInitialized,
+      updateSuccess: updateSuccess ?? this.updateSuccess,
+      isUpdating: isUpdating ?? this.isUpdating,
+      localeToApply: localeToApply ?? this.localeToApply,
+    );
+  }
 
   @override
-  List<Object> get props => [user];
+  List<Object?> get props => [user, formValuesInitialized, updateSuccess, isUpdating, localeToApply];
 }
 
 class ProfileError extends ProfileState {
@@ -32,3 +60,4 @@ class ProfileError extends ProfileState {
   @override
   List<Object> get props => [message];
 }
+

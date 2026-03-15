@@ -48,56 +48,59 @@ class OnboardingContentWidget extends StatelessWidget {
               iconCount: pageIndex == 1 ? 10 : 5, // More icons on second page
             ),
           ),
-          // Content
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon container with gradient
-              Container(
-                width: AppWidth.s100 * 2,
-                height: AppWidth.s100 * 2,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [content.color, content.color.withOpacity(0.7)],
-                  ),
-                  borderRadius: BorderRadius.circular(AppRadius.r40),
-                  boxShadow: [
-                    BoxShadow(
-                      color: content.color.withOpacity(0.3),
-                      blurRadius: AppSize.s30,
-                      offset: Offset(0, AppHeight.s15),
+          // Content – scrollable to avoid overflow on small screens
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon container with gradient
+                Container(
+                  width: AppWidth.s100 * 1.75,
+                  height: AppWidth.s100 * 1.7,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [content.color, content.color.withOpacity(0.7)],
                     ),
-                  ],
+                    borderRadius: BorderRadius.circular(AppRadius.r40),
+                    boxShadow: [
+                      BoxShadow(
+                        color: content.color.withOpacity(0.3),
+                        blurRadius: AppSize.s30,
+                        offset: Offset(0, AppHeight.s15),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    content.icon,
+                    size: AppSize.s100,
+                    color: Colors.white,
+                  ),
                 ),
-                child: Icon(
-                  content.icon,
-                  size: AppSize.s100,
-                  color: Colors.white,
+                SizedBox(height: AppHeight.s48),
+                // Title
+                CustomText(
+                  text: content.title,
+                  textAlign: TextAlign.center,
+                  textStyle: getBoldStyle(
+                    fontSize: AppFontSize.s22,
+                    color: ColorManager.textPrimary,
+                  ),
                 ),
-              ),
-              SizedBox(height: AppHeight.s48),
-              // Title
-              CustomText(
-                text: content.title,
-                textAlign: TextAlign.center,
-                textStyle: getBoldStyle(
-                  fontSize: AppFontSize.s22,
-                  color: ColorManager.textPrimary,
+                SizedBox(height: AppHeight.s20),
+                // Description
+                CustomText(
+                  text: content.description,
+                  textAlign: TextAlign.center,
+                  textStyle: getRegularStyle(
+                    fontSize: AppFontSize.s18,
+                    color: ColorManager.textColor,
+                  ),
                 ),
-              ),
-              SizedBox(height: AppHeight.s20),
-              // Description
-              CustomText(
-                text: content.description,
-                textAlign: TextAlign.center,
-                textStyle: getRegularStyle(
-                  fontSize: AppFontSize.s16,
-                  color: ColorManager.textColor,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

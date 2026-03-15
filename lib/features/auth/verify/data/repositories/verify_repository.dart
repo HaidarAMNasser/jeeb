@@ -15,7 +15,8 @@ class VerifyRepository {
     this._networkInfo,
   );
 
-  Future<Either<Failure, void>> verify({
+  /// Returns the response [data] map on success so the bloc can read token+user if present.
+  Future<Either<Failure, Map<String, dynamic>?>> verify({
     required String email,
     required String otp,
   }) async {
@@ -26,13 +27,14 @@ class VerifyRepository {
           otp: otp,
         );
 
-        final apiResponse = ApiResponseModel<void>.fromJson(
+        final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
           response.data as Map<String, dynamic>,
-          null,
+          (json) => json is Map<String, dynamic> ? json : {},
         );
 
         if (apiResponse.isSuccess) {
-          return const Right(null);
+          final data = apiResponse.data ?? {};
+          return Right(data);
         } else {
           return Left(ErrorHandler.handle(
             DioException(

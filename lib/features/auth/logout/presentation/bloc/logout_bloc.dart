@@ -19,12 +19,11 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
         emit(const LogoutLoading());
         final result = await _logoutRepository.logout();
 
-        result.fold(
-          (failure) => emit(LogoutError(message: failure.message)),
+        await result.fold(
+          (failure) async => emit(LogoutError(message: failure.message)),
           (_) async {
-            // Clear storage
             await _storageService.clearStorage(clearAuthParams: true);
-            emit(const LogoutSuccess());
+            if (!emit.isDone) emit(const LogoutSuccess());
           },
         );
       }

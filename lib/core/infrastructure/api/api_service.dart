@@ -8,8 +8,37 @@ abstract class AppApiServiceClient {
   factory AppApiServiceClient({required Dio dio, required String baseUrlApi}) =
       _AppApiServiceClientImpl;
 
+  // Favorites endpoints
+  @POST("favorites/toggle")
+  Future<Response> toggleFavorites({
+    List<int>? restaurants,
+    List<int>? products,
+  });
+
+  // Reviews endpoints (product/order reviews by customer)
+  @POST("reviews")
+  Future<Response> createReview({
+    required String entityType,
+    required int entityId,
+    required int rating,
+    required String comment,
+  });
+
+  @GET("reviews/{id}")
+  Future<Response> getReview(@Path('id') String id);
+
+  @PATCH("reviews/{id}")
+  Future<Response> updateReview(
+    @Path('id') String id, {
+    int? rating,
+    String? comment,
+  });
+
+  @DELETE("reviews/{id}")
+  Future<Response> deleteReview(@Path('id') String id);
+
   // Authentication endpoints
-  @POST("apiAdmin/Auth_general/login")
+  @POST("auth/login")
   Future<Response> loginWithPhone(
     @Field('phone') String phone,
     @Field('password') String password,
@@ -17,7 +46,7 @@ abstract class AppApiServiceClient {
     @Field('phone_code_id') int phoneCodeId,
   );
 
-  @POST("apiAdmin/Auth_general/login")
+  @POST("auth/login")
   Future<Response> loginWithEmail(
     @Field('email') String email,
     @Field('password') String password,
@@ -32,10 +61,16 @@ abstract class AppApiServiceClient {
     @Field('password') String password,
     @Field('phone') String phone,
     @Field('role') String role,
-    @Field('countryId') int countryId,
-    @Field('cityId') int cityId,
+    @Field('countryId') int? countryId,
+    @Field('cityId') int? cityId,
+    @Field('latitude') double? latitude,
+    @Field('longitude') double? longitude,
     @Field('notificationChannel') String notificationChannel,
     @Field('address') String? address,
+    @Field('birthday') String? birthday,
+    MultipartFile? image,
+    MultipartFile? idPhotoFront,
+    MultipartFile? idPhotoBack,
   );
 
   @POST("auth/verify")
@@ -60,15 +95,22 @@ abstract class AppApiServiceClient {
   @GET("auth/profile")
   Future<Response> getProfile();
 
+  @GET("settings")
+  Future<Response> getSettings();
+
   @PATCH("auth/profile")
-  Future<Response> updateProfile(
-    @Field('firstName') String? firstName,
-    @Field('lastName') String? lastName,
-    @Field('phone') String? phone,
-    @Field('countryId') int? countryId,
-    @Field('cityId') int? cityId,
-    @Field('address') String? address,
-  );
+  Future<Response> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? phone,
+    int? countryId,
+    int? cityId,
+    String? address,
+    double? latitude,
+    double? longitude,
+    bool? isActive,
+    MultipartFile? image,
+  });
 
   @POST("auth/logout")
   Future<Response> logout();
@@ -98,6 +140,13 @@ abstract class AppApiServiceClient {
 
   @PATCH("products/{id}")
   Future<Response> updateProduct(@Path('id') String id, FormData formData);
+
+  /// Confirm product and set final price so it becomes visible to clients.
+  @POST("products/{id}/confirm")
+  Future<Response> confirmProduct(
+    @Path('id') String id,
+    @Field('newPrice') double newPrice,
+  );
 
   @DELETE("products/{id}")
   Future<Response> deleteProduct(@Path('id') String id);
@@ -142,16 +191,6 @@ abstract class AppApiServiceClient {
   @DELETE("users/merchants/{id}")
   Future<Response> deleteMerchant(@Path('id') String id);
 
-  // Offers endpoints
-  @GET("offers")
-  Future<Response> getOffers({
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-    @Query('search') String? search,
-    @Query('isActive') bool? isActive,
-    @Query('merchantId') String? merchantId,
-  });
-
   // Merchant Review endpoints
   @GET("merchants/{merchantId}/reviews")
   Future<Response> getMerchantReviews({
@@ -184,34 +223,8 @@ abstract class AppApiServiceClient {
   @DELETE("users/deliveries/{id}")
   Future<Response> deleteDeliveryMan(@Path('id') String id);
 
-  // Favorites endpoints
-  @POST("favorites/toggle")
-  Future<Response> toggleFavorites({
-    List<int>? restaurants,
-    List<int>? products,
-  });
-
-  // Reviews endpoints (product/order reviews by customer)
-  @POST("reviews")
-  Future<Response> createReview({
-    required String entityType,
-    required int entityId,
-    required int rating,
-    required String comment,
-  });
-
-  @GET("reviews/{id}")
-  Future<Response> getReview(@Path('id') String id);
-
-  @PATCH("reviews/{id}")
-  Future<Response> updateReview(
-    @Path('id') String id, {
-    int? rating,
-    String? comment,
-  });
-
-  @DELETE("reviews/{id}")
-  Future<Response> deleteReview(@Path('id') String id);
+  @POST("users/deliveries/{id}/confirm")
+  Future<Response> confirmDeliveryMan(@Path('id') String id);
 
   // Order endpoints
   @GET("orders")
@@ -230,6 +243,26 @@ abstract class AppApiServiceClient {
 
   @POST("orders/{id}/cancel")
   Future<Response> cancelOrder(@Path('id') String id);
+
+  // Offer endpoints (merchant & admin)
+  @GET("offers")
+  Future<Response> getOffers({
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+    @Query('restaurantId') String? restaurantId,
+  });
+
+  @GET("offers/{id}")
+  Future<Response> getOfferDetails(@Path('id') String id);
+
+  @POST("offers")
+  Future<Response> createOffer(FormData formData);
+
+  @POST("offers/{id}")
+  Future<Response> updateOffer(@Path('id') String id, FormData formData);
+
+  @POST("offers/{id}/delete")
+  Future<Response> deleteOffer(@Path('id') String id);
 }
 
 // Annotations for API methods (simplified versions)

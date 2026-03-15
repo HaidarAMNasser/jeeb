@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
-import 'package:jeeb_app/features/merchant/favorites/data/data_sources/favorites_remote_data_source.dart';
-import 'package:jeeb_app/features/merchant/favorites/domain/entities/favorites_toggle_result.dart';
+import 'package:jeeb_app/features/favorites/data/data_sources/favorites_remote_data_source.dart';
+import 'package:jeeb_app/features/favorites/domain/entities/favorites_toggle_result.dart';
 
 class FavoritesRepository {
   final FavoritesRemoteDataSource _remote;

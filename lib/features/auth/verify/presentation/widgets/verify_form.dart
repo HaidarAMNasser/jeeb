@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_display.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 class VerifyForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController otpController;
   final VoidCallback onVerify;
   final VoidCallback onResendOtp;
+  final VoidCallback onBackToLogin;
   final bool isLoading;
 
   const VerifyForm({
@@ -20,6 +21,7 @@ class VerifyForm extends StatelessWidget {
     required this.otpController,
     required this.onVerify,
     required this.onResendOtp,
+    required this.onBackToLogin,
     required this.isLoading,
   });
 
@@ -39,17 +41,28 @@ class VerifyForm extends StatelessWidget {
           CustomButton(
             text: AppTranslation.verifyAccount,
             onPressed: onVerify,
-            isLoading: isLoading,
             color: ColorManager.primary,
           ),
           SizedBox(height: AppHeight.s16),
           TextButton(
             onPressed: onResendOtp,
-            child: CustomTextDisplay(
+            child: CustomText(
               text: AppTranslation.resendOtp,
-              fontSize: AppFontSize.s14,
-              color: ColorManager.primary,
-              fontWeight: FontWeight.w600,
+              textStyle: getMediumStyle(
+                fontSize: AppFontSize.s14,
+                color: ColorManager.primary,
+              ),
+            ),
+          ),
+          SizedBox(height: AppHeight.s8),
+          TextButton(
+            onPressed: onBackToLogin,
+            child: CustomText(
+              text: AppTranslation.backToLogin,
+              textStyle: getMediumStyle(
+                fontSize: AppFontSize.s14,
+                color: ColorManager.primary,
+              ),
             ),
           ),
         ],

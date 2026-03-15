@@ -1,4 +1,4 @@
-import 'package:jeeb_app/features/merchant/reviews/domain/entities/review_entity.dart';
+import 'package:jeeb_app/features/reviews/domain/entities/review_entity.dart';
 
 class ReviewModel extends ReviewEntity {
   const ReviewModel({

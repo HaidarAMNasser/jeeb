@@ -16,7 +16,16 @@ class VerifyLoading extends VerifyState {
 }
 
 class VerifySuccess extends VerifyState {
-  const VerifySuccess();
+  final bool goToMain;
+
+  const VerifySuccess({this.goToMain = true});
+
+  @override
+  List<Object?> get props => [goToMain];
+}
+
+class VerifyDeliveryPending extends VerifyState {
+  const VerifyDeliveryPending();
 }
 
 class VerifyOtpResent extends VerifyState {
@@ -31,4 +40,3 @@ class VerifyError extends VerifyState {
   @override
   List<Object> get props => [message];
 }
-

@@ -90,6 +90,13 @@ class AppTranslation {
       'are_you_sure_delete_product'.tr();
   static String get areYouSureWantToDeleteThisProduct =>
       'are_you_sure_want_to_delete_this_product'.tr();
+  static String get productConfirmedSuccessfully =>
+      'product_confirmed_successfully'.tr();
+  static String get confirmProduct => 'confirm_product'.tr();
+  static String get options => 'options'.tr();
+  static String get newPrice => 'new_price'.tr();
+  static String get enterNewPrice => 'enter_new_price'.tr();
+  static String get productConfirming => 'product_confirming'.tr();
   static String get delete => 'delete'.tr();
   static String get edit => 'edit'.tr();
   static String get merchantDeletedSuccessfully =>
@@ -142,6 +149,11 @@ class AppTranslation {
   static String get enterPhone => 'enter_phone'.tr();
   static String get address => 'address'.tr();
   static String get enterAddress => 'enter_address'.tr();
+  static String get pleaseEnterAddress => 'please_enter_address'.tr();
+  static String get restaurantName => 'restaurant_name'.tr();
+  static String get enterRestaurantName => 'enter_restaurant_name'.tr();
+  static String get pleaseEnterRestaurantName =>
+      'please_enter_restaurant_name'.tr();
   static String get selectCountry => 'select_country'.tr();
   static String get selectCity => 'select_city'.tr();
   static String get notificationChannel => 'notification_channel'.tr();
@@ -160,6 +172,7 @@ class AppTranslation {
   static String get accountVerifiedSuccess => 'account_verified_success'.tr();
   static String get otpSentSuccess => 'otp_sent_success'.tr();
   static String get notAuthorized => 'not_authorized'.tr();
+  static String get sessionExpired => 'session_expired'.tr();
   static String get pleaseEnterEmail => 'please_enter_email'.tr();
   static String get pleaseEnterPassword => 'please_enter_password'.tr();
   static String get pleaseSelectCountry => 'please_select_country'.tr();
@@ -168,9 +181,24 @@ class AppTranslation {
   static String get pleaseEnterOtp => 'please_enter_otp'.tr();
   static String get sendOtp => 'send_otp'.tr();
   static String get passwordsDoNotMatch => 'passwords_do_not_match'.tr();
+  static String get customer => 'customer'.tr();
+  static String get delivery => 'delivery'.tr();
+  static String get birthday => 'birthday'.tr();
+  static String get birthdayHint => 'birthday_hint'.tr();
+  static String get joinAsDelivery => 'join_as_delivery'.tr();
+  static String get deliveryRegisterDialogText =>
+      'delivery_register_dialog_text'.tr();
+  static String get contactManagement => 'contact_management'.tr();
+  static String get registerManually => 'register_manually'.tr();
+  static String get deliveryWaitingTitle => 'delivery_waiting_title'.tr();
+  static String get deliveryWaitingSubtitle => 'delivery_waiting_subtitle'.tr();
+  static String get refreshPage => 'refresh_page'.tr();
+  static String get deliveryPendingToast => 'delivery_pending_toast'.tr();
+  static String get whatsappNotAvailable => 'whatsapp_not_available'.tr();
   static String get profileUpdatedSuccess => 'profile_updated_success'.tr();
   static String get logoutSuccess => 'logout_success'.tr();
   static String get logoutError => 'logout_error'.tr();
+  static String get areYouSureLogout => 'are_you_sure_logout'.tr();
   static String get forgotPasswordDescription =>
       'forgot_password_description'.tr();
   static String get pleaseSelectCountryFirst =>
@@ -184,15 +212,37 @@ class AppTranslation {
   static String get searchMerchants => 'search_merchants'.tr();
   static String get searchMerchantsHint => 'search_merchants_hint'.tr();
   static String get location => 'location'.tr();
+  static String get useMyLocation => 'use_my_location'.tr();
+  static String get pleaseSelectLocation => 'please_select_location'.tr();
+  static String get locationSetFormat => 'location_set_format'.tr();
+  static String get pleaseSelectCountryOrLocation =>
+      'please_select_country_or_location'.tr();
+  static String get locationPermissionDenied =>
+      'location_permission_denied'.tr();
+  static String get locationUnavailable => 'location_unavailable'.tr();
+  static String get chooseLocationOnMap => 'choose_location_on_map'.tr();
+  static String get updateLocation => 'update_location'.tr();
+  static String get currentLocation => 'current_location'.tr();
+  static String get noLocationSet => 'no_location_set'.tr();
+  static String get accountStatus => 'account_status'.tr();
+  static String get accountActive => 'account_active'.tr();
+  static String get accountInactive => 'account_inactive'.tr();
+  static String get activateAccount => 'activate_account'.tr();
+  static String get deactivateAccount => 'deactivate_account'.tr();
 
   // Delivery
   static String get deliveryMen => 'delivery_men'.tr();
   static String get deliveryManDetails => 'delivery_man_details'.tr();
   static String get addDeliveryMan => 'add_delivery_man'.tr();
   static String get editDeliveryMan => 'edit_delivery_man'.tr();
+  static String get confirmDelivery => 'confirm_delivery'.tr();
   static String get noDeliveryMenFound => 'no_delivery_men_found'.tr();
   static String get vehicleType => 'vehicle_type'.tr();
   static String get status => 'status'.tr();
+  static String get online => 'online'.tr();
+  static String get offline => 'offline'.tr();
+  static String get confirmed => 'confirmed'.tr();
+  static String get notConfirmed => 'not_confirmed'.tr();
   static String get searchDeliveryMen => 'search_delivery_men'.tr();
   static String get searchDeliveryMenHint => 'search_delivery_men_hint'.tr();
   static String get deliveryManCreatedSuccessfully =>
@@ -201,6 +251,8 @@ class AppTranslation {
       'delivery_man_updated_successfully'.tr();
   static String get deliveryManDeletedSuccessfully =>
       'delivery_man_deleted_successfully'.tr();
+  static String get deliveryManConfirmedSuccessfully =>
+      'delivery_man_confirmed_successfully'.tr();
   static String get areYouSureDeleteDeliveryMan =>
       'are_you_sure_delete_delivery_man'.tr();
   static String get enterFirstName => 'enter_first_name'.tr();
@@ -239,18 +291,31 @@ class AppTranslation {
   static String get completeOrder => 'complete_order'.tr();
   static String get cancelOrder => 'cancel_order'.tr();
 
-  // Offers
+  // Offer
   static String get offers => 'offers'.tr();
-  static String get offersTitle => 'offers_title'.tr();
-  static String get offersLoading => 'offers_loading'.tr();
-  static String get offersError => 'offers_error'.tr();
-  static String get offersEmpty => 'offers_empty'.tr();
-  static String get noOffersAvailable => 'no_offers_available'.tr();
-  static String get totalOffers => 'total_offers'.tr();
-  static String get discountPercentage => 'discount_percentage'.tr();
-  static String get discountFixed => 'discount_fixed'.tr();
-  static String get active => 'active'.tr();
-  static String get inactive => 'inactive'.tr();
-  static String get offerProducts => 'offer_products'.tr();
-  static String get retryOffer => 'retry_offer'.tr();
+  static String get addOffer => 'add_offer'.tr();
+  static String get editOffer => 'edit_offer'.tr();
+  static String get offerDetails => 'offer_details'.tr();
+  static String get noOffersFound => 'no_offers_found'.tr();
+  static String get offerShortDescription => 'offer_short_description'.tr();
+  static String get offerLongDescription => 'offer_long_description'.tr();
+  static String get selectProducts => 'select_products'.tr();
+  static String get offerStartDate => 'offer_start_date'.tr();
+  static String get offerEndDate => 'offer_end_date'.tr();
+  static String get offerDiscountType => 'offer_discount_type'.tr();
+  static String get offerDiscountValue => 'offer_discount_value'.tr();
+  static String get offerDiscountPercentage => 'offer_discount_percentage'.tr();
+  static String get offerDiscountValueType => 'offer_discount_value_type'.tr();
+  static String get offerProductsCount => 'offer_products_count'.tr();
+  static String get offerDiscount => 'offer_discount'.tr();
+  static String get offerCreatedSuccessfully =>
+      'offer_created_successfully'.tr();
+  static String get offerUpdatedSuccessfully =>
+      'offer_updated_successfully'.tr();
+  static String get offerDeletedSuccessfully =>
+      'offer_deleted_successfully'.tr();
+  static String get areYouSureDeleteOffer => 'are_you_sure_delete_offer'.tr();
+  static String get selectDate => 'select_date'.tr();
+  static String get showAll => 'show_all'.tr();
+  static String get backToLogin => 'back_to_login'.tr();
 }

@@ -132,6 +132,10 @@
   "please_enter_otp": "الرجاء إدخال رمز التحقق",
   "send_otp": "إرسال رمز التحقق",
   "passwords_do_not_match": "كلمات المرور غير متطابقة",
+  "customer": "عميل",
+  "delivery": "سائق توصيل",
+  "birthday": "تاريخ الميلاد",
+  "birthday_hint": "YYYY-MM-DD",
   "profile_updated_success": "تم تحديث الملف الشخصي بنجاح",
   "logout_success": "تم تسجيل الخروج بنجاح",
   "logout_error": "فشل تسجيل الخروج. يرجى المحاولة مرة أخرى",
@@ -191,6 +195,22 @@
   "language_changed_successfully": "تم تغيير اللغة بنجاح",
   "verify_account_method_title": "كيف تفضّل التحقق من حسابك؟",
   "verify_email_otp": "رمز التحقق عبر البريد الإلكتروني",
-  "verify_whatsapp_otp": "رمز التحقق عبر واتساب"
+  "verify_whatsapp_otp": "رمز التحقق عبر واتساب",
+
+  "restaurant_name": "اسم المطعم",
+  "enter_restaurant_name": "أدخل اسم المطعم",
+  "please_enter_restaurant_name": "الرجاء إدخال اسم المطعم",
+  "use_my_location": "استخدام موقعي",
+  "location_set_format": "تم تعيين الموقع",
+  "location_permission_denied": "تم رفض إذن الموقع",
+  "join_as_delivery": "هل تريد الانضمام إلينا كسائق توصيل؟",
+  "delivery_register_dialog_text": "هل تريد التسجيل يدوياً أم التواصل مع الإدارة لتسجيلك؟",
+  "contact_management": "التواصل مع الإدارة",
+  "register_manually": "التسجيل يدوياً",
+  "delivery_waiting_title": "بانتظار الموافقة",
+  "delivery_waiting_subtitle": "حسابك قيد المراجعة. سنخطرك فور الموافقة.",
+  "refresh_page": "تحديث الصفحة",
+  "delivery_pending_toast": "حسابك ما زال قيد المراجعة.",
+  "whatsapp_not_available": "رقم واتساب غير متاح."
 
 }

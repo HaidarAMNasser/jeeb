@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/widgets/merchant_list_item.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/widgets/search_merchant_widget.dart';
@@ -158,19 +158,7 @@ class _ListMerchantPageState extends State<ListMerchantPage> {
                     itemCount: filteredMerchants.length,
                     itemBuilder: (context, index) {
                       final merchant = filteredMerchants[index];
-                      final favIds = state is ListMerchantLoaded
-                          ? (state as ListMerchantLoaded).favoriteMerchantIds
-                          : state is ListMerchantLoadingMore
-                              ? (state as ListMerchantLoadingMore)
-                                  .favoriteMerchantIds
-                              : <String>{};
-                      return MerchantListItem(
-                        merchant: merchant,
-                        isFavorite: favIds.contains(merchant.id),
-                        onFavoriteTap: () => context
-                            .read<ListMerchantBloc>()
-                            .add(ToggleFavoriteMerchantEvent(merchant.id)),
-                      );
+                      return MerchantListItem(merchant: merchant);
                     },
                   ),
                 ),

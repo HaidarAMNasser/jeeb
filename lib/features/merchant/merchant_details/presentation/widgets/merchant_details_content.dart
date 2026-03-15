@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
+import 'package:jeeb_app/features/merchant/merchant_details/presentation/widgets/merchant_offers_section.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/presentation/widgets/merchant_products_section.dart';
-
 class MerchantDetailsContent extends StatelessWidget {
   final MerchantEntity merchant;
   final String merchantId;
@@ -127,11 +127,11 @@ class MerchantDetailsContent extends StatelessWidget {
             ),
           ),
           SizedBox(height: AppHeight.s24),
-          // Products Section
-          MerchantProductsSection(
-            merchantId: merchantId,
-            scrollController: scrollController,
-          ),
+          // Products Section (limit 3 + Show all)
+          MerchantProductsSection(merchantId: merchantId),
+          SizedBox(height: AppHeight.s24),
+          // Offers Section (limit 3 + Show all)
+          MerchantOffersSection(merchantId: merchantId),
         ],
       ),
     );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
-import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
-import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
+import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 
 /// A generic widget that handles BlocBuilder states automatically
 /// Works with any bloc that follows the common state pattern:

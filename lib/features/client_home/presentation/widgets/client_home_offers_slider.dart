@@ -7,8 +7,8 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_cubit.dart';
-import 'package:jeeb_app/features/offers/domain/entities/offer_entity.dart';
 import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_state.dart';
+import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
 
 /// Slider showing 3 offer cards at a time; middle one is bigger. Auto-advances.
 class ClientHomeOffersSlider extends StatefulWidget {
@@ -29,9 +29,10 @@ class _ClientHomeOffersSliderState extends State<ClientHomeOffersSlider> {
       if (!mounted) return;
       final cubit = context.read<ClientHomeCubit>();
       final state = cubit.state;
-      if (state.offers.isEmpty) return;
+      final offers = state.offers ?? [];
+      if (offers.isEmpty) return;
       final current = _pageController.page?.round() ?? 0;
-      final next = (current + 1) % state.offers.length;
+      final next = (current + 1) % offers.length;
       _pageController.animateToPage(
         next,
         duration: const Duration(milliseconds: 400),
@@ -52,7 +53,7 @@ class _ClientHomeOffersSliderState extends State<ClientHomeOffersSlider> {
     return BlocBuilder<ClientHomeCubit, ClientHomeState>(
       buildWhen: (a, b) => a.offers != b.offers,
       builder: (context, state) {
-        final offers = state.offers;
+        final offers = state.offers ?? const [];
         if (offers.isEmpty) return const SizedBox.shrink();
 
         return Column(
@@ -112,14 +113,14 @@ class _OfferCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              ColorManager.primary.withOpacity(0.9),
-              ColorManager.secondary.withOpacity(0.8),
+              ColorManager.primary.withValues(alpha: 0.9),
+              ColorManager.secondary.withValues(alpha: 0.8),
             ],
           ),
           borderRadius: BorderRadius.circular(AppRadius.r16),
           boxShadow: [
             BoxShadow(
-              color: ColorManager.primary.withOpacity(0.3),
+              color: ColorManager.primary.withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -131,7 +132,7 @@ class _OfferCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomText(
-              text: offer.name,
+              text: offer.shortDescription ?? offer.longDescription ?? 'Offer',
               textStyle: getBoldStyle(
                 fontSize: AppFontSize.s16,
                 color: ColorManager.defaultWhite,
@@ -139,14 +140,18 @@ class _OfferCard extends StatelessWidget {
               maxLines: 2,
               textOverflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: AppHeight.s4),
-            CustomText(
-              text: offer.merchant.restaurantName,
-              textStyle: getRegularStyle(
-                fontSize: AppFontSize.s12,
-                color: ColorManager.defaultWhite.withOpacity(0.9),
+            if (offer.longDescription != null && offer.longDescription != offer.shortDescription) ...[
+              SizedBox(height: AppHeight.s4),
+              CustomText(
+                text: offer.longDescription!,
+                textStyle: getRegularStyle(
+                  fontSize: AppFontSize.s12,
+                  color: ColorManager.defaultWhite.withValues(alpha: 0.9),
+                ),
+                maxLines: 1,
+                textOverflow: TextOverflow.ellipsis,
               ),
-            ),
+            ],
             SizedBox(height: AppHeight.s8),
             Container(
               padding: EdgeInsets.symmetric(
@@ -154,13 +159,13 @@ class _OfferCard extends StatelessWidget {
                 vertical: AppPadding.p4,
               ),
               decoration: BoxDecoration(
-                color: ColorManager.defaultWhite.withOpacity(0.25),
+                color: ColorManager.defaultWhite.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(AppRadius.r8),
               ),
               child: CustomText(
-                text: offer.discountType.name == 'PERCENTAGE'
-                    ? '${offer.discountValue.toInt()}% off'
-                    : '${offer.discountValue.toInt()} off',
+                text: (offer.discountType ?? 'PERCENTAGE').toUpperCase() == 'PERCENTAGE'
+                    ? '${(offer.discountValue ?? 0).toInt()}% off'
+                    : '${(offer.discountValue ?? 0).toInt()} off',
                 textStyle: getSemiBoldStyle(
                   fontSize: AppFontSize.s12,
                   color: ColorManager.defaultWhite,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_password_field.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_password_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
 
 class ResetPasswordForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -61,3 +61,4 @@ class ResetPasswordForm extends StatelessWidget {
     );
   }
 }
+

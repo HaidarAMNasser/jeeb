@@ -17,10 +17,12 @@ class GradientText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultGradient =
-        gradient ??
+    final defaultGradient = gradient ??
         LinearGradient(
-          colors: [ColorManager.defaultYellow, ColorManager.primary],
+          colors: [
+            ColorManager.defaultYellow,
+            ColorManager.primary,
+          ],
         );
 
     return ShaderMask(
@@ -29,11 +31,12 @@ class GradientText extends StatelessWidget {
       ),
       child: Text(
         text,
-        style:
-            textStyle?.copyWith(color: Colors.white) ??
-            const TextStyle(color: Colors.white),
+        style: textStyle?.copyWith(
+          color: Colors.white,
+        ) ?? const TextStyle(color: Colors.white),
         textAlign: textAlign,
       ),
     );
   }
 }
+

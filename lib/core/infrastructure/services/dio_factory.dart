@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import '../../config/app_config.dart';
@@ -8,6 +9,7 @@ import '../../common/utils/toast_util.dart';
 import '../../presentation/localization/app_translation.dart';
 import 'dio_cache_interceptor.dart';
 import 'storage_service.dart';
+import 'package:chucker_flutter/chucker_flutter.dart';
 
 const String accept = "Accept";
 const String acceptEncoding = "Accept-Encoding";
@@ -66,6 +68,8 @@ class DioFactory {
       defaultCacheDuration: const Duration(minutes: 5),
     );
 
+    // Chucker first so it sees the real request/response (including failed auth) before any other interceptor
+    dio.interceptors.add(ChuckerDioInterceptor());
     dio.interceptors.add(
       AppInterceptors(_storageService, _navigationService, cacheInterceptor),
     );
@@ -107,41 +111,39 @@ class AppInterceptors extends Interceptor {
     if (tokenForRequest.isNotEmpty) {
       options.headers[authorization] = "Bearer $tokenForRequest";
     }
+    if (kDebugMode) {
+      print('HTTP Request: ${options.method} ${options.path}');
+      print('Headers: ${options.headers}');
+    }
     return super.onRequest(options, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final status = err.response?.statusCode;
+    if (kDebugMode) {
+      print('HTTP Error: status=$status, path=${err.requestOptions.path}');
+      print('Response data: ${err.response?.data}');
+    }
     if (status == 401 || status == 403) {
-      final isLoginRequest =
+      final isAuthRequest =
           err.requestOptions.path.contains('login') ||
           err.requestOptions.path.contains('Login') ||
           err.requestOptions.path.contains('Auth_general') ||
           err.requestOptions.path.contains('auth/login') ||
           err.requestOptions.path.contains('auth/register');
 
-      if (!isLoginRequest) {
+      // Only do session-expired redirect for authenticated requests (invalid/expired token).
+      // For login/register, let the real error through so the UI can show the backend message.
+      if (!isAuthRequest) {
         _cacheInterceptor.clearCache();
-        _storageService.clearStorage(clearAuthParams: true).then((val) {
-          // Show not authorized message
-          customToast(msg: AppTranslation.notAuthorized);
-          // Navigate to login on auth error
+        _storageService.clearStorage(clearAuthParams: true).then((_) {
+          customToast(msg: AppTranslation.sessionExpired);
           _navigationService.pushNamedAndRemoveUntil(Routes.login);
         });
       }
-      // Don't pass error to UI to avoid "error occurred" messages
-      return handler.resolve(
-        Response(
-          requestOptions: err.requestOptions,
-          data: {},
-          statusCode: 200,
-          statusMessage: 'auth-redirect',
-          headers: Headers.fromMap({
-            'x-auth-redirect': ['true'],
-          }),
-        ),
-      );
+      // Pass the real error through so backend message is shown (and Chucker sees real response)
+      return handler.next(err);
     } else if (err.response?.statusCode == 404) {
       // Handle not found errors if needed
     }

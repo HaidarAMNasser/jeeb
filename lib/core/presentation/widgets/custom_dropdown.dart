@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:easy_localization/easy_localization.dart' as easy_localization;
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+
 
 class CustomDropdown<T> extends StatelessWidget {
   final String title;
