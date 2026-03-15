@@ -56,21 +56,15 @@ class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
           : path;
       image = await MultipartFile.fromFile(path, filename: name);
     }
-    MultipartFile? idFront;
-    if (idFrontFile != null) {
-      final path = idFrontFile.path;
-      final name = path.contains(RegExp(r'[/\\]'))
-          ? path.split(RegExp(r'[/\\]')).last
-          : path;
-      idFront = await MultipartFile.fromFile(path, filename: name);
-    }
-    MultipartFile? idBack;
-    if (idBackFile != null) {
-      final path = idBackFile.path;
-      final name = path.contains(RegExp(r'[/\\]'))
-          ? path.split(RegExp(r'[/\\]')).last
-          : path;
-      idBack = await MultipartFile.fromFile(path, filename: name);
+    final idImageFiles = <MultipartFile>[];
+    for (final file in [idFrontFile, idBackFile]) {
+      if (file != null) {
+        final path = file.path;
+        final name = path.contains(RegExp(r'[/\\]'))
+            ? path.split(RegExp(r'[/\\]')).last
+            : path;
+        idImageFiles.add(await MultipartFile.fromFile(path, filename: name));
+      }
     }
     return _appApiServiceClient.register(
       firstName,
@@ -87,8 +81,7 @@ class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
       address,
       birthday,
       image,
-      idFront,
-      idBack,
+      idImageFiles.isEmpty ? null : idImageFiles,
     );
   }
 }

@@ -34,6 +34,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   dynamic selectedImageFile;
   dynamic idFrontImageFile;
   dynamic idBackImageFile;
+  int _imageVersion = 0;
+  int get imageVersion => _imageVersion;
+  int _idFrontVersion = 0;
+  int get idFrontVersion => _idFrontVersion;
+  int _idBackVersion = 0;
+  int get idBackVersion => _idBackVersion;
 
   RegisterBloc(this._registerRepository, this._storageService)
     : super(const RegisterInitial()) {
@@ -54,16 +60,19 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     });
 
     on<RegisterImageChanged>((event, emit) {
+      _imageVersion++;
       selectedImageFile = event.imageFile;
       emit(_buildInitialState());
     });
 
     on<RegisterIdFrontChanged>((event, emit) {
+      _idFrontVersion++;
       idFrontImageFile = event.imageFile;
       emit(_buildInitialState());
     });
 
     on<RegisterIdBackChanged>((event, emit) {
+      _idBackVersion++;
       idBackImageFile = event.imageFile;
       emit(_buildInitialState());
     });
@@ -109,7 +118,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         birthday: birthdayController.text.trim().isEmpty
             ? null
             : birthdayController.text.trim(),
-        imageFile: selectedImageFile,
+        imageFile: (selectedRole == 'DELIVERY') ? null : selectedImageFile,
         idFrontFile: idFrontImageFile,
         idBackFile: idBackImageFile,
       );

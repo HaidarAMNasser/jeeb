@@ -69,22 +69,26 @@ class RegisterPage extends StatelessWidget {
     final bloc = context.read<RegisterBloc>();
 
     bloc.add(const RegisterLocationLoadingChanged(true));
-    final position = await LocationPermissionHelper.requestAndGetPosition();
+    final result = await LocationPermissionHelper.requestAndGetPosition();
     if (!context.mounted) return;
 
     bloc.add(const RegisterLocationLoadingChanged(false));
 
-    if (position != null) {
+    if (result.latitude != null && result.longitude != null) {
       bloc.add(
         RegisterLocationUpdated(
-          latitude: position.latitude,
-          longitude: position.longitude,
+          latitude: result.latitude!,
+          longitude: result.longitude!,
         ),
       );
       return;
     }
 
-    customToast(msg: AppTranslation.locationPermissionDenied);
+    if (result.permissionGranted) {
+      customToast(msg: AppTranslation.locationUnavailable);
+    } else {
+      customToast(msg: AppTranslation.locationPermissionDenied);
+    }
   }
 
   @override

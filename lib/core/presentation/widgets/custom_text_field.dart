@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:easy_localization/easy_localization.dart' as easy_localization;
@@ -19,6 +20,8 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final Color? filledColor;
   final bool? obscureText;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
   const CustomTextField({
     super.key,
     this.title,
@@ -31,6 +34,8 @@ class CustomTextField extends StatelessWidget {
     this.filledColor,
     this.obscureText = false,
     this.keyboardType,
+    this.inputFormatters,
+    this.maxLength,
   });
 
   @override
@@ -58,6 +63,8 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           onChanged: onChanged,
           onSubmitted: onSubmitted,
+          inputFormatters: inputFormatters,
+          maxLength: maxLength,
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: prefixIcon,

@@ -99,8 +99,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     String? address,
     String? birthday,
     MultipartFile? image,
-    MultipartFile? idPhotoFront,
-    MultipartFile? idPhotoBack,
+    List<MultipartFile>? images,
   ) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -116,24 +115,20 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     };
     if (countryId != null) data['countryId'] = countryId;
     if (cityId != null) data['cityId'] = cityId;
-    if (latitude != null && longitude != null) {
-      data['location'] = {'lat': latitude, 'lng': longitude};
-    }
+    if (latitude != null) data['latitude'] = latitude;
+    if (longitude != null) data['longitude'] = longitude;
     if (address != null) data['address'] = address;
     if (birthday != null && birthday.isNotEmpty) {
       data['birthday'] = birthday;
     }
 
     final formData = FormData.fromMap(data);
-    if (image != null) {
-      formData.files.add(MapEntry('image', image));
-    }
-    if (idPhotoFront != null) {
-      formData.files.add(MapEntry('idPhoto', idPhotoFront));
-    }
-    if (idPhotoBack != null) {
-      formData.files.add(MapEntry('idPhoto', idPhotoBack));
-    }
+    // ID images commented for now
+    // if (images != null) {
+    //   for (var i = 0; i < images.length; i++) {
+    //     formData.files.add(MapEntry('images[$i]', images[i]));
+    //   }
+    // }
 
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(

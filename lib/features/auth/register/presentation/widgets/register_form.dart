@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show File;
+// import 'dart:io' show File; // used for ID image preview, commented with ID pickers
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -9,6 +9,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/common/utils/date_input_formatter.dart';
 import 'package:jeeb_app/core/presentation/widgets/avatar_image_picker.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
@@ -59,29 +60,29 @@ class RegisterForm extends StatelessWidget {
           initial = bloc.firstNameController.text[0].toUpperCase();
         }
 
-        String? idFrontPath;
-        final idFrontFile = bloc.idFrontImageFile;
-        if (idFrontFile != null) {
-          final dynamic dynamicFile = idFrontFile;
-          final path = dynamicFile is String
-              ? dynamicFile
-              : dynamicFile.path as String?;
-          if (path != null && path.isNotEmpty) {
-            idFrontPath = path;
-          }
-        }
-
-        String? idBackPath;
-        final idBackFile = bloc.idBackImageFile;
-        if (idBackFile != null) {
-          final dynamic dynamicFile = idBackFile;
-          final path = dynamicFile is String
-              ? dynamicFile
-              : dynamicFile.path as String?;
-          if (path != null && path.isNotEmpty) {
-            idBackPath = path;
-          }
-        }
+        // ID paths commented while ID photo pickers are hidden
+        // String? idFrontPath;
+        // final idFrontFile = bloc.idFrontImageFile;
+        // if (idFrontFile != null) {
+        //   final dynamic dynamicFile = idFrontFile;
+        //   final path = dynamicFile is String
+        //       ? dynamicFile
+        //       : dynamicFile.path as String?;
+        //   if (path != null && path.isNotEmpty) {
+        //     idFrontPath = path;
+        //   }
+        // }
+        // String? idBackPath;
+        // final idBackFile = bloc.idBackImageFile;
+        // if (idBackFile != null) {
+        //   final dynamic dynamicFile = idBackFile;
+        //   final path = dynamicFile is String
+        //       ? dynamicFile
+        //       : dynamicFile.path as String?;
+        //   if (path != null && path.isNotEmpty) {
+        //     idBackPath = path;
+        //   }
+        // }
 
         return Form(
           key: bloc.formKey,
@@ -89,11 +90,13 @@ class RegisterForm extends StatelessWidget {
             spacing: AppHeight.s24,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AvatarImagePicker(
-                imagePath: imagePath,
-                fallbackInitial: initial,
-                onTap: onPickImage,
-              ),
+              if ((bloc.selectedRole ?? 'CUSTOMER') != 'DELIVERY')
+                AvatarImagePicker(
+                  key: ValueKey(bloc.imageVersion),
+                  imagePath: imagePath,
+                  fallbackInitial: initial,
+                  onTap: onPickImage,
+                ),
               CustomTextField(
                 title: AppTranslation.firstName,
                 hintText: AppTranslation.firstName,
@@ -131,97 +134,102 @@ class RegisterForm extends StatelessWidget {
                 hintText: AppTranslation.birthdayHint,
                 controller: bloc.birthdayController,
                 keyboardType: TextInputType.datetime,
+                inputFormatters: [DateSlashInputFormatter()],
+                maxLength: 10,
               ),
-              if ((bloc.selectedRole ?? 'CUSTOMER') == 'DELIVERY')
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          CustomText(
-                            text: 'ID Front',
-                            textStyle: getMediumStyle(
-                              fontSize: AppFontSize.s15,
-                              color: ColorManager.defaultWhite,
-                            ),
-                          ),
-                          SizedBox(height: AppHeight.s8),
-                          GestureDetector(
-                            onTap: onPickIdFront,
-                            child: Container(
-                              height: AppHeight.s78,
-                              decoration: BoxDecoration(
-                                color: ColorManager.background,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.r18,
-                                ),
-                                border: Border.all(color: ColorManager.primary),
-                              ),
-                              child: idFrontPath == null
-                                  ? Icon(
-                                      Icons.add_a_photo,
-                                      color: ColorManager.primary,
-                                    )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadius.r18,
-                                      ),
-                                      child: Image.file(
-                                        File(idFrontPath),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: AppWidth.s16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          CustomText(
-                            text: 'ID Back',
-                            textStyle: getMediumStyle(
-                              fontSize: AppFontSize.s15,
-                              color: ColorManager.defaultWhite,
-                            ),
-                          ),
-                          SizedBox(height: AppHeight.s8),
-                          GestureDetector(
-                            onTap: onPickIdBack,
-                            child: Container(
-                              height: AppHeight.s78,
-                              decoration: BoxDecoration(
-                                color: ColorManager.background,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.r18,
-                                ),
-                                border: Border.all(color: ColorManager.primary),
-                              ),
-                              child: idBackPath == null
-                                  ? Icon(
-                                      Icons.add_a_photo,
-                                      color: ColorManager.primary,
-                                    )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadius.r18,
-                                      ),
-                                      child: Image.file(
-                                        File(idBackPath),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              // ID Front/Back photo pickers commented for now
+              // if ((bloc.selectedRole ?? 'CUSTOMER') == 'DELIVERY')
+              //   Row(
+              //     children: [
+              //       Expanded(
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.stretch,
+              //           children: [
+              //             CustomText(
+              //               text: 'ID Front',
+              //               textStyle: getMediumStyle(
+              //                 fontSize: AppFontSize.s15,
+              //                 color: ColorManager.defaultWhite,
+              //               ),
+              //             ),
+              //             SizedBox(height: AppHeight.s8),
+              //             GestureDetector(
+              //               onTap: onPickIdFront,
+              //               child: Container(
+              //                 key: ValueKey(bloc.idFrontVersion),
+              //                 height: AppHeight.s78,
+              //                 decoration: BoxDecoration(
+              //                   color: ColorManager.background,
+              //                   borderRadius: BorderRadius.circular(
+              //                     AppRadius.r18,
+              //                   ),
+              //                   border: Border.all(color: ColorManager.primary),
+              //                 ),
+              //                 child: idFrontPath == null
+              //                     ? Icon(
+              //                         Icons.add_a_photo,
+              //                         color: ColorManager.primary,
+              //                       )
+              //                     : ClipRRect(
+              //                         borderRadius: BorderRadius.circular(
+              //                           AppRadius.r18,
+              //                         ),
+              //                         child: Image.file(
+              //                           File(idFrontPath),
+              //                           fit: BoxFit.cover,
+              //                         ),
+              //                       ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //       SizedBox(width: AppWidth.s16),
+              //       Expanded(
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.stretch,
+              //           children: [
+              //             CustomText(
+              //               text: 'ID Back',
+              //               textStyle: getMediumStyle(
+              //                 fontSize: AppFontSize.s15,
+              //                 color: ColorManager.defaultWhite,
+              //               ),
+              //             ),
+              //             SizedBox(height: AppHeight.s8),
+              //             GestureDetector(
+              //               onTap: onPickIdBack,
+              //               child: Container(
+              //                 key: ValueKey(bloc.idBackVersion),
+              //                 height: AppHeight.s78,
+              //                 decoration: BoxDecoration(
+              //                   color: ColorManager.background,
+              //                   borderRadius: BorderRadius.circular(
+              //                     AppRadius.r18,
+              //                   ),
+              //                   border: Border.all(color: ColorManager.primary),
+              //                 ),
+              //                 child: idBackPath == null
+              //                     ? Icon(
+              //                         Icons.add_a_photo,
+              //                         color: ColorManager.primary,
+              //                       )
+              //                     : ClipRRect(
+              //                         borderRadius: BorderRadius.circular(
+              //                           AppRadius.r18,
+              //                         ),
+              //                         child: Image.file(
+              //                           File(idBackPath),
+              //                           fit: BoxFit.cover,
+              //                         ),
+              //                       ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //   ),
               LocationSourceSelector(
                 title: AppTranslation.location,
                 useMyLocationHint: AppTranslation.useMyLocation,

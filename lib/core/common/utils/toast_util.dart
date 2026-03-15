@@ -10,7 +10,7 @@ void customToast({
   Color? backgroundColor,
   Color? textColor,
 }) => Fluttertoast.showToast(
-  msg: msg,
+  msg: (msg.trim().isEmpty) ? ' ' : msg,
   toastLength: toastLength,
   fontSize: fontSize ?? AppFontSize.s14,
   backgroundColor: backgroundColor,

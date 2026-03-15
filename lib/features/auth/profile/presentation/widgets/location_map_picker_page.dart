@@ -67,15 +67,19 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
 
   Future<void> _goToMyLocation() async {
     setState(() => _isLoadingLocation = true);
-    final position = await LocationPermissionHelper.requestAndGetPosition();
+    final result = await LocationPermissionHelper.requestAndGetPosition();
     if (!mounted) return;
     setState(() => _isLoadingLocation = false);
-    if (position != null) {
-      final point = LatLng(position.latitude, position.longitude);
+    if (result.latitude != null && result.longitude != null) {
+      final point = LatLng(result.latitude!, result.longitude!);
       setState(() => _selectedPoint = point);
       _mapController.move(point, _zoom);
     } else if (mounted) {
-      customToast(msg: AppTranslation.locationPermissionDenied);
+      customToast(
+        msg: result.permissionGranted
+            ? AppTranslation.locationUnavailable
+            : AppTranslation.locationPermissionDenied,
+      );
     }
   }
 

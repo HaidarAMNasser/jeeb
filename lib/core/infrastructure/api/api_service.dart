@@ -69,8 +69,7 @@ abstract class AppApiServiceClient {
     @Field('address') String? address,
     @Field('birthday') String? birthday,
     MultipartFile? image,
-    MultipartFile? idPhotoFront,
-    MultipartFile? idPhotoBack,
+    List<MultipartFile>? images,
   );
 
   @POST("auth/verify")

@@ -71,15 +71,31 @@ class LocationPermissionHelper {
     }
   }
 
-  /// Request permission and get current position in one call.
-  /// Returns (lat, lng) or null if failed.
-  static Future<({double latitude, double longitude})?> requestAndGetPosition() async {
+  /// Result of requesting location: position may be null even when permission
+  /// was granted (e.g. GPS off or first fix not yet available).
+  static Future<({double? latitude, double? longitude, bool permissionGranted})>
+      requestAndGetPosition() async {
     final granted = await requestLocationPermission();
-    if (!granted) return null;
+    if (!granted) {
+      return (latitude: null, longitude: null, permissionGranted: false);
+    }
 
-    final position = await getCurrentPosition();
-    if (position == null) return null;
+    // Give the system a moment to apply permission (fixes "still denied" on some devices)
+    await Future<void>.delayed(const Duration(milliseconds: 400));
 
-    return (latitude: position.latitude, longitude: position.longitude);
+    Position? position = await getCurrentPosition();
+    if (position == null) {
+      try {
+        position = await Geolocator.getLastKnownPosition();
+      } catch (_) {}
+    }
+    if (position == null) {
+      return (latitude: null, longitude: null, permissionGranted: true);
+    }
+    return (
+      latitude: position.latitude,
+      longitude: position.longitude,
+      permissionGranted: true,
+    );
   }
 }
