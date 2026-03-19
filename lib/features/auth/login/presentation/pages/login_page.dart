@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
-import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -15,9 +13,6 @@ import '../widgets/login_header.dart';
 import '../widgets/login_form.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-/// Dev-only: fixed token for testing. Remove when using real login.
-const String _kDevClientToken =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUzLCJlbWFpbCI6ImhhaWRlcmN1c3RvbWVyQGplZWIuY29tIiwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzczNTgyNTQyLCJleHAiOjE3NzYxNzQ1NDJ9.MEBnK5nyvgg6hGxZByBnd27oTZiabF1BV0sQOBxml8I";
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -52,27 +47,9 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       context.read<LoginBloc>().add(
-            LoginSubmitted(
-              email: email,
-              password: password,
-            ),
-          );
+        LoginSubmitted(email: email, password: password),
+      );
     }
-  }
-
-  /// Dev-only: use fixed token and go to client home. Remove later.
-  Future<void> _onDevClientHome(BuildContext context) async {
-    final storage = di.sl<StorageService>();
-    await storage.setUserToken(_kDevClientToken);
-    await storage.setUserRole('CUSTOMER');
-    await storage.setUserId(53);
-    await storage.setLoggedIn(true);
-    await storage.setVerified(true);
-    if (!context.mounted) return;
-    context.pushNamedAndRemoveUntil(
-      Routes.clientHome,
-      predicate: (_) => false,
-    );
   }
 
   @override
@@ -115,17 +92,6 @@ class _LoginPageState extends State<LoginPage> {
                       onLogin: _handleLogin,
                       isLoading: state is LoginLoading,
                     ),
-                    SizedBox(height: AppPadding.p16),
-                    TextButton(
-                      onPressed: () => _onDevClientHome(context),
-                      child: Text(
-                        'Dev: Client home',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: ColorManager.primary.withOpacity(0.8),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -136,4 +102,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

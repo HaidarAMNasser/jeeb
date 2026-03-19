@@ -125,24 +125,42 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
       data['birthday'] = birthday;
     }
 
-    final formData = FormData.fromMap(data);
-    // ID images commented for now
-    // if (images != null) {
-    //   for (var i = 0; i < images.length; i++) {
-    //     formData.files.add(MapEntry('images[$i]', images[i]));
-    //   }
-    // }
+    final hasFiles = image != null || (images != null && images.isNotEmpty);
+    final dynamic requestData;
+    final Options options;
+
+    if (hasFiles) {
+      // Multipart: single Map → FormData. Do NOT set Content-Type; Dio sets multipart + boundary.
+      final formMap = <String, dynamic>{
+        ...data.map((k, v) => MapEntry(k, v is String ? v : v.toString())),
+      };
+      if (image != null) formMap['image'] = image;
+      if (images != null && images.isNotEmpty) {
+        for (var i = 0; i < images.length; i++) {
+          formMap['images[$i]'] = images[i];
+        }
+      }
+      requestData = FormData.fromMap(formMap);
+      options = Options(method: 'POST', headers: headers, extra: extra);
+    } else {
+      // No files → JSON only. One object, numeric types for countryId, latitude, longitude.
+      requestData = data;
+      options = Options(
+        method: 'POST',
+        contentType: Headers.jsonContentType,
+        headers: headers,
+        extra: extra,
+      );
+    }
 
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(
-        Options(method: 'POST', headers: headers, extra: extra)
-            .compose(
-              dio.options,
-              'auth/register',
-              queryParameters: queryParameters,
-              data: formData,
-            )
-            .copyWith(baseUrl: baseUrlApi),
+        options.compose(
+          dio.options,
+          'auth/register',
+          queryParameters: queryParameters,
+          data: requestData,
+        ).copyWith(baseUrl: baseUrlApi),
       ),
     );
 

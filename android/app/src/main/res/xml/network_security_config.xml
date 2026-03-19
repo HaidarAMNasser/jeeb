@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Allow cleartext (HTTP) for development; HTTPS always allowed -->
+<!-- Ensures release build can reach API (HTTPS) and allows cleartext only for API domain if ever needed -->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true">
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
             <certificates src="user" />
         </trust-anchors>
     </base-config>
+    <!-- Allow cleartext only for your API host if it ever redirects to HTTP -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.jeeb2.com</domain>
+        <domain includeSubdomains="true">jeeb2.com</domain>
+    </domain-config>
 </network-security-config>

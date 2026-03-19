@@ -9,7 +9,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/common/utils/date_input_formatter.dart';
+// import 'package:jeeb_app/core/common/utils/date_input_formatter.dart';
 import 'package:jeeb_app/core/presentation/widgets/avatar_image_picker.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
@@ -129,14 +129,14 @@ class RegisterForm extends StatelessWidget {
                 hintText: AppTranslation.enterAddress,
                 controller: bloc.addressController,
               ),
-              CustomTextField(
-                title: AppTranslation.birthday,
-                hintText: AppTranslation.birthdayHint,
-                controller: bloc.birthdayController,
-                keyboardType: TextInputType.datetime,
-                inputFormatters: [DateSlashInputFormatter()],
-                maxLength: 10,
-              ),
+              // CustomTextField(
+              //   title: AppTranslation.birthday,
+              //   hintText: AppTranslation.birthdayHint,
+              //   controller: bloc.birthdayController,
+              //   keyboardType: TextInputType.datetime,
+              //   inputFormatters: [DateSlashInputFormatter()],
+              //   maxLength: 10,
+              // ),
               // ID Front/Back photo pickers commented for now
               // if ((bloc.selectedRole ?? 'CUSTOMER') == 'DELIVERY')
               //   Row(

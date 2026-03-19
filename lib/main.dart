@@ -60,16 +60,16 @@ class _MyAppState extends State<MyApp> {
   // Chucker commented out
   // Offset _chuckerButtonOffset = const Offset(300, 500);
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     final size = MediaQuery.of(context).size;
-  //     setState(() {
-  //       _chuckerButtonOffset = Offset(size.width - 72, size.height - 160);
-  //     });
-  //   });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   final size = MediaQuery.of(context).size;
+    //   setState(() {
+    //     _chuckerButtonOffset = Offset(size.width - 72, size.height - 160);
+    //   });
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {

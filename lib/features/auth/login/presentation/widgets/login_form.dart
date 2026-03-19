@@ -49,20 +49,46 @@ class LoginForm extends StatelessWidget {
           ),
 
           SizedBox(height: AppHeight.s16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                context.pushNamed(Routes.forgotPassword);
-              },
-              child: CustomText(
-                text: AppTranslation.forgotPassword,
-                textStyle: getMediumStyle(
-                  fontSize: AppFontSize.s14,
-                  color: ColorManager.primary,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () async {
+                  final result = await showDialog<String>(
+                    context: context,
+                    builder: (dialogContext) => const DeliveryRegisterDialog(),
+                  );
+                  if (result == 'manual') {
+                    context.pushNamed(
+                      Routes.register,
+                      arguments: {'initialRole': 'DELIVERY'},
+                    );
+                  }
+                },
+                child: CustomText(
+                  text: AppTranslation.joinAsDelivery,
+                  textStyle: getMediumStyle(
+                    fontSize: AppFontSize.s14,
+                    color: ColorManager.primary,
+                  ),
                 ),
               ),
-            ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    context.pushNamed(Routes.forgotPassword);
+                  },
+                  child: CustomText(
+                    text: AppTranslation.forgotPassword,
+                    textStyle: getMediumStyle(
+                      fontSize: AppFontSize.s14,
+                      color: ColorManager.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: AppHeight.s32),
           CustomButton(
@@ -96,27 +122,6 @@ class LoginForm extends StatelessWidget {
             ],
           ),
           SizedBox(height: AppHeight.s16),
-          TextButton(
-            onPressed: () async {
-              final result = await showDialog<String>(
-                context: context,
-                builder: (dialogContext) => const DeliveryRegisterDialog(),
-              );
-              if (result == 'manual') {
-                context.pushNamed(
-                  Routes.register,
-                  arguments: {'initialRole': 'DELIVERY'},
-                );
-              }
-            },
-            child: CustomText(
-              text: AppTranslation.joinAsDelivery,
-              textStyle: getMediumStyle(
-                fontSize: AppFontSize.s14,
-                color: ColorManager.primary,
-              ),
-            ),
-          ),
         ],
       ),
     );
