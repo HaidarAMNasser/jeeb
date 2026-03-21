@@ -9,6 +9,7 @@ class MerchantEntity extends Equatable {
   final String? location; // Not used in UI right now
   final String? phoneNumber;
   final String? image; // Might be null
+  final bool? isOnline;
 
   const MerchantEntity({
     required this.id,
@@ -19,6 +20,7 @@ class MerchantEntity extends Equatable {
     this.location,
     this.phoneNumber,
     this.image,
+    this.isOnline,
   });
 
   @override
@@ -31,6 +33,7 @@ class MerchantEntity extends Equatable {
         location,
         phoneNumber,
         image,
+        isOnline,
       ];
 }
 

@@ -29,7 +29,33 @@ class ClientHomeMerchantsSection extends StatelessWidget {
         }
 
         final merchants = state.merchants;
-        if (merchants.isEmpty) return const SizedBox.shrink();
+        if (merchants.isEmpty) {
+          if (state.isSearchActive) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  text: AppTranslation.merchants,
+                  textStyle: getBoldStyle(
+                    fontSize: AppFontSize.s18,
+                    color: ColorManager.titlesColor,
+                  ),
+                ),
+                SizedBox(height: AppHeight.s12),
+                Center(
+                  child: CustomText(
+                    text: AppTranslation.noResultsFound,
+                    textStyle: getRegularStyle(
+                      fontSize: AppFontSize.s14,
+                      color: ColorManager.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+          return const SizedBox.shrink();
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +75,7 @@ class ClientHomeMerchantsSection extends StatelessWidget {
                     AppRouter.navigateTo(context, Routes.merchants);
                   },
                   child: CustomText(
-                    text: 'View more',
+                    text: AppTranslation.showAll,
                     textStyle: getSemiBoldStyle(
                       fontSize: AppFontSize.s14,
                       color: ColorManager.primary,

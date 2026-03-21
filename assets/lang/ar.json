@@ -149,6 +149,9 @@
   "are_you_sure_delete_merchant": "هل أنت متأكد أنك تريد حذف هذا التاجر؟",
   "search_merchants": "البحث عن التجار",
   "search_merchants_hint": "ابحث عن التجار...",
+  "search_hint_restaurants": "ابحث عن المطاعم...",
+  "search_hint_favorite_food": "ابحث عن طعامك المفضل...",
+  "search_hint_offers": "ابحث عن العروض...",
   "location": "الموقع",
   "delivery_men": "سائقي التوصيل",
   "delivery_man_details": "تفاصيل سائق التوصيل",
@@ -263,5 +266,9 @@
   "reset": "إعادة ضبط",
   "all_categories": "جميع الفئات",
   "basket": "السلة",
-  "my_orders": "طلباتي"
+  "my_orders": "طلباتي",
+  "basket_is_empty": "سلة التسوق الخاصة بك فارغة",
+  "search_results": "نتائج البحث",
+  "no_results_found": "لا توجد نتائج",
+  "start_searching": "ابدأ البحث..."
 }

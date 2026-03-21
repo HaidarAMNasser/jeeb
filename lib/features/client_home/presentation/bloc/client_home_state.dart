@@ -5,6 +5,7 @@ import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 class ClientHomeState extends Equatable {
+  static const Object _unset = Object();
   final bool isLoading;
   final bool isCategoriesLoading;
   final bool isMerchantsLoading;
@@ -58,11 +59,11 @@ class ClientHomeState extends Equatable {
     List<MerchantEntity>? merchants,
     List<ProductEntity>? products,
     List<OfferEntity>? offers,
-    String? selectedCategoryId,
-    String? searchQuery,
-    double? minPrice,
-    double? maxPrice,
-    int? minRating,
+    Object? selectedCategoryId = _unset,
+    Object? searchQuery = _unset,
+    Object? minPrice = _unset,
+    Object? maxPrice = _unset,
+    Object? minRating = _unset,
     int? page,
   }) {
     return ClientHomeState(
@@ -78,11 +79,15 @@ class ClientHomeState extends Equatable {
       merchants: merchants ?? this.merchants,
       products: products ?? this.products,
       offers: offers ?? this.offers,
-      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
-      searchQuery: searchQuery ?? this.searchQuery,
-      minPrice: minPrice ?? this.minPrice,
-      maxPrice: maxPrice ?? this.maxPrice,
-      minRating: minRating ?? this.minRating,
+      selectedCategoryId: selectedCategoryId == _unset
+          ? this.selectedCategoryId
+          : selectedCategoryId as String?,
+      searchQuery: searchQuery == _unset
+          ? this.searchQuery
+          : searchQuery as String?,
+      minPrice: minPrice == _unset ? this.minPrice : minPrice as double?,
+      maxPrice: maxPrice == _unset ? this.maxPrice : maxPrice as double?,
+      minRating: minRating == _unset ? this.minRating : minRating as int?,
       page: page ?? this.page,
     );
   }
@@ -95,6 +100,8 @@ class ClientHomeState extends Equatable {
       selectedCategoryId: null,
     );
   }
+
+  bool get isSearchActive => searchQuery != null && searchQuery!.isNotEmpty;
 
   @override
   List<Object?> get props => [

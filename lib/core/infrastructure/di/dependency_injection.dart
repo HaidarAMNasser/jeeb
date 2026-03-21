@@ -67,6 +67,9 @@ import '../../../features/client_home/presentation/bloc/client_home_state.dart';
 import '../../../features/favorites/data/data_sources/favorites_remote_data_source.dart';
 import '../../../features/favorites/data/repositories/favorites_repository.dart';
 import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
+import '../../../features/search/data/data_sources/search_remote_data_source.dart';
+import '../../../features/search/data/repositories/search_repository_impl.dart';
+import '../../../features/search/domain/repositories/search_repository.dart';
 
 final sl = GetIt.instance;
 
@@ -242,6 +245,15 @@ Future<void> init() async {
       merchantRepository: sl<ListMerchantRepository>(),
       productRepository: sl<ListProductRepository>(),
       offersRepository: sl<ListOfferRepository>(),
+      searchRepository: sl<SearchRepository>(),
     ),
+  );
+
+  //! Global Search
+  sl.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(sl(), sl()),
   );
 }

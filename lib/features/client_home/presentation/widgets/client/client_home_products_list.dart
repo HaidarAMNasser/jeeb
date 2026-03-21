@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
@@ -27,9 +30,49 @@ class ClientHomeProductsList extends StatelessWidget {
 
         final products = state.products;
         if (products.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: AppHeight.s32),
-            child: EmptyStateWidget(message: AppTranslation.noProductsFound),
+          if (state.isSearchActive) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  text: AppTranslation.products,
+                  textStyle: getBoldStyle(
+                    fontSize: AppFontSize.s18,
+                    color: ColorManager.titlesColor,
+                  ),
+                ),
+                SizedBox(height: AppHeight.s12),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: AppHeight.s32),
+                    child: EmptyStateWidget(
+                      message: AppTranslation.noResultsFound,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                text: AppTranslation.products,
+                textStyle: getBoldStyle(
+                  fontSize: AppFontSize.s18,
+                  color: ColorManager.titlesColor,
+                ),
+              ),
+              SizedBox(height: AppHeight.s12),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppHeight.s32),
+                  child: EmptyStateWidget(
+                    message: AppTranslation.noProductsFound,
+                  ),
+                ),
+              ),
+            ],
           );
         }
         return BlocBuilder<FavoritesBloc, FavoritesState>(
@@ -41,17 +84,34 @@ class ClientHomeProductsList extends StatelessWidget {
             final togglingIds = favState is FavoritesLoaded
                 ? favState.togglingProductIds
                 : <String>{};
+            final hasFavoritesState = favState is FavoritesLoaded;
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (int i = 0; i < products.length; i++) ...[
-                  ProductListItem(
-                    product: products[i],
-                    isFavorite: favoriteIds.contains(products[i].id),
-                    isTogglingFavorite: togglingIds.contains(products[i].id),
-                    onToggleFavorite: () => context.read<FavoritesBloc>().add(
-                      ToggleFavoriteEvent(products[i].id),
-                    ),
+                CustomText(
+                  text: AppTranslation.products,
+                  textStyle: getBoldStyle(
+                    fontSize: AppFontSize.s18,
+                    color: ColorManager.titlesColor,
                   ),
+                ),
+                SizedBox(height: AppHeight.s12),
+                for (int i = 0; i < products.length; i++) ...[
+                  (() {
+                    final product = products[i];
+                    final isFavorite = hasFavoritesState
+                        ? favoriteIds.contains(product.id)
+                        : (product.isFavorite ?? false);
+                    return ProductListItem(
+                      product: product,
+                      isFavorite: isFavorite,
+                      isTogglingFavorite: togglingIds.contains(product.id),
+                      onToggleFavorite: () =>
+                          context.read<FavoritesBloc>().add(
+                            ToggleFavoriteEvent(product.id),
+                          ),
+                    );
+                  })(),
                   if (i < products.length - 1) SizedBox(height: AppHeight.s12),
                 ],
               ],

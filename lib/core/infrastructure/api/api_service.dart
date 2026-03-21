@@ -274,6 +274,14 @@ abstract class AppApiServiceClient {
 
   @POST("offers/{id}/delete")
   Future<Response> deleteOffer(@Path('id') String id);
+
+  // Global Search endpoint
+  @GET("search")
+  Future<Response> search({
+    @Query('q') required String query,
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+  });
 }
 
 // Annotations for API methods (simplified versions)

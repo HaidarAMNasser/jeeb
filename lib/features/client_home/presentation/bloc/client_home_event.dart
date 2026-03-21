@@ -51,3 +51,11 @@ class ApplyFiltersEvent extends ClientHomeEvent {
 class LoadMoreProductsEvent extends ClientHomeEvent {
   const LoadMoreProductsEvent();
 }
+
+class GlobalSearchEvent extends ClientHomeEvent {
+  final String query;
+  const GlobalSearchEvent(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}

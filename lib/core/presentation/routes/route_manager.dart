@@ -176,12 +176,17 @@ class AppRouter {
 
       case Routes.clientHome:
         return _buildRoute(
-          BlocProvider<FavoritesBloc>.value(
-            value: di.sl<FavoritesBloc>(),
-            child: BlocProvider<ClientHomeBloc>(
-              create: (_) => di.sl<ClientHomeBloc>(),
-              child: const ClientHomePage(),
-            ),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider<FavoritesBloc>.value(value: di.sl<FavoritesBloc>()),
+              BlocProvider<ClientHomeBloc>(
+                create: (_) => di.sl<ClientHomeBloc>(),
+              ),
+              BlocProvider<ProfileBloc>(
+                create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
+              ),
+            ],
+            child: const ClientHomePage(),
           ),
           settings,
         );

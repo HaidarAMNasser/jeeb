@@ -9,6 +9,8 @@ import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merc
 import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/paginated_products.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
+import 'package:jeeb_app/features/search/domain/repositories/search_repository.dart';
+import 'package:jeeb_app/features/search/domain/entities/search_result.dart';
 
 import 'package:jeeb_app/features/category/list_category/domain/entities/paginated_categories.dart';
 
@@ -17,6 +19,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
   final ListMerchantRepository _merchantRepository;
   final ListProductRepository _productRepository;
   final ListOfferRepository _offersRepository;
+  final SearchRepository _searchRepository;
 
   static const int _merchantsLimit = 6;
   static const int _productsLimit = 20;
@@ -27,10 +30,12 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
     required ListMerchantRepository merchantRepository,
     required ListProductRepository productRepository,
     required ListOfferRepository offersRepository,
+    required SearchRepository searchRepository,
   }) : _categoryRepository = categoryRepository,
        _merchantRepository = merchantRepository,
        _productRepository = productRepository,
        _offersRepository = offersRepository,
+       _searchRepository = searchRepository,
        super(const ClientHomeState()) {
     on<LoadClientHomeEvent>(_onLoad);
     on<SelectCategoryEvent>(_onSelectCategory);
@@ -38,6 +43,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
     on<RefreshClientHomeEvent>(_onRefresh);
     on<ApplyFiltersEvent>(_onApplyFilters);
     on<LoadMoreProductsEvent>(_onLoadMoreProducts);
+    on<GlobalSearchEvent>(_onGlobalSearch);
   }
 
   Future<void> _onLoad(
@@ -172,6 +178,10 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
         isProductsLoading: true,
         page: 1,
         hasReachedMax: false,
+        minPrice:
+            null, // Clear price filters when selecting category from home chips
+        maxPrice: null,
+        minRating: null,
       ),
     );
 
@@ -180,9 +190,10 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
       limit: _productsLimit,
       categoryId: event.categoryId,
       search: state.searchQuery?.isEmpty ?? true ? null : state.searchQuery,
-      minPrice: state.minPrice,
-      maxPrice: state.maxPrice,
-      minRating: state.minRating,
+      // Pass nulls to API to ensure a clean category search
+      minPrice: null,
+      maxPrice: null,
+      minRating: null,
     );
 
     result.fold(
@@ -294,22 +305,14 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
     result.fold(
       (f) =>
           emit(state.copyWith(isLoadingMore: false, errorMessage: f.message)),
-      (paginatedProducts) {
-        if (paginatedProducts.products.isEmpty) {
-          emit(state.copyWith(isLoadingMore: false, hasReachedMax: true));
-        } else {
-          emit(
-            state.copyWith(
-              isLoadingMore: false,
-              products: List.of(state.products)
-                ..addAll(paginatedProducts.products),
-              page: nextPage,
-              hasReachedMax:
-                  !(paginatedProducts.pagination?.hasNextPage ?? false),
-            ),
-          );
-        }
-      },
+      (paginatedProducts) => emit(
+        state.copyWith(
+          isLoadingMore: false,
+          page: nextPage,
+          products: [...state.products, ...paginatedProducts.products],
+          hasReachedMax: !(paginatedProducts.pagination?.hasNextPage ?? false),
+        ),
+      ),
     );
   }
 
@@ -317,6 +320,90 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
     RefreshClientHomeEvent event,
     Emitter<ClientHomeState> emit,
   ) async {
+    emit(state.clearFilters().copyWith(searchQuery: null));
     add(const LoadClientHomeEvent());
+  }
+
+  Future<void> _onGlobalSearch(
+    GlobalSearchEvent event,
+    Emitter<ClientHomeState> emit,
+  ) async {
+    if (event.query.isEmpty) {
+      add(const RefreshClientHomeEvent());
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        searchQuery: event.query,
+        isMerchantsLoading: true,
+        isProductsLoading: true,
+        isOffersLoading: true,
+        page: 1,
+        hasReachedMax: false,
+        // Keep categories intact during search; only clear sections affected by search
+        merchants: [],
+        products: [],
+        offers: [],
+      ),
+    );
+
+    final result = await _searchRepository.search(query: event.query);
+
+    result.fold(
+      (f) {
+        if (state.searchQuery != event.query) return;
+        print('ClientHomeBloc._onGlobalSearch: failure=${f.message}');
+        emit(
+          state.copyWith(
+            isMerchantsLoading: false,
+            isProductsLoading: false,
+            isOffersLoading: false,
+            errorMessage: f.message,
+          ),
+        );
+      },
+      (paginatedResults) {
+        if (state.searchQuery != event.query) return;
+        print(
+          'ClientHomeBloc._onGlobalSearch: paginatedResults.results length=${paginatedResults.results.length}',
+        );
+        for (final item in paginatedResults.results) {
+          print(
+            'ClientHomeBloc._onGlobalSearch: result type=${item.runtimeType}, value=$item',
+          );
+        }
+
+        final merchants = paginatedResults.results
+            .whereType<MerchantSearchResult>()
+            .map((e) => e.merchant)
+            .toList();
+        final products = paginatedResults.results
+            .whereType<ProductSearchResult>()
+            .map((e) => e.product)
+            .toList();
+        final offers = paginatedResults.results
+            .whereType<OfferSearchResult>()
+            .map((e) => e.offer)
+            .toList();
+
+        print(
+          'ClientHomeBloc._onGlobalSearch: merchants=${merchants.length}, products=${products.length}, offers=${offers.length}',
+        );
+
+        emit(
+          state.copyWith(
+            isMerchantsLoading: false,
+            isProductsLoading: false,
+            isOffersLoading: false,
+            merchants: merchants,
+            products: products,
+            offers: offers,
+            hasReachedMax:
+                true, // Search results usually don't support infinite scroll same way products do
+          ),
+        );
+      },
+    );
   }
 }

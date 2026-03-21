@@ -69,14 +69,12 @@ class OfferListItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: CustomText(
+                        child: _scrollableText(
                           text: offer.displayTitle,
                           textStyle: getBoldStyle(
                             fontSize: AppFontSize.s18,
                             color: ColorManager.productNameColor,
                           ),
-                          maxLines: 2,
-                          textOverflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Container(
@@ -102,14 +100,12 @@ class OfferListItem extends StatelessWidget {
                   if (offer.displayDescription != null &&
                       offer.displayDescription!.isNotEmpty) ...[
                     SizedBox(height: AppHeight.s8),
-                    CustomText(
+                    _scrollableText(
                       text: offer.displayDescription!,
                       textStyle: getRegularStyle(
                         fontSize: AppFontSize.s12,
                         color: ColorManager.descriptionColor,
                       ),
-                      maxLines: 2,
-                      textOverflow: TextOverflow.ellipsis,
                     ),
                   ],
                   SizedBox(height: AppHeight.s8),
@@ -146,5 +142,23 @@ class OfferListItem extends StatelessWidget {
     final e =
         end != null ? '${end.day}/${end.month}/${end.year}' : '—';
     return '$s - $e';
+  }
+
+  Widget _scrollableText({
+    required String text,
+    required TextStyle textStyle,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      height: (textStyle.fontSize ?? 14) + 8,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: CustomText(
+          text: text,
+          textStyle: textStyle,
+          maxLines: 1,
+        ),
+      ),
+    );
   }
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
+    as di;
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
+import 'package:jeeb_app/features/delivery/home/presentation/pages/delivery_home_page.dart';
+import 'package:jeeb_app/features/delivery/orders/presentation/pages/delivery_orders_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
@@ -22,18 +25,16 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
   Widget _buildScreen(int index) {
     switch (index) {
       case 0:
-        return const Scaffold(body: Center(child: Text('Home (Blank)')));
+        return const DeliveryHomePage();
       case 1:
-        return const Scaffold(body: Center(child: Text('My Orders')));
+        return const DeliveryOrdersPage();
       case 2:
         return MultiBlocProvider(
           providers: [
             BlocProvider<ProfileBloc>(
               create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
             ),
-            BlocProvider<LogoutBloc>(
-              create: (_) => di.sl<LogoutBloc>(),
-            ),
+            BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
           ],
           child: const ProfilePage(),
         );

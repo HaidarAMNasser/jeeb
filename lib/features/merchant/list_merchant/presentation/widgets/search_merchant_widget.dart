@@ -51,6 +51,8 @@ class _SearchMerchantWidgetState extends State<SearchMerchantWidget> {
         controller: _searchController,
         onSubmitted: _onSearchSubmitted,
         prefixIcon: Icon(Icons.search, color: ColorManager.primary),
+        textColor: ColorManager.productNameColor,
+        hintColor: ColorManager.textSecondary,
         suffixIcon: _searchController.text.isNotEmpty
             ? IconButton(
                 icon: Icon(

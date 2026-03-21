@@ -30,14 +30,10 @@ class OfferCardContent extends StatelessWidget {
             _line(offer.merchant!.name, AppFontSize.s11),
             SizedBox(height: AppHeight.s4),
           ],
-          CustomText(
-            text: offer.displayTitle,
-            textStyle: getBoldStyle(
-              fontSize: AppFontSize.s16,
-              color: ColorManager.defaultWhite,
-            ),
-            maxLines: 2,
-            textOverflow: TextOverflow.ellipsis,
+          _line(
+            offer.displayTitle,
+            AppFontSize.s16,
+            isBold: true,
           ),
           if (offer.displayDescription != null &&
               offer.displayDescription!.isNotEmpty) ...[
@@ -65,15 +61,26 @@ class OfferCardContent extends StatelessWidget {
     );
   }
 
-  Widget _line(String text, double fontSize) {
-    return CustomText(
-      text: text,
-      textStyle: getRegularStyle(
-        fontSize: fontSize,
-        color: ColorManager.defaultWhite.withOpacity(0.9),
+  Widget _line(String text, double fontSize, {bool isBold = false}) {
+    return SizedBox(
+      width: double.infinity,
+      height: fontSize + 8,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: CustomText(
+          text: text,
+          textStyle: isBold
+              ? getBoldStyle(
+                  fontSize: fontSize,
+                  color: ColorManager.defaultWhite,
+                )
+              : getRegularStyle(
+                  fontSize: fontSize,
+                  color: ColorManager.defaultWhite.withOpacity(0.9),
+                ),
+          maxLines: 1,
+        ),
       ),
-      maxLines: 1,
-      textOverflow: TextOverflow.ellipsis,
     );
   }
 

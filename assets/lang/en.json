@@ -98,6 +98,10 @@
   "register": "Register",
   "email": "Email",
   "password": "Password",
+  "search_results": "Search Results",
+  "no_results_found": "No results found",
+  "start_searching": "Start searching...",
+
   "enter_email": "Enter your email",
   "enter_password": "Enter your password",
   "login_success": "Login successful",
@@ -149,6 +153,9 @@
   "are_you_sure_delete_merchant": "Are you sure you want to delete this merchant?",
   "search_merchants": "Search Merchants",
   "search_merchants_hint": "Search merchants...",
+  "search_hint_restaurants": "Search for restaurants...",
+  "search_hint_favorite_food": "Search for your favorite food...",
+  "search_hint_offers": "Search for offers...",
   "location": "Location",
   "delivery_men": "Delivery Men",
   "delivery_man_details": "Delivery Man Details",
@@ -263,5 +270,6 @@
   "reset": "Reset",
   "all_categories": "All Categories",
   "basket": "Basket",
-  "my_orders": "My Orders"
+  "my_orders": "My Orders",
+  "basket_is_empty": "Your basket is empty"
 }

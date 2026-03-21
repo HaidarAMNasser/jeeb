@@ -66,7 +66,7 @@ class ClientHomeCategoriesSection extends StatelessWidget {
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return CategoryChip(
-                      label: 'All',
+                      label: AppTranslation.allCategories,
                       isSelected: selectedId == null,
                       onTap: () => context.read<ClientHomeBloc>().add(
                         const SelectCategoryEvent(null),

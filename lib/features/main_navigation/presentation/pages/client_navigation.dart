@@ -9,6 +9,10 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
 import 'package:jeeb_app/features/client_home/presentation/pages/client_home_page.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
+import 'package:jeeb_app/features/favorites/presentation/pages/favorites_page.dart';
+import 'package:jeeb_app/features/order/list_order/presentation/pages/list_order_page.dart';
+import 'package:jeeb_app/features/order/list_order/presentation/bloc/list_order_bloc.dart';
+import 'package:jeeb_app/features/basket/presentation/pages/basket_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
@@ -32,28 +36,24 @@ class _ClientNavigationState extends State<ClientNavigation> {
             BlocProvider<ClientHomeBloc>(
               create: (_) => di.sl<ClientHomeBloc>(),
             ),
+            BlocProvider<ProfileBloc>(
+              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
+            ),
           ],
           child: const ClientHomePage(),
         );
       case 1:
         return BlocProvider<FavoritesBloc>.value(
-          value: di.sl<FavoritesBloc>(),
-          child: const Scaffold(body: Center(child: Text('Favorites'))),
+          value: di.sl<FavoritesBloc>()..add(const LoadFavoritesEvent()),
+          child: const FavoritesPage(),
         );
       case 2:
-        return const Scaffold(body: Center(child: Text('Orders')));
-      case 3:
-        return const Scaffold(body: Center(child: Text('Basket')));
-      case 4:
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider<ProfileBloc>(
-              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
-            ),
-            BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
-          ],
-          child: const ProfilePage(),
+        return BlocProvider<ListOrderBloc>(
+          create: (_) => di.sl<ListOrderBloc>()..add(const GetOrdersEvent()),
+          child: const ListOrderPage(),
         );
+      case 3:
+        return const BasketPage();
       default:
         return const SizedBox.shrink();
     }
@@ -97,24 +97,19 @@ class _ClientNavigationState extends State<ClientNavigation> {
               label: AppTranslation.home,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.favorite_outline),
+              icon: const Icon(Icons.favorite_outlined),
               activeIcon: const Icon(Icons.favorite),
               label: AppTranslation.favorites,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.shopping_bag_outlined),
-              activeIcon: const Icon(Icons.shopping_bag),
+              icon: const Icon(Icons.assignment_outlined),
+              activeIcon: const Icon(Icons.assignment),
               label: AppTranslation.orders,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.shopping_cart_outlined),
-              activeIcon: const Icon(Icons.shopping_cart),
+              icon: const Icon(Icons.shopping_basket_outlined),
+              activeIcon: const Icon(Icons.shopping_basket),
               label: AppTranslation.basket,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: AppTranslation.profile,
             ),
           ],
         ),

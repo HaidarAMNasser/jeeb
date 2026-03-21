@@ -85,6 +85,14 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                           _selectedCategoryId = null;
                           _minRating = null;
                         });
+                        context.read<ClientHomeBloc>().add(
+                          const ApplyFiltersEvent(
+                            minPrice: null,
+                            maxPrice: null,
+                            minRating: null,
+                            categoryId: null,
+                          ),
+                        );
                       },
                       child: CustomText(
                         text: AppTranslation.reset,
@@ -118,6 +126,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                         keyboardType: TextInputType.number,
                         filledColor: ColorManager.surface,
                         textColor: ColorManager.productNameColor,
+                        hintColor: ColorManager.textSecondary,
                       ),
                     ),
                     SizedBox(width: AppPadding.p16),
@@ -129,6 +138,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                         keyboardType: TextInputType.number,
                         filledColor: ColorManager.surface,
                         textColor: ColorManager.productNameColor,
+                        hintColor: ColorManager.textSecondary,
                       ),
                     ),
                   ],

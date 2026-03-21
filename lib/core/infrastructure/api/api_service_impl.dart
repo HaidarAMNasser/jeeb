@@ -1267,4 +1267,35 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
 
     return result;
   }
+
+  @override
+  Future<Response> search({
+    required String query,
+    int? page,
+    int? limit,
+  }) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      'q': query,
+      if (page != null) 'page': page,
+      if (limit != null) 'limit': limit,
+    };
+    final headers = <String, dynamic>{};
+    const data = <String, dynamic>{};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'GET', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'search',
+              queryParameters: queryParameters,
+              data: data,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
 }
