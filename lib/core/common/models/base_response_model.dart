@@ -1,9 +1,12 @@
+import 'pagination_model.dart';
+
 class BaseResponseModel<T> {
   bool? success;
   int? status;
   String? message;
   int? statusCode;
   T? data;
+  PaginationModel? pagination;
 
   BaseResponseModel({
     required this.success,
@@ -11,6 +14,7 @@ class BaseResponseModel<T> {
     required this.status,
     required this.statusCode,
     required this.data,
+    this.pagination,
   });
 
   factory BaseResponseModel.fromJson(
@@ -23,6 +27,9 @@ class BaseResponseModel<T> {
       message: json['message'] as String?,
       statusCode: (json['statusCode'] ?? json['status_code']) as int?,
       data: json['data'] != null ? fromJsonT(json['data']) : null,
+      pagination: json['pagination'] != null
+          ? PaginationModel.fromJson(json['pagination'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -33,6 +40,7 @@ class BaseResponseModel<T> {
       'message': message,
       'status_code': statusCode,
       'data': data != null ? toJsonT(data as T) : null,
+      'pagination': pagination?.toJson(),
     };
   }
 }

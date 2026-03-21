@@ -61,11 +61,12 @@ import '../../../features/offer/offer_details/data/data_sources/offer_details_da
 import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
 
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
-import '../../../features/client_home/presentation/cubit/client_home_cubit.dart';
+import '../../../features/client_home/presentation/bloc/client_home_bloc.dart';
+import '../../../features/client_home/presentation/bloc/client_home_event.dart';
+import '../../../features/client_home/presentation/bloc/client_home_state.dart';
 import '../../../features/favorites/data/data_sources/favorites_remote_data_source.dart';
 import '../../../features/favorites/data/repositories/favorites_repository.dart';
 import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
-
 
 final sl = GetIt.instance;
 
@@ -111,7 +112,6 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ListProductRepository(sl(), sl()));
 
- 
   //! Product Details Dependencies
   sl.registerFactory<ProductDetailsRemoteDataSource>(
     () => ProductDetailsRemoteDataSourceImpl(sl()),
@@ -140,7 +140,8 @@ Future<void> init() async {
   );
   sl.registerFactory(() => VerifyRepository(sl(), sl()));
   sl.registerFactory(
-      () => VerifyBloc(sl(), sl<StorageService>(), sl<ProfileRepository>()));
+    () => VerifyBloc(sl(), sl<StorageService>(), sl<ProfileRepository>()),
+  );
 
   //! Auth Dependencies - Forgot Password
   sl.registerFactory<ForgotPasswordRemoteDataSource>(
@@ -161,7 +162,9 @@ Future<void> init() async {
     () => ProfileRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => ProfileRepository(sl(), sl()));
-  sl.registerFactory(() => ProfileBloc(sl<ProfileRepository>(), sl<StorageService>()));
+  sl.registerFactory(
+    () => ProfileBloc(sl<ProfileRepository>(), sl<StorageService>()),
+  );
 
   //! Auth Dependencies - Logout
   sl.registerFactory<LogoutRemoteDataSource>(
@@ -214,7 +217,6 @@ Future<void> init() async {
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(() => OrderDetailsBloc(sl()));
 
- 
   sl.registerFactory<ListOfferRemoteDataSource>(
     () => ListOfferRemoteDataSourceImpl(sl()),
   );
@@ -234,8 +236,8 @@ Future<void> init() async {
   sl.registerLazySingleton<FavoritesBloc>(() => FavoritesBloc(sl()));
 
   //! Client Home (customer role)
-  sl.registerFactory<ClientHomeCubit>(
-    () => ClientHomeCubit(
+  sl.registerFactory<ClientHomeBloc>(
+    () => ClientHomeBloc(
       categoryRepository: sl<ListCategoryRepository>(),
       merchantRepository: sl<ListMerchantRepository>(),
       productRepository: sl<ListProductRepository>(),

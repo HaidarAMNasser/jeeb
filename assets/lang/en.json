@@ -252,6 +252,16 @@
   "back_to_login": "Back to Login",
   "products_count_n": "%s product(s)",
   "favorites": "Favorites",
-  "no_favorites_found": "No favorites yet"
-
+  "no_favorites_found": "No favorites yet",
+  "filters": "Filters",
+  "min_price": "Min Price",
+  "max_price": "Max Price",
+  "min_price_hint": "0",
+  "max_price_hint": "1000",
+  "min_rating": "Min Rating",
+  "apply": "Apply",
+  "reset": "Reset",
+  "all_categories": "All Categories",
+  "basket": "Basket",
+  "my_orders": "My Orders"
 }

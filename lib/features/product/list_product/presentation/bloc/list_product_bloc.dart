@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/data/repositories/list_product_repository.dart';
+import 'package:jeeb_app/features/product/list_product/domain/entities/paginated_products.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 part 'list_product_event.dart';
@@ -34,12 +35,15 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
 
             result.fold(
               (failure) => emit(ListProductError(message: failure.message)),
-              (products) {
-                final updatedProducts = [...currentState.products, ...products];
+              (paginatedProducts) {
+                final updatedProducts = [
+                  ...currentState.products,
+                  ...paginatedProducts.products,
+                ];
                 emit(
                   ListProductLoaded(
                     products: updatedProducts,
-                    hasMore: products.length == _pageSize,
+                    hasMore: paginatedProducts.pagination?.hasNextPage ?? false,
                     currentPage: nextPage,
                     merchantId: currentState.merchantId,
                   ),
@@ -59,10 +63,10 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
 
           result.fold(
             (failure) => emit(ListProductError(message: failure.message)),
-            (products) => emit(
+            (paginatedProducts) => emit(
               ListProductLoaded(
-                products: products,
-                hasMore: products.length == _pageSize,
+                products: paginatedProducts.products,
+                hasMore: paginatedProducts.pagination?.hasNextPage ?? false,
                 currentPage: 1,
                 merchantId: event.merchantId,
               ),

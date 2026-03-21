@@ -8,6 +8,7 @@ import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
 import 'package:jeeb_app/features/product/list_product/data/data_sources/list_product_data_source.dart';
 import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
 import 'package:jeeb_app/features/product/list_product/data/models/product_model.dart';
+import 'package:jeeb_app/features/product/list_product/domain/entities/paginated_products.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 class ListProductRepository {
@@ -16,12 +17,15 @@ class ListProductRepository {
 
   const ListProductRepository(this._remoteDataSource, this._networkInfo);
 
-  Future<Either<Failure, List<ProductEntity>>> getProducts({
+  Future<Either<Failure, PaginatedProducts>> getProducts({
     int? page,
     int? limit,
     String? search,
     String? categoryId,
     String? restaurantId,
+    double? minPrice,
+    double? maxPrice,
+    int? minRating,
   }) async {
     if (!await _networkInfo.isConnected) {
       return const Left(NetworkFailure());
@@ -33,6 +37,9 @@ class ListProductRepository {
         search: search,
         categoryId: categoryId,
         restaurantId: restaurantId,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        minRating: minRating,
       );
 
       BaseResponseModel<List<ProductModel>>
@@ -76,7 +83,12 @@ class ListProductRepository {
         }
 
         try {
-          return Right(baseResponseModel.data!.toDomain());
+          return Right(
+            PaginatedProducts(
+              products: baseResponseModel.data!.toDomain(),
+              pagination: baseResponseModel.pagination,
+            ),
+          );
         } catch (domainError) {
           return Left(ErrorHandler.handle(domainError));
         }

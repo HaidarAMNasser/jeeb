@@ -9,7 +9,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart'
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 /// A reusable paginated dropdown widget with scroll detection
-/// 
+///
 /// Generic type T should be the entity/model type
 /// displayText function extracts the display text from the item
 /// onLoadMore is called when user scrolls near bottom (90% threshold)
@@ -30,6 +30,8 @@ class CustomPaginatedDropdown<T> extends StatefulWidget {
   final double? maxHeight;
   final bool isReadOnly;
 
+  final Widget Function(BuildContext, T, bool)? itemBuilder;
+
   const CustomPaginatedDropdown({
     super.key,
     required this.title,
@@ -47,6 +49,7 @@ class CustomPaginatedDropdown<T> extends StatefulWidget {
     this.isRequired = false,
     this.maxHeight,
     this.isReadOnly = false,
+    this.itemBuilder,
   });
 
   @override
@@ -207,9 +210,7 @@ class _CustomPaginatedDropdownState<T>
           ),
         if (_isExpanded && !widget.isReadOnly && widget.items.isNotEmpty)
           Container(
-            constraints: BoxConstraints(
-              maxHeight: widget.maxHeight ?? 250,
-            ),
+            constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 250),
             decoration: BoxDecoration(
               color: ColorManager.defaultWhite,
               border: Border(
@@ -249,36 +250,38 @@ class _CustomPaginatedDropdownState<T>
                       _isExpanded = false;
                     });
                   },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppPadding.p16,
-                      vertical: AppHeight.s12,
-                    ),
-                    color: isSelected
-                        ? ColorManager.primary.withOpacity(0.1)
-                        : Colors.transparent,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: CustomText(
-                            text: widget.displayText(item),
-                            textStyle: getRegularStyle(
-                              fontSize: AppFontSize.s14,
-                              color: isSelected
-                                  ? ColorManager.primary
-                                  : ColorManager.productNameColor,
-                            ),
+                  child: widget.itemBuilder != null
+                      ? widget.itemBuilder!(context, item, isSelected)
+                      : Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppPadding.p16,
+                            vertical: AppHeight.s12,
+                          ),
+                          color: isSelected
+                              ? ColorManager.primary.withOpacity(0.1)
+                              : Colors.transparent,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: CustomText(
+                                  text: widget.displayText(item),
+                                  textStyle: getRegularStyle(
+                                    fontSize: AppFontSize.s14,
+                                    color: isSelected
+                                        ? ColorManager.primary
+                                        : ColorManager.productNameColor,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check,
+                                  size: 20,
+                                  color: ColorManager.primary,
+                                ),
+                            ],
                           ),
                         ),
-                        if (isSelected)
-                          Icon(
-                            Icons.check,
-                            size: 20,
-                            color: ColorManager.primary,
-                          ),
-                      ],
-                    ),
-                  ),
                 );
               },
             ),
@@ -287,4 +290,3 @@ class _CustomPaginatedDropdownState<T>
     );
   }
 }
-

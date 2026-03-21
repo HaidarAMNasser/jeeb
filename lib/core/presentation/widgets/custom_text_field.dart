@@ -22,6 +22,7 @@ class CustomTextField extends StatelessWidget {
   final bool? obscureText;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
+  final Color? textColor;
   const CustomTextField({
     super.key,
     this.title,
@@ -36,6 +37,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.maxLength,
+    this.textColor,
   });
 
   @override
@@ -95,7 +97,7 @@ class CustomTextField extends StatelessWidget {
           ),
           style: getRegularStyle(
             fontSize: AppFontSize.s14,
-            color: ColorManager.defaultWhite,
+            color: textColor ?? ColorManager.defaultWhite,
           ),
         ),
       ],

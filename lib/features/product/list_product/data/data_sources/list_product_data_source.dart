@@ -8,6 +8,9 @@ abstract class ListProductRemoteDataSource {
     String? search,
     String? categoryId,
     String? restaurantId,
+    double? minPrice,
+    double? maxPrice,
+    int? minRating,
   });
 }
 
@@ -23,6 +26,9 @@ class ListProductRemoteDataSourceImpl implements ListProductRemoteDataSource {
     String? search,
     String? categoryId,
     String? restaurantId,
+    double? minPrice,
+    double? maxPrice,
+    int? minRating,
   }) {
     return _appApiServiceClient.getProducts(
       page,
@@ -30,6 +36,9 @@ class ListProductRemoteDataSourceImpl implements ListProductRemoteDataSource {
       search,
       categoryId,
       restaurantId,
+      minPrice,
+      maxPrice,
+      minRating,
     );
   }
 }

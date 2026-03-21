@@ -4,13 +4,14 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
-import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_cubit.dart';
-import 'package:jeeb_app/features/client_home/presentation/cubit/client_home_state.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_search_bar.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_categories_section.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_merchants_section.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_offers_slider.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_products_list.dart';
+import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
+import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_event.dart';
+import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_search_bar.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_categories_section.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/merchants/client_home_merchants_section.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/offer/client_home_offers_slider.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_products_list.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ClientHomePage extends StatefulWidget {
@@ -21,11 +22,27 @@ class ClientHomePage extends StatefulWidget {
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
-    context.read<ClientHomeCubit>().load();
+    context.read<ClientHomeBloc>().add(const LoadClientHomeEvent());
     context.read<FavoritesBloc>().add(const LoadFavoritesEvent());
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<ClientHomeBloc>().add(const LoadMoreProductsEvent());
+    }
   }
 
   @override
@@ -33,39 +50,57 @@ class _ClientHomePageState extends State<ClientHomePage> {
     return Scaffold(
       backgroundColor: ColorManager.background,
       body: SafeArea(
-        child: BlocBuilder<ClientHomeCubit, ClientHomeState>(
+        child: BlocBuilder<ClientHomeBloc, ClientHomeState>(
           builder: (context, state) {
-        
-            if (state.isLoading && state.categories.isEmpty) {
-              return const Center(child: CustomCircleIndicator());
-            }
             if (state.errorMessage != null && state.categories.isEmpty) {
               return ErrorStateWidget(
                 message: state.errorMessage!,
-                onRetry: () => context.read<ClientHomeCubit>().refresh(),
+                onRetry: () => context.read<ClientHomeBloc>().add(
+                  const LoadClientHomeEvent(),
+                ),
               );
             }
             return RefreshIndicator(
-              onRefresh: () => context.read<ClientHomeCubit>().refresh(),
+              onRefresh: () async {
+                context.read<ClientHomeBloc>().add(
+                  const RefreshClientHomeEvent(),
+                );
+              },
               color: ColorManager.primary,
-              child: SingleChildScrollView(
+              child: CustomScrollView(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.all(AppPadding.p16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const ClientHomeSearchBar(),
-                    SizedBox(height: AppHeight.s24),
-                    const ClientHomeCategoriesSection(),
-                    SizedBox(height: AppHeight.s24),
-                    const ClientHomeMerchantsSection(),
-                    SizedBox(height: AppHeight.s24),
-                    const ClientHomeOffersSlider(),
-                    SizedBox(height: AppHeight.s24),
-                    const ClientHomeProductsList(),
-                    SizedBox(height: AppHeight.s24),
-                  ],
-                ),
+                slivers: [
+                  SliverPadding(
+                    padding: EdgeInsets.all(AppPadding.p16),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        const ClientHomeSearchBar(),
+                        SizedBox(height: AppHeight.s24),
+                        const ClientHomeCategoriesSection(),
+                        SizedBox(height: AppHeight.s24),
+                        const ClientHomeMerchantsSection(),
+                        SizedBox(height: AppHeight.s24),
+                        const ClientHomeOffersSlider(),
+                        SizedBox(height: AppHeight.s24),
+                      ]),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
+                    sliver: const SliverToBoxAdapter(
+                      child: ClientHomeProductsList(),
+                    ),
+                  ),
+                  if (state.isLoadingMore)
+                    const SliverPadding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      sliver: SliverToBoxAdapter(
+                        child: Center(child: CustomCircleIndicator()),
+                      ),
+                    ),
+                  SliverToBoxAdapter(child: SizedBox(height: AppHeight.s24)),
+                ],
               ),
             );
           },

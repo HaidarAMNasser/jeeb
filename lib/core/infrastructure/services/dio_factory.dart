@@ -9,7 +9,7 @@ import '../../common/utils/toast_util.dart';
 import '../../presentation/localization/app_translation.dart';
 import 'dio_cache_interceptor.dart';
 import 'storage_service.dart';
-// import 'package:chucker_flutter/chucker_flutter.dart';
+import 'package:chucker_flutter/chucker_flutter.dart';
 
 const String accept = "Accept";
 const String acceptEncoding = "Accept-Encoding";
@@ -68,8 +68,8 @@ class DioFactory {
       defaultCacheDuration: const Duration(minutes: 5),
     );
 
-    // Chucker commented out
-    // dio.interceptors.add(ChuckerDioInterceptor());
+    // Chucker
+    dio.interceptors.add(ChuckerDioInterceptor());
     dio.interceptors.add(
       AppInterceptors(_storageService, _navigationService, cacheInterceptor),
     );

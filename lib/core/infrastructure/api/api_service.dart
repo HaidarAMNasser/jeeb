@@ -122,7 +122,10 @@ abstract class AppApiServiceClient {
 
   // Category endpoints
   @GET("apiAdmin/Category/all")
-  Future<Response> getCategories();
+  Future<Response> getCategories(
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+  );
 
   @POST("apiAdmin/Category/create")
   Future<Response> addCategory(@Field('name') String name);
@@ -135,6 +138,9 @@ abstract class AppApiServiceClient {
     @Query('search') String? search,
     @Query('categoryId') String? categoryId,
     @Query('restaurantId') String? restaurantId,
+    @Query('minPrice') double? minPrice,
+    @Query('maxPrice') double? maxPrice,
+    @Query('minRating') int? minRating,
   );
 
   @GET("products/{id}")

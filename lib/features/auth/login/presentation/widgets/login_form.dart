@@ -52,29 +52,31 @@ class LoginForm extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton(
-                onPressed: () async {
-                  final result = await showDialog<String>(
-                    context: context,
-                    builder: (dialogContext) => const DeliveryRegisterDialog(),
-                  );
-                  if (result == 'manual') {
-                    context.pushNamed(
-                      Routes.register,
-                      arguments: {'initialRole': 'DELIVERY'},
+              Flexible(
+                child: TextButton(
+                  onPressed: () async {
+                    final result = await showDialog<String>(
+                      context: context,
+                      builder: (dialogContext) =>
+                          const DeliveryRegisterDialog(),
                     );
-                  }
-                },
-                child: CustomText(
-                  text: AppTranslation.joinAsDelivery,
-                  textStyle: getMediumStyle(
-                    fontSize: AppFontSize.s14,
-                    color: ColorManager.primary,
+                    if (result == 'manual') {
+                      context.pushNamed(
+                        Routes.register,
+                        arguments: {'initialRole': 'DELIVERY'},
+                      );
+                    }
+                  },
+                  child: CustomText(
+                    text: AppTranslation.joinAsDelivery,
+                    textStyle: getMediumStyle(
+                      fontSize: AppFontSize.s14,
+                      color: ColorManager.primary,
+                    ),
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.centerRight,
+              Flexible(
                 child: TextButton(
                   onPressed: () {
                     context.pushNamed(Routes.forgotPassword);
@@ -85,6 +87,7 @@ class LoginForm extends StatelessWidget {
                       fontSize: AppFontSize.s14,
                       color: ColorManager.primary,
                     ),
+                    textAlign: TextAlign.right,
                   ),
                 ),
               ),
