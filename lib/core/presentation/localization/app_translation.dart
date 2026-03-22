@@ -152,6 +152,10 @@ class AppTranslation {
   static String get register => 'register'.tr();
   static String get email => 'email'.tr();
   static String get password => 'password'.tr();
+  static String get searchResults => 'search_results'.tr();
+  static String get noResultsFound => 'no_results_found'.tr();
+  static String get startSearching => 'start_searching'.tr();
+
   static String get enterEmail => 'enter_email'.tr();
   static String get enterPassword => 'enter_password'.tr();
   static String get loginSuccess => 'login_success'.tr();
@@ -198,6 +202,18 @@ class AppTranslation {
   static String get passwordsDoNotMatch => 'passwords_do_not_match'.tr();
   static String get customer => 'customer'.tr();
   static String get delivery => 'delivery'.tr();
+
+  // Filters
+  static String get filters => 'filters'.tr();
+  static String get minPrice => 'min_price'.tr();
+  static String get maxPrice => 'max_price'.tr();
+  static String get minPriceHint => 'min_price_hint'.tr();
+  static String get maxPriceHint => 'max_price_hint'.tr();
+  static String get minRating => 'min_rating'.tr();
+  static String get apply => 'apply'.tr();
+  static String get reset => 'reset'.tr();
+  static String get allCategories => 'all_categories'.tr();
+
   static String get birthday => 'birthday'.tr();
   static String get birthdayHint => 'birthday_hint'.tr();
   static String get joinAsDelivery => 'join_as_delivery'.tr();
@@ -226,6 +242,9 @@ class AppTranslation {
   static String get noMerchantsFound => 'no_merchants_found'.tr();
   static String get searchMerchants => 'search_merchants'.tr();
   static String get searchMerchantsHint => 'search_merchants_hint'.tr();
+  static String get searchHintRestaurants => 'search_hint_restaurants'.tr();
+  static String get searchHintFavoriteFood => 'search_hint_favorite_food'.tr();
+  static String get searchHintOffers => 'search_hint_offers'.tr();
   static String get location => 'location'.tr();
   static String get useMyLocation => 'use_my_location'.tr();
   static String get pleaseSelectLocation => 'please_select_location'.tr();
@@ -236,6 +255,12 @@ class AppTranslation {
       'location_permission_denied'.tr();
   static String get locationPermissionEnableInSettings =>
       'location_permission_enable_in_settings'.tr();
+
+  // Navigation
+  static String get basket => 'basket'.tr();
+  static String get myOrders => 'my_orders'.tr();
+  static String get basketIsEmpty => 'basket_is_empty'.tr();
+
   static String get locationUnavailable => 'location_unavailable'.tr();
   static String get chooseLocationOnMap => 'choose_location_on_map'.tr();
   static String get updateLocation => 'update_location'.tr();
@@ -337,8 +362,7 @@ class AppTranslation {
   static String get backToLogin => 'back_to_login'.tr();
   static String productsCountN(int n) =>
       'products_count_n'.tr(args: [n.toString()]);
-  static String amountOffN(String value) =>
-      'amount_off'.tr(args: [value]);
+  static String amountOffN(String value) => 'amount_off'.tr(args: [value]);
 
   static String get favorites => 'favorites'.tr();
   static String get noFavoritesFound => 'no_favorites_found'.tr();

@@ -79,10 +79,18 @@ class MerchantModel {
   });
 
   factory MerchantModel.fromJson(Map<String, dynamic> json) {
+    final firstName =
+        json['restaurantName']?.toString() ??
+        json['storeName']?.toString() ??
+        json['name']?.toString() ??
+        json['firstName']?.toString() ??
+        '';
+    final lastName = json['lastName']?.toString() ?? '';
+
     return MerchantModel(
       id: json['id']?.toString() ?? '',
-      firstName: json['firstName']?.toString() ?? '',
-      lastName: json['lastName']?.toString() ?? '',
+      firstName: firstName,
+      lastName: lastName,
       email: json['email']?.toString() ?? '',
       phone: json['phone']?.toString() ?? '',
       role: json['role']?.toString(),
@@ -108,7 +116,7 @@ class MerchantModel {
   }
 
   // Helper getters for backward compatibility
-  String get name => '$firstName $lastName';
+  String get name => '$firstName $lastName'.trim();
   String? get cityName => city?.name.en.isNotEmpty == true
       ? city?.name.en
       : (city?.name.ar.isNotEmpty == true ? city?.name.ar : null);

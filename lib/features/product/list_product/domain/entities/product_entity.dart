@@ -29,6 +29,7 @@ class ProductEntity extends Equatable {
   final double? commissionRate;
   final int? commissionAmount;
   final bool? commissionConfirmed;
+  final bool? isFavorite;
   final List<ProductImageEntity> images;
   final double? rating;
   final DateTime? createdAt;
@@ -62,6 +63,7 @@ class ProductEntity extends Equatable {
     this.commissionRate,
     this.commissionAmount,
     this.commissionConfirmed,
+    this.isFavorite,
     required this.images,
     this.rating,
     this.createdAt,
@@ -97,6 +99,7 @@ class ProductEntity extends Equatable {
         commissionRate,
         commissionAmount,
         commissionConfirmed,
+        isFavorite,
         images,
         rating,
         createdAt,

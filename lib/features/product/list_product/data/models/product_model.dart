@@ -28,6 +28,7 @@ class ProductModel {
   final double? commissionRate;
   final int? commissionAmount;
   final bool? commissionConfirmed;
+  final bool? isFavorite;
   final List<ProductImageModel> images;
   final double? rating;
   final DateTime? createdAt;
@@ -61,6 +62,7 @@ class ProductModel {
     this.commissionRate,
     this.commissionAmount,
     this.commissionConfirmed,
+    this.isFavorite,
     required this.images,
     this.rating,
     this.createdAt,
@@ -129,6 +131,7 @@ class ProductModel {
       commissionRate: json['commissionRate'] is num ? (json['commissionRate'] as num).toDouble() : null,
       commissionAmount: json['commissionAmount'] is num ? (json['commissionAmount'] as num).toInt() : null,
       commissionConfirmed: json['commissionConfirmed'] as bool?,
+      isFavorite: json['isFavorite'] as bool?,
       images: json['images'] != null
           ? (json['images'] as List)
               .map((item) => ProductImageModel.fromJson(item as Map<String, dynamic>))
@@ -166,6 +169,7 @@ class ProductModel {
       'commissionRate': commissionRate,
       'commissionAmount': commissionAmount,
       'commissionConfirmed': commissionConfirmed,
+      'isFavorite': isFavorite,
       'images': images.map((img) => img.toJson()).toList(),
       'rating': rating,
       'createdAt': createdAt?.toIso8601String(),

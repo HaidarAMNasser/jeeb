@@ -121,6 +121,8 @@ class _SearchOrderWidgetState extends State<SearchOrderWidget> {
           Icons.search,
           color: ColorManager.primary,
         ),
+        textColor: ColorManager.productNameColor,
+        hintColor: ColorManager.textSecondary,
         suffixIcon: _searchController.text.isNotEmpty
             ? IconButton(
                 icon: Icon(

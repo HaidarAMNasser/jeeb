@@ -25,15 +25,38 @@ class OfferDetailsRepository {
             BaseResponseModel<OfferModel>.fromJson(
           response.data!,
           (json) {
+            OfferModel fromList(List<dynamic> list) {
+              final maps = list.whereType<Map>().map(
+                (e) => Map<String, dynamic>.from(e),
+              );
+              final matched = maps.firstWhere(
+                (m) => m['id']?.toString() == id,
+                orElse: () => maps.isNotEmpty ? maps.first : <String, dynamic>{},
+              );
+              return OfferModel.fromJson(matched);
+            }
+
             if (json is String) {
-              final parsed = jsonDecode(json) as Map<String, dynamic>;
-              return OfferModel.fromJson(parsed);
+              final parsed = jsonDecode(json);
+              if (parsed is Map<String, dynamic>) {
+                return OfferModel.fromJson(parsed);
+              }
+              if (parsed is List) {
+                return fromList(parsed);
+              }
+              throw FormatException(
+                'Expected parsed json to be Map or List, got ${parsed.runtimeType}',
+              );
             }
             if (json is Map<String, dynamic>) {
               return OfferModel.fromJson(json);
             }
+            if (json is List) {
+              return fromList(json);
+            }
             throw FormatException(
-                'Expected data to be String or Map, got ${json.runtimeType}');
+              'Expected data to be String, Map or List, got ${json.runtimeType}',
+            );
           },
         );
 

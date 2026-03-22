@@ -100,6 +100,7 @@ class _ListProductPageState extends State<ListProductPage> {
                     final togglingIds = favState is FavoritesLoaded
                         ? favState.togglingProductIds
                         : <String>{};
+                    final hasFavoritesState = favState is FavoritesLoaded;
                     return ListView.builder(
                       controller: _scrollController,
                       padding: EdgeInsets.all(AppPadding.p16),
@@ -112,9 +113,12 @@ class _ListProductPageState extends State<ListProductPage> {
                           );
                         }
                         final product = products[index];
+                        final isFavorite = hasFavoritesState
+                            ? favoriteIds.contains(product.id)
+                            : (product.isFavorite ?? false);
                         return ProductListItem(
                           product: product,
-                          isFavorite: favoriteIds.contains(product.id),
+                          isFavorite: isFavorite,
                           isTogglingFavorite: togglingIds.contains(product.id),
                           onToggleFavorite: () => favBloc.add(
                                 ToggleFavoriteEvent(product.id),

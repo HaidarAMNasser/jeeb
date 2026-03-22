@@ -15,7 +15,9 @@ class ListCategoryBloc extends Bloc<ListCategoryEvent, ListCategoryState> {
         final result = await _repository.getCategories();
         result.fold(
           (failure) => emit(ListCategoryError(message: failure.message)),
-          (categories) => emit(ListCategoryLoaded(categories: categories)),
+          (paginatedCategories) => emit(
+            ListCategoryLoaded(categories: paginatedCategories.categories),
+          ),
         );
       }
     });

@@ -52,6 +52,7 @@ extension ProductMapper on ProductModel {
       commissionRate: commissionRate,
       commissionAmount: commissionAmount,
       commissionConfirmed: commissionConfirmed,
+      isFavorite: isFavorite,
       images: images.map((img) => img.toDomain()).toList(),
       rating: rating,
       createdAt: createdAt,

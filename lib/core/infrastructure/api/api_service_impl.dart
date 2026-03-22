@@ -155,12 +155,14 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
 
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(
-        options.compose(
-          dio.options,
-          'auth/register',
-          queryParameters: queryParameters,
-          data: requestData,
-        ).copyWith(baseUrl: baseUrlApi),
+        options
+            .compose(
+              dio.options,
+              'auth/register',
+              queryParameters: queryParameters,
+              data: requestData,
+            )
+            .copyWith(baseUrl: baseUrlApi),
       ),
     );
 
@@ -358,9 +360,11 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   }
 
   @override
-  Future<Response> getCategories() async {
+  Future<Response> getCategories(int? page, int? limit) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    if (page != null) queryParameters['page'] = page;
+    if (limit != null) queryParameters['limit'] = limit;
     final headers = <String, dynamic>{};
 
     final result = await dio.fetch<Map<String, dynamic>>(
@@ -408,6 +412,9 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     String? search,
     String? categoryId,
     String? restaurantId,
+    double? minPrice,
+    double? maxPrice,
+    int? minRating,
   ) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -418,6 +425,9 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
       queryParameters['categoryId'] = categoryId;
     if (restaurantId != null && restaurantId.isNotEmpty && restaurantId != '0')
       queryParameters['restaurantId'] = restaurantId;
+    if (minPrice != null) queryParameters['minPrice'] = minPrice;
+    if (maxPrice != null) queryParameters['maxPrice'] = maxPrice;
+    if (minRating != null) queryParameters['minRating'] = minRating;
     final headers = <String, dynamic>{};
 
     final result = await dio.fetch<Map<String, dynamic>>(
@@ -442,11 +452,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(
         Options(method: 'GET', headers: headers, extra: extra)
-            .compose(
-              dio.options,
-              'favorites',
-              queryParameters: queryParameters,
-            )
+            .compose(dio.options, 'favorites', queryParameters: queryParameters)
             .copyWith(baseUrl: baseUrlApi),
       ),
     );
@@ -1254,6 +1260,37 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
               dio.options,
               'offers/$id/delete',
               queryParameters: queryParameters,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
+  Future<Response> search({
+    required String query,
+    int? page,
+    int? limit,
+  }) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      'q': query,
+      if (page != null) 'page': page,
+      if (limit != null) 'limit': limit,
+    };
+    final headers = <String, dynamic>{};
+    const data = <String, dynamic>{};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'GET', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'search',
+              queryParameters: queryParameters,
+              data: data,
             )
             .copyWith(baseUrl: baseUrlApi),
       ),

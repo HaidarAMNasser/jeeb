@@ -26,6 +26,7 @@ class OfferModel {
     this.endDate,
     this.discountType,
     this.discountValue,
+    String? image,
   });
 
   static String? _string(dynamic v) {
@@ -33,6 +34,29 @@ class OfferModel {
     if (v is String) return v.isEmpty ? null : v;
     if (v is Map && v.isEmpty) return null;
     return v.toString();
+  }
+
+  static List<ProductModel> _extractProducts(Map<String, dynamic> json) {
+    final directProducts = json['products'];
+    if (directProducts is List) {
+      return directProducts
+          .whereType<Map>()
+          .map((e) => ProductModel.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    }
+
+    final offerProducts = json['offerProducts'];
+    if (offerProducts is List) {
+      return offerProducts
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          .map((e) => e['product'])
+          .whereType<Map>()
+          .map((p) => ProductModel.fromJson(Map<String, dynamic>.from(p)))
+          .toList();
+    }
+
+    return const [];
   }
 
   factory OfferModel.fromJson(Map<String, dynamic> json) {
@@ -50,11 +74,7 @@ class OfferModel {
       shortDescription: json['shortDescription']?.toString() ?? name,
       longDescription: json['longDescription']?.toString() ?? description,
       merchant: merchantModel,
-      products: json['products'] != null
-          ? (json['products'] as List)
-              .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
-              .toList()
-          : [],
+      products: _extractProducts(json),
       startDate: json['startDate'] != null
           ? DateTime.tryParse(json['startDate'] as String)
           : null,
@@ -64,8 +84,8 @@ class OfferModel {
       discountType: json['discountType']?.toString(),
       discountValue: json['discountValue'] != null
           ? (json['discountValue'] is int
-              ? (json['discountValue'] as int).toDouble()
-              : (json['discountValue'] as num))
+                ? (json['discountValue'] as int).toDouble()
+                : (json['discountValue'] as num))
           : null,
     );
   }

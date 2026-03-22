@@ -22,6 +22,8 @@ class CustomTextField extends StatelessWidget {
   final bool? obscureText;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
+  final Color? textColor;
+  final Color? hintColor;
   const CustomTextField({
     super.key,
     this.title,
@@ -36,6 +38,8 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.maxLength,
+    this.textColor,
+    this.hintColor,
   });
 
   @override
@@ -74,7 +78,7 @@ class CustomTextField extends StatelessWidget {
               borderSide: BorderSide(color: ColorManager.primary),
             ),
             hintStyle: getRegularStyle(
-              color: ColorManager.descriptionColor,
+              color: hintColor ?? ColorManager.descriptionColor,
               fontSize: AppFontSize.s13,
             ),
             hintTextDirection: textDirection,
@@ -95,7 +99,7 @@ class CustomTextField extends StatelessWidget {
           ),
           style: getRegularStyle(
             fontSize: AppFontSize.s14,
-            color: ColorManager.defaultWhite,
+            color: textColor ?? ColorManager.defaultWhite,
           ),
         ),
       ],

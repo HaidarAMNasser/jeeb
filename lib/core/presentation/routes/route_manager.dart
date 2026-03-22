@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
 import '../../../features/splash/presentation/pages/splash_page.dart';
@@ -32,7 +33,6 @@ import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dar
 import '../../../features/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
-import '../../../features/client_home/presentation/cubit/client_home_cubit.dart';
 import '../../../features/client_home/presentation/pages/client_home_page.dart';
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
 import '../../../features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
@@ -176,12 +176,17 @@ class AppRouter {
 
       case Routes.clientHome:
         return _buildRoute(
-          BlocProvider<FavoritesBloc>.value(
-            value: di.sl<FavoritesBloc>(),
-            child: BlocProvider<ClientHomeCubit>(
-              create: (_) => di.sl<ClientHomeCubit>(),
-              child: const ClientHomePage(),
-            ),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider<FavoritesBloc>.value(value: di.sl<FavoritesBloc>()),
+              BlocProvider<ClientHomeBloc>(
+                create: (_) => di.sl<ClientHomeBloc>(),
+              ),
+              BlocProvider<ProfileBloc>(
+                create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
+              ),
+            ],
+            child: const ClientHomePage(),
           ),
           settings,
         );
@@ -280,15 +285,16 @@ class AppRouter {
           ],
         );
 
-      case Routes.favorites: {
-        final favBloc = di.sl<FavoritesBloc>();
-        favBloc.add(const LoadFavoritesEvent());
-        return _buildRouteWithBlocValue<FavoritesBloc>(
-          const FavoritesPage(),
-          settings,
-          bloc: favBloc,
-        );
-      }
+      case Routes.favorites:
+        {
+          final favBloc = di.sl<FavoritesBloc>();
+          favBloc.add(const LoadFavoritesEvent());
+          return _buildRouteWithBlocValue<FavoritesBloc>(
+            const FavoritesPage(),
+            settings,
+            bloc: favBloc,
+          );
+        }
 
       default:
         return _buildRoute(

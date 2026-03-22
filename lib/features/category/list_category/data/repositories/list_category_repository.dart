@@ -10,19 +10,27 @@ import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/common/models/base_response_model.dart';
 import 'package:jeeb_app/core/common/utils/error_handler.dart';
 
+import 'package:jeeb_app/features/category/list_category/domain/entities/paginated_categories.dart';
+
 class ListCategoryRepository {
   final ListCategoryRemoteDataSource _remoteDataSource;
   final NetworkInfo _networkInfo;
 
   const ListCategoryRepository(this._remoteDataSource, this._networkInfo);
 
-  Future<Either<Failure, List<CategoryEntity>>> getCategories() async {
+  Future<Either<Failure, PaginatedCategories>> getCategories({
+    int? page,
+    int? limit,
+  }) async {
     if (await _networkInfo.isConnected) {
       try {
-        final response = await _remoteDataSource.getCategories();
+        final response = await _remoteDataSource.getCategories(
+          page: page,
+          limit: limit,
+        );
 
-        BaseResponseModel<List<CategoryModel>>
-        baseResponseModel = BaseResponseModel<List<CategoryModel>>.fromJson(
+        BaseResponseModel<List<CategoryModel>> baseResponseModel =
+            BaseResponseModel<List<CategoryModel>>.fromJson(
           response.data!,
           (json) {
             if (json is String) {
@@ -64,7 +72,12 @@ class ListCategoryRepository {
           }
 
           try {
-            return Right(baseResponseModel.data!.toDomain());
+            return Right(
+              PaginatedCategories(
+                categories: baseResponseModel.data!.toDomain(),
+                pagination: baseResponseModel.pagination,
+              ),
+            );
           } catch (domainError) {
             return Left(ErrorHandler.handle(domainError));
           }
