@@ -9,8 +9,8 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_event.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/category_chip.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/categories_shimmer.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/category/category_chip.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/category/categories_shimmer.dart';
 
 /// Horizontal scrollable circular category chips. Tapping one refreshes products by category.
 class ClientHomeCategoriesSection extends StatelessWidget {

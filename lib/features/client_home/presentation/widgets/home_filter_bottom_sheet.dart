@@ -12,7 +12,7 @@ import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_event.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
 
-import 'package:jeeb_app/features/client_home/presentation/widgets/category_paginated_dropdown.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/category/category_paginated_dropdown.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/rating_selector.dart';
 
 class HomeFilterBottomSheet extends StatefulWidget {

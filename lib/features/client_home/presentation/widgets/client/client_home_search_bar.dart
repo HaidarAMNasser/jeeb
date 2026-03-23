@@ -91,29 +91,32 @@ class _ClientHomeSearchBarState extends State<ClientHomeSearchBar> {
     return Row(
       children: [
         Expanded(
-          child: CustomTextField(
-            hintText: hints[_hintIndex % hints.length],
-            controller: _controller,
-            onChanged: _onSearchChanged,
-            onSubmitted: _onSearchSubmitted,
-            prefixIcon: Icon(Icons.search, color: ColorManager.primary),
-            suffixIcon: _controller.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    color: ColorManager.textSecondary,
-                    onPressed: () {
-                      _debounce?.cancel();
-                      _controller.clear();
-                      setState(() {});
-                      context.read<ClientHomeBloc>().add(
-                        const RefreshClientHomeEvent(),
-                      );
-                    },
-                  )
-                : null,
-            filledColor: ColorManager.surface,
-            textColor: ColorManager.productNameColor,
-            hintColor: ColorManager.textSecondary,
+          child: Padding(
+            padding:  EdgeInsets.only(bottom: AppPadding.p8),
+            child: CustomTextField(
+              hintText: hints[_hintIndex % hints.length],
+              controller: _controller,
+              onChanged: _onSearchChanged,
+              onSubmitted: _onSearchSubmitted,
+              prefixIcon: Icon(Icons.search, color: ColorManager.primary),
+              suffixIcon: _controller.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      color: ColorManager.textSecondary,
+                      onPressed: () {
+                        _debounce?.cancel();
+                        _controller.clear();
+                        setState(() {});
+                        context.read<ClientHomeBloc>().add(
+                          const RefreshClientHomeEvent(),
+                        );
+                      },
+                    )
+                  : null,
+              filledColor: ColorManager.surface,
+              textColor: ColorManager.productNameColor,
+              hintColor: ColorManager.textSecondary,
+            ),
           ),
         ),
         SizedBox(width: AppPadding.p8),
