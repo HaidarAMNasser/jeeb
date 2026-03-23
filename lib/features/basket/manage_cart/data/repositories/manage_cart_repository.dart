@@ -106,7 +106,7 @@ class ManageCartRepository {
           final patchResponse = await _remote.updateCart({
             'add': {
               'offers': [
-                {'offer_id': id, 'quantity': quantity},
+                {'offerId': id, 'quantity': quantity},
               ],
             },
           });
@@ -119,7 +119,7 @@ class ManageCartRepository {
 
       final createResponse = await _remote.createCart({
         'offers': [
-          {'offer_id': id, 'quantity': quantity},
+          {'offerId': id, 'quantity': quantity},
         ],
       });
       final parsedCreate = _parseCartFromSuccessResponse(createResponse.data);

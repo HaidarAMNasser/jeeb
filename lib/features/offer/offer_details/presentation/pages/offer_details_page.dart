@@ -41,7 +41,9 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
       builder: (context, cartState) {
         return ModalProgressHUD(
           inAsyncCall: cartState is ManageCartLoading,
-          progressIndicator: const CustomCircleIndicator(),
+          progressIndicator: const CircularProgressIndicator(
+            color: ColorManager.primary,
+          ),
           child: Scaffold(
             backgroundColor: ColorManager.background,
             appBar: CustomAppBar(title: AppTranslation.offerDetails),
@@ -61,25 +63,37 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
                 return OfferDetailsContent(offer: offer);
               },
             ),
-            bottomNavigationBar: BlocBuilder<OfferDetailsBloc, OfferDetailsState>(
+            bottomNavigationBar:
+                BlocBuilder<OfferDetailsBloc, OfferDetailsState>(
               builder: (context, offerState) {
-                if (offerState is! OfferDetailsLoaded) return const SizedBox.shrink();
+                if (offerState is! OfferDetailsLoaded) {
+                  return const SizedBox.shrink();
+                }
                 final offer = offerState.offer;
                 return SafeArea(
-                  minimum: EdgeInsets.fromLTRB(
-                    AppPadding.p16,
-                    AppPadding.p8,
-                    AppPadding.p16,
-                    AppPadding.p12,
-                  ),
-                  child: SizedBox(
-                    height: AppHeight.s56,
-                    child: ElevatedButton.icon(
-                      onPressed: () => context.read<ManageCartBloc>().add(
-                        AddOfferToCartEvent(offer.id),
+                  top: false,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      AppPadding.p16,
+                      0,
+                      AppPadding.p16,
+                      AppPadding.p16,
+                    ),
+                    child: SizedBox(
+                      height: AppHeight.s56,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorManager.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          context.read<ManageCartBloc>().add(
+                                AddOfferToCartEvent(offer.id),
+                              );
+                        },
+                        icon: const Icon(Icons.shopping_basket_outlined),
+                        label: Text(AppTranslation.addToCart),
                       ),
-                      icon: const Icon(Icons.local_offer_outlined),
-                      label: Text(AppTranslation.addToCart),
                     ),
                   ),
                 );
