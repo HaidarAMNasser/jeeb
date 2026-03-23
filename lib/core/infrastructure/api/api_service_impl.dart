@@ -489,6 +489,76 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   }
 
   @override
+  Future<Response> getCart() async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'GET', headers: headers, extra: extra)
+            .compose(dio.options, 'cart', queryParameters: queryParameters)
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+    return result;
+  }
+
+  @override
+  Future<Response> createCart(Map<String, dynamic> body) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'POST', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'cart',
+              queryParameters: queryParameters,
+              data: body,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+    return result;
+  }
+
+  @override
+  Future<Response> updateCart(Map<String, dynamic> body) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'PATCH', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'cart',
+              queryParameters: queryParameters,
+              data: body,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+    return result;
+  }
+
+  @override
+  Future<Response> clearCart() async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'DELETE', headers: headers, extra: extra)
+            .compose(dio.options, 'cart', queryParameters: queryParameters)
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+    return result;
+  }
+
+  @override
   Future<Response> createReview({
     required String entityType,
     required int entityId,

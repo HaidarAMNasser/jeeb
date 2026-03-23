@@ -24,6 +24,7 @@ class ProductEntity extends Equatable {
   final String? merchantName;
   final String? merchantAddress;
   final String? merchantPhone;
+  final bool hidePhoneNumber;
   final String? merchantEmail;
   final int? personCount;
   final double? commissionRate;
@@ -58,6 +59,7 @@ class ProductEntity extends Equatable {
     this.merchantName,
     this.merchantAddress,
     this.merchantPhone,
+    this.hidePhoneNumber = false,
     this.merchantEmail,
     this.personCount,
     this.commissionRate,
@@ -94,6 +96,7 @@ class ProductEntity extends Equatable {
         merchantName,
         merchantAddress,
         merchantPhone,
+        hidePhoneNumber,
         merchantEmail,
         personCount,
         commissionRate,

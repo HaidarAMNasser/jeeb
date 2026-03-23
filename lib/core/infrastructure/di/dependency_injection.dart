@@ -68,6 +68,12 @@ import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
 import '../../../features/search/data/data_sources/search_remote_data_source.dart';
 import '../../../features/search/data/repositories/search_repository_impl.dart';
 import '../../../features/search/domain/repositories/search_repository.dart';
+import '../../../features/basket/list_cart/data/data_sources/list_cart_remote_data_source.dart';
+import '../../../features/basket/list_cart/data/repositories/list_cart_repository.dart';
+import '../../../features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
+import '../../../features/basket/manage_cart/data/data_sources/manage_cart_remote_data_source.dart';
+import '../../../features/basket/manage_cart/data/repositories/manage_cart_repository.dart';
+import '../../../features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -254,4 +260,18 @@ Future<void> init() async {
   sl.registerLazySingleton<SearchRepository>(
     () => SearchRepositoryImpl(sl(), sl()),
   );
+
+  //! Basket / Cart - List endpoint
+  sl.registerFactory<ListCartRemoteDataSource>(
+    () => ListCartRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => ListCartRepository(sl(), sl()));
+  sl.registerLazySingleton<ListCartBloc>(() => ListCartBloc(sl(), sl()));
+
+  //! Basket / Cart - Create/Update/Clear endpoints
+  sl.registerFactory<ManageCartRemoteDataSource>(
+    () => ManageCartRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => ManageCartRepository(sl(), sl()));
+  sl.registerLazySingleton<ManageCartBloc>(() => ManageCartBloc(sl()));
 }

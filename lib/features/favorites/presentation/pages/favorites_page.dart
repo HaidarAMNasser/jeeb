@@ -33,11 +33,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorManager.background,
-      appBar: CustomAppBar(title: AppTranslation.favorites),
-      body: BlocConsumer<FavoritesBloc, FavoritesState>(
-        listener: _listener,
+    return BlocListener<FavoritesBloc, FavoritesState>(
+      listener: _listener,
+      child: BlocBuilder<FavoritesBloc, FavoritesState>(
         builder: (context, state) {
           final isToggling = state is FavoritesLoaded &&
               state.togglingProductIds.isNotEmpty;
@@ -48,7 +46,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
             progressIndicator: const CircularProgressIndicator(
               color: ColorManager.primary,
             ),
-            child: BlocStateHandler<FavoritesBloc, FavoritesState>(
+            child: Scaffold(
+              backgroundColor: ColorManager.background,
+              appBar: CustomAppBar(title: AppTranslation.favorites),
+              body: BlocStateHandler<FavoritesBloc, FavoritesState>(
                   bloc: context.read<FavoritesBloc>(),
                   isLoading: (s) => s is FavoritesLoading,
                   isError: (s) => s is FavoritesError,
@@ -82,6 +83,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     );
                   },
                 ),
+            ),
             );
         },
       ),

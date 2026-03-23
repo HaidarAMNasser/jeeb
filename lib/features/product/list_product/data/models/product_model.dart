@@ -23,6 +23,7 @@ class ProductModel {
   final String? merchantName;
   final String? merchantAddress;
   final String? merchantPhone;
+  final bool hidePhoneNumber;
   final String? merchantEmail;
   final int? personCount;
   final double? commissionRate;
@@ -57,6 +58,7 @@ class ProductModel {
     this.merchantName,
     this.merchantAddress,
     this.merchantPhone,
+    this.hidePhoneNumber = false,
     this.merchantEmail,
     this.personCount,
     this.commissionRate,
@@ -93,6 +95,7 @@ class ProductModel {
     String? merchantAddress;
     String? merchantPhone;
     String? merchantEmail;
+    bool hidePhoneNumber = false;
     final mer = json['merchant'];
     if (mer is Map<String, dynamic>) {
       final first = mer['firstName']?.toString() ?? '';
@@ -101,6 +104,7 @@ class ProductModel {
       merchantAddress = mer['address']?.toString();
       merchantPhone = mer['phone']?.toString();
       merchantEmail = mer['email']?.toString();
+      hidePhoneNumber = mer['hidePhoneNumber'] == true;
     }
 
     return ProductModel(
@@ -126,6 +130,7 @@ class ProductModel {
       merchantName: merchantName,
       merchantAddress: merchantAddress,
       merchantPhone: merchantPhone,
+      hidePhoneNumber: hidePhoneNumber,
       merchantEmail: merchantEmail,
       personCount: json['personCount'] is num ? (json['personCount'] as num).toInt() : null,
       commissionRate: json['commissionRate'] is num ? (json['commissionRate'] as num).toDouble() : null,
@@ -164,6 +169,7 @@ class ProductModel {
       'merchantName': merchantName,
       'merchantAddress': merchantAddress,
       'merchantPhone': merchantPhone,
+      'hidePhoneNumber': hidePhoneNumber,
       'merchantEmail': merchantEmail,
       'personCount': personCount,
       'commissionRate': commissionRate,

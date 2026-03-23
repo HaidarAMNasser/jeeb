@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 
 class ProductItemActions extends StatelessWidget {
   final String productId;
@@ -60,16 +58,6 @@ class ProductItemActions extends StatelessWidget {
               ),
           ],
         ),
-        if (stockQuantity != null && hasStock == true) ...[
-          SizedBox(height: AppHeight.s8),
-          CustomText(
-            text: '${AppTranslation.productQuantity}: $stockQuantity',
-            textStyle: getRegularStyle(
-              fontSize: AppFontSize.s14,
-              color: ColorManager.descriptionColor,
-            ),
-          ),
-        ],
       ],
     );
   }

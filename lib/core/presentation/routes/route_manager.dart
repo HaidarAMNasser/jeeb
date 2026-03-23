@@ -49,6 +49,7 @@ import '../../../features/offer/offer_details/presentation/bloc/offer_details_bl
 import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
 import '../../../features/favorites/presentation/pages/favorites_page.dart';
 import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
+import '../../../features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
 
@@ -153,6 +154,7 @@ class AppRouter {
                   ListProductBloc(di.sl<ListProductRepository>())
                     ..add(GetProductsEvent(merchantId: productMerchantId)),
             ),
+            BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
           ],
           // >>>>>>> 01548bdab41b53e5162e3d8617375f258e8805f2
         );
@@ -168,6 +170,7 @@ class AppRouter {
               create: (_) =>
                   ProductDetailsBloc(di.sl<ProductDetailsRepository>()),
             ),
+            BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
           ],
         );
 

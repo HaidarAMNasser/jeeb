@@ -260,6 +260,10 @@ class AppTranslation {
   static String get basket => 'basket'.tr();
   static String get myOrders => 'my_orders'.tr();
   static String get basketIsEmpty => 'basket_is_empty'.tr();
+  static String get addToCart => 'add_to_cart'.tr();
+  static String get addedToCart => 'added_to_cart'.tr();
+  static String get total => 'total'.tr();
+  static String get quantity => 'quantity'.tr();
 
   static String get locationUnavailable => 'location_unavailable'.tr();
   static String get chooseLocationOnMap => 'choose_location_on_map'.tr();

@@ -48,7 +48,7 @@ class _FavoriteHeartIconState extends State<_FavoriteHeartIcon> {
           padding: const EdgeInsets.all(8),
           child: Icon(
             _isFavorite ? Icons.favorite : Icons.favorite_border,
-            color: _isFavorite ? Colors.red : ColorManager.defaultWhite,
+            color: Colors.red,
             size: 22,
           ),
         ),
@@ -132,7 +132,10 @@ class ProductListItem extends StatelessWidget {
                     enableSmallDesign: enableSmallDesign,
                     productId: product.id,
                     price: product.price,
-                    displayPrice: product.finalPrice ?? product.priceAfterDiscount ?? product.price,
+                    displayPrice:
+                        product.finalPrice ??
+                        product.priceAfterDiscount ??
+                        product.price,
                     commissionRate: product.commissionRate,
                     showConfirmProduct: showConfirmProduct,
                     stockQuantity: product.stockQuantity,

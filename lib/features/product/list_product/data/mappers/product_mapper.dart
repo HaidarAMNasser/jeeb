@@ -47,6 +47,7 @@ extension ProductMapper on ProductModel {
       merchantName: merchantName,
       merchantAddress: merchantAddress,
       merchantPhone: merchantPhone,
+      hidePhoneNumber: hidePhoneNumber,
       merchantEmail: merchantEmail,
       personCount: personCount,
       commissionRate: commissionRate,

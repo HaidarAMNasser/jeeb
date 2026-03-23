@@ -1,0 +1,545 @@
+{
+  "info": {
+    "_postman_id": "cart-module-2026",
+    "name": "Delivery Jeeb - Cart Module",
+    "description": "Cart management API for customers. Includes authentication, cart operations (create, read, update, delete).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.jeeb2.com/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "customer_email",
+      "value": "samacustomer@jeeb.com",
+      "type": "string"
+    },
+    {
+      "key": "customer_password",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "customer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "merchant_email",
+      "value": "khderhabib2016@gmail.com",
+      "type": "string"
+    },
+    {
+      "key": "merchant_password",
+      "value": "password",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "1. Customer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (pm.response.code === 200 && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('customer_token', jsonData.data.access_token);",
+                  "    console.log('Customer token stored successfully');",
+                  "} else {",
+                  "    console.log('Failed to get customer token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{customer_email}}\",\n    \"password\": \"{{customer_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2. Merchant Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (pm.response.code === 200 && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('merchant_token', jsonData.data.access_token);",
+                  "    console.log('Merchant token stored successfully');",
+                  "} else {",
+                  "    console.log('Failed to get merchant token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{merchant_email}}\",\n    \"password\": \"{{merchant_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛒 Cart Operations",
+      "item": [
+        {
+          "name": "1. Get Cart",
+          "description": "Get the current customer's cart. Returns null if cart is empty.",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success - Cart Exists",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/cart",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"customer\": {\n            \"id\": 52,\n            \"firstName\": \"Sama\",\n            \"lastName\": \"Customer\",\n            \"phone\": \"+963970000001\"\n        },\n        \"merchant\": {\n            \"id\": 100,\n            \"restaurantName\": \"مطعم الشاورما\",\n            \"phone\": \"+963911111111\",\n            \"address\": \"دمشق\"\n        },\n        \"items\": [\n            {\n                \"id\": 1,\n                \"product\": {\n                    \"id\": 10,\n                    \"name\": \"شاورما دجاج\",\n                    \"shortDescription\": \"شاورما دجاج لذيذة\",\n                    \"description\": \"شاورما دجاج طازجة مع الصوص الخاص\",\n                    \"personCount\": 1,\n                    \"price\": 7500,\n                    \"discount\": 10,\n                    \"discountType\": \"PERCENTAGE\",\n                    \"isAvailable\": true,\n                    \"hasStock\": true,\n                    \"stockQuantity\": 50,\n                    \"images\": [\n                        { \"id\": 1, \"url\": \"https://example.com/image.jpg\", \"isMain\": true }\n                    ]\n                },\n                \"quantity\": 2,\n                \"unitPrice\": 7500,\n                \"totalPrice\": 15000,\n                \"createdAt\": \"2026-03-22T10:00:00.000Z\"\n            }\n        ],\n        \"offers\": [\n            {\n                \"id\": 1,\n                \"offer\": {\n                    \"id\": 5,\n                    \"name\": \"وجبة كاملة\",\n                    \"description\": \"وجبة كاملة تشمل برجر وعصير\",\n                    \"discountType\": \"PERCENTAGE\",\n                    \"discountValue\": 10,\n                    \"isActive\": true,\n                    \"products\": [\n                        {\n                            \"id\": 1,\n                            \"name\": \"برجر\",\n                            \"price\": 5000,\n                            \"shortDescription\": \"برجر لحم طازج\",\n                            \"image\": \"https://example.com/burger.jpg\"\n                        },\n                        {\n                            \"id\": 2,\n                            \"name\": \"عصير\",\n                            \"price\": 2000,\n                            \"shortDescription\": \"عصير برتقال طازج\",\n                            \"image\": \"https://example.com/juice.jpg\"\n                        }\n                    ]\n                },\n                \"quantity\": 1,\n                \"subtotal\": 7000,\n                \"discount\": 700,\n                \"createdAt\": \"2026-03-22T10:05:00.000Z\"\n            }\n        ],\n        \"summary\": {\n            \"itemsSubtotal\": 15000,\n            \"offersSubtotal\": 7000,\n            \"totalSubtotal\": 22000,\n            \"totalDiscount\": 700,\n            \"finalTotal\": 21300,\n            \"platformCommission\": 2130,\n            \"merchantRevenue\": 19170\n        }\n    }\n}"
+            },
+            {
+              "name": "Success - Empty Cart",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/cart",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Cart is empty\",\n    \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Create Cart (with items and offers)",
+          "description": "Create a new cart or replace the entire cart with new items and offers.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"items\": [\n        { \"productId\": 10, \"quantity\": 2 },\n        { \"productId\": 15, \"quantity\": 1 }\n    ],\n    \"offers\": [\n        { \"offerId\": 1, \"quantity\": 1 },\n        { \"offerId\": 3, \"quantity\": 2 }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"items\": [\n        { \"productId\": 10, \"quantity\": 2 }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"customer\": { ... },\n        \"merchant\": { ... },\n        \"items\": [...],\n        \"offers\": [...],\n        \"summary\": { ... }\n    }\n}"
+            },
+            {
+              "name": "Error - Product Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Product with id 99 not found\",\n    \"error\": \"Not Found\"\n}"
+            },
+            {
+              "name": "Error - Different Merchant",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 400,\n    \"message\": \"All items must be from the same merchant\",\n    \"error\": \"Bad Request\"\n}"
+            },
+            {
+              "name": "Error - Product Not Available",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 400,\n    \"message\": \"Product شاورما دجاج is not available\",\n    \"error\": \"Bad Request\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Update Cart - Add Items",
+          "description": "Add new items or offers to the existing cart. Items from different merchant will be rejected.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"add\": {\n        \"items\": [\n            { \"productId\": 20, \"quantity\": 3 }\n        ],\n        \"offers\": [\n            { \"offerId\": 8, \"quantity\": 1 }\n        ]\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": { ... }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Update Cart - Update Quantities",
+          "description": "Update quantities of existing items or offers in the cart.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"update\": {\n        \"items\": [\n            { \"productId\": 10, \"quantity\": 5 }\n        ],\n        \"offers\": [\n            { \"offerId\": 1, \"quantity\": 3 }\n        ]\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": { ... }\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Update Cart - Remove Items",
+          "description": "Remove items or offers from the cart by providing their IDs.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"remove\": {\n        \"items\": [10, 15],\n        \"offers\": [1, 3]\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": { ... }\n}"
+            }
+          ]
+        },
+        {
+          "name": "6. Update Cart - Combined Actions",
+          "description": "Add, update, and remove items in a single request.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"add\": {\n        \"items\": [\n            { \"productId\": 25, \"quantity\": 2 }\n        ]\n    },\n    \"update\": {\n        \"items\": [\n            { \"productId\": 10, \"quantity\": 10 }\n        ]\n    },\n    \"remove\": {\n        \"items\": [15],\n        \"offers\": [5]\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": { ... }\n}"
+            }
+          ]
+        },
+        {
+          "name": "7. Clear Cart",
+          "description": "Delete all items and offers from the cart.",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Cart cleared successfully\",\n    \"data\": null\n}"
+            },
+            {
+              "name": "Error - Cart Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Cart not found\",\n    \"error\": \"Not Found\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🧪 Error Scenarios",
+      "item": [
+        {
+          "name": "Unauthorized Access",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Token",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n    \"statusCode\": 401,\n    \"message\": \"Unauthorized\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

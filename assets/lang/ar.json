@@ -268,6 +268,10 @@
   "basket": "السلة",
   "my_orders": "طلباتي",
   "basket_is_empty": "سلة التسوق الخاصة بك فارغة",
+  "add_to_cart": "أضف إلى السلة",
+  "added_to_cart": "تمت الإضافة إلى السلة",
+  "total": "المجموع",
+  "quantity": "الكمية",
   "search_results": "نتائج البحث",
   "no_results_found": "لا توجد نتائج",
   "start_searching": "ابدأ البحث..."

@@ -21,6 +21,19 @@ abstract class AppApiServiceClient {
     List<int>? products,
   });
 
+  // Basket / Cart endpoints
+  @GET("cart")
+  Future<Response> getCart();
+
+  @POST("cart")
+  Future<Response> createCart(Map<String, dynamic> body);
+
+  @PATCH("cart")
+  Future<Response> updateCart(Map<String, dynamic> body);
+
+  @DELETE("cart")
+  Future<Response> clearCart();
+
   // Reviews endpoints (product/order reviews by customer)
   @POST("reviews")
   Future<Response> createReview({

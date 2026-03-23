@@ -271,5 +271,9 @@
   "all_categories": "All Categories",
   "basket": "Basket",
   "my_orders": "My Orders",
-  "basket_is_empty": "Your basket is empty"
+  "basket_is_empty": "Your basket is empty",
+  "add_to_cart": "Add to cart",
+  "added_to_cart": "Added to cart",
+  "total": "Total",
+  "quantity": "Quantity"
 }
