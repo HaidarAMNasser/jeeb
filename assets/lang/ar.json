@@ -272,6 +272,13 @@
   "added_to_cart": "تمت الإضافة إلى السلة",
   "total": "المجموع",
   "quantity": "الكمية",
+  "create_order": "إنشاء طلب",
+  "pay_on_delivery": "سيتم الدفع عند استلام الطلب",
+  "selected_location": "الموقع المحدد",
+  "country": "الدولة",
+  "city": "المدينة",
+  "street": "الشارع",
+  "address_details": "تفاصيل العنوان",
   "search_results": "نتائج البحث",
   "no_results_found": "لا توجد نتائج",
   "start_searching": "ابدأ البحث..."

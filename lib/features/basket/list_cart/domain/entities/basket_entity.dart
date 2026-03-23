@@ -6,6 +6,7 @@ class BasketEntity extends Equatable {
   final String id;
   final String? merchantId;
   final String? merchantName;
+  final String? customerPhone;
   final List<BasketItemEntity> items;
   final BasketSummaryEntity? summary;
 
@@ -13,6 +14,7 @@ class BasketEntity extends Equatable {
     required this.id,
     this.merchantId,
     this.merchantName,
+    this.customerPhone,
     required this.items,
     this.summary,
   });
@@ -20,5 +22,12 @@ class BasketEntity extends Equatable {
   bool get isEmpty => items.isEmpty;
 
   @override
-  List<Object?> get props => [id, merchantId, merchantName, items, summary];
+  List<Object?> get props => [
+        id,
+        merchantId,
+        merchantName,
+        customerPhone,
+        items,
+        summary,
+      ];
 }

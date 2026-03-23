@@ -8,8 +8,9 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 class BasketSaveBar extends StatelessWidget {
   final VoidCallback onSave;
+  final String? label;
 
-  const BasketSaveBar({super.key, required this.onSave});
+  const BasketSaveBar({super.key, required this.onSave, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class BasketSaveBar extends StatelessWidget {
           ),
           onPressed: onSave,
           child: CustomText(
-            text: AppTranslation.save,
+            text: label ?? AppTranslation.save,
             textStyle: getSemiBoldStyle(
               fontSize: AppFontSize.s16,
               color: ColorManager.defaultWhite,

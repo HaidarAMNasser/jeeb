@@ -39,10 +39,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
         builder: (context, state) {
           final isToggling = state is FavoritesLoaded &&
               state.togglingProductIds.isNotEmpty;
-          final isLoading = state is FavoritesLoading || isToggling;
 
           return ModalProgressHUD(
-            inAsyncCall: isLoading,
+            inAsyncCall: isToggling,
             progressIndicator: const CircularProgressIndicator(
               color: ColorManager.primary,
             ),

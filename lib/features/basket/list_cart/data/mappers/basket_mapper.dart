@@ -36,6 +36,7 @@ extension BasketMapper on BasketModel {
       id: id,
       merchantId: merchantId,
       merchantName: merchantName,
+      customerPhone: customerPhone,
       items: items.map((e) => e.toDomain()).toList(),
       summary: summary?.toDomain(),
     );

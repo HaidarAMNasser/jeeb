@@ -1,22 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/core/common/utils/location_permission_helper.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/widgets/location_map_picker_page.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
+import 'package:jeeb_app/features/basket/confirmation/presentation/models/confirmation_item.dart';
+import 'package:jeeb_app/features/basket/confirmation/presentation/pages/basket_confirmation_page.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_empty_state.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_item_card.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_save_bar.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_summary_card.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/location_choice_dialog.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class BasketPage extends StatelessWidget {
   const BasketPage({super.key});
 
   String _price(int value) => (value / 100).toStringAsFixed(2);
+
+  Future<void> _openLocationAndGoToConfirmation(
+    BuildContext context,
+    ListCartLoaded state,
+  ) async {
+    final action = await showDialog<LocationChoice>(
+      context: context,
+      builder: (_) => const LocationChoiceDialog(),
+    );
+    if (action == null) return;
+
+    double? lat;
+    double? lng;
+
+    if (action == LocationChoice.current) {
+      final res = await LocationPermissionHelper.requestAndGetPosition();
+      lat = res.latitude;
+      lng = res.longitude;
+      if (lat == null || lng == null) {
+        customToast(msg: AppTranslation.locationUnavailable);
+        return;
+      }
+    } else {
+      final picked = await Navigator.of(context).push<LocationMapPickerResult>(
+        MaterialPageRoute(builder: (_) => const LocationMapPickerPage()),
+      );
+      if (picked == null) return;
+      lat = picked.latitude;
+      lng = picked.longitude;
+    }
+
+    if (!context.mounted) return;
+    final confirmationItems = state.currentItems
+        .map(
+          (item) => ConfirmationItem(
+            productName: item.productName,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          ),
+        )
+        .toList(growable: false);
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BasketConfirmationPage(
+          items: confirmationItems,
+          merchantName: state.merchantName,
+          latitude: lat!,
+          longitude: lng!,
+          initialPhone: state.customerPhone,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +160,12 @@ class BasketPage extends StatelessWidget {
                         onSave: () => context.read<ListCartBloc>().add(
                           const SaveCartChangesEvent(),
                         ),
+                      )
+                    else
+                      BasketSaveBar(
+                        label: AppTranslation.createOrder,
+                        onSave: () =>
+                            _openLocationAndGoToConfirmation(context, state),
                       ),
                   ],
                 );

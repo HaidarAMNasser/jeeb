@@ -264,6 +264,13 @@ class AppTranslation {
   static String get addedToCart => 'added_to_cart'.tr();
   static String get total => 'total'.tr();
   static String get quantity => 'quantity'.tr();
+  static String get createOrder => 'create_order'.tr();
+  static String get payOnDelivery => 'pay_on_delivery'.tr();
+  static String get selectedLocation => 'selected_location'.tr();
+  static String get country => 'country'.tr();
+  static String get city => 'city'.tr();
+  static String get street => 'street'.tr();
+  static String get addressDetails => 'address_details'.tr();
 
   static String get locationUnavailable => 'location_unavailable'.tr();
   static String get chooseLocationOnMap => 'choose_location_on_map'.tr();

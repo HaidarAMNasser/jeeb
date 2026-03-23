@@ -275,5 +275,12 @@
   "add_to_cart": "Add to cart",
   "added_to_cart": "Added to cart",
   "total": "Total",
-  "quantity": "Quantity"
+  "quantity": "Quantity",
+  "create_order": "Create Order",
+  "pay_on_delivery": "You will pay when receiving the order",
+  "selected_location": "Selected location",
+  "country": "Country",
+  "city": "City",
+  "street": "Street",
+  "address_details": "Address details"
 }

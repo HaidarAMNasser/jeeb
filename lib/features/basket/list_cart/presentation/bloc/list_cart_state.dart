@@ -19,6 +19,7 @@ class ListCartLoaded extends ListCartState {
   final List<CartDraftItem> originalItems;
   final List<CartDraftItem> currentItems;
   final String merchantName;
+  final String customerPhone;
   final bool isSaving;
   final String? noticeMessage;
   final bool noticeIsError;
@@ -27,6 +28,7 @@ class ListCartLoaded extends ListCartState {
     required this.originalItems,
     required this.currentItems,
     required this.merchantName,
+    this.customerPhone = '',
     this.isSaving = false,
     this.noticeMessage,
     this.noticeIsError = false,
@@ -50,6 +52,7 @@ class ListCartLoaded extends ListCartState {
     List<CartDraftItem>? originalItems,
     List<CartDraftItem>? currentItems,
     String? merchantName,
+    String? customerPhone,
     bool? isSaving,
     String? noticeMessage,
     bool clearNotice = false,
@@ -59,6 +62,7 @@ class ListCartLoaded extends ListCartState {
       originalItems: originalItems ?? this.originalItems,
       currentItems: currentItems ?? this.currentItems,
       merchantName: merchantName ?? this.merchantName,
+      customerPhone: customerPhone ?? this.customerPhone,
       isSaving: isSaving ?? this.isSaving,
       noticeMessage: clearNotice ? null : (noticeMessage ?? this.noticeMessage),
       noticeIsError: noticeIsError ?? this.noticeIsError,
@@ -70,6 +74,7 @@ class ListCartLoaded extends ListCartState {
         originalItems,
         currentItems,
         merchantName,
+        customerPhone,
         isSaving,
         noticeMessage,
         noticeIsError,
