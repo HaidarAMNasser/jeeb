@@ -11,10 +11,26 @@ class ManageCartBloc extends Bloc<ManageCartEvent, ManageCartState> {
 
   ManageCartBloc(this._repository) : super(const ManageCartInitial()) {
     on<AddProductToCartEvent>(_onAdd);
+    on<AddOfferToCartEvent>(_onAddOffer);
     on<UpdateCartItemQuantityEvent>(_onUpdate);
     on<RemoveCartItemEvent>(_onRemove);
     on<ClearCartEvent>(_onClear);
     on<ReplaceCartItemsEvent>(_onReplaceAll);
+  }
+
+  Future<void> _onAddOffer(
+    AddOfferToCartEvent event,
+    Emitter<ManageCartState> emit,
+  ) async {
+    emit(const ManageCartLoading());
+    final result = await _repository.addOffer(
+      offerId: event.offerId,
+      quantity: event.quantity,
+    );
+    result.fold(
+      (failure) => emit(ManageCartError(failure.message)),
+      (basket) => emit(ManageCartSuccess(basket)),
+    );
   }
 
   Future<void> _onAdd(
@@ -80,7 +96,10 @@ class ManageCartBloc extends Bloc<ManageCartEvent, ManageCartState> {
     Emitter<ManageCartState> emit,
   ) async {
     emit(const ManageCartLoading());
-    final result = await _repository.replaceCartItems(event.items);
+    final result = await _repository.replaceCartItems(
+      items: event.items,
+      offers: event.offers,
+    );
     result.fold(
       (failure) => emit(ManageCartError(failure.message)),
       (basket) => emit(ManageCartSuccess(basket)),

@@ -1,8 +1,10 @@
 import 'package:jeeb_app/features/basket/list_cart/data/models/basket_item_model.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/basket_model.dart';
+import 'package:jeeb_app/features/basket/list_cart/data/models/basket_offer_model.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/basket_summary_model.dart';
 import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_entity.dart';
 import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_item_entity.dart';
+import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_offer_entity.dart';
 import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_summary_entity.dart';
 import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
 
@@ -30,6 +32,20 @@ extension BasketItemMapper on BasketItemModel {
   }
 }
 
+extension BasketOfferMapper on BasketOfferModel {
+  BasketOfferEntity toDomain() {
+    return BasketOfferEntity(
+      id: id,
+      offerId: offerId,
+      offerName: offerName,
+      offerDescription: offerDescription,
+      quantity: quantity,
+      subtotal: subtotal,
+      discount: discount,
+    );
+  }
+}
+
 extension BasketMapper on BasketModel {
   BasketEntity toDomain() {
     return BasketEntity(
@@ -38,6 +54,7 @@ extension BasketMapper on BasketModel {
       merchantName: merchantName,
       customerPhone: customerPhone,
       items: items.map((e) => e.toDomain()).toList(),
+      offers: offers.map((e) => e.toDomain()).toList(),
       summary: summary?.toDomain(),
     );
   }

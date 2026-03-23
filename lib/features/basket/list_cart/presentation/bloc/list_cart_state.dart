@@ -41,7 +41,9 @@ class ListCartLoaded extends ListCartState {
   bool get isDirty {
     if (originalItems.length != currentItems.length) return true;
     for (final item in originalItems) {
-      final current = currentItems.where((e) => e.productId == item.productId);
+      final current = currentItems.where(
+        (e) => e.productId == item.productId && e.isOffer == item.isOffer,
+      );
       if (current.isEmpty) return true;
       if (current.first.quantity != item.quantity) return true;
     }
@@ -92,6 +94,7 @@ class ListCartError extends ListCartState {
 
 class CartDraftItem extends Equatable {
   final String productId;
+  final bool isOffer;
   final String productName;
   final String? imageUrl;
   final String? description;
@@ -100,6 +103,7 @@ class CartDraftItem extends Equatable {
 
   const CartDraftItem({
     required this.productId,
+    this.isOffer = false,
     required this.productName,
     this.imageUrl,
     required this.description,
@@ -111,6 +115,7 @@ class CartDraftItem extends Equatable {
 
   CartDraftItem copyWith({
     String? productId,
+    bool? isOffer,
     String? productName,
     String? imageUrl,
     String? description,
@@ -119,6 +124,7 @@ class CartDraftItem extends Equatable {
   }) {
     return CartDraftItem(
       productId: productId ?? this.productId,
+      isOffer: isOffer ?? this.isOffer,
       productName: productName ?? this.productName,
       imageUrl: imageUrl ?? this.imageUrl,
       description: description ?? this.description,
@@ -130,6 +136,7 @@ class CartDraftItem extends Equatable {
   @override
   List<Object?> get props => [
         productId,
+        isOffer,
         productName,
         imageUrl,
         description,

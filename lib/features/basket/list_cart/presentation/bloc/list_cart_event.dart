@@ -12,21 +12,23 @@ class LoadCartEvent extends ListCartEvent {
 }
 
 class IncreaseCartItemEvent extends ListCartEvent {
-  final String productId;
+  final String itemId;
+  final bool isOffer;
 
-  const IncreaseCartItemEvent(this.productId);
+  const IncreaseCartItemEvent(this.itemId, {this.isOffer = false});
 
   @override
-  List<Object?> get props => [productId];
+  List<Object?> get props => [itemId, isOffer];
 }
 
 class DecreaseCartItemEvent extends ListCartEvent {
-  final String productId;
+  final String itemId;
+  final bool isOffer;
 
-  const DecreaseCartItemEvent(this.productId);
+  const DecreaseCartItemEvent(this.itemId, {this.isOffer = false});
 
   @override
-  List<Object?> get props => [productId];
+  List<Object?> get props => [itemId, isOffer];
 }
 
 class SaveCartChangesEvent extends ListCartEvent {

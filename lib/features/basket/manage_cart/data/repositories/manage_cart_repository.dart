@@ -91,6 +91,50 @@ class ManageCartRepository {
     }
   }
 
+  Future<Either<Failure, BasketEntity>> addOffer({
+    required String offerId,
+    int quantity = 1,
+  }) async {
+    if (!await _networkInfo.isConnected) return const Left(NetworkFailure());
+    final id = int.tryParse(offerId);
+    if (id == null) return const Left(ServerFailure(message: 'Invalid offer id'));
+
+    try {
+      final hasCart = await _hasExistingCart();
+      if (hasCart) {
+        try {
+          final patchResponse = await _remote.updateCart({
+            'add': {
+              'offers': [
+                {'offer_id': id, 'quantity': quantity},
+              ],
+            },
+          });
+          final parsed = _parseCartFromSuccessResponse(patchResponse.data);
+          if (parsed != null) return Right(parsed);
+        } on DioException catch (e) {
+          if (e.response?.statusCode != 404) rethrow;
+        }
+      }
+
+      final createResponse = await _remote.createCart({
+        'offers': [
+          {'offer_id': id, 'quantity': quantity},
+        ],
+      });
+      final parsedCreate = _parseCartFromSuccessResponse(createResponse.data);
+      if (parsedCreate != null) return Right(parsedCreate);
+      final raw = createResponse.data is Map<String, dynamic>
+          ? createResponse.data as Map<String, dynamic>
+          : null;
+      return Left(
+        ServerFailure(message: raw?['message']?.toString() ?? 'Failed to add offer to cart'),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
   Future<Either<Failure, BasketEntity>> updateItemQuantity({
     required String productId,
     required int quantity,
@@ -162,9 +206,10 @@ class ManageCartRepository {
     }
   }
 
-  Future<Either<Failure, BasketEntity?>> replaceCartItems(
-    List<Map<String, dynamic>> items,
-  ) async {
+  Future<Either<Failure, BasketEntity?>> replaceCartItems({
+    required List<Map<String, dynamic>> items,
+    List<Map<String, dynamic>> offers = const [],
+  }) async {
     if (!await _networkInfo.isConnected) return const Left(NetworkFailure());
     try {
       // Always clear then recreate from local draft.
@@ -172,11 +217,14 @@ class ManageCartRepository {
       final clearFailed = clearResult.fold((f) => f, (_) => null);
       if (clearFailed != null) return Left(clearFailed);
 
-      if (items.isEmpty) {
+      if (items.isEmpty && offers.isEmpty) {
         return const Right(null);
       }
 
-      final response = await _remote.createCart({'items': items});
+      final response = await _remote.createCart({
+        'items': items,
+        'offers': offers,
+      });
       final parsed = _parseCartFromSuccessResponse(response.data);
       if (parsed != null) return Right(parsed);
 

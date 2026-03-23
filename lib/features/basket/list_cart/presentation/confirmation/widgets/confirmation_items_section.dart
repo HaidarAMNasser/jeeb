@@ -5,7 +5,7 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/features/basket/confirmation/presentation/models/confirmation_item.dart';
+import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 
 class ConfirmationItemsSection extends StatelessWidget {
   final List<ConfirmationItem> items;

@@ -285,6 +285,7 @@ class AppRouter {
             BlocProvider<OfferDetailsBloc>(
               create: (_) => OfferDetailsBloc(di.sl<OfferDetailsRepository>()),
             ),
+            BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
           ],
         );
 
