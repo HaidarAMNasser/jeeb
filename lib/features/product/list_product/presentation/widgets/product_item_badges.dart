@@ -27,7 +27,7 @@ class ProductItemBadges extends StatelessWidget {
             vertical: AppPadding.p4,
           ),
           decoration: BoxDecoration(
-            color: ColorManager.categoryBadgeBackground,
+            color: ColorManager.lightPrimary,
             borderRadius: BorderRadius.circular(AppRadius.r20),
           ),
           child: CustomText(

@@ -5,9 +5,9 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/bloc/list_merchant_bloc.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/widgets/merchant_list_item.dart';
+import 'package:jeeb_app/features/merchant/list_merchant/presentation/widgets/merchant_list_shimmer.dart';
 import 'package:jeeb_app/features/merchant/list_merchant/presentation/widgets/search_merchant_widget.dart';
 
 class ListMerchantPage extends StatefulWidget {
@@ -62,6 +62,7 @@ class _ListMerchantPageState extends State<ListMerchantPage> {
           Expanded(
             child: BlocStateHandler<ListMerchantBloc, ListMerchantState>(
               bloc: context.read<ListMerchantBloc>(),
+              loadingWidget: const MerchantListPageShimmer(),
               isLoading: (state) => state is ListMerchantLoading,
               isError: (state) => state is ListMerchantError,
               getErrorMessage: (state) => (state as ListMerchantError).message,
@@ -83,9 +84,7 @@ class _ListMerchantPageState extends State<ListMerchantPage> {
                 final merchants = merchantState is ListMerchantLoaded
                     ? merchantState.merchants
                     : (merchantState as ListMerchantLoadingMore).merchants;
-                final hasMore = merchantState is ListMerchantLoaded
-                    ? merchantState.hasMore
-                    : false;
+                final isLoadingMore = merchantState is ListMerchantLoadingMore;
                 final currentSearch = merchantState is ListMerchantLoaded
                     ? merchantState.search
                     : (merchantState as ListMerchantLoadingMore).search;
@@ -99,13 +98,11 @@ class _ListMerchantPageState extends State<ListMerchantPage> {
                   child: ListView.builder(
                     controller: _scrollController,
                     padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
-                    itemCount: merchants.length + (hasMore ? 1 : 0),
+                    itemCount:
+                        merchants.length + (isLoadingMore ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (index == merchants.length) {
-                        return Padding(
-                          padding: EdgeInsets.all(AppPadding.p16),
-                          child: const CustomCircleIndicator(),
-                        );
+                      if (index == merchants.length && isLoadingMore) {
+                        return const MerchantListPaginationShimmer();
                       }
                       return MerchantListItem(merchant: merchants[index]);
                     },

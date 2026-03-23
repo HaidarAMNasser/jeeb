@@ -5,12 +5,14 @@ extension MerchantMapper on MerchantModel {
   MerchantEntity toDomain() {
     return MerchantEntity(
       id: id,
-      name: name,
+      // name: name,
+      restaurantName: restaurantName,
       email: email,
       cityName: cityName,
       countryName: countryName,
       location: address,
       phoneNumber: phoneNumber,
+      hidePhoneNumber: hidePhoneNumber,
       image: imageUrl,
       isOnline: isOnline,
     );

@@ -16,8 +16,6 @@ import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/auth/register/presentation/bloc/register_bloc.dart';
 import 'package:jeeb_app/features/auth/register/presentation/widgets/location_source_selector.dart';
-import 'package:jeeb_app/features/city/domain/entities/city_entity.dart';
-import 'package:jeeb_app/features/country/domain/entities/country_entity.dart';
 import 'package:jeeb_app/features/country/presentation/widgets/country_city_widget.dart';
 
 class RegisterForm extends StatelessWidget {
@@ -59,31 +57,6 @@ class RegisterForm extends StatelessWidget {
         if (bloc.firstNameController.text.isNotEmpty) {
           initial = bloc.firstNameController.text[0].toUpperCase();
         }
-
-        // ID paths commented while ID photo pickers are hidden
-        // String? idFrontPath;
-        // final idFrontFile = bloc.idFrontImageFile;
-        // if (idFrontFile != null) {
-        //   final dynamic dynamicFile = idFrontFile;
-        //   final path = dynamicFile is String
-        //       ? dynamicFile
-        //       : dynamicFile.path as String?;
-        //   if (path != null && path.isNotEmpty) {
-        //     idFrontPath = path;
-        //   }
-        // }
-        // String? idBackPath;
-        // final idBackFile = bloc.idBackImageFile;
-        // if (idBackFile != null) {
-        //   final dynamic dynamicFile = idBackFile;
-        //   final path = dynamicFile is String
-        //       ? dynamicFile
-        //       : dynamicFile.path as String?;
-        //   if (path != null && path.isNotEmpty) {
-        //     idBackPath = path;
-        //   }
-        // }
-
         return Form(
           key: bloc.formKey,
           child: Column(
@@ -129,107 +102,6 @@ class RegisterForm extends StatelessWidget {
                 hintText: AppTranslation.enterAddress,
                 controller: bloc.addressController,
               ),
-              // CustomTextField(
-              //   title: AppTranslation.birthday,
-              //   hintText: AppTranslation.birthdayHint,
-              //   controller: bloc.birthdayController,
-              //   keyboardType: TextInputType.datetime,
-              //   inputFormatters: [DateSlashInputFormatter()],
-              //   maxLength: 10,
-              // ),
-              // ID Front/Back photo pickers commented for now
-              // if ((bloc.selectedRole ?? 'CUSTOMER') == 'DELIVERY')
-              //   Row(
-              //     children: [
-              //       Expanded(
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.stretch,
-              //           children: [
-              //             CustomText(
-              //               text: 'ID Front',
-              //               textStyle: getMediumStyle(
-              //                 fontSize: AppFontSize.s15,
-              //                 color: ColorManager.defaultWhite,
-              //               ),
-              //             ),
-              //             SizedBox(height: AppHeight.s8),
-              //             GestureDetector(
-              //               onTap: onPickIdFront,
-              //               child: Container(
-              //                 key: ValueKey(bloc.idFrontVersion),
-              //                 height: AppHeight.s78,
-              //                 decoration: BoxDecoration(
-              //                   color: ColorManager.background,
-              //                   borderRadius: BorderRadius.circular(
-              //                     AppRadius.r18,
-              //                   ),
-              //                   border: Border.all(color: ColorManager.primary),
-              //                 ),
-              //                 child: idFrontPath == null
-              //                     ? Icon(
-              //                         Icons.add_a_photo,
-              //                         color: ColorManager.primary,
-              //                       )
-              //                     : ClipRRect(
-              //                         borderRadius: BorderRadius.circular(
-              //                           AppRadius.r18,
-              //                         ),
-              //                         child: Image.file(
-              //                           File(idFrontPath),
-              //                           fit: BoxFit.cover,
-              //                         ),
-              //                       ),
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //       SizedBox(width: AppWidth.s16),
-              //       Expanded(
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.stretch,
-              //           children: [
-              //             CustomText(
-              //               text: 'ID Back',
-              //               textStyle: getMediumStyle(
-              //                 fontSize: AppFontSize.s15,
-              //                 color: ColorManager.defaultWhite,
-              //               ),
-              //             ),
-              //             SizedBox(height: AppHeight.s8),
-              //             GestureDetector(
-              //               onTap: onPickIdBack,
-              //               child: Container(
-              //                 key: ValueKey(bloc.idBackVersion),
-              //                 height: AppHeight.s78,
-              //                 decoration: BoxDecoration(
-              //                   color: ColorManager.background,
-              //                   borderRadius: BorderRadius.circular(
-              //                     AppRadius.r18,
-              //                   ),
-              //                   border: Border.all(color: ColorManager.primary),
-              //                 ),
-              //                 child: idBackPath == null
-              //                     ? Icon(
-              //                         Icons.add_a_photo,
-              //                         color: ColorManager.primary,
-              //                       )
-              //                     : ClipRRect(
-              //                         borderRadius: BorderRadius.circular(
-              //                           AppRadius.r18,
-              //                         ),
-              //                         child: Image.file(
-              //                           File(idBackPath),
-              //                           fit: BoxFit.cover,
-              //                         ),
-              //                       ),
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     ],
-              //   ),
               LocationSourceSelector(
                 title: AppTranslation.location,
                 useMyLocationHint: AppTranslation.useMyLocation,
@@ -249,10 +121,10 @@ class RegisterForm extends StatelessWidget {
                 selectedCountry: state.selectedCountry,
                 selectedCity: state.selectedCity,
                 onSelectCountry: (country) {
-                  bloc.add(RegisterCountryChanged(country as CountryEntity?));
+                  bloc.add(RegisterCountryChanged(country ));
                 },
                 onSelectCity: (city) {
-                  bloc.add(RegisterCityChanged(city as CityEntity?));
+                  bloc.add(RegisterCityChanged(city));
                 },
                 isRequired: true,
                 isReadOnly: false,

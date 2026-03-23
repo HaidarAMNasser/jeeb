@@ -5,9 +5,9 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
-import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/bloc/list_product_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/widgets/product_list_item.dart';
+import 'package:jeeb_app/features/product/list_product/presentation/widgets/products_shimmer.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ListProductPage extends StatefulWidget {
@@ -59,6 +59,7 @@ class _ListProductPageState extends State<ListProductPage> {
         builder: (context, state) {
           return BlocStateHandler<ListProductBloc, ListProductState>(
             bloc: context.read<ListProductBloc>(),
+            loadingWidget: const ProductListPageShimmer(),
             isLoading: (state) => state is ListProductLoading,
             isError: (state) => state is ListProductError,
             getErrorMessage: (state) => (state as ListProductError).message,
@@ -83,9 +84,7 @@ class _ListProductPageState extends State<ListProductPage> {
               final products = productState is ListProductLoaded
                   ? productState.products
                   : (productState as ListProductLoadingMore).products;
-              final hasMore = productState is ListProductLoaded
-                  ? productState.hasMore
-                  : false;
+              final isLoadingMore = productState is ListProductLoadingMore;
 
               Widget listView;
               try {
@@ -104,13 +103,11 @@ class _ListProductPageState extends State<ListProductPage> {
                     return ListView.builder(
                       controller: _scrollController,
                       padding: EdgeInsets.all(AppPadding.p16),
-                      itemCount: products.length + (hasMore ? 1 : 0),
+                      itemCount:
+                          products.length + (isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
-                        if (index == products.length) {
-                          return Padding(
-                            padding: EdgeInsets.all(AppPadding.p16),
-                            child: const CustomCircleIndicator(),
-                          );
+                        if (index == products.length && isLoadingMore) {
+                          return const ProductListPaginationShimmer();
                         }
                         final product = products[index];
                         final isFavorite = hasFavoritesState
@@ -132,13 +129,11 @@ class _ListProductPageState extends State<ListProductPage> {
                 listView = ListView.builder(
                   controller: _scrollController,
                   padding: EdgeInsets.all(AppPadding.p16),
-                  itemCount: products.length + (hasMore ? 1 : 0),
+                  itemCount:
+                      products.length + (isLoadingMore ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index == products.length) {
-                      return Padding(
-                        padding: EdgeInsets.all(AppPadding.p16),
-                        child: const CustomCircleIndicator(),
-                      );
+                    if (index == products.length && isLoadingMore) {
+                      return const ProductListPaginationShimmer();
                     }
                     return ProductListItem(product: products[index]);
                   },

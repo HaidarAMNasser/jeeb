@@ -13,9 +13,7 @@ import 'package:jeeb_app/features/favorites/presentation/pages/favorites_page.da
 import 'package:jeeb_app/features/order/list_order/presentation/pages/list_order_page.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/bloc/list_order_bloc.dart';
 import 'package:jeeb_app/features/basket/presentation/pages/basket_page.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
-import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
 
 class ClientNavigation extends StatefulWidget {
   const ClientNavigation({super.key});

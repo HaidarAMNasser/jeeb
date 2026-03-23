@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/horizontal_scrollable_text.dart';
+import 'package:jeeb_app/core/presentation/widgets/merchant_default_cover_image.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
@@ -25,7 +28,8 @@ class MerchantCard extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(AppRadius.r16),
       child: Container(
-        width: 160,
+        width: 180.w,
+        height: 170.0.h,
         decoration: BoxDecoration(
           color: ColorManager.surface,
           borderRadius: BorderRadius.circular(AppRadius.r16),
@@ -54,9 +58,12 @@ class MerchantCard extends StatelessWidget {
                           ? Image.network(
                               merchant.image!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _placeholder(),
+                              errorBuilder: (_, __, ___) =>
+                                  const MerchantDefaultCoverImage(
+                                    fillParent: true,
+                                  ),
                             )
-                          : _placeholder(),
+                          : const MerchantDefaultCoverImage(fillParent: true),
                     ),
                   ),
                   if (merchant.isOnline == true)
@@ -81,74 +88,63 @@ class MerchantCard extends StatelessWidget {
             ),
             Expanded(
               flex: 2,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppPadding.p8,
-                  vertical: AppPadding.p2,
+              child: Material(
+                color: ColorManager.lightPrimary,
+                elevation: 2,
+                shadowColor: ColorManager.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(AppRadius.r16),
+                  bottomRight: Radius.circular(AppRadius.r16),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _scrollableText(
-                      text: merchant.name,
-                      textStyle: getSemiBoldStyle(
-                        fontSize: AppFontSize.s14,
-                        color: ColorManager.productNameColor,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppPadding.p8,
+                    vertical: AppPadding.p4,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+
+                    children: [
+                      HorizontalScrollableText(
+                        text: merchant.restaurantName,
+                        textStyle: getSemiBoldStyle(
+                          fontSize: AppFontSize.s14,
+                          color: ColorManager.productNameColor,
+                        ),
+                        height: AppHeight.s26,
                       ),
-                    ),
-                    if (merchant.cityName != null &&
-                        merchant.cityName!.isNotEmpty) ...[
-                      SizedBox(height: AppHeight.s2_5),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppPadding.p6,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: ColorManager.primary.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(AppRadius.r8),
-                        ),
-                        child: CustomText(
-                          text: merchant.cityName!,
-                          textStyle: getRegularStyle(
-                            fontSize: AppFontSize.s8,
-                            color: ColorManager.primary,
+                      if (merchant.cityName != null &&
+                          merchant.cityName!.isNotEmpty) ...[
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppPadding.p6,
+                            vertical: 1,
                           ),
-                          maxLines: 1,
-                          textOverflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
+                          decoration: BoxDecoration(
+                            color: ColorManager.primary.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(AppRadius.r8),
+                          ),
+                          child: CustomText(
+                            text: merchant.cityName!,
+                            textStyle: getRegularStyle(
+                              fontSize: AppFontSize.s10,
+                              color: ColorManager.primary,
+                            ),
+                            maxLines: 1,
+                            textOverflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _placeholder() {
-    return Container(
-      color: ColorManager.background,
-      child: Icon(
-        Icons.store,
-        color: ColorManager.primary.withOpacity(0.5),
-        size: 40,
-      ),
-    );
-  }
-
-  Widget _scrollableText({required String text, required TextStyle textStyle}) {
-    return SizedBox(
-      width: double.infinity,
-      height: AppHeight.s18,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: CustomText(text: text, textStyle: textStyle, maxLines: 1),
       ),
     );
   }

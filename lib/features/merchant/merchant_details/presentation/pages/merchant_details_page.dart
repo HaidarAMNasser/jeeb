@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
-import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/presentation/bloc/merchant_details_bloc.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/presentation/widgets/merchant_details_content.dart';
 import 'package:jeeb_app/features/offer/list_offer/presentation/bloc/list_offer_bloc.dart';
@@ -51,48 +51,28 @@ class _MerchantDetailsPageState extends State<MerchantDetailsPage> {
       appBar: CustomAppBar(title: AppTranslation.merchantDetails),
       body: Builder(
         builder: (context) {
-          // return BlocStateHandler<MerchantDetailsBloc, MerchantDetailsState>(
-          //   bloc: context.read<MerchantDetailsBloc>(),
-          //   isLoading: (state) => state is MerchantDetailsLoading,
-          //   isError: (state) => state is MerchantDetailsError,
-          //   getErrorMessage: (state) => (state as MerchantDetailsError).message,
-          //   isSuccess: (state) => state is MerchantDetailsLoaded,
-          //   getRetryCallback: (state) => () {
-          //     context.read<MerchantDetailsBloc>().add(
-          //           GetMerchantDetailsEvent(id: widget.merchantId),
-          //         );
-          //   },
-          //   successBuilder: (context, detailsState) {
-          //     final loadedState = detailsState as MerchantDetailsLoaded;
-          //     return MerchantDetailsContent(merchant: loadedState.merchant);
-          //   },
-          // );
-
-          // Fake data for UI testing
-          final fakeMerchant = _generateFakeMerchant();
-          return SingleChildScrollView(
-            controller: _scrollController,
-            child: MerchantDetailsContent(
-              merchant: fakeMerchant,
-              merchantId: widget.merchantId,
-              scrollController: _scrollController,
-            ),
+          return BlocStateHandler<MerchantDetailsBloc, MerchantDetailsState>(
+            bloc: context.read<MerchantDetailsBloc>(),
+            isLoading: (state) => state is MerchantDetailsLoading,
+            isError: (state) => state is MerchantDetailsError,
+            getErrorMessage: (state) => (state as MerchantDetailsError).message,
+            isSuccess: (state) => state is MerchantDetailsLoaded,
+            getRetryCallback: (state) => () {
+              context.read<MerchantDetailsBloc>().add(
+                GetMerchantDetailsEvent(id: widget.merchantId),
+              );
+            },
+            successBuilder: (context, detailsState) {
+              final loadedState = detailsState as MerchantDetailsLoaded;
+              return MerchantDetailsContent(
+                merchant: loadedState.merchant,
+                merchantId: widget.merchantId,
+                scrollController: _scrollController,
+              );
+            },
           );
         },
       ),
-    );
-  }
-
-  // Fake data generation for UI testing
-  MerchantEntity _generateFakeMerchant() {
-    return MerchantEntity(
-      id: widget.merchantId,
-      name: 'Al-Rashid Restaurant',
-      email: 'al_rashid_restaurant@example.com',
-      cityName: 'Beirut',
-      countryName: 'Lebanon',
-      phoneNumber: '+961 3 1234567',
-      image: 'https://picsum.photos/seed/merchant${widget.merchantId}/200/200',
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/data/repositories/list_product_repository.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/paginated_products.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 part 'list_product_event.dart';

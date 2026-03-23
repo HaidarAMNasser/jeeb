@@ -34,7 +34,7 @@ class ListMerchantBloc extends Bloc<ListMerchantEvent, ListMerchantState> {
             );
 
             result.fold(
-              (failure) => emit(ListMerchantError(message: failure!.message)),
+              (failure) => emit(ListMerchantError(message: failure.message)),
               (newMerchants) {
                 final updatedMerchants = [
                   ...currentState.merchants,
@@ -61,7 +61,7 @@ class ListMerchantBloc extends Bloc<ListMerchantEvent, ListMerchantState> {
           );
 
           result.fold(
-            (failure) => emit(ListMerchantError(message: failure!.message)),
+            (failure) => emit(ListMerchantError(message: failure.message)),
             (merchants) => emit(
               ListMerchantLoaded(
                 merchants: merchants,

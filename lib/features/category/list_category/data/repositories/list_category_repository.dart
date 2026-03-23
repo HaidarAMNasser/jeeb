@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
 import 'package:jeeb_app/features/category/list_category/data/data_sources/list_category_data_source.dart';
-import 'package:jeeb_app/features/category/list_category/domain/entities/category_entity.dart';
 import 'package:jeeb_app/features/category/list_category/data/models/category_model.dart';
 import 'package:jeeb_app/features/category/list_category/data/mappers/category_mapper.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';

@@ -26,8 +26,8 @@ class OfferCardContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (offer.merchant != null && offer.merchant!.name.isNotEmpty) ...[
-            _line(offer.merchant!.name, AppFontSize.s11),
+          if (offer.merchant != null && offer.merchant!.restaurantName.isNotEmpty) ...[
+            _line(offer.merchant!.restaurantName, AppFontSize.s11),
             SizedBox(height: AppHeight.s4),
           ],
           _line(

@@ -16,8 +16,8 @@ class ProductDetailsBloc extends Bloc<ProductDetailsEvent, ProductDetailsState> 
 
         final result = await _repository.getProductDetails(event.id);
         result.fold(
-          (failure) => emit(ProductDetailsError(message: failure?.toString() ?? '')),
-          (product) => emit(ProductDetailsLoaded(product: product as ProductEntity)),
+          (failure) => emit(ProductDetailsError(message: failure.toString())),
+          (product) => emit(ProductDetailsLoaded(product: product)),
         );
       }
     });

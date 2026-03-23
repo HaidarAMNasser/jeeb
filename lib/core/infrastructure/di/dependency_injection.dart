@@ -62,8 +62,6 @@ import '../../../features/offer/offer_details/data/repositories/offer_details_re
 
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/client_home/presentation/bloc/client_home_bloc.dart';
-import '../../../features/client_home/presentation/bloc/client_home_event.dart';
-import '../../../features/client_home/presentation/bloc/client_home_state.dart';
 import '../../../features/favorites/data/data_sources/favorites_remote_data_source.dart';
 import '../../../features/favorites/data/repositories/favorites_repository.dart';
 import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';

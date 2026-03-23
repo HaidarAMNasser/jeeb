@@ -11,7 +11,9 @@ class ImageAsset {
 
   // Logo Images
   static const String appLogo = 'assets/images/app_logo.png';
-  
+  static const String defaultMarchent = 'assets/images/default_marchent.avif';
+  static const String offerDefault = 'assets/images/offer_default.webp';
+
   // Add more image paths here as needed
   // Example:
   // static const String placeholder = 'assets/images/placeholder.png';
@@ -27,4 +29,3 @@ class IconAsset {
   // Example:
   // static const String customIcon = 'assets/icons/custom_icon.png';
 }
-

@@ -12,7 +12,6 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 

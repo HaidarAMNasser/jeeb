@@ -39,7 +39,7 @@ class ColorManager {
   static const Color descriptionColor = Color(0xFF6B7280);
 
   // Product List Item Colors
-  static const Color categoryBadgeBackground = Color(0xFFFFE5D4);
+  static const Color lightPrimary = Color(0xFFFFE5D4);
   static const Color categoryTextColor = Color(0xFFE25727);
   static const Color priceColor = Color(0xFFE25727);
   static const Color ratingBackgroundColor = Color(0xFFFFF4E0);

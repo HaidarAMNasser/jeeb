@@ -7,9 +7,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductItemImageCarousel extends StatefulWidget {
   final List<ProductImageEntity> images;
-  final bool enableSmallDesign; 
+  final bool enableSmallDesign;
 
-  const ProductItemImageCarousel({super.key, required this.images, this.enableSmallDesign = false});
+  /// Optional bundled image (e.g. [ImageAsset.offerDefault]) when URL is missing or fails.
+  final String? placeholderAsset;
+
+  const ProductItemImageCarousel({
+    super.key,
+    required this.images,
+    this.enableSmallDesign = false,
+    this.placeholderAsset,
+  });
 
   @override
   State<ProductItemImageCarousel> createState() =>
@@ -46,8 +54,10 @@ class _ProductItemImageCarouselState extends State<ProductItemImageCarousel> {
             controller: _pageController,
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemCount: itemCount,
-            itemBuilder: (context, index) =>
-                _ImagePage(url: hasImages ? widget.images[index].url : null),
+            itemBuilder: (context, index) => _ImagePage(
+              url: hasImages ? widget.images[index].url : null,
+              placeholderAsset: widget.placeholderAsset,
+            ),
           ),
           if (itemCount > 1)
             _CarouselDots(count: itemCount, currentIndex: _currentPage),
@@ -59,8 +69,9 @@ class _ProductItemImageCarouselState extends State<ProductItemImageCarousel> {
 
 class _ImagePage extends StatelessWidget {
   final String? url;
+  final String? placeholderAsset;
 
-  const _ImagePage({this.url});
+  const _ImagePage({this.url, this.placeholderAsset});
 
   @override
   Widget build(BuildContext context) {
@@ -72,15 +83,29 @@ class _ImagePage extends StatelessWidget {
       child: Container(
         width: double.infinity,
         color: ColorManager.background,
-        child: url != null
+        child: url != null && url!.isNotEmpty
             ? CustomCachedNetworkImage(
                 imageUrl: url!,
                 fit: BoxFit.cover,
-                errorWidget: const _PlaceholderImage(),
+                width: double.infinity,
+                height: double.infinity,
+                errorWidget: _assetOrIconPlaceholder(placeholderAsset),
               )
-            : const _PlaceholderImage(),
+            : _assetOrIconPlaceholder(placeholderAsset),
       ),
     );
+  }
+
+  static Widget _assetOrIconPlaceholder(String? asset) {
+    if (asset != null && asset.isNotEmpty) {
+      return Image.asset(
+        asset,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+    return const _PlaceholderImage();
   }
 }
 

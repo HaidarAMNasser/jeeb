@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/common/utils/asset_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_cached_network_image.dart';
 
-/// Background layer for offer card: image or gradient, with dark overlay.
+/// Background layer: product image, [ImageAsset.offerDefault] if missing/error, + dark overlay.
 class OfferCardBackground extends StatelessWidget {
   const OfferCardBackground({super.key, this.imageUrl});
 
@@ -20,26 +20,22 @@ class OfferCardBackground extends StatelessWidget {
   }
 
   Widget _buildLayer() {
+    final fallback = Image.asset(
+      ImageAsset.offerDefault,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+    );
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return CustomCachedNetworkImage(
         imageUrl: imageUrl!,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        errorWidget: fallback,
       );
     }
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            ColorManager.primary.withOpacity(0.9),
-            ColorManager.secondary.withOpacity(0.8),
-          ],
-        ),
-      ),
-    );
+    return fallback;
   }
 
   Widget _buildOverlay() {

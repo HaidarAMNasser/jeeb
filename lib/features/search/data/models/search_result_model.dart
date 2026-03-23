@@ -42,6 +42,7 @@ class SearchResultModel {
         }
 
         return MerchantModel(
+          restaurantName: json['restaurantName']?.toString() ?? '',
           id: (json['merchantId'] ?? json['id'] ?? '').toString(),
           firstName: name,
           lastName: json['lastName']?.toString() ?? '',
@@ -158,6 +159,7 @@ class SearchResultModel {
                                 '')
                             .toString(),
                     lastName: '',
+                    restaurantName: json['restaurantName']?.toString() ?? '',
                     email: '',
                     phone: '',
                   )
@@ -280,7 +282,7 @@ class SearchResponseModel {
         if (rawData is List) {
           dataList = rawData;
         } else if (rawData is Map) {
-          final dynamic nestedData = (rawData as Map)['data'];
+          final dynamic nestedData = (rawData)['data'];
           if (nestedData is List) {
             dataList = nestedData;
           }
@@ -294,7 +296,7 @@ class SearchResponseModel {
       // 3. Determine pagination
       final dynamic rawPagination =
           responseMap['pagination'] ??
-          (rawData is Map ? (rawData as Map)['pagination'] : null);
+          (rawData is Map ? (rawData)['pagination'] : null);
       if (rawPagination is Map) {
         paginationMap = Map<String, dynamic>.from(rawPagination);
       }

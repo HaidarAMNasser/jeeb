@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
@@ -86,7 +87,7 @@ class ClientHomeMerchantsSection extends StatelessWidget {
             ),
             SizedBox(height: AppHeight.s12),
             SizedBox(
-              height: AppHeight.s136,
+              height: 170.0.h,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: merchants.length,

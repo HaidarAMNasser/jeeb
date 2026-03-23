@@ -7,12 +7,8 @@ import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_even
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
 import 'package:jeeb_app/features/merchant/merchant_details/domain/entities/merchant_entity.dart';
 import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/paginated_products.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 import 'package:jeeb_app/features/search/domain/repositories/search_repository.dart';
 import 'package:jeeb_app/features/search/domain/entities/search_result.dart';
-
-import 'package:jeeb_app/features/category/list_category/domain/entities/paginated_categories.dart';
 
 class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
   final ListCategoryRepository _categoryRepository;

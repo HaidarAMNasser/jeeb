@@ -18,7 +18,7 @@ class MerchantDetailsBloc
         result.fold(
           (l) => emit(MerchantDetailsError(
               message: l is Exception ? l.toString() : (l as dynamic).message?.toString() ?? 'Unknown error')),
-          (merchant) => emit(MerchantDetailsLoaded(merchant: merchant as MerchantEntity)),
+          (merchant) => emit(MerchantDetailsLoaded(merchant: merchant )),
         );
       }
     });

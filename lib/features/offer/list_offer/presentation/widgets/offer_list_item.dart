@@ -6,6 +6,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/common/utils/asset_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/offer/list_offer/domain/entities/offer_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_image_entity.dart';
@@ -49,6 +50,7 @@ class OfferListItem extends StatelessWidget {
             key: ValueKey('offer_${offer.id}_${images.length}'),
             images: images,
             enableSmallDesign: enableSmallDesign,
+            placeholderAsset: ImageAsset.offerDefault,
           ),
           Container(
             margin: EdgeInsets.only(bottom: AppMargin.m16),

@@ -39,9 +39,11 @@ class MerchantImageModel {
 
 class MerchantModel {
   final String id;
+  final String restaurantName;
   final String firstName;
   final String lastName;
   final String email;
+
   final String phone;
   final String? role;
   final String? notificationChannel;
@@ -50,6 +52,9 @@ class MerchantModel {
   final String? address;
   final String? birthday;
   final bool? isOnline;
+
+  /// API: when true, do not display phone in the app.
+  final bool hidePhoneNumber;
   final String? verifiedAt;
   final String? createdAt;
   final String? updatedAt;
@@ -59,6 +64,7 @@ class MerchantModel {
 
   MerchantModel({
     required this.id,
+    required this.restaurantName,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -70,6 +76,7 @@ class MerchantModel {
     this.address,
     this.birthday,
     this.isOnline,
+    this.hidePhoneNumber = false,
     this.verifiedAt,
     this.createdAt,
     this.updatedAt,
@@ -91,6 +98,7 @@ class MerchantModel {
       id: json['id']?.toString() ?? '',
       firstName: firstName,
       lastName: lastName,
+      restaurantName: json['restaurantName']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       phone: json['phone']?.toString() ?? '',
       role: json['role']?.toString(),
@@ -100,6 +108,7 @@ class MerchantModel {
       address: json['address']?.toString(),
       birthday: json['birthday']?.toString(),
       isOnline: json['isOnline'] as bool?,
+      hidePhoneNumber: json['hidePhoneNumber'] as bool? ?? false,
       verifiedAt: json['verifiedAt']?.toString(),
       createdAt: json['createdAt']?.toString(),
       updatedAt: json['updatedAt']?.toString(),
@@ -131,6 +140,7 @@ class MerchantModel {
       'id': id,
       'firstName': firstName,
       'lastName': lastName,
+      'restaurantName': restaurantName,
       'email': email,
       'phone': phone,
       'role': role,
@@ -140,6 +150,7 @@ class MerchantModel {
       'address': address,
       'birthday': birthday,
       'isOnline': isOnline,
+      'hidePhoneNumber': hidePhoneNumber,
       'verifiedAt': verifiedAt,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -149,4 +160,3 @@ class MerchantModel {
     };
   }
 }
-

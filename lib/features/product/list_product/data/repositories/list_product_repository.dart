@@ -9,7 +9,6 @@ import 'package:jeeb_app/features/product/list_product/data/data_sources/list_pr
 import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
 import 'package:jeeb_app/features/product/list_product/data/models/product_model.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/paginated_products.dart';
-import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 class ListProductRepository {
   final ListProductRemoteDataSource _remoteDataSource;

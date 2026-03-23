@@ -25,7 +25,7 @@ class BasketPage extends StatelessWidget {
             ),
             SizedBox(height: AppHeight.s16),
             Text(
-              AppTranslation.basketIsEmpty ?? 'Basket is Empty',
+              AppTranslation.basketIsEmpty ,
               style: getBoldStyle(
                 fontSize: AppFontSize.s20,
                 color: ColorManager.textSecondary,
