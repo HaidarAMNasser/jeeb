@@ -1,5 +1,7 @@
 import 'package:chucker_flutter/chucker_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'core/presentation/routes/route_manager.dart';
@@ -7,7 +9,9 @@ import 'core/presentation/routes/routes.dart';
 import 'core/presentation/routes/navigation_service.dart';
 import 'core/infrastructure/di/dependency_injection.dart' as di;
 import 'core/presentation/localization/localization_manager.dart';
+import 'core/infrastructure/services/notification_service.dart';
 import 'core/infrastructure/services/storage_service.dart';
+import 'features/notification/update_token/presentation/bloc/update_token_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
@@ -24,6 +28,7 @@ void main() async {
     ),
   );
   await di.init();
+  await Firebase.initializeApp();
 
   // Chucker
   ChuckerFlutter.showOnRelease = true;
@@ -59,10 +64,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // Chucker
   Offset _chuckerButtonOffset = const Offset(300, 500);
+  late final UpdateTokenBloc _updateTokenBloc;
 
   @override
   void initState() {
     super.initState();
+    _updateTokenBloc = di.sl<UpdateTokenBloc>();
+    _updateTokenBloc.add(const UpdateTokenInitializeRequested());
+    _initNotifications();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
       setState(() {
@@ -71,50 +80,60 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> _initNotifications() async {
+    final notificationService = di.sl<NotificationService>();
+    await notificationService.initialize(
+      onToken: (token) => _updateTokenBloc.add(UpdateTokenReceived(token)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return MaterialApp(
-          title: 'Jeeb App',
-          debugShowCheckedModeBanner: false,
-          navigatorObservers: [ChuckerFlutter.navigatorObserver],
-          builder: (context, child) {
-            return Stack(
-              children: [
-                child ?? const SizedBox.shrink(),
-                Positioned(
-                  left: _chuckerButtonOffset.dx,
-                  top: _chuckerButtonOffset.dy,
-                  child: GestureDetector(
-                    onPanUpdate: (details) {
-                      setState(() {
-                        _chuckerButtonOffset += details.delta;
-                      });
-                    },
-                    child: Transform.scale(
-                      scale: 0.7,
-                      child: ChuckerFlutter.chuckerButton,
+    return BlocProvider.value(
+      value: _updateTokenBloc,
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return MaterialApp(
+            title: 'Jeeb App',
+            debugShowCheckedModeBanner: false,
+            navigatorObservers: [ChuckerFlutter.navigatorObserver],
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  child ?? const SizedBox.shrink(),
+                  Positioned(
+                    left: _chuckerButtonOffset.dx,
+                    top: _chuckerButtonOffset.dy,
+                    child: GestureDetector(
+                      onPanUpdate: (details) {
+                        setState(() {
+                          _chuckerButtonOffset += details.delta;
+                        });
+                      },
+                      child: Transform.scale(
+                        scale: 0.7,
+                        child: ChuckerFlutter.chuckerButton,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
-          // theme: AppTheme.lightTheme,
-          // darkTheme:  AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
-          navigatorKey: di.sl<NavigationService>().navigationKey,
-          initialRoute: Routes.splash,
-          onGenerateRoute: AppRouter.generateRoute,
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-        );
-      },
+                ],
+              );
+            },
+            // theme: AppTheme.lightTheme,
+            // darkTheme:  AppTheme.darkTheme,
+            themeMode: ThemeMode.system,
+            navigatorKey: di.sl<NavigationService>().navigationKey,
+            initialRoute: Routes.splash,
+            onGenerateRoute: AppRouter.generateRoute,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+          );
+        },
+      ),
     );
   }
 }

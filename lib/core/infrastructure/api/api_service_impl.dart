@@ -360,6 +360,32 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   }
 
   @override
+  Future<Response> updateDeviceToken({
+    required String token,
+    required String platform,
+  }) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final data = <String, dynamic>{'token': token, 'platform': platform};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'POST', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'auth/device-token',
+              queryParameters: queryParameters,
+              data: data,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
   Future<Response> getCategories(int? page, int? limit) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

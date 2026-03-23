@@ -6,6 +6,7 @@ import '../network/network_info.dart';
 import '../../presentation/routes/navigation_service.dart';
 import '../services/storage_service.dart';
 import '../services/dio_factory.dart';
+import '../services/notification_service.dart';
 import '../api/api_service.dart';
 import '../../config/app_config.dart';
 import '../../../features/product/list_product/data/data_sources/list_product_data_source.dart';
@@ -74,6 +75,9 @@ import '../../../features/basket/list_cart/presentation/bloc/list_cart_bloc.dart
 import '../../../features/basket/manage_cart/data/data_sources/manage_cart_remote_data_source.dart';
 import '../../../features/basket/manage_cart/data/repositories/manage_cart_repository.dart';
 import '../../../features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
+import '../../../features/notification/update_token/data/data_sources/update_token_remote_data_source.dart';
+import '../../../features/notification/update_token/data/repositories/update_token_repository.dart';
+import '../../../features/notification/update_token/presentation/bloc/update_token_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -87,6 +91,7 @@ Future<void> init() async {
   //! Core Services
   sl.registerLazySingleton<StorageService>(() => StorageServiceImpl(sl()));
   sl.registerLazySingleton(() => NavigationService());
+  sl.registerLazySingleton<NotificationService>(() => NotificationService(sl()));
 
   //! Network
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
@@ -274,4 +279,11 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ManageCartRepository(sl(), sl()));
   sl.registerLazySingleton<ManageCartBloc>(() => ManageCartBloc(sl()));
+
+  //! FCM - Update device token
+  sl.registerFactory<UpdateTokenRemoteDataSource>(
+    () => UpdateTokenRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => UpdateTokenRepository(sl(), sl()));
+  sl.registerLazySingleton<UpdateTokenBloc>(() => UpdateTokenBloc(sl(), sl()));
 }
