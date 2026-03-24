@@ -283,6 +283,15 @@ class AppTranslation {
   static String get activateAccount => 'activate_account'.tr();
   static String get deactivateAccount => 'deactivate_account'.tr();
 
+  static String get deliveryDashboard => 'delivery_dashboard'.tr();
+  static String get hello => 'hello'.tr();
+  static String get partner => 'partner'.tr();
+  static String get activeOrders => 'active_orders'.tr();
+  static String get noActiveOrders => 'no_active_orders'.tr();
+  static String get pickUpPoint => 'pick_up_point'.tr();
+  static String get orderItems => 'order_items'.tr();
+  static String moreItemsN(int n) => 'more_items'.tr(args: [n.toString()]);
+
   // Delivery
   static String get deliveryMen => 'delivery_men'.tr();
   static String get deliveryManDetails => 'delivery_man_details'.tr();

@@ -63,7 +63,7 @@ class _VerifyPageState extends State<VerifyPage> {
           if (state.goToMain) {
             customToast(msg: AppTranslation.accountVerifiedSuccess);
             context.pushNamedAndRemoveUntil(
-              Routes.clientHome,
+              Routes.mainNavigation,
               predicate: (route) => false,
             );
           } else {

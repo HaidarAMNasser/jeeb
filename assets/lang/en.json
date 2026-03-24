@@ -301,5 +301,13 @@
   "account_active": "Account is active",
   "account_inactive": "Account is inactive",
   "activate_account": "Activate account",
-  "deactivate_account": "Deactivate account"
+  "deactivate_account": "Deactivate account",
+  "delivery_dashboard": "Delivery Dashboard",
+  "hello": "Hello",
+  "partner": "Partner",
+  "active_orders": "Active Orders",
+  "no_active_orders": "No active orders available",
+  "pick_up_point": "Pick up point",
+  "order_items": "Order Items",
+  "more_items": "+ %s more items"
 }

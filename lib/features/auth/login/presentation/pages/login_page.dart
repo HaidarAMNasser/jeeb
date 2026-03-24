@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
           );
           customToast(msg: AppTranslation.loginSuccess);
           context.pushNamedAndRemoveUntil(
-            Routes.clientHome,
+            Routes.mainNavigation,
             predicate: (route) => false,
           );
         } else if (state is LoginNeedsVerification) {
