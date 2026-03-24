@@ -212,7 +212,7 @@
   "location_permission_denied": "Location permission denied",
   "location_unavailable": "Could not get location. Ensure GPS is on and try again.",
   "location_permission_enable_in_settings": "Please enable location in settings, then tap \"Use my location\" again.",
-  "join_as_delivery": "join us as a delivery?",
+  "join_as_delivery": "Join us as a delivery?",
   "delivery_register_dialog_text": "Do you want to register manually or contact management to get yourself registered?",
   "contact_management": "Contact Management",
   "register_manually": "Register Manually",
