@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_item_entity.dart';
+import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_offer_entity.dart';
 import 'package:jeeb_app/features/basket/list_cart/domain/entities/basket_summary_entity.dart';
 
 class BasketEntity extends Equatable {
@@ -8,6 +9,7 @@ class BasketEntity extends Equatable {
   final String? merchantName;
   final String? customerPhone;
   final List<BasketItemEntity> items;
+  final List<BasketOfferEntity> offers;
   final BasketSummaryEntity? summary;
 
   const BasketEntity({
@@ -16,6 +18,7 @@ class BasketEntity extends Equatable {
     this.merchantName,
     this.customerPhone,
     required this.items,
+    this.offers = const [],
     this.summary,
   });
 
@@ -28,6 +31,7 @@ class BasketEntity extends Equatable {
         merchantName,
         customerPhone,
         items,
+        offers,
         summary,
       ];
 }

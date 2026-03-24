@@ -8,6 +8,7 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/features/delivery/home/presentation/pages/delivery_home_page.dart';
 import 'package:jeeb_app/features/delivery/orders/presentation/pages/delivery_orders_page.dart';
+import 'package:jeeb_app/features/delivery/home/presentation/bloc/delivery_home_bloc.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
@@ -25,7 +26,18 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
   Widget _buildScreen(int index) {
     switch (index) {
       case 0:
-        return const DeliveryHomePage();
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<DeliveryHomeBloc>(
+              create: (_) =>
+                  DeliveryHomeBloc()..add(const LoadDeliveryHomeEvent()),
+            ),
+            BlocProvider<ProfileBloc>(
+              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
+            ),
+          ],
+          child: const DeliveryHomePage(),
+        );
       case 1:
         return const DeliveryOrdersPage();
       case 2:

@@ -7,6 +7,7 @@ import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/features/notification/update_token/presentation/bloc/update_token_bloc.dart';
 
 import '../bloc/login_bloc.dart';
 import '../widgets/login_header.dart';
@@ -57,9 +58,12 @@ class _LoginPageState extends State<LoginPage> {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
+          context.read<UpdateTokenBloc>().add(
+            const UpdateTokenLoginSucceeded(),
+          );
           customToast(msg: AppTranslation.loginSuccess);
           context.pushNamedAndRemoveUntil(
-            Routes.clientHome,
+            Routes.mainNavigation,
             predicate: (route) => false,
           );
         } else if (state is LoginNeedsVerification) {

@@ -42,9 +42,20 @@ class ClearCartEvent extends ManageCartEvent {
 
 class ReplaceCartItemsEvent extends ManageCartEvent {
   final List<Map<String, dynamic>> items;
+  final List<Map<String, dynamic>> offers;
 
-  const ReplaceCartItemsEvent(this.items);
+  const ReplaceCartItemsEvent(this.items, {this.offers = const []});
 
   @override
-  List<Object?> get props => [items];
+  List<Object?> get props => [items, offers];
+}
+
+class AddOfferToCartEvent extends ManageCartEvent {
+  final String offerId;
+  final int quantity;
+
+  const AddOfferToCartEvent(this.offerId, {this.quantity = 1});
+
+  @override
+  List<Object?> get props => [offerId, quantity];
 }

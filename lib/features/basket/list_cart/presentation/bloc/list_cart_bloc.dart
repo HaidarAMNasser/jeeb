@@ -26,7 +26,7 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
     result.fold(
       (failure) => emit(ListCartError(failure.message)),
       (basket) {
-        if (basket == null || basket.items.isEmpty) {
+        if (basket == null || (basket.items.isEmpty && basket.offers.isEmpty)) {
           emit(
             const ListCartLoaded(
               originalItems: [],
@@ -41,6 +41,7 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
             .map(
               (e) => CartDraftItem(
                 productId: e.product.id,
+                isOffer: false,
                 productName: e.product.name,
                 imageUrl: e.product.images.isNotEmpty ? e.product.images.first.url : null,
                 description: e.product.shortDescription ?? e.product.description,
@@ -49,10 +50,24 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
               ),
             )
             .toList();
+        final draftOffers = basket.offers
+            .map(
+              (e) => CartDraftItem(
+                productId: e.offerId,
+                isOffer: true,
+                productName: e.offerName,
+                imageUrl: null,
+                description: e.offerDescription,
+                quantity: e.quantity,
+                unitPrice: e.quantity > 0 ? (e.subtotal ~/ e.quantity) : 0,
+              ),
+            )
+            .toList();
+        final mergedDraft = [...draftItems, ...draftOffers];
         emit(
           ListCartLoaded(
-            originalItems: draftItems,
-            currentItems: draftItems,
+            originalItems: mergedDraft,
+            currentItems: mergedDraft,
             merchantName: basket.merchantName ?? '',
             customerPhone: basket.customerPhone ?? '',
           ),
@@ -66,7 +81,8 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
     if (current is! ListCartLoaded) return;
     final updated = current.currentItems
         .map(
-          (e) => e.productId == event.productId
+          (e) => e.productId == event.itemId
+              && e.isOffer == event.isOffer
               ? e.copyWith(quantity: e.quantity + 1)
               : e,
         )
@@ -79,7 +95,7 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
     if (current is! ListCartLoaded) return;
     final updated = <CartDraftItem>[];
     for (final item in current.currentItems) {
-      if (item.productId != event.productId) {
+      if (item.productId != event.itemId || item.isOffer != event.isOffer) {
         updated.add(item);
         continue;
       }
@@ -98,7 +114,8 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
     if (current is! ListCartLoaded || !current.isDirty) return;
     emit(current.copyWith(isSaving: true, clearNotice: true));
 
-    final payload = current.currentItems
+    final itemPayload = current.currentItems
+        .where((e) => !e.isOffer)
         .map(
           (e) => {
             'productId': int.tryParse(e.productId),
@@ -113,8 +130,27 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
           },
         )
         .toList();
+    final offerPayload = current.currentItems
+        .where((e) => e.isOffer)
+        .map(
+          (e) => {
+            'offer_id': int.tryParse(e.productId),
+            'quantity': e.quantity,
+          },
+        )
+        .where((e) => e['offer_id'] != null)
+        .map(
+          (e) => {
+            'offer_id': e['offer_id'] as int,
+            'quantity': e['quantity'] as int,
+          },
+        )
+        .toList();
 
-    final result = await _manageRepository.replaceCartItems(payload);
+    final result = await _manageRepository.replaceCartItems(
+      items: itemPayload,
+      offers: offerPayload,
+    );
     result.fold(
       (failure) => emit(
         current.copyWith(

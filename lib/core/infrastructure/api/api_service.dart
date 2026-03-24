@@ -133,6 +133,12 @@ abstract class AppApiServiceClient {
   @POST("auth/logout")
   Future<Response> logout();
 
+  @POST("auth/device-token")
+  Future<Response> updateDeviceToken({
+    @Field('token') required String token,
+    @Field('platform') required String platform,
+  });
+
   // Category endpoints
   @GET("apiAdmin/Category/all")
   Future<Response> getCategories(

@@ -19,6 +19,12 @@ abstract class StorageService {
   Future<void> setVerified(bool value);
   Future<String?> getPendingVerifyEmail();
   Future<void> setPendingVerifyEmail(String? email);
+  Future<String?> getFcmToken();
+  Future<void> setFcmToken(String token);
+  Future<String?> getLastSyncedFcmToken();
+  Future<void> setLastSyncedFcmToken(String token);
+  Future<int?> getLastSyncedFcmUserId();
+  Future<void> setLastSyncedFcmUserId(int userId);
   Future<void> clearStorage({bool clearAuthParams = false});
 }
 
@@ -32,6 +38,9 @@ class StorageServiceImpl implements StorageService {
   static const String _isLoggedInKey = 'is_logged_in';
   static const String _isVerifiedKey = 'is_verified';
   static const String _pendingVerifyEmailKey = 'pending_verify_email';
+  static const String _fcmTokenKey = 'fcm_token';
+  static const String _lastSyncedFcmTokenKey = 'last_synced_fcm_token';
+  static const String _lastSyncedFcmUserIdKey = 'last_synced_fcm_user_id';
 
   StorageServiceImpl(this._sharedPreferences);
 
@@ -120,6 +129,36 @@ class StorageServiceImpl implements StorageService {
   }
 
   @override
+  Future<String?> getFcmToken() async {
+    return _sharedPreferences.getString(_fcmTokenKey);
+  }
+
+  @override
+  Future<void> setFcmToken(String token) async {
+    await _sharedPreferences.setString(_fcmTokenKey, token);
+  }
+
+  @override
+  Future<String?> getLastSyncedFcmToken() async {
+    return _sharedPreferences.getString(_lastSyncedFcmTokenKey);
+  }
+
+  @override
+  Future<void> setLastSyncedFcmToken(String token) async {
+    await _sharedPreferences.setString(_lastSyncedFcmTokenKey, token);
+  }
+
+  @override
+  Future<int?> getLastSyncedFcmUserId() async {
+    return _sharedPreferences.getInt(_lastSyncedFcmUserIdKey);
+  }
+
+  @override
+  Future<void> setLastSyncedFcmUserId(int userId) async {
+    await _sharedPreferences.setInt(_lastSyncedFcmUserIdKey, userId);
+  }
+
+  @override
   Future<void> clearStorage({bool clearAuthParams = false}) async {
     if (clearAuthParams) {
       await _sharedPreferences.remove(_tokenKey);
@@ -128,6 +167,8 @@ class StorageServiceImpl implements StorageService {
       await _sharedPreferences.remove(_isLoggedInKey);
       await _sharedPreferences.remove(_isVerifiedKey);
       await _sharedPreferences.remove(_pendingVerifyEmailKey);
+      await _sharedPreferences.remove(_lastSyncedFcmTokenKey);
+      await _sharedPreferences.remove(_lastSyncedFcmUserIdKey);
     }
   }
 }

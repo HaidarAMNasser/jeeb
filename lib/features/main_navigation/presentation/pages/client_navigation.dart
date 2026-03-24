@@ -12,7 +12,7 @@ import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dar
 import 'package:jeeb_app/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/pages/list_order_page.dart';
 import 'package:jeeb_app/features/order/list_order/presentation/bloc/list_order_bloc.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/pages/basket_page.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/basket/pages/basket_page.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 

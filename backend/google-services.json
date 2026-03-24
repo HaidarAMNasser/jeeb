@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "242498010770",
+    "project_id": "jeeb-f64a4",
+    "storage_bucket": "jeeb-f64a4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242498010770:android:0f26d781d98fba3d62704b",
+        "android_client_info": {
+          "package_name": "com.jeeb.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVz_0Tx7AKwdsxIIaBuMObJmULa8zaK8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
