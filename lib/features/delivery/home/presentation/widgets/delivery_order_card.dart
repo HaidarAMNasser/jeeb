@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:slide_countdown/slide_countdown.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -82,7 +83,38 @@ class DeliveryOrderCard extends StatelessWidget {
                 _buildPriceTag(totalPrice),
               ],
             ),
-            SizedBox(height: AppHeight.s20),
+            SizedBox(height: AppHeight.s12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(
+                  Icons.timer_outlined,
+                  size: AppSize.s14,
+                  color: ColorManager.primary,
+                ),
+                SizedBox(width: AppWidth.s4),
+                SlideCountdown(
+                  duration: const Duration(minutes: 30),
+                  decoration: BoxDecoration(
+                    color: ColorManager.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppSize.s8),
+                  ),
+                  style: getSemiBoldStyle(
+                    fontSize: AppFontSize.s12,
+                    color: ColorManager.primary,
+                  ),
+                  separatorStyle: getSemiBoldStyle(
+                    fontSize: AppFontSize.s12,
+                    color: ColorManager.primary,
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppPadding.p8,
+                    vertical: AppPadding.p2,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: AppHeight.s8),
             Row(
               children: [
                 _buildAvatarIcon(Icons.restaurant, Colors.orangeAccent),
