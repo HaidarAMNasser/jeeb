@@ -95,7 +95,7 @@ class CustomTextField extends StatelessWidget {
               borderSide: BorderSide(color: ColorManager.primary),
             ),
             filled: true,
-            fillColor: filledColor ?? ColorManager.transparent,
+            fillColor: filledColor ?? ColorManager.defaultWhite,
           ),
           style: getRegularStyle(
             fontSize: AppFontSize.s14,

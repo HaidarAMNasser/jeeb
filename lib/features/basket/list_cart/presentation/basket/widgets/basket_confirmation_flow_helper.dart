@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/common/utils/location_permission_helper.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_choice_dialog.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_map_picker_page.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/widgets/location_map_picker_page.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/location_choice_dialog.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/confirmation/pages/basket_confirmation_page.dart';
 
 class BasketConfirmationFlowHelper {

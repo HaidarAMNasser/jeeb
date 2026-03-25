@@ -86,11 +86,27 @@ class RegisterLocationLoadingChanged extends RegisterEvent {
 class RegisterLocationUpdated extends RegisterEvent {
   final double? latitude;
   final double? longitude;
+  /// UI-only labels from reverse geocoding; register API payload unchanged.
+  final String? displayCountry;
+  final String? displayCity;
+  final String? displayStreet;
 
-  const RegisterLocationUpdated({this.latitude, this.longitude});
+  const RegisterLocationUpdated({
+    this.latitude,
+    this.longitude,
+    this.displayCountry,
+    this.displayCity,
+    this.displayStreet,
+  });
 
   @override
-  List<Object?> get props => [latitude, longitude];
+  List<Object?> get props => [
+        latitude,
+        longitude,
+        displayCountry,
+        displayCity,
+        displayStreet,
+      ];
 }
 
 class RegisterLocationCleared extends RegisterEvent {

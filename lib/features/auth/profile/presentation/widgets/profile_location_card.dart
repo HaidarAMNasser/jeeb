@@ -7,7 +7,7 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/auth/login/domain/entities/user_entity.dart';
 
-import 'location_map_picker_page.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_map_picker_page.dart';
 
 /// Displays user's current location from profile and allows updating via map picker.
 class ProfileLocationCard extends StatelessWidget {

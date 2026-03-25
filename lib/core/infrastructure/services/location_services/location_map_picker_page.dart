@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:jeeb_app/core/common/utils/location_permission_helper.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart' show customToast;
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -12,7 +12,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:latlong2/latlong.dart';
 
-/// Default center when no initial location (Cairo).
+/// Default center when no device location (Cairo).
 const LatLng _defaultCenter = LatLng(30.0444, 31.2357);
 
 /// Result returned when user confirms location.
@@ -26,6 +26,8 @@ class LocationMapPickerResult {
 }
 
 /// Full-screen map to pick a location. Tap to set marker, confirm to return lat/lng.
+/// Opens centered on [initialLatitude]/[initialLongitude] if provided; otherwise
+/// tries device location (silent first, then permission flow).
 class LocationMapPickerPage extends StatefulWidget {
   const LocationMapPickerPage({
     super.key,
@@ -45,6 +47,7 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
   late LatLng _selectedPoint;
   static const double _zoom = 14;
   bool _isLoadingLocation = false;
+  bool _didApplyInitialDevice = false;
 
   @override
   void initState() {
@@ -56,10 +59,40 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
       );
     } else {
       _selectedPoint = _defaultCenter;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusInitialOnDevice();
+      });
     }
   }
 
   LatLng get _initialCenter => _selectedPoint;
+
+  Future<void> _focusInitialOnDevice() async {
+    if (_didApplyInitialDevice || !mounted) return;
+    _didApplyInitialDevice = true;
+
+    setState(() => _isLoadingLocation = true);
+
+    LatLng? point;
+    final silent = await LocationPermissionHelper.trySilentPosition();
+    if (silent != null) {
+      point = LatLng(silent.latitude, silent.longitude);
+    } else {
+      final res = await LocationPermissionHelper.requestAndGetPosition();
+      if (res.latitude != null && res.longitude != null) {
+        point = LatLng(res.latitude!, res.longitude!);
+      }
+    }
+
+    if (!mounted) return;
+    setState(() => _isLoadingLocation = false);
+
+    if (point != null) {
+      final p = point;
+      setState(() => _selectedPoint = p);
+      _mapController.move(p, _zoom);
+    }
+  }
 
   void _onMapTap(TapPosition tapPosition, LatLng point) {
     setState(() => _selectedPoint = point);
@@ -104,7 +137,7 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
               mapController: _mapController,
               options: MapOptions(
                 initialCenter: _initialCenter,
-                initialZoom: 14,
+                initialZoom: _zoom,
                 onTap: _onMapTap,
                 interactionOptions: const InteractionOptions(
                   flags: InteractiveFlag.all,

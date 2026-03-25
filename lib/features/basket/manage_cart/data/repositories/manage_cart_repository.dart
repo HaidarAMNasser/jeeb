@@ -22,6 +22,38 @@ class ManageCartRepository {
     return null;
   }
 
+  /// After PATCH [updateCart]: parsed cart → [Right]. Missing cart (404) → `null` (caller may POST).
+  /// Any other failure → [Left] (do **not** POST — avoids duplicate PATCH+POST on business errors).
+  Either<Failure, BasketEntity>? _interpretPatchUpdateResponse(Response<dynamic> response) {
+    final parsed = _parseCartFromSuccessResponse(response.data);
+    if (parsed != null) return Right(parsed);
+
+    final raw = response.data is Map<String, dynamic>
+        ? response.data as Map<String, dynamic>
+        : null;
+    final msg = raw?['message']?.toString() ?? 'Failed to update cart';
+    final http = response.statusCode;
+    final bodyCode = raw?['statusCode'] as int? ?? raw?['status_code'] as int?;
+
+    if (http == 404) return null;
+
+    if (http != null && http >= 400) {
+      return Left(ServerFailure(message: msg));
+    }
+    if (bodyCode != null && bodyCode != 200 && bodyCode != 201) {
+      return Left(ServerFailure(message: msg));
+    }
+    return Left(ServerFailure(message: msg));
+  }
+
+  static String _dioErrorMessage(DioException e, String fallback) {
+    final data = e.response?.data;
+    if (data is Map<String, dynamic>) {
+      return data['message']?.toString() ?? fallback;
+    }
+    return fallback;
+  }
+
   Future<bool> _hasExistingCart() async {
     try {
       final response = await _remote.getCart();
@@ -65,11 +97,18 @@ class ManageCartRepository {
               ],
             },
           });
-          final parsed = _parseCartFromSuccessResponse(patchResponse.data);
-          if (parsed != null) return Right(parsed);
+          final patchOutcome = _interpretPatchUpdateResponse(patchResponse);
+          if (patchOutcome != null) return patchOutcome;
         } on DioException catch (e) {
-          // If cart vanished between GET and PATCH, fallback to create.
-          if (e.response?.statusCode != 404) rethrow;
+          if (e.response?.statusCode == 404) {
+            // Cart gone between GET and PATCH → create below.
+          } else {
+            return Left(
+              ServerFailure(
+                message: _dioErrorMessage(e, 'Failed to update cart'),
+              ),
+            );
+          }
         }
       }
 
@@ -110,10 +149,18 @@ class ManageCartRepository {
               ],
             },
           });
-          final parsed = _parseCartFromSuccessResponse(patchResponse.data);
-          if (parsed != null) return Right(parsed);
+          final patchOutcome = _interpretPatchUpdateResponse(patchResponse);
+          if (patchOutcome != null) return patchOutcome;
         } on DioException catch (e) {
-          if (e.response?.statusCode != 404) rethrow;
+          if (e.response?.statusCode == 404) {
+            // Cart gone → create below.
+          } else {
+            return Left(
+              ServerFailure(
+                message: _dioErrorMessage(e, 'Failed to update offer in cart'),
+              ),
+            );
+          }
         }
       }
 

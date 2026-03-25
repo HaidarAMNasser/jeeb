@@ -4,8 +4,11 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/resolved_address_caption.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
+/// Same address formatting as registration ([ResolvedAddressCaption] + geocoding),
+/// not a single `country city street` line (order and sanitization differ).
 class ConfirmationLocationCard extends StatelessWidget {
   final double latitude;
   final double longitude;
@@ -29,16 +32,15 @@ class ConfirmationLocationCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppPadding.p12),
       decoration: BoxDecoration(
-        color: ColorManager.surface,
+        color: ColorManager.defaultWhite,
         borderRadius: BorderRadius.circular(AppRadius.r12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
-            text:
-                '${AppTranslation.selectedLocation}: ${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}',
-            textStyle: getRegularStyle(
+            text: AppTranslation.selectedLocation,
+            textStyle: getSemiBoldStyle(
               fontSize: AppFontSize.s13,
               color: ColorManager.productNameColor,
             ),
@@ -65,52 +67,18 @@ class ConfirmationLocationCard extends StatelessWidget {
               ],
             ),
           ] else ...[
-            if ((country ?? '').isNotEmpty)
-              _LocationLine(
-                label: AppTranslation.country,
-                value: country!,
-                topSpacing: AppHeight.s5,
-              ),
-            if ((city ?? '').isNotEmpty)
-              _LocationLine(
-                label: AppTranslation.city,
-                value: city!,
-                topSpacing: AppHeight.s4,
-              ),
-            if ((street ?? '').isNotEmpty)
-              _LocationLine(
-                label: AppTranslation.street,
-                value: street!,
-                topSpacing: AppHeight.s4,
-              ),
+            SizedBox(height: AppHeight.s5),
+            ResolvedAddressCaption(
+              country: country,
+              city: city,
+              street: street,
+              fallbackLine: AppTranslation.locationSetFormat,
+              latitude: latitude,
+              longitude: longitude,
+              compactSingleLine: true,
+            ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _LocationLine extends StatelessWidget {
-  final String label;
-  final String value;
-  final double topSpacing;
-
-  const _LocationLine({
-    required this.label,
-    required this.value,
-    required this.topSpacing,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: topSpacing),
-      child: CustomText(
-        text: '$label: $value',
-        textStyle: getRegularStyle(
-          fontSize: AppFontSize.s13,
-          color: ColorManager.productNameColor,
-        ),
       ),
     );
   }

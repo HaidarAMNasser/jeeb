@@ -31,6 +31,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   bool isLocationLoading = false;
   double? useLocationLat;
   double? useLocationLng;
+  String? locationDisplayCountry;
+  String? locationDisplayCity;
+  String? locationDisplayStreet;
   dynamic selectedImageFile;
   dynamic idFrontImageFile;
   dynamic idBackImageFile;
@@ -90,12 +93,19 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     on<RegisterLocationUpdated>((event, emit) {
       useLocationLat = event.latitude;
       useLocationLng = event.longitude;
+      locationDisplayCountry = event.displayCountry;
+      locationDisplayCity = event.displayCity;
+      locationDisplayStreet = event.displayStreet;
       emit(_buildInitialState());
     });
 
     on<RegisterLocationCleared>((event, emit) {
       useLocationLat = null;
       useLocationLng = null;
+      locationDisplayCountry = null;
+      locationDisplayCity = null;
+      locationDisplayStreet = null;
+      isLocationLoading = false;
       emit(_buildInitialState());
     });
 
@@ -132,6 +142,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
             isLocationLoading: isLocationLoading,
             useLocationLat: useLocationLat,
             useLocationLng: useLocationLng,
+            locationDisplayCountry: locationDisplayCountry,
+            locationDisplayCity: locationDisplayCity,
+            locationDisplayStreet: locationDisplayStreet,
           ),
         ),
         (tokenEntity) async {
@@ -153,6 +166,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
                 isLocationLoading: isLocationLoading,
                 useLocationLat: useLocationLat,
                 useLocationLng: useLocationLng,
+                locationDisplayCountry: locationDisplayCountry,
+                locationDisplayCity: locationDisplayCity,
+                locationDisplayStreet: locationDisplayStreet,
               ),
             );
           }
@@ -168,6 +184,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       isLocationLoading: isLocationLoading,
       useLocationLat: useLocationLat,
       useLocationLng: useLocationLng,
+      locationDisplayCountry: locationDisplayCountry,
+      locationDisplayCity: locationDisplayCity,
+      locationDisplayStreet: locationDisplayStreet,
     );
   }
 
@@ -178,6 +197,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       isLocationLoading: isLocationLoading,
       useLocationLat: useLocationLat,
       useLocationLng: useLocationLng,
+      locationDisplayCountry: locationDisplayCountry,
+      locationDisplayCity: locationDisplayCity,
+      locationDisplayStreet: locationDisplayStreet,
     );
   }
 

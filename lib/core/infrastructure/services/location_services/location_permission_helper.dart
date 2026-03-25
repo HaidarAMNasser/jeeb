@@ -1,7 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 
-/// Helper for location permission and fetching current position.
-/// Used when merchant chooses "Use my location" during registration.
+/// Permission and position helpers for map picker, registration, delivery, basket flows.
 class LocationPermissionHelper {
   LocationPermissionHelper._();
 
@@ -22,8 +21,6 @@ class LocationPermissionHelper {
         return true;
       }
 
-      // Re-ask for permission (works for denied; for deniedForever the system
-      // may show "open settings" or we open settings below)
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.always ||
           permission == LocationPermission.whileInUse) {
@@ -52,7 +49,6 @@ class LocationPermissionHelper {
   }
 
   /// Get current position. Requires location permission.
-  /// Returns null on failure (permission denied, service disabled, or error).
   static Future<Position?> getCurrentPosition() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -61,6 +57,23 @@ class LocationPermissionHelper {
       final hasPermission = await isLocationPermissionGranted();
       if (!hasPermission) return null;
 
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// No permission dialog. Last known or current fix if already permitted and services on.
+  static Future<Position?> trySilentPosition() async {
+    try {
+      if (!await isLocationPermissionGranted()) return null;
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      final last = await Geolocator.getLastKnownPosition();
+      if (last != null) return last;
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
@@ -80,7 +93,6 @@ class LocationPermissionHelper {
       return (latitude: null, longitude: null, permissionGranted: false);
     }
 
-    // Give the system a moment to apply permission (fixes "still denied" on some devices)
     await Future<void>.delayed(const Duration(milliseconds: 400));
 
     Position? position = await getCurrentPosition();

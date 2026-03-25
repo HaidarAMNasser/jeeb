@@ -10,7 +10,7 @@ import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/core/common/utils/location_permission_helper.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
 import 'package:jeeb_app/features/delivery/home/presentation/widgets/delivery_home_app_bar.dart';
 import 'package:jeeb_app/features/delivery/home/presentation/widgets/delivery_home_map.dart';
 import 'package:jeeb_app/features/delivery/home/presentation/widgets/delivery_order_card.dart';

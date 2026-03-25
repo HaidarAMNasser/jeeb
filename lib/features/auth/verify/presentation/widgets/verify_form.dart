@@ -7,6 +7,7 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+
 class VerifyForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController otpController;
@@ -44,30 +45,34 @@ class VerifyForm extends StatelessWidget {
             color: ColorManager.primary,
           ),
           SizedBox(height: AppHeight.s16),
-          TextButton(
-            onPressed: onResendOtp,
-            child: CustomText(
-              text: AppTranslation.resendOtp,
-              textStyle: getMediumStyle(
-                fontSize: AppFontSize.s14,
-                color: ColorManager.primary,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: onResendOtp,
+                child: CustomText(
+                  text: AppTranslation.resendOtp,
+                  textStyle: getMediumStyle(
+                    fontSize: AppFontSize.s14,
+                    color: ColorManager.primary,
+                  ),
+                ),
               ),
-            ),
-          ),
-          SizedBox(height: AppHeight.s8),
-          TextButton(
-            onPressed: onBackToLogin,
-            child: CustomText(
-              text: AppTranslation.backToLogin,
-              textStyle: getMediumStyle(
-                fontSize: AppFontSize.s14,
-                color: ColorManager.primary,
+
+              TextButton(
+                onPressed: onBackToLogin,
+                child: CustomText(
+                  text: AppTranslation.backToLogin,
+                  textStyle: getMediumStyle(
+                    fontSize: AppFontSize.s14,
+                    color: ColorManager.primary,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 }
-

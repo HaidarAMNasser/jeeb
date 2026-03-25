@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jeeb_app/core/common/utils/location_permission_helper.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/address_geocoding.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_choice_dialog.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_map_picker_page.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -65,27 +68,56 @@ class RegisterPage extends StatelessWidget {
     }
   }
 
-  Future<void> _onUseMyLocation(BuildContext context) async {
+  Future<void> _onPickLocation(BuildContext context) async {
     final bloc = context.read<RegisterBloc>();
 
-    bloc.add(const RegisterLocationLoadingChanged(true));
-    final result = await LocationPermissionHelper.requestAndGetPosition();
-    if (!context.mounted) return;
+    final action = await showDialog<LocationChoice>(
+      context: context,
+      builder: (_) => const LocationChoiceDialog(),
+    );
+    if (action == null || !context.mounted) return;
 
-    bloc.add(const RegisterLocationLoadingChanged(false));
+    double? lat;
+    double? lng;
 
-    if (result.latitude != null && result.longitude != null) {
-      bloc.add(
-        RegisterLocationUpdated(
-          latitude: result.latitude!,
-          longitude: result.longitude!,
+    if (action == LocationChoice.current) {
+      bloc.add(const RegisterLocationLoadingChanged(true));
+      final result = await LocationPermissionHelper.requestAndGetPosition();
+      if (!context.mounted) return;
+      bloc.add(const RegisterLocationLoadingChanged(false));
+      lat = result.latitude;
+      lng = result.longitude;
+      if (lat == null || lng == null) {
+        customToast(msg: AppTranslation.locationUnavailable);
+        return;
+      }
+    } else {
+      final picked = await Navigator.of(context).push<LocationMapPickerResult>(
+        MaterialPageRoute<LocationMapPickerResult>(
+          builder: (_) => const LocationMapPickerPage(),
         ),
       );
-      return;
+      if (picked == null || !context.mounted) return;
+      lat = picked.latitude;
+      lng = picked.longitude;
     }
 
-    // Permission denied or unavailable: we already re-asked and may have opened settings.
-    customToast(msg: AppTranslation.locationPermissionEnableInSettings);
+    bloc.add(const RegisterLocationLoadingChanged(true));
+    final resolved = await AddressGeocoding.fromCoordinates(
+      latitude: lat,
+      longitude: lng,
+    );
+    if (!context.mounted) return;
+    bloc.add(const RegisterLocationLoadingChanged(false));
+    bloc.add(
+      RegisterLocationUpdated(
+        latitude: lat,
+        longitude: lng,
+        displayCountry: resolved?.country,
+        displayCity: resolved?.city,
+        displayStreet: resolved?.street,
+      ),
+    );
   }
 
   @override
@@ -120,7 +152,7 @@ class RegisterPage extends StatelessWidget {
                 padding: EdgeInsets.all(AppPadding.p24),
                 child: RegisterForm(
                   onRegister: () => _onRegisterTapped(context),
-                  onUseMyLocation: () => _onUseMyLocation(context),
+                  onPickLocation: () => _onPickLocation(context),
                   onPickImage: () => _onPickImage(context),
                   onPickIdFront: () => _onPickIdFront(context),
                   onPickIdBack: () => _onPickIdBack(context),

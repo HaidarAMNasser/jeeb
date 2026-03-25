@@ -3,18 +3,21 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/resolved_address_caption.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
-/// A dropdown-style container for "Use my location" during registration.
-/// Matches the look of [CustomPaginatedDropdown] / [CustomDropdown].
+/// Registration "Use my location" row (UI only; geocoding lives in [AddressGeocoding]).
 class LocationSourceSelector extends StatelessWidget {
   final String title;
   final String useMyLocationHint;
-  final String locationSetHint;
+  final String locationSetFallbackHint;
   final double? latitude;
   final double? longitude;
+  final String? displayCountry;
+  final String? displayCity;
+  final String? displayStreet;
   final bool isRequired;
-  final VoidCallback onUseMyLocation;
+  final VoidCallback onPickLocation;
   final VoidCallback? onClearLocation;
   final bool isLoading;
 
@@ -22,17 +25,19 @@ class LocationSourceSelector extends StatelessWidget {
     super.key,
     required this.title,
     required this.useMyLocationHint,
-    required this.locationSetHint,
+    required this.locationSetFallbackHint,
     this.latitude,
     this.longitude,
+    this.displayCountry,
+    this.displayCity,
+    this.displayStreet,
     this.isRequired = false,
-    required this.onUseMyLocation,
+    required this.onPickLocation,
     this.onClearLocation,
     this.isLoading = false,
   });
 
-  bool get hasLocation =>
-      latitude != null && longitude != null;
+  bool get hasLocation => latitude != null && longitude != null;
 
   @override
   Widget build(BuildContext context) {
@@ -59,72 +64,83 @@ class LocationSourceSelector extends StatelessWidget {
           ],
         ),
         SizedBox(height: AppHeight.s8),
-        GestureDetector(
-          onTap: hasLocation || isLoading ? null : onUseMyLocation,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            height: AppHeight.s56,
-            padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
-            decoration: BoxDecoration(
-              color: ColorManager.defaultWhite,
-              borderRadius: BorderRadius.circular(AppRadius.r18),
-              border: Border.all(
-                color: ColorManager.borderColor,
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppRadius.r18),
+            onTap: isLoading || hasLocation ? null : onPickLocation,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              constraints: BoxConstraints(minHeight: AppHeight.s48),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppPadding.p12,
+                vertical: AppPadding.p8,
               ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  hasLocation ? Icons.location_on : Icons.my_location,
-                  size: 22,
-                  color: hasLocation
-                      ? ColorManager.primary
-                      : ColorManager.descriptionColor,
-                ),
-                SizedBox(width: AppPadding.p12),
-                Expanded(
-                  child: isLoading
-                      ? CustomText(
-                          text: useMyLocationHint,
-                          textStyle: getRegularStyle(
-                            fontSize: AppFontSize.s14,
-                            color: ColorManager.descriptionColor,
+              decoration: BoxDecoration(
+                color: ColorManager.defaultWhite,
+                borderRadius: BorderRadius.circular(AppRadius.r18),
+                border: Border.all(color: ColorManager.borderColor),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    hasLocation ? Icons.location_on : Icons.my_location,
+                    size: 22,
+                    color: hasLocation
+                        ? ColorManager.primary
+                        : ColorManager.descriptionColor,
+                  ),
+                  SizedBox(width: AppPadding.p8),
+                  Expanded(
+                    child: isLoading
+                        ? CustomText(
+                            text: useMyLocationHint,
+                            textStyle: getRegularStyle(
+                              fontSize: AppFontSize.s14,
+                              color: ColorManager.descriptionColor,
+                            ).copyWith(height: 1.15),
+                          )
+                        : hasLocation
+                        ? ResolvedAddressCaption(
+                            country: displayCountry,
+                            city: displayCity,
+                            street: displayStreet,
+                            fallbackLine: locationSetFallbackHint,
+                            latitude: latitude!,
+                            longitude: longitude!,
+                            compactSingleLine: true,
+                          )
+                        : CustomText(
+                            text: useMyLocationHint,
+                            textStyle: getRegularStyle(
+                              fontSize: AppFontSize.s14,
+                              color: ColorManager.descriptionColor,
+                            ).copyWith(height: 1.15),
                           ),
-                        )
-                      : CustomText(
-                          text: hasLocation
-                              ? locationSetHint
-                                  .replaceAll('{lat}', latitude!.toStringAsFixed(5))
-                                  .replaceAll('{lng}', longitude!.toStringAsFixed(5))
-                              : useMyLocationHint,
-                          textStyle: getRegularStyle(
-                            fontSize: AppFontSize.s14,
-                            color: hasLocation
-                                ? ColorManager.productNameColor
-                                : ColorManager.descriptionColor,
-                          ),
-                        ),
-                ),
-                if (hasLocation && onClearLocation != null)
-                  IconButton(
-                    onPressed: onClearLocation,
-                    icon: Icon(
-                      Icons.close,
-                      size: 20,
+                  ),
+                  if (hasLocation && onClearLocation != null)
+                    IconButton(
+                      onPressed: onClearLocation,
+                      icon: Icon(
+                        Icons.close,
+                        size: 20,
+                        color: ColorManager.descriptionColor,
+                      ),
+                      padding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                    )
+                  else if (!hasLocation && !isLoading)
+                    Icon(
+                      Icons.arrow_drop_down,
                       color: ColorManager.descriptionColor,
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(
-                      minWidth: 40,
-                      minHeight: 40,
-                    ),
-                  )
-                else if (!hasLocation && !isLoading)
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: ColorManager.descriptionColor,
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

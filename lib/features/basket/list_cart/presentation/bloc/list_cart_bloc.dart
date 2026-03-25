@@ -134,14 +134,14 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
         .where((e) => e.isOffer)
         .map(
           (e) => {
-            'offer_id': int.tryParse(e.productId),
+            'offerId': int.tryParse(e.productId),
             'quantity': e.quantity,
           },
         )
-        .where((e) => e['offer_id'] != null)
+        .where((e) => e['offerId'] != null)
         .map(
           (e) => {
-            'offer_id': e['offer_id'] as int,
+            'offerId': e['offerId'] as int,
             'quantity': e['quantity'] as int,
           },
         )

@@ -15,7 +15,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/language_selection_dialog.dart';
 import 'package:jeeb_app/core/presentation/widgets/logout_dialog.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/widgets/location_map_picker_page.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_map_picker_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/widgets/profile_page_content.dart';
 
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';

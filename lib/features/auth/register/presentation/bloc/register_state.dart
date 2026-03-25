@@ -6,6 +6,9 @@ abstract class RegisterState extends Equatable {
   final bool isLocationLoading;
   final double? useLocationLat;
   final double? useLocationLng;
+  final String? locationDisplayCountry;
+  final String? locationDisplayCity;
+  final String? locationDisplayStreet;
 
   const RegisterState({
     this.selectedCountry,
@@ -13,6 +16,9 @@ abstract class RegisterState extends Equatable {
     this.isLocationLoading = false,
     this.useLocationLat,
     this.useLocationLng,
+    this.locationDisplayCountry,
+    this.locationDisplayCity,
+    this.locationDisplayStreet,
   });
 
   @override
@@ -22,6 +28,9 @@ abstract class RegisterState extends Equatable {
         isLocationLoading,
         useLocationLat,
         useLocationLng,
+        locationDisplayCountry,
+        locationDisplayCity,
+        locationDisplayStreet,
       ];
 }
 
@@ -32,6 +41,9 @@ class RegisterInitial extends RegisterState {
     super.isLocationLoading,
     super.useLocationLat,
     super.useLocationLng,
+    super.locationDisplayCountry,
+    super.locationDisplayCity,
+    super.locationDisplayStreet,
   });
 }
 
@@ -42,6 +54,9 @@ class RegisterLoading extends RegisterState {
     super.isLocationLoading,
     super.useLocationLat,
     super.useLocationLng,
+    super.locationDisplayCountry,
+    super.locationDisplayCity,
+    super.locationDisplayStreet,
   });
 }
 
@@ -57,6 +72,9 @@ class RegisterSuccess extends RegisterState {
     super.isLocationLoading,
     super.useLocationLat,
     super.useLocationLng,
+    super.locationDisplayCountry,
+    super.locationDisplayCity,
+    super.locationDisplayStreet,
   });
 
   @override
@@ -73,6 +91,9 @@ class RegisterError extends RegisterState {
     super.isLocationLoading,
     super.useLocationLat,
     super.useLocationLng,
+    super.locationDisplayCountry,
+    super.locationDisplayCity,
+    super.locationDisplayStreet,
   });
 
   @override

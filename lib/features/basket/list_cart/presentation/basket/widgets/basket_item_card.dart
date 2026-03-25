@@ -27,7 +27,7 @@ class BasketItemCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: AppHeight.s12),
       padding: EdgeInsets.all(AppPadding.p12),
       decoration: BoxDecoration(
-        color: ColorManager.defaultWhite,
+        color: ColorManager.lightPrimary,
         borderRadius: BorderRadius.circular(AppRadius.r12),
         boxShadow: [
           BoxShadow(

@@ -3,7 +3,7 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
-import 'package:jeeb_app/features/basket/list_cart/data/helpful_functions/address_resolver.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/address_geocoding.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/confirmation/widgets/confirmation_contact_fields_section.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/confirmation/widgets/confirmation_items_section.dart';
@@ -56,7 +56,7 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
   }
 
   Future<void> _resolveAddress() async {
-    final resolved = await resolveAddressFromCoordinates(
+    final resolved = await AddressGeocoding.fromCoordinates(
       latitude: widget.latitude,
       longitude: widget.longitude,
     );

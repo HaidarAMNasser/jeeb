@@ -1,0 +1,53 @@
+import 'package:flutter/material.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/features/auth/register/presentation/bloc/register_bloc.dart';
+
+class RegisterPersonalFields extends StatelessWidget {
+  final RegisterBloc bloc;
+
+  const RegisterPersonalFields({super.key, required this.bloc});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: AppHeight.s24,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CustomTextField(
+          title: AppTranslation.firstName,
+          hintText: AppTranslation.firstName,
+          controller: bloc.firstNameController,
+        ),
+        CustomTextField(
+          title: AppTranslation.lastName,
+          hintText: AppTranslation.lastName,
+          controller: bloc.lastNameController,
+        ),
+        CustomTextField(
+          title: AppTranslation.email,
+          hintText: AppTranslation.enterEmail,
+          controller: bloc.emailController,
+        ),
+        CustomTextField(
+          keyboardType: TextInputType.phone,
+          title: AppTranslation.phone,
+          hintText: AppTranslation.enterPhone,
+          controller: bloc.phoneController,
+        ),
+        CustomTextField(
+          obscureText: true,
+          title: AppTranslation.password,
+          hintText: AppTranslation.enterPassword,
+          controller: bloc.passwordController,
+        ),
+        CustomTextField(
+          title: AppTranslation.address,
+          hintText: AppTranslation.enterAddress,
+          controller: bloc.addressController,
+        ),
+      ],
+    );
+  }
+}

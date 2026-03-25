@@ -450,7 +450,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     if (categoryId != null && categoryId.isNotEmpty)
       queryParameters['categoryId'] = categoryId;
     if (restaurantId != null && restaurantId.isNotEmpty && restaurantId != '0')
-      queryParameters['restaurantId'] = restaurantId;
+      queryParameters['merchantId'] = restaurantId;
     if (minPrice != null) queryParameters['minPrice'] = minPrice;
     if (maxPrice != null) queryParameters['maxPrice'] = maxPrice;
     if (minRating != null) queryParameters['minRating'] = minRating;
@@ -1263,7 +1263,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     if (page != null) queryParameters['page'] = page;
     if (limit != null) queryParameters['limit'] = limit;
     if (restaurantId != null && restaurantId.isNotEmpty) {
-      queryParameters['restaurantId'] = restaurantId;
+      queryParameters['merchantId'] = restaurantId;
     }
     final headers = <String, dynamic>{};
 
