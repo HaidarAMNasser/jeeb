@@ -17,6 +17,9 @@ class ConfirmationLocationCard extends StatelessWidget {
   final String? city;
   final String? street;
 
+  /// Opens location choice again (current vs map).
+  final VoidCallback? onUpdateLocation;
+
   const ConfirmationLocationCard({
     super.key,
     required this.latitude,
@@ -25,6 +28,7 @@ class ConfirmationLocationCard extends StatelessWidget {
     this.country,
     this.city,
     this.street,
+    this.onUpdateLocation,
   });
 
   @override
@@ -38,13 +42,39 @@ class ConfirmationLocationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(
-            text: AppTranslation.selectedLocation,
-            textStyle: getSemiBoldStyle(
-              fontSize: AppFontSize.s13,
-              color: ColorManager.productNameColor,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: CustomText(
+                  text: AppTranslation.selectedLocation,
+                  textStyle: getSemiBoldStyle(
+                    fontSize: AppFontSize.s13,
+                    color: ColorManager.productNameColor,
+                  ),
+                ),
+              ),
+              if (onUpdateLocation != null)
+                TextButton(
+                  onPressed: isResolvingAddress ? null : onUpdateLocation,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor: ColorManager.primary,
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(AppPadding.p8),
+                    decoration: BoxDecoration(
+                      color: ColorManager.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.r12),
+                    ),
+                    child: Icon(Icons.edit, size: AppSize.s16),
+                  ),
+                ),
+            ],
           ),
+          SizedBox(height: AppHeight.s5),
           if (isResolvingAddress) ...[
             SizedBox(height: AppHeight.s8),
             Row(

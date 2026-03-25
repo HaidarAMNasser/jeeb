@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/address_geocoding.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
-import 'package:jeeb_app/core/infrastructure/services/location_services/address_geocoding.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/basket_order_location_session.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/checkout_location_pick.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/confirmation/widgets/confirmation_contact_fields_section.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/confirmation/widgets/confirmation_items_section.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/confirmation/widgets/confirmation_location_card.dart';
@@ -34,6 +36,8 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
   late final TextEditingController _addressDetailsController;
   late final TextEditingController _phoneController;
   late final TextEditingController _streetController;
+  late double _latitude;
+  late double _longitude;
   String? _country;
   String? _city;
   bool _isResolvingAddress = true;
@@ -41,6 +45,8 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
   @override
   void initState() {
     super.initState();
+    _latitude = widget.latitude;
+    _longitude = widget.longitude;
     _addressDetailsController = TextEditingController();
     _phoneController = TextEditingController(text: widget.initialPhone);
     _streetController = TextEditingController();
@@ -56,9 +62,11 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
   }
 
   Future<void> _resolveAddress() async {
+    if (!mounted) return;
+    setState(() => _isResolvingAddress = true);
     final resolved = await AddressGeocoding.fromCoordinates(
-      latitude: widget.latitude,
-      longitude: widget.longitude,
+      latitude: _latitude,
+      longitude: _longitude,
     );
     if (!mounted) return;
     setState(() {
@@ -67,6 +75,17 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
       _streetController.text = resolved?.street ?? '';
       _isResolvingAddress = false;
     });
+  }
+
+  Future<void> _changeLocation() async {
+    final picked = await pickCheckoutLocation(context);
+    if (picked == null || !mounted) return;
+    BasketOrderLocationSession.save(picked.lat, picked.lng);
+    setState(() {
+      _latitude = picked.lat;
+      _longitude = picked.lng;
+    });
+    await _resolveAddress();
   }
 
   String _price(int value) => (value / 100).toStringAsFixed(2);
@@ -90,14 +109,15 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
           ),
           SizedBox(height: AppHeight.s8),
           ConfirmationLocationCard(
-            latitude: widget.latitude,
-            longitude: widget.longitude,
+            latitude: _latitude,
+            longitude: _longitude,
             isResolvingAddress: _isResolvingAddress,
             country: _country,
             city: _city,
             street: _streetController.text.trim().isEmpty
                 ? null
                 : _streetController.text.trim(),
+            onUpdateLocation: _changeLocation,
           ),
           SizedBox(height: AppHeight.s12),
           ConfirmationContactFieldsSection(

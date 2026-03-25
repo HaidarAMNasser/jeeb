@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart' show customToast;
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -10,7 +10,6 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:latlong2/latlong.dart';
 
 /// Default center when no device location (Cairo).
 const LatLng _defaultCenter = LatLng(30.0444, 31.2357);
@@ -25,7 +24,7 @@ class LocationMapPickerResult {
   final double longitude;
 }
 
-/// Full-screen map to pick a location. Tap to set marker, confirm to return lat/lng.
+/// Full-screen **Google** map to pick a location. Tap to set marker, confirm to return lat/lng.
 /// Opens centered on [initialLatitude]/[initialLongitude] if provided; otherwise
 /// tries device location (silent first, then permission flow).
 class LocationMapPickerPage extends StatefulWidget {
@@ -43,9 +42,9 @@ class LocationMapPickerPage extends StatefulWidget {
 }
 
 class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
-  final MapController _mapController = MapController();
+  GoogleMapController? _mapController;
   late LatLng _selectedPoint;
-  static const double _zoom = 14;
+  static const double _zoom = 16;
   bool _isLoadingLocation = false;
   bool _didApplyInitialDevice = false;
 
@@ -64,8 +63,6 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
       });
     }
   }
-
-  LatLng get _initialCenter => _selectedPoint;
 
   Future<void> _focusInitialOnDevice() async {
     if (_didApplyInitialDevice || !mounted) return;
@@ -88,13 +85,14 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
     setState(() => _isLoadingLocation = false);
 
     if (point != null) {
-      final p = point;
-      setState(() => _selectedPoint = p);
-      _mapController.move(p, _zoom);
+      setState(() => _selectedPoint = point!);
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(point, _zoom),
+      );
     }
   }
 
-  void _onMapTap(TapPosition tapPosition, LatLng point) {
+  void _onMapTap(LatLng point) {
     setState(() => _selectedPoint = point);
   }
 
@@ -106,7 +104,9 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
     if (result.latitude != null && result.longitude != null) {
       final point = LatLng(result.latitude!, result.longitude!);
       setState(() => _selectedPoint = point);
-      _mapController.move(point, _zoom);
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(point, _zoom),
+      );
     } else if (mounted) {
       customToast(
         msg: result.permissionGranted
@@ -133,36 +133,34 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
       body: Column(
         children: [
           Expanded(
-            child: FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                initialCenter: _initialCenter,
-                initialZoom: _zoom,
-                onTap: _onMapTap,
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.all,
-                ),
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _selectedPoint,
+                zoom: _zoom,
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.jeeb.jeeb_admin',
+              onMapCreated: (c) {
+                _mapController = c;
+                if (widget.initialLatitude == null ||
+                    widget.initialLongitude == null) {
+                  _mapController?.animateCamera(
+                    CameraUpdate.newLatLngZoom(_selectedPoint, _zoom),
+                  );
+                }
+              },
+              onTap: _onMapTap,
+              markers: {
+                Marker(
+                  markerId: const MarkerId('pick'),
+                  position: _selectedPoint,
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueOrange,
+                  ),
                 ),
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: _selectedPoint,
-                      width: 48,
-                      height: 48,
-                      child: Icon(
-                        Icons.location_on,
-                        size: 48,
-                        color: ColorManager.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              },
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
+              compassEnabled: true,
             ),
           ),
           Container(

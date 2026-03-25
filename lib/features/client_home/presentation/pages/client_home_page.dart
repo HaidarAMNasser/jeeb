@@ -8,7 +8,7 @@ import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_event.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_app_bar.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_search_bar.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_search_bar.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/category/client_home_categories_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/merchants/client_home_merchants_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/offer/client_home_offers_slider.dart';

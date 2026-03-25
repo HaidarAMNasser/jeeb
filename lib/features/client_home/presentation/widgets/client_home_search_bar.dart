@@ -65,25 +65,25 @@ class _ClientHomeSearchBarState extends State<ClientHomeSearchBar> {
   }
 
   void _onSearchSubmitted(String query) {
-    if (query.length >= 3) {
+    if (query.isNotEmpty) {
       context.read<ClientHomeBloc>().add(GlobalSearchEvent(query));
     } else if (query.isEmpty) {
       context.read<ClientHomeBloc>().add(const RefreshClientHomeEvent());
     }
   }
 
-  void _onSearchChanged(String query) {
-    setState(() {});
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 350), () {
-      if (!mounted) return;
-      if (query.length >= 3) {
-        context.read<ClientHomeBloc>().add(GlobalSearchEvent(query));
-      } else if (query.isEmpty) {
-        context.read<ClientHomeBloc>().add(const RefreshClientHomeEvent());
-      }
-    });
-  }
+  // void _onSearchChanged(String query) {
+  //   setState(() {});
+  //   _debounce?.cancel();
+  //   _debounce = Timer(const Duration(milliseconds: 350), () {
+  //     if (!mounted) return;
+  //     if (query.length >= 3) {
+  //       context.read<ClientHomeBloc>().add(GlobalSearchEvent(query));
+  //     } else if (query.isEmpty) {
+  //       context.read<ClientHomeBloc>().add(const RefreshClientHomeEvent());
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -92,11 +92,11 @@ class _ClientHomeSearchBarState extends State<ClientHomeSearchBar> {
       children: [
         Expanded(
           child: Padding(
-            padding:  EdgeInsets.only(bottom: AppPadding.p8),
+            padding: EdgeInsets.only(bottom: AppPadding.p8),
             child: CustomTextField(
               hintText: hints[_hintIndex % hints.length],
               controller: _controller,
-              onChanged: _onSearchChanged,
+              onChanged: (val) {},
               onSubmitted: _onSearchSubmitted,
               prefixIcon: Icon(Icons.search, color: ColorManager.primary),
               suffixIcon: _controller.text.isNotEmpty

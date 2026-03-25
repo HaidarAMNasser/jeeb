@@ -41,9 +41,9 @@ class SearchResultModel {
           }
         }
 
-        return MerchantModel(
+        return MerchantModel(  
           restaurantName: json['restaurantName']?.toString() ?? '',
-          id: (json['merchantId'] ?? json['id'] ?? '').toString(),
+          id: ( json['id'] ?? '').toString(),
           firstName: name,
           lastName: json['lastName']?.toString() ?? '',
           email: json['email']?.toString() ?? '',
@@ -149,9 +149,9 @@ class SearchResultModel {
             discountValue: (json['discountValue'] as num?)?.toDouble(),
             discountType: json['discountType']?.toString(),
             image: imageUrl,
-            merchant: (json['merchantId'] ?? json['merchant']?['id']) != null
+            merchant: ( json['merchant']?['id']) != null
                 ? MerchantModel(
-                    id: (json['merchantId'] ?? json['merchant']?['id'])
+                    id: (json['merchant']?['id'])
                         .toString(),
                     firstName:
                         (json['merchantName'] ??

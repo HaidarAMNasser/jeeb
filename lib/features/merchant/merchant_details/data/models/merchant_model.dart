@@ -94,8 +94,10 @@ class MerchantModel {
         '';
     final lastName = json['lastName']?.toString() ?? '';
 
+    // Match search payloads: search returns both `id` (often user/hit id) and
+    // `merchantId` (store id for details APIs). Prefer merchantId when present.
     return MerchantModel(
-      id: json['id']?.toString() ?? '',
+      id: (json['merchantId'] ?? json['id'])?.toString() ?? '',
       firstName: firstName,
       lastName: lastName,
       restaurantName: json['restaurantName']?.toString() ?? '',
