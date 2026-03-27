@@ -13,6 +13,15 @@ class OrderEntity extends Equatable {
   final String? merchantId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? pickupAddress;
+  final String? deliveryAddress;
+  final String? distance;
+  final String? customerName;
+  final String? customerPhone;
+  final double? totalPrice;
+  final double? deliveryFee;
+  final double? deliveryEarning;
+  final int? preparationTime;
 
   const OrderEntity({
     required this.id,
@@ -26,6 +35,15 @@ class OrderEntity extends Equatable {
     this.merchantId,
     this.createdAt,
     this.updatedAt,
+    this.pickupAddress,
+    this.deliveryAddress,
+    this.distance,
+    this.customerName,
+    this.customerPhone,
+    this.totalPrice,
+    this.deliveryFee,
+    this.deliveryEarning,
+    this.preparationTime,
   });
 
   @override
@@ -41,6 +59,15 @@ class OrderEntity extends Equatable {
     merchantId,
     createdAt,
     updatedAt,
+    pickupAddress,
+    deliveryAddress,
+    distance,
+    customerName,
+    customerPhone,
+    totalPrice,
+    deliveryFee,
+    deliveryEarning,
+    preparationTime,
   ];
 }
 

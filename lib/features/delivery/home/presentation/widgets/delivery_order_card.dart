@@ -6,6 +6,10 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
+import 'delivery_order_header.dart';
+import 'delivery_order_merchant.dart';
+import 'delivery_order_items_list.dart';
+import 'delivery_order_price_section.dart';
 
 class DeliveryOrderCard extends StatelessWidget {
   final OrderEntity order;
@@ -15,7 +19,7 @@ class DeliveryOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total price
+    // Calculate total price from products
     final totalPrice = order.products.fold<int>(
       0,
       (sum, p) => sum + p.displayPrice,
@@ -27,8 +31,16 @@ class DeliveryOrderCard extends StatelessWidget {
         : AppTranslation.restaurantName;
 
     // Recipient (Customer) info
-    final recipientName = order.deliveryMan?.name ?? AppTranslation.customer;
-    final recipientAddress = order.deliveryMan?.cityName ?? '';
+    final recipientName =
+        order.customerName ??
+        (order.deliveryMan?.name ?? AppTranslation.customer);
+    final recipientAddress =
+        order.deliveryAddress ?? (order.deliveryMan?.cityName ?? '');
+
+    // Get delivery fees from order entity
+    final deliveryFee = (order.deliveryFee ?? 0).toInt();
+    final deliveryEarning = (order.deliveryEarning ?? 0).toInt();
+    final preparationMinutes = order.preparationTime ?? 15;
 
     return GestureDetector(
       onTap: onTap,
@@ -53,188 +65,60 @@ class DeliveryOrderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Section: Person and Restaurant
-            Row(
-              children: [
-                _buildAvatarIcon(Icons.person, ColorManager.primary),
-                SizedBox(width: AppWidth.s12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        text: recipientName,
-                        textStyle: getBoldStyle(
-                          fontSize: AppFontSize.s18,
-                          color: ColorManager.titlesColor,
-                        ),
-                      ),
-                      CustomText(
-                        text: recipientAddress,
-                        textStyle: getRegularStyle(
-                          fontSize: AppFontSize.s12,
-                          color: ColorManager.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                _buildPriceTag(totalPrice),
-              ],
+            DeliveryOrderHeader(
+              recipientName: recipientName,
+              recipientAddress: recipientAddress,
+              totalPrice:
+                  (order.totalPrice ?? (totalPrice + deliveryFee).toDouble())
+                      .toInt(),
             ),
             SizedBox(height: AppHeight.s20),
-            Row(
-              children: [
-                _buildAvatarIcon(Icons.restaurant, Colors.orangeAccent),
-                SizedBox(width: AppWidth.s12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        text: restaurantName,
-                        textStyle: getSemiBoldStyle(
-                          fontSize: AppFontSize.s16,
-                          color: ColorManager.primary,
-                        ),
-                      ),
-                      CustomText(
-                        text: AppTranslation.pickUpPoint,
-                        textStyle: getRegularStyle(
-                          fontSize: AppFontSize.s12,
-                          color: ColorManager.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            DeliveryOrderMerchant(
+              restaurantName: restaurantName,
+              preparationDuration: Duration(minutes: preparationMinutes),
             ),
             SizedBox(height: AppHeight.s24),
-
-            // Divider with label
-            Row(
-              children: [
-                const Expanded(
-                  child: Divider(
-                    color: ColorManager.textSecondary,
-                    thickness: 0.5,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppPadding.p12),
-                  child: CustomText(
-                    text: AppTranslation.orderItems,
-                    textStyle: getSemiBoldStyle(
-                      fontSize: AppFontSize.s12,
-                      color: ColorManager.textSecondary,
-                    ),
-                  ),
-                ),
-                const Expanded(
-                  child: Divider(
-                    color: ColorManager.textSecondary,
-                    thickness: 0.5,
-                  ),
-                ),
-              ],
+            DeliveryOrderItemsList(products: order.products),
+            SizedBox(height: AppHeight.s12),
+            DeliveryOrderPriceSection(
+              deliveryFee: deliveryFee,
+              deliveryEarning: deliveryEarning,
             ),
             SizedBox(height: AppHeight.s16),
-
-            // Items List Section
-            ...order.products.map((p) => _buildItemRow(p.name, p.displayPrice)),
-
-            SizedBox(height: AppHeight.s12),
-
-            // Order ID Footer
-            Align(
-              alignment: Alignment.centerRight,
-              child: CustomText(
-                text: 'Order #${order.id}',
-                textStyle: TextStyle(
-                  fontSize: AppFontSize.s10,
-                  color: ColorManager.textSecondary.withOpacity(0.5),
-                ),
-              ),
-            ),
+            _DeliveryOrderFooter(orderId: order.id, status: order.status),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildAvatarIcon(IconData icon, Color color) {
-    return Container(
-      padding: EdgeInsets.all(AppPadding.p8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, size: AppSize.s20, color: color),
-    );
-  }
+class _DeliveryOrderFooter extends StatelessWidget {
+  final String orderId;
+  final String? status;
 
-  Widget _buildPriceTag(int price) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppPadding.p12,
-        vertical: AppPadding.p6,
-      ),
-      decoration: BoxDecoration(
-        color: ColorManager.primary,
-        borderRadius: BorderRadius.circular(AppSize.s12),
-        boxShadow: [
-          BoxShadow(
-            color: ColorManager.primary.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: CustomText(
-        text: '\$${(price / 100).toStringAsFixed(2)}',
-        textStyle: getBoldStyle(fontSize: AppFontSize.s14, color: Colors.white),
-      ),
-    );
-  }
+  const _DeliveryOrderFooter({required this.orderId, this.status});
 
-  Widget _buildItemRow(String name, int price) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: AppPadding.p8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Icon(
-                  Icons.circle,
-                  size: 6,
-                  color: ColorManager.primary.withOpacity(0.5),
-                ),
-                SizedBox(width: AppWidth.s8),
-                Expanded(
-                  child: CustomText(
-                    text: name,
-                    textStyle: getRegularStyle(
-                      fontSize: AppFontSize.s14,
-                      color: ColorManager.titlesColor.withOpacity(0.9),
-                    ),
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomText(
+          text: status ?? '',
+          textStyle: getSemiBoldStyle(
+            fontSize: AppFontSize.s10,
+            color: ColorManager.primary.withOpacity(0.7),
           ),
-          CustomText(
-            text: '\$${(price / 100).toStringAsFixed(2)}',
-            textStyle: getRegularStyle(
-              fontSize: AppFontSize.s14,
-              color: ColorManager.titlesColor.withOpacity(0.7),
-            ),
+        ),
+        CustomText(
+          text: 'Order #$orderId',
+          textStyle: TextStyle(
+            fontSize: AppFontSize.s10,
+            color: ColorManager.textSecondary.withOpacity(0.5),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

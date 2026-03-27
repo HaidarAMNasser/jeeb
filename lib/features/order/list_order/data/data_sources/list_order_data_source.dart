@@ -8,6 +8,8 @@ abstract class ListOrderRemoteDataSource {
     String? search,
     String? ownerId,
   });
+
+  Future<Response> getAvailableOrders();
 }
 
 class ListOrderRemoteDataSourceImpl implements ListOrderRemoteDataSource {
@@ -28,6 +30,11 @@ class ListOrderRemoteDataSourceImpl implements ListOrderRemoteDataSource {
       search: search,
       ownerId: ownerId,
     );
+  }
+
+  @override
+  Future<Response> getAvailableOrders() {
+    return _appApiServiceClient.getOrders();
   }
 }
 

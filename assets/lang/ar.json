@@ -340,6 +340,12 @@
   "pick_up_point": "نقطة الاستلام",
   "order_items": "أصناف الطلب",
   "more_items": "+ %s أصناف أخرى",
+  "delivery_price": "سعر التوصيل",
+  "delivery_earning": "ربح التوصيل",
+  "preparation_time": "وقت التحضير",
+  "pending": "قيد الانتظار",
+  "completed": "مكتمل",
+  "cancelled": "ملغى",
   "search_results": "نتائج البحث",
   "no_results_found": "لا توجد نتائج",
   "start_searching": "ابدأ البحث..."

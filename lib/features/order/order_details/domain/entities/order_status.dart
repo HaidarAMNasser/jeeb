@@ -113,18 +113,18 @@ enum OrderStatus {
 
   Color get color {
     switch (this) {
-      case OrderStatus.delivered:
       case OrderStatus.completed:
+      case OrderStatus.delivered:
         return Colors.green;
       case OrderStatus.cancelled:
       case OrderStatus.rejected:
         return Colors.red;
       case OrderStatus.pending:
+      case OrderStatus.readyForPickup:
         return Colors.orange;
       case OrderStatus.searching:
       case OrderStatus.preparing:
       case OrderStatus.confirmed:
-      case OrderStatus.readyForPickup:
       case OrderStatus.assigned:
       case OrderStatus.pickedUp:
       case OrderStatus.onTheWay:
@@ -134,7 +134,9 @@ enum OrderStatus {
     }
   }
 
-  bool get canCompleteOrCancel => this == OrderStatus.pending;
+  /// True if complete/cancel actions are allowed (e.g. only for pending).
+  bool get canCompleteOrCancel =>
+      this == OrderStatus.pending || this == OrderStatus.readyForPickup;
 }
 
 /// Icons for tracking / details UI (timeline, badges).

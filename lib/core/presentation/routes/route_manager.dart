@@ -36,6 +36,7 @@ import '../../../features/order/order_details/data/repositories/order_details_re
 import '../../../features/order/order_details/domain/entities/order_status.dart';
 import '../../../features/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
+import '../../../features/delivery/orders/presentation/pages/delivery_order_details_page.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
 import '../../../features/client_home/presentation/pages/client_home_page.dart';
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
@@ -289,6 +290,20 @@ class AppRouter {
                   di.sl<OrderDetailsBloc>()..add(GetOrderDetailsEvent(orderId)),
             ),
           ],
+        );
+
+      case Routes.deliveryOrderDetails:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final orderId = args?['orderId'] as String? ?? '';
+        if (orderId.isEmpty) {
+          return _buildRoute(
+            Scaffold(body: Center(child: Text('Order ID not provided'))),
+            settings,
+          );
+        }
+        return _buildRoute(
+          DeliveryOrderDetailsPage(orderId: orderId),
+          settings,
         );
 
       case Routes.offers:

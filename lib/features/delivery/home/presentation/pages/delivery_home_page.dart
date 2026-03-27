@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
@@ -182,7 +183,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
           child: DeliveryOrderCard(
             order: activeOrder,
             onTap: () {
-              // Navigate to order details if needed
+              Navigator.pushNamed(
+                context,
+                Routes.deliveryOrderDetails,
+                arguments: {'orderId': activeOrder.id},
+              );
             },
           ),
         );

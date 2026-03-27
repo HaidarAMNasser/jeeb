@@ -343,5 +343,11 @@
   "no_active_orders": "No active orders available",
   "pick_up_point": "Pick up point",
   "order_items": "Order Items",
-  "more_items": "+ %s more items"
+  "more_items": "+ %s more items",
+  "delivery_price": "Delivery Price",
+  "delivery_earning": "Delivery Earning",
+  "preparation_time": "Preparation Time",
+  "pending": "Pending",
+  "completed": "Completed",
+  "cancelled": "Cancelled"
 }

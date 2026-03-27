@@ -341,6 +341,12 @@ class AppTranslation {
   static String get pickUpPoint => 'pick_up_point'.tr();
   static String get orderItems => 'order_items'.tr();
   static String moreItemsN(int n) => 'more_items'.tr(args: [n.toString()]);
+  static String get deliveryPrice => 'delivery_price'.tr();
+  static String get deliveryEarning => 'delivery_earning'.tr();
+  static String get preparationTime => 'preparation_time'.tr();
+  static String get pending => 'pending'.tr();
+  static String get completed => 'completed'.tr();
+  static String get cancelled => 'cancelled'.tr();
 
   // Delivery
   static String get deliveryMen => 'delivery_men'.tr();

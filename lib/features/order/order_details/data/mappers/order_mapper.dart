@@ -18,6 +18,15 @@ extension OrderMapper on OrderModel {
       merchantId: merchantId,
       createdAt: createdAt != null ? DateTime.tryParse(createdAt!) : null,
       updatedAt: updatedAt != null ? DateTime.tryParse(updatedAt!) : null,
+      pickupAddress: pickupAddress,
+      deliveryAddress: deliveryAddress,
+      distance: distance,
+      customerName: customerName,
+      customerPhone: customerPhone,
+      totalPrice: totalPrice,
+      deliveryFee: deliveryFee,
+      deliveryEarning: deliveryEarning,
+      preparationTime: preparationTime,
     );
   }
 }
