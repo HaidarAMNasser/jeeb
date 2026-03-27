@@ -41,7 +41,12 @@ class OrderDetailsRepository {
         Map<String, dynamic> orderJson;
         final data = raw['data'];
         if (data is Map<String, dynamic>) {
-          orderJson = data;
+          final nestedOrder = data['order'];
+          if (nestedOrder is Map<String, dynamic>) {
+            orderJson = nestedOrder;
+          } else {
+            orderJson = data;
+          }
         } else {
           orderJson = raw;
         }

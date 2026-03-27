@@ -10,6 +10,7 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
 import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
 
@@ -22,11 +23,23 @@ class OrderListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        AppRouter.navigateTo(
-          context,
-          Routes.orderDetails,
-          arguments: {'orderId': order.id},
-        );
+        final status = OrderStatus.fromString(order.status);
+        if (orderStatusIsTerminal(status)) {
+          AppRouter.navigateTo(
+            context,
+            Routes.orderDetails,
+            arguments: {'orderId': order.id},
+          );
+        } else {
+          AppRouter.navigateTo(
+            context,
+            Routes.orderStatus,
+            arguments: {
+              'orderId': order.id,
+              'initialStatus': order.status,
+            },
+          );
+        }
       },
       child: Card(
         color: ColorManager.defaultWhite,

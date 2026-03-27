@@ -1,6 +1,15 @@
 import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 
+/// Tells the UI to copy [BasketConfirmationState] into text controllers once.
+enum BasketConfirmationFieldSync {
+  none,
+  /// First load: profile + reverse geocode applied together.
+  initialSync,
+  /// New coordinates / geocode (street line only).
+  streetOnly,
+}
+
 class BasketConfirmationState extends Equatable {
   final List<ConfirmationItem> items;
   final String merchantName;
@@ -17,8 +26,8 @@ class BasketConfirmationState extends Equatable {
   final int? profileCityId;
   final int locationVersion;
   final bool isSubmitting;
-  final String? orderIdSuccess;
   final String? submitError;
+  final BasketConfirmationFieldSync pendingFieldSync;
 
   const BasketConfirmationState({
     required this.items,
@@ -36,8 +45,8 @@ class BasketConfirmationState extends Equatable {
     this.profileCityId,
     required this.locationVersion,
     required this.isSubmitting,
-    this.orderIdSuccess,
     this.submitError,
+    this.pendingFieldSync = BasketConfirmationFieldSync.none,
   });
 
   factory BasketConfirmationState.initial({
@@ -80,9 +89,8 @@ class BasketConfirmationState extends Equatable {
     int? profileCityId,
     int? locationVersion,
     bool? isSubmitting,
-    String? orderIdSuccess,
     String? submitError,
-    bool clearOrderSuccess = false,
+    BasketConfirmationFieldSync? pendingFieldSync,
     bool clearSubmitError = false,
   }) {
     return BasketConfirmationState(
@@ -101,8 +109,8 @@ class BasketConfirmationState extends Equatable {
       profileCityId: profileCityId ?? this.profileCityId,
       locationVersion: locationVersion ?? this.locationVersion,
       isSubmitting: isSubmitting ?? this.isSubmitting,
-      orderIdSuccess: clearOrderSuccess ? null : (orderIdSuccess ?? this.orderIdSuccess),
       submitError: clearSubmitError ? null : (submitError ?? this.submitError),
+      pendingFieldSync: pendingFieldSync ?? this.pendingFieldSync,
     );
   }
 
@@ -123,7 +131,7 @@ class BasketConfirmationState extends Equatable {
         profileCityId,
         locationVersion,
         isSubmitting,
-        orderIdSuccess,
         submitError,
+        pendingFieldSync,
       ];
 }

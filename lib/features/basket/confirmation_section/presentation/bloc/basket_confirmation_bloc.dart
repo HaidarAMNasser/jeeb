@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/address_geocoding.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/features/auth/profile/data/repositories/profile_repository.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/basket_order_location_session.dart';
@@ -8,11 +11,13 @@ import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_state.dart';
 import 'package:jeeb_app/features/order/create_order/data/repositories/create_order_repository.dart';
 import 'package:jeeb_app/features/order/create_order/domain/entities/create_order_params.dart';
+import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
 
 class BasketConfirmationBloc
     extends Bloc<BasketConfirmationEvent, BasketConfirmationState> {
   final CreateOrderRepository _orderRepository;
   final ProfileRepository _profileRepository;
+  final NavigationService _navigationService;
 
   BasketConfirmationBloc({
     required List<ConfirmationItem> items,
@@ -23,8 +28,10 @@ class BasketConfirmationBloc
     required String initialPhone,
     required CreateOrderRepository orderRepository,
     required ProfileRepository profileRepository,
+    required NavigationService navigationService,
   })  : _orderRepository = orderRepository,
         _profileRepository = profileRepository,
+        _navigationService = navigationService,
         super(
           BasketConfirmationState.initial(
             items: items,
@@ -42,38 +49,83 @@ class BasketConfirmationBloc
     on<BasketConfirmationPhoneChanged>(_onPhoneChanged);
     on<BasketConfirmationLocationPicked>(_onLocationPicked);
     on<BasketConfirmationSubmitRequested>(_onSubmitRequested);
-    on<BasketConfirmationSubmitErrorCleared>(_onSubmitErrorCleared);
+    on<BasketConfirmationFieldSyncConsumed>(_onFieldSyncConsumed);
 
     add(const BasketConfirmationStarted());
+  }
+
+  void _showSnackBar(String message) {
+    final ctx = _navigationService.navigationKey.currentContext;
+    if (ctx == null) return;
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _emitSubmitError(String message, Emitter<BasketConfirmationState> emit) {
+    emit(state.copyWith(isSubmitting: false, submitError: message));
+    _showSnackBar(message);
+    emit(state.copyWith(clearSubmitError: true));
+  }
+
+  void _navigateAfterOrderSuccess(String orderId) {
+    _navigationService.back();
+    _navigationService.pushNamed(
+      Routes.orderStatus,
+      arguments: {
+        'orderId': orderId,
+        'initialStatus': OrderStatus.pending.apiWireValue,
+      },
+    );
   }
 
   Future<void> _onStarted(
     BasketConfirmationStarted event,
     Emitter<BasketConfirmationState> emit,
   ) async {
-    await Future.wait([
-      _loadProfile(emit),
-      _resolveAddress(emit),
-    ]);
-  }
+    emit(state.copyWith(isResolvingAddress: true));
 
-  Future<void> _loadProfile(Emitter<BasketConfirmationState> emit) async {
-    final result = await _profileRepository.getProfile();
+    final profileResult = await _profileRepository.getProfile();
+    final resolved = await AddressGeocoding.fromCoordinates(
+      latitude: state.latitude,
+      longitude: state.longitude,
+    );
     if (isClosed) return;
-    result.fold((_) {}, (user) {
-      if (isClosed) return;
-      final s = state;
-      emit(
-        s.copyWith(
-          name: s.name.trim().isEmpty ? user.fullName.trim() : s.name,
-          phone: s.phone.trim().isEmpty ? user.phone.trim() : s.phone,
-          profileCityId: user.cityId > 0 ? user.cityId : s.profileCityId,
-        ),
-      );
+
+    final s = state;
+    var newName = s.name;
+    var newPhone = s.phone;
+    var profileCityId = s.profileCityId;
+
+    profileResult.fold((_) {}, (user) {
+      newName = s.name.trim().isEmpty ? user.fullName.trim() : s.name;
+      newPhone = s.phone.trim().isEmpty ? user.phone.trim() : s.phone;
+      profileCityId = user.cityId > 0 ? user.cityId : s.profileCityId;
     });
+
+    emit(
+      s.copyWith(
+        name: newName,
+        phone: newPhone,
+        profileCityId: profileCityId,
+        country: resolved?.country,
+        city: resolved?.city,
+        street: resolved?.street ?? '',
+        isResolvingAddress: false,
+        locationVersion: s.locationVersion + 1,
+        pendingFieldSync: BasketConfirmationFieldSync.initialSync,
+      ),
+    );
   }
 
-  Future<void> _resolveAddress(Emitter<BasketConfirmationState> emit) async {
+  void _onFieldSyncConsumed(
+    BasketConfirmationFieldSyncConsumed event,
+    Emitter<BasketConfirmationState> emit,
+  ) {
+    emit(state.copyWith(pendingFieldSync: BasketConfirmationFieldSync.none));
+  }
+
+  Future<void> _resolveAddressAfterLocationChange(
+    Emitter<BasketConfirmationState> emit,
+  ) async {
     emit(state.copyWith(isResolvingAddress: true));
     final lat = state.latitude;
     final lng = state.longitude;
@@ -89,6 +141,7 @@ class BasketConfirmationBloc
         street: resolved?.street ?? '',
         isResolvingAddress: false,
         locationVersion: state.locationVersion + 1,
+        pendingFieldSync: BasketConfirmationFieldSync.streetOnly,
       ),
     );
   }
@@ -133,7 +186,7 @@ class BasketConfirmationBloc
         clearSubmitError: true,
       ),
     );
-    await _resolveAddress(emit);
+    await _resolveAddressAfterLocationChange(emit);
   }
 
   Future<void> _onSubmitRequested(
@@ -143,7 +196,7 @@ class BasketConfirmationBloc
     final s = state;
     final ownerId = int.tryParse(s.merchantOwnerId ?? '');
     if (ownerId == null) {
-      emit(s.copyWith(submitError: AppTranslation.orderOwnerRequired));
+      _emitSubmitError(AppTranslation.orderOwnerRequired, emit);
       return;
     }
 
@@ -162,13 +215,13 @@ class BasketConfirmationBloc
     }
 
     if (products.isEmpty && offers.isEmpty) {
-      emit(s.copyWith(submitError: AppTranslation.orderItemsInvalid));
+      _emitSubmitError(AppTranslation.orderItemsInvalid, emit);
       return;
     }
 
     final phone = s.phone.trim();
     if (phone.isEmpty) {
-      emit(s.copyWith(submitError: AppTranslation.pleaseEnterPhone));
+      _emitSubmitError(AppTranslation.pleaseEnterPhone, emit);
       return;
     }
 
@@ -202,25 +255,11 @@ class BasketConfirmationBloc
     final result = await _orderRepository.createOrder(params);
     if (isClosed) return;
     result.fold(
-      (failure) => emit(
-        state.copyWith(
-          isSubmitting: false,
-          submitError: failure.message,
-        ),
-      ),
-      (orderId) => emit(
-        state.copyWith(
-          isSubmitting: false,
-          orderIdSuccess: orderId,
-        ),
-      ),
+      (failure) => _emitSubmitError(failure.message, emit),
+      (orderId) {
+        emit(state.copyWith(isSubmitting: false));
+        _navigateAfterOrderSuccess(orderId);
+      },
     );
-  }
-
-  void _onSubmitErrorCleared(
-    BasketConfirmationSubmitErrorCleared event,
-    Emitter<BasketConfirmationState> emit,
-  ) {
-    emit(state.copyWith(clearSubmitError: true));
   }
 }

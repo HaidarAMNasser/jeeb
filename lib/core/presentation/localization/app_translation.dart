@@ -274,8 +274,34 @@ class AppTranslation {
       'order_status_tracking_subtitle'.tr();
   static String get orderStatusProblemBanner =>
       'order_status_problem_banner'.tr();
+  static String get orderStatusPendingFriendly =>
+      'order_status_pending_friendly'.tr();
+  /// API [OrderStatus] short labels (lists, badges, `OrderStatus.displayLabel`).
+  static String get orderStatusLabelConfirmed =>
+      'order_status_label_confirmed'.tr();
+  static String get orderStatusLabelSearching =>
+      'order_status_label_searching'.tr();
+  static String get orderStatusLabelPreparing =>
+      'order_status_label_preparing'.tr();
+  static String get orderStatusLabelReadyForPickup =>
+      'order_status_label_ready_for_pickup'.tr();
+  static String get orderStatusLabelAssigned =>
+      'order_status_label_assigned'.tr();
+  static String get orderStatusLabelPickedUp =>
+      'order_status_label_picked_up'.tr();
+  static String get orderStatusLabelOnTheWay =>
+      'order_status_label_on_the_way'.tr();
+  static String get orderStatusLabelDelivered =>
+      'order_status_label_delivered'.tr();
+  static String get orderStatusLabelCancelled =>
+      'order_status_label_cancelled'.tr();
+  static String get orderStatusLabelRejected =>
+      'order_status_label_rejected'.tr();
+  static String get orderStatusLabelUnknown =>
+      'order_status_label_unknown'.tr();
   static String get orderStepPlaced => 'order_step_placed'.tr();
   static String get orderStepConfirmed => 'order_step_confirmed'.tr();
+  static String get orderStepSearching => 'order_step_searching'.tr();
   static String get orderStepPreparing => 'order_step_preparing'.tr();
   static String get orderStepReady => 'order_step_ready'.tr();
   static String get orderStepWithDriver => 'order_step_with_driver'.tr();
@@ -357,6 +383,10 @@ class AppTranslation {
   // Order
   static String get orders => 'orders'.tr();
   static String get orderDetails => 'order_details'.tr();
+  /// Map preview on order details when status is on the way (live tracking later).
+  static String get orderDeliveryMapBadge => 'order_delivery_map_badge'.tr();
+  /// Opens [Routes.orderStatus] from order details while the order is still active.
+  static String get orderTrackOrderCta => 'order_track_order_cta'.tr();
   static String get noOrdersFound => 'no_orders_found'.tr();
   static String get searchOrders => 'search_orders'.tr();
   static String get searchOrdersHint => 'search_orders_hint'.tr();

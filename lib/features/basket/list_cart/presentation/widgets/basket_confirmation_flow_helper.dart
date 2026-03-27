@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
+import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/basket_order_location_session.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
@@ -49,6 +50,7 @@ class BasketConfirmationFlowHelper {
             initialPhone: state.customerPhone,
             orderRepository: di.sl<CreateOrderRepository>(),
             profileRepository: di.sl<ProfileRepository>(),
+            navigationService: di.sl<NavigationService>(),
           ),
           child: const BasketConfirmationPage(),
         ),

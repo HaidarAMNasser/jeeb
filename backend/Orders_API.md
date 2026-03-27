@@ -32,9 +32,9 @@ Base URL: `http://localhost:3000/api/v1`
 يمر الطلب عبر المراحل التالية مع التحقق من صلاحيات الانتقال:
 
 ```
-PENDING → CONFIRMED → PREPARING → READY_FOR_PICKUP → ASSIGNED → PICKED_UP → ON_THE_WAY → DELIVERED
-                 ↓                                              ↓                    ↓
-           REJECTED (terminal)                           CANCELLED (terminal)    (terminal)
+PENDING → CONFIRMED → SEARCHING → ASSIGNED/READY_FOR_PICKUP → PICKED_UP → ON_THE_WAY → DELIVERED
+                ↓                         ↓                                              ↓
+          REJECTED (terminal)      CANCELLED (terminal)                             (terminal)
 ```
 
 ### حالات الطلب (OrderStatus)
@@ -43,9 +43,9 @@ PENDING → CONFIRMED → PREPARING → READY_FOR_PICKUP → ASSIGNED → PICKED
 | ------------------ | ------------------------------ | ----------------------------------------------- |
 | `PENDING`          | الطلب وصل ولم يقبله التاجر بعد | Order received, waiting for merchant acceptance |
 | `CONFIRMED`        | التاجر قبل الطلب               | Merchant confirmed the order                    |
-| `PREPARING`        | التاجر بدأ التحضير             | Merchant started preparing the order            |
-| `READY_FOR_PICKUP` | جاهز للاستلام                  | Order ready for pickup by delivery driver       |
+| `SEARCHING`        | جاري البحث عن سائق             | Searching for available delivery driver         |
 | `ASSIGNED`         | تم تعيين سائق                  | Driver assigned to the order                    |
+| `READY_FOR_PICKUP` | جاهز للاستلام                  | Order ready for pickup by delivery driver       |
 | `PICKED_UP`        | السائق استلم الطلب             | Driver picked up the order from merchant        |
 | `ON_THE_WAY`       | السائق في الطريق               | Driver is on the way to delivery location       |
 | `DELIVERED`        | تم التوصيل                     | Order successfully delivered (Terminal)         |
@@ -67,18 +67,18 @@ PENDING → CONFIRMED → PREPARING → READY_FOR_PICKUP → ASSIGNED → PICKED
 
 ### انتقالات الحالات المسموحة
 
-| من حالة          | إلى حالة                                                   |
-| ---------------- | ---------------------------------------------------------- |
-| PENDING          | CONFIRMED, REJECTED, CANCELLED                             |
-| CONFIRMED        | PREPARING, CANCELLED                                       |
-| PREPARING        | READY_FOR_PICKUP, CANCELLED                                |
-| READY_FOR_PICKUP | ASSIGNED, CANCELLED                                        |
-| ASSIGNED         | PICKED_UP, CANCELLED                                       |
-| PICKED_UP        | ON_THE_WAY, DELIVERED                                      |
-| ON_THE_WAY       | DELIVERED                                                  |
-| DELIVERED        | (نهاية - لا انتقالات)                                      |
-| CANCELLED        | PENDING, CONFIRMED (خلال 3 دقائق فقط - MERCHANT/ADMIN فقط) |
-| REJECTED         | (نهاية - حالة نهائية)                                      |
+| من حالة          | إلى حالة                              |
+| ---------------- | ------------------------------------- |
+| PENDING          | CONFIRMED, REJECTED, CANCELLED        |
+| CONFIRMED        | SEARCHING, CANCELLED                  |
+| SEARCHING        | ASSIGNED, READY_FOR_PICKUP, CANCELLED |
+| READY_FOR_PICKUP | ASSIGNED, CANCELLED                   |
+| ASSIGNED         | PICKED_UP, CANCELLED                  |
+| PICKED_UP        | ON_THE_WAY, DELIVERED                 |
+| ON_THE_WAY       | DELIVERED                             |
+| DELIVERED        | (نهاية - لا انتقالات)                 |
+| CANCELLED        | (لا يوجد استعادة في الإصدار الحالي)   |
+| REJECTED         | (نهاية - حالة نهائية)                 |
 
 ### المراحل التفصيلية لكل حالة
 
@@ -122,75 +122,38 @@ PENDING → CONFIRMED → PREPARING → READY_FOR_PICKUP → ASSIGNED → PICKED
 
 #### 2️⃣ CONFIRMED (تم التأكيد) {#confirmed}
 
-**الوصف:** التاجر أكد الطلب وبدء التحضير
+**الوصف:** التاجر أكد الطلب - يبدأ النظام تلقائياً بالبحث عن سائق
 
 **من يمكنه الوصول:**
 
-- التاجر (MERCHANT): يمكنه تحضير الطلب أو إلغاؤه
+- التاجر (MERCHANT): يمكنه عرض الطلب أو إلغاؤه
 - المدير (ADMIN): يمكنه أي إجراء
 
-**Request - تغيير إلى PREPARING:**
-
-```bash
-curl -X PATCH http://localhost:3000/api/v1/orders/123/preparing \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "تم بدء تحضير الطلب"}'
-```
-
-**Response:**
-
-```json
-{
-  "id": 123,
-  "status": "PREPARING",
-  "updatedAt": "2024-01-15T13:50:00.000Z",
-  "items": [...],
-  "totalAmount": 19000
-}
-```
+**ملاحظة:** عند تأكيد الطلب، يتم الانتقال تلقائياً إلى حالة SEARCHING ويبدأ النظام بالبحث عن سائق.
 
 **الإجراءات المتاحة:**
 
-- بدء التحضير (MERCHANT/ADMIN) → PREPARING
 - إلغاء الطلب (MERCHANT/ADMIN) → CANCELLED
+- يبدأ النظام تلقائياً بالبحث عن سائق → SEARCHING
 
 ---
 
-#### 3️⃣ PREPARING (قيد التحضير) {#preparing}
+#### 3️⃣ SEARCHING (جاري البحث عن سائق) {#searching}
 
-**الوصف:** التاجر يحضر الطلب
+**الوصف:** النظام يبحث عن سائق متاح للطلب
 
 **من يمكنه الوصول:**
 
-- التاجر (MERCHANT): يمكنه إكمال التحضير أو إلغاؤه
+- التاجر (MERCHANT): يمكنه عرض الطلب أو إلغاؤه
 - المدير (ADMIN): يمكنه أي إجراء
-
-**Request - تغيير إلى READY_FOR_PICKUP:**
-
-```bash
-curl -X PATCH http://localhost:3000/api/v1/orders/123/ready-for-pickup \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "الطلب جاهز للاستلام"}'
-```
-
-**Response:**
-
-```json
-{
-  "id": 123,
-  "status": "READY_FOR_PICKUP",
-  "updatedAt": "2024-01-15T14:00:00.000Z",
-  "items": [...],
-  "totalAmount": 19000
-}
-```
 
 **ملاحظة:** عند الوصول لهذه الحالة، يتم إرسال إشعارات تلقائية للسائقين المتاحين عبر `DeliveryAssignmentService`.
 
+**مهم:** يتم حساب المسافة بين السائقين والمطعم باستخدام الموقع الجغرافي للتاجر (`location.lat` و `location.lng`) وليس `currentLat`/`currentLng`.
+
 **الإجراءات المتاحة:**
 
+- تعيين سائق (نظام/مسؤول) → ASSIGNED
 - تحديد جاهز للاستلام (MERCHANT/ADMIN) → READY_FOR_PICKUP
 - إلغاء الطلب (MERCHANT/ADMIN) → CANCELLED
 
@@ -225,8 +188,16 @@ curl -X POST http://localhost:3000/api/v1/orders/123/send-delivery-notifications
 
 ```bash
 curl -X POST http://localhost:3000/api/v1/orders/123/accept-delivery \
-  -H "Authorization: Bearer <access_token>"
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"deliveryTime": 30}'
 ```
+
+**Payload (Request Body):**
+
+| Parameter      | Type   | Required | Description                    |
+| -------------- | ------ | -------- | ------------------------------ |
+| `deliveryTime` | number | No       | وقت التوصيل المتوقع (بالدقائق) |
 
 **Response:**
 
@@ -680,7 +651,7 @@ else if (order.deliveryCoordinates) {
 
 - PENDING (أي مستخدم بصلاحية)
 - CONFIRMED (MERCHANT/ADMIN)
-- PREPARING (MERCHANT/ADMIN)
+- SEARCHING (MERCHANT/ADMIN)
 - READY_FOR_PICKUP (MERCHANT/ADMIN)
 - ASSIGNED (ADMIN فقط)
 
@@ -827,9 +798,8 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
 │     │                           │◄──── 200 OK ─────────────│                │
 │     │                           │     (CONFIRMED)          │                │
 │     │                           │                           │                │
-│     │                           │──── PATCH /preparing ───►│                │
-│     │                           │◄──── 200 OK ─────────────│                │
-│     │                           │     (PREPARING)          │                │
+│     │                           │   (بدء البحث عن سائق)   │                │
+│     │                           │     (SEARCHING)          │                │
 │     │                           │                           │                │
 │     │                           │──── PATCH /ready───────►│                │
 │     │                           │◄──── 200 OK ─────────────│                │
@@ -903,14 +873,14 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
 
 ### صلاحيات تعديل حالة الطلب حسب الدور
 
-| الدور          | الحالات المسموح بتعديلها                                                                    |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| `CUSTOMER`     | CANCELLED (فقط للطلبات PENDING)                                                             |
-| `MERCHANT`     | CONFIRMED, PREPARING, READY_FOR_PICKUP, REJECTED, CANCELLED, PENDING, CONFIRMED (للاستعادة) |
-| `DELIVERY`     | PICKED_UP, ON_THE_WAY, DELIVERED                                                            |
-| `ADMIN`        | جميع الحالات                                                                                |
-| `OFFICE_OWNER` | لا يوجد صلاحيات                                                                             |
-| `SUPPORT`      | لا يوجد صلاحيات                                                                             |
+| الدور          | الحالات المسموح بتعديلها                                    |
+| -------------- | ----------------------------------------------------------- |
+| `CUSTOMER`     | CANCELLED (فقط للطلبات PENDING)                             |
+| `MERCHANT`     | CONFIRMED, SEARCHING, READY_FOR_PICKUP, REJECTED, CANCELLED |
+| `DELIVERY`     | PICKED_UP, ON_THE_WAY, DELIVERED                            |
+| `ADMIN`        | جميع الحالات                                                |
+| `OFFICE_OWNER` | لا يوجد صلاحيات                                             |
+| `SUPPORT`      | لا يوجد صلاحيات                                             |
 
 ### صلاحيات عرض الطلبات
 
@@ -923,7 +893,113 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
 
 ---
 
-## 3. إنشاء طلب جديد
+## 3. الإشعارات المرسلة لكل حالة الطلب
+
+يرسل النظام إشعارات تلقائية عبر Firebase لكل حالة تغيير. الجدول التالي يوضح الإشعارات المرسلة:
+
+### إشعارات الطلبات (Order Notifications)
+
+| حالة الطلب         | نوع الإشعار      | المستلم                  | العنوان             | الرسالة                                           |
+| ------------------ | ---------------- | ------------------------ | ------------------- | ------------------------------------------------- |
+| `ORDER_CREATED`    | ORDER_CREATED    | التاجر (المطعم)          | طلب جديد            | `لديك طلب جديد #${orderId}`                       |
+| `ORDER_CONFIRMED`  | ORDER_CONFIRMED  | العميل                   | تم تأكيد طلبك       | `تم تأكيد طلبك #${orderId} وهو الآن يبحث عن سائق` |
+| `ORDER_SEARCHING`  | ORDER_SEARCHING  | العميل                   | جاري البحث عن سائق  | `جاري البحث عن سائق لطلبك #${orderId}`            |
+| `ASSIGNED`         | ORDER_ASSIGNED   | السائق + العميل          | تم assign طلب لك    | `تم assign سائق لطلبك #${orderId}`                |
+| `READY_FOR_PICKUP` | ORDER_READY      | السائق                   | الطلب جاهز للاستلام | `الطلب #${orderId} جاهز للاستلام`                 |
+| `PICKED_UP`        | ORDER_PICKED_UP  | العميل                   | تم استلام الطلب     | `تم استلام طلبك #${orderId} من قبل السائق`        |
+| `ON_THE_WAY`       | ORDER_ON_THE_WAY | العميل + السائق          | الطلب في الطريق     | `طلبك #${orderId} في الطريق إليك`                 |
+| `DELIVERED`        | ORDER_DELIVERED  | العميل                   | تم توصيل الطلب      | `تم توصيل طلبك #${orderId} بنجاح`                 |
+| `CANCELLED`        | ORDER_CANCELLED  | العميل + السائق (إن وجد) | تم إلغاء الطلب      | `تم إلغاء طلبك #${orderId}`                       |
+
+### إشعارات الحسابات (Auth Notifications)
+
+عند تسجيل أو تحقق سائق أو مطعم، يتم إرسال إشعارات للمدير:
+
+| الحدث           | نوع الإشعار           | المستلم                |
+| --------------- | --------------------- | ---------------------- |
+| تسجيل سائق جديد | DELIVERY_REGISTRATION | المدير (جميع المديرين) |
+| تحقق حساب سائق  | DELIVERY_VERIFIED     | المدير (جميع المديرين) |
+| تسجيل مطعم جديد | MERCHANT_REGISTRATION | المدير (جميع المديرين) |
+| تحقق حساب مطعم  | MERCHANT_VERIFIED     | المدير (جميع المديرين) |
+
+---
+
+## 4. Distance API (حساب المسافة)
+
+نظام حساب المسافة باستخدام Haversine Formula مع دعم حساب البقشيش للسائق.
+
+### نظرة عامة
+
+- **URL:** `/distance`
+- **Method:** `POST`
+- **Authentication:** Not Required (Public)
+
+### 1. حساب المسافة والبقشيش
+
+حساب المسافة بين نقطتين مع تقدير البقشيش للسائق.
+
+- **URL:** `/distance/calculate`
+- **Method:** `POST`
+
+#### Request Body
+
+| الحقل             | النوع  | مطلوب | الوصف        |
+| ----------------- | ------ | ----- | ------------ |
+| `source`          | object | نعم   | نقطة البداية |
+| `source.lat`      | number | نعم   | خط العرض     |
+| `source.lng`      | number | نعم   | خط الطول     |
+| `destination`     | object | نعم   | نقطة النهاية |
+| `destination.lat` | number | نعم   | خط العرض     |
+| `destination.lng` | number | نعم   | خط الطول     |
+
+#### Request Example
+
+```json
+{
+  "source": {
+    "lat": 33.5138,
+    "lng": 36.2765
+  },
+  "destination": {
+    "lat": 33.515,
+    "lng": 36.28
+  }
+}
+```
+
+#### Response Example
+
+```json
+{
+  "success": true,
+  "data": {
+    "distance": 1500,
+    "distanceUnit": "meters",
+    "distanceKm": 1.5,
+    "calculationMethod": "HAVERSINE",
+    "estimatedTip": 750,
+    "tipCalculation": {
+      "tipPerKilometer": 500,
+      "distanceKm": 1.5,
+      "calculatedTip": 750
+    }
+  }
+}
+```
+
+#### الوصف
+
+| الحقل                            | الوصف                                   |
+| -------------------------------- | --------------------------------------- |
+| `distance`                       | المسافة بالمتر                          |
+| `distanceKm`                     | المسافة بالكيلومتر                      |
+| `calculationMethod`              | طريقة الحساب (HAVERSINE أو GOOGLE_MAPS) |
+| `estimatedTip`                   | البقشيش المقدر                          |
+| `tipCalculation.tipPerKilometer` | سعر الكيلومتر (من الإعدادات)            |
+
+---
+
+## 5. إنشاء طلب جديد
 
 إنشاء طلب جديد مع التحقق من المخزون وحساب الأسعار.
 
@@ -938,6 +1014,8 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
 | الحقل                                     | النوع  | مطلوب  | الوصف                                                           |
 | ----------------------------------------- | ------ | ------ | --------------------------------------------------------------- |
 | `ownerId`                                 | number | نعم    | معرف صاحب المطعم (التاجر)                                       |
+| `customerName`                            | string | **لا** | اسم العميل (اختياري)                                            |
+| `phone`                                   | string | **لا** | رقم هاتف العميل (اختياري)                                       |
 | `items`                                   | array  | **لا** | قائمة المنتجات (اختياري - يمكن إنشاء طلب بعروض فقط بدون منتجات) |
 | `items[].productId`                       | number | نعم    | معرف المنتج                                                     |
 | `items[].quantity`                        | number | نعم    | الكمية (يجب أن تكون ≥ 1)                                        |
@@ -972,6 +1050,8 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
 ```json
 {
   "ownerId": 1,
+  "customerName": "أحمد محمد",
+  "phone": "0930658959",
   "items": [
     {
       "productId": 10,
@@ -1047,6 +1127,8 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
   "order": {
     "id": 123,
     "customerId": 1,
+    "customerName": "أحمد محمد",
+    "phone": "0930658959",
     "customer": {
       "id": 1,
       "firstName": "أحمد",
@@ -1059,7 +1141,12 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/confirmed \
       "id": 1,
       "firstName": "محمد",
       "lastName": "علي",
-      "phone": "+963911111111"
+      "phone": "+963911111111",
+      "restaurantName": "مطعم تزا",
+      "location": {
+        "lat": 35.5187196,
+        "lng": 35.8009756
+      }
     },
     "paymentMethod": "CASH",
     "status": "PENDING",
@@ -1244,7 +1331,12 @@ curl -X GET "http://localhost:3000/api/v1/orders?page=1&limit=10&status=PENDING"
       "owner": {
         "id": 1,
         "firstName": "محمد",
-        "lastName": "علي"
+        "lastName": "علي",
+        "restaurantName": "مطعم تزا",
+        "location": {
+          "lat": 35.5187196,
+          "lng": 35.8009756
+        }
       },
       "paymentMethod": "CASH",
       "status": "PENDING",
@@ -1345,7 +1437,12 @@ curl -X GET http://localhost:3000/api/v1/orders/123 \
     "lastName": "habib",
     "phone": "646464664",
     "email": "khderhabib2016@gmail.com",
-    "address": "address"
+    "address": "address",
+    "restaurantName": "مطعم تازا",
+    "location": {
+      "lat": 35.5187196,
+      "lng": 35.8009756
+    }
   },
   "paymentMethod": "CASH",
   "status": "CANCELLED",
@@ -1704,7 +1801,7 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/preparing \
   "customerId": 1,
   "ownerId": 1,
   "paymentMethod": "CASH",
-  "status": "PREPARING",
+  "status": "SEARCHING",
   "deliveryDeadline": "2024-01-15T14:30:00.000Z",
   "mealPreparationTime": 15,
   "deliveryTime": 30,
@@ -1750,7 +1847,7 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123/preparing \
 
 ```json
 {
-  "message": "Role \"CUSTOMER\" cannot change status to \"PREPARING\"",
+  "message": "Role \"CUSTOMER\" cannot change status to \"SEARCHING\"",
   "error": "Forbidden",
   "statusCode": 403
 }
@@ -2513,14 +2610,16 @@ curl -X POST http://localhost:3000/api/v1/orders/123/reject-delivery \
 
 ### جميع الحقول المتاحة
 
-| الحقل              | النوع | مطلوب | الوصف                          |
-| ------------------ | ----- | ----- | ------------------------------ |
-| `itemsByProductId` | array | لا    | تعديل العناصر by productId     |
-| `itemsById`        | array | لا    | تعديل العناصر by order item ID |
-| `offersByOfferId`  | array | لا    | تعديل العروض by offerId        |
-| `offersById`       | array | لا    | تعديل العروض by ID             |
-| `deletedProducts`  | array | لا    | حذف منتجات by productId        |
-| `deletedOffers`    | array | لا    | حذف عروض by offerId            |
+| الحقل              | النوع  | مطلوب | الوصف                           |
+| ------------------ | ------ | ----- | ------------------------------- |
+| `customerName`     | string | لا    | تعديل اسم العميل (اختياري)      |
+| `phone`            | string | لا    | تعديل رقم هاتف العميل (اختياري) |
+| `itemsByProductId` | array  | لا    | تعديل العناصر by productId      |
+| `itemsById`        | array  | لا    | تعديل العناصر by order item ID  |
+| `offersByOfferId`  | array  | لا    | تعديل العروض by offerId         |
+| `offersById`       | array  | لا    | تعديل العروض by ID              |
+| `deletedProducts`  | array  | لا    | حذف منتجات by productId         |
+| `deletedOffers`    | array  | لا    | حذف عروض by offerId             |
 
 ### بنية itemsByProductId
 
@@ -2592,13 +2691,27 @@ curl -X PATCH http://localhost:3000/api/v1/orders/123 \
   }'
 ```
 
-#### مثال 4: دمج طرق متعددة
+#### مثال 4: تعديل بيانات العميل
 
 ```bash
 curl -X PATCH http://localhost:3000/api/v1/orders/123 \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{
+    "customerName": "اسم العميل الجديد",
+    "phone": "0930658959"
+  }'
+```
+
+#### مثال 5: دمج طرق متعددة
+
+```bash
+curl -X PATCH http://localhost:3000/api/v1/orders/123 \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "اسم العميل الجديد",
+    "phone": "0930658959",
     "itemsByProductId": [
       { "productId": 10, "quantity": 3 }
     ],

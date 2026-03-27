@@ -65,6 +65,7 @@ class BasketConfirmationSubmitRequested extends BasketConfirmationEvent {
   const BasketConfirmationSubmitRequested();
 }
 
-class BasketConfirmationSubmitErrorCleared extends BasketConfirmationEvent {
-  const BasketConfirmationSubmitErrorCleared();
+/// UI applied [BasketConfirmationState.pendingFieldSync] to controllers.
+class BasketConfirmationFieldSyncConsumed extends BasketConfirmationEvent {
+  const BasketConfirmationFieldSyncConsumed();
 }

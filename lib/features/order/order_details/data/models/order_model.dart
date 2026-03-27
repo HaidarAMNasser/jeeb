@@ -179,7 +179,9 @@ class OrderModel {
                     ? json['numberOfPeople'] as int
                     : int.tryParse(json['numberOfPeople'].toString()))
               : null),
-      status: json['status']?.toString(),
+      status: json['status']?.toString() ??
+          json['orderStatus']?.toString() ??
+          json['state']?.toString(),
       merchantId: ownerId?.toString(),
       createdAt: createdAt,
       updatedAt: json['updatedAt']?.toString(),
