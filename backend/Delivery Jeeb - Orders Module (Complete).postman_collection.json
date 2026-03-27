@@ -1,0 +1,966 @@
+{
+  "info": {
+    "_postman_id": "orders-module-complete-v3",
+    "name": "Delivery Jeeb - Orders Module (Complete)",
+    "description": "Complete Orders API with all endpoints and full response examples. Updated with product details, commission calculations, and offer totals.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46725728"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.jeeb2.com/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_token_here",
+      "type": "string"
+    },
+    {
+      "key": "merchant_token",
+      "value": "your_merchant_token_here",
+      "type": "string"
+    },
+    {
+      "key": "delivery_token",
+      "value": "your_delivery_token_here",
+      "type": "string"
+    },
+    {
+      "key": "customer_token",
+      "value": "your_customer_token_here",
+      "type": "string"
+    },
+    { "key": "admin_email", "value": "admin@jeeb.com", "type": "string" },
+    { "key": "admin_password", "value": "password", "type": "string" },
+    {
+      "key": "merchant_email",
+      "value": "khderhabib2016@gmail.com",
+      "type": "string"
+    },
+    { "key": "merchant_password", "value": "password", "type": "string" },
+    {
+      "key": "delivery_email",
+      "value": "assem_driver2@jeeb.com",
+      "type": "string"
+    },
+    { "key": "delivery_password", "value": "password", "type": "string" },
+    {
+      "key": "customer_email",
+      "value": "samacustomer@jeeb.com",
+      "type": "string"
+    },
+    { "key": "customer_password", "value": "password", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "1. Customer Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{customer_email}}\",\n    \"password\": \"{{customer_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"userId\": 52,\n        \"email\": \"samacustomer@jeeb.com\",\n        \"firstName\": \"Sama\",\n        \"lastName\": \"Customer\",\n        \"role\": \"CUSTOMER\",\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Merchant Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{merchant_email}}\",\n    \"password\": \"{{merchant_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"userId\": 30114,\n        \"email\": \"khderhabib2016@gmail.com\",\n        \"firstName\": \"haidar\",\n        \"lastName\": \"habib\",\n        \"role\": \"MERCHANT\",\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Delivery Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{delivery_email}}\",\n    \"password\": \"{{delivery_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"userId\": 100,\n        \"email\": \"driver@jeeb.com\",\n        \"firstName\": \"Ahmed\",\n        \"lastName\": \"Driver\",\n        \"role\": \"DELIVERY\",\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"userId\": 1,\n        \"email\": \"admin@jeeb.com\",\n        \"firstName\": \"Admin\",\n        \"lastName\": \"User\",\n        \"role\": \"ADMIN\",\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📦 Orders - Customer",
+      "item": [
+        {
+          "name": "1. Create Order (items only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ownerId\": 30114,\n    \"items\": [\n        { \"productId\": 5111, \"quantity\": 2 }\n    ],\n    \"deliveryCoordinates\": {\n        \"latitude\": 33.5138,\n        \"longitude\": 36.2765,\n        \"address\": \"123 Customer Street, Damascus\"\n    },\n    \"deliveryFee\": 0,\n    \"paymentMethod\": \"CASH\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success - Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"order\": {\n            \"id\": 125,\n            \"customerId\": 52,\n            \"ownerId\": 30114,\n            \"status\": \"PENDING\",\n            \"deliveryDeadline\": \"2026-03-24T12:00:00.000Z\",\n            \"items\": [\n                {\n                    \"id\": 100,\n                    \"productId\": 5111,\n                    \"product\": {\n                        \"id\": 5111,\n                        \"merchantId\": 30114,\n                        \"name\": \"test 2\",\n                        \"price\": 100,\n                        \"discount\": 10,\n                        \"discountType\": \"PERCENTAGE\",\n                        \"commissionRate\": 5,\n                        \"images\": []\n                    },\n                    \"quantity\": 2,\n                    \"originalUnitPrice\": 100,\n                    \"unitPrice\": 90,\n                    \"totalCommissionAmount\": 10,\n                    \"totalProductDiscountValue\": 20,\n                    \"totalPrice\": 190\n                }\n            ],\n            \"offers\": [],\n            \"subtotal\": 190,\n            \"priceBeforeDiscount\": 210,\n            \"productDiscount\": 20,\n            \"offerDiscount\": 0,\n            \"totalAmount\": 200,\n            \"totalCommissionAmount\": 10,\n            \"platformCommission\": 10,\n            \"ownerRevenue\": 180,\n            \"currencyCode\": \"SAR\"\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Create Order (offers only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ownerId\": 30114,\n    \"offers\": [\n        { \"offerId\": 29, \"quantity\": 1 }\n    ],\n    \"deliveryCoordinates\": {\n        \"latitude\": 33.5138,\n        \"longitude\": 36.2765,\n        \"address\": \"123 Customer Street\"\n    },\n    \"deliveryFee\": 0,\n    \"paymentMethod\": \"CASH\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"order\": {\n            \"id\": 126,\n            \"customerId\": 52,\n            \"ownerId\": 30114,\n            \"status\": \"PENDING\",\n            \"items\": [],\n            \"offers\": [\n                {\n                    \"id\": 29,\n                    \"name\": \"عرض الصيف الخاص\",\n                    \"discountType\": \"PERCENTAGE\",\n                    \"discountValue\": 25,\n                    \"products\": [...],\n                    \"totalQuantity\": 1,\n                    \"subtotal\": 200,\n                    \"productDiscount\": 20,\n                    \"offerDiscount\": 45,\n                    \"total\": 145,\n                    \"totalCommissionAmount\": 10\n                }\n            ],\n            \"totalAmount\": 135,\n            \"totalCommissionAmount\": 10\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Create Order (items + offers)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ownerId\": 30114,\n    \"items\": [\n        { \"productId\": 5111, \"quantity\": 2 }\n    ],\n    \"offers\": [\n        { \"offerId\": 29, \"quantity\": 1 }\n    ],\n    \"deliveryCoordinates\": {\n        \"latitude\": 33.5138,\n        \"longitude\": 36.2765,\n        \"address\": \"123 Customer Street\"\n    },\n    \"deliveryFee\": 0,\n    \"paymentMethod\": \"CASH\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"order\": {\n            \"id\": 127,\n            \"customerId\": 52,\n            \"status\": \"PENDING\",\n            \"items\": [...],\n            \"offers\": [...],\n            \"totalAmount\": 325,\n            \"totalCommissionAmount\": 30\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 127,\n            \"customerId\": 52,\n            \"ownerId\": 30114,\n            \"status\": \"PENDING\",\n            \"totalAmount\": 325,\n            \"createdAt\": \"2026-03-24T10:00:00.000Z\",\n            \"items\": [\n                {\n                    \"id\": 100,\n                    \"productId\": 5111,\n                    \"quantity\": 2,\n                    \"totalPrice\": 190,\n                    \"product\": {\n                        \"id\": 5111,\n                        \"name\": \"test 2\",\n                        \"images\": [\n                            { \"id\": 255, \"url\": \"products/5111/image.webp\", \"mobileUrl\": \"products/5111/image_mobile.webp\", \"thumbnailUrl\": \"products/5111/image_thumb.webp\", \"isMain\": true }\n                        ]\n                    }\n                }\n            ],\n            \"owner\": { \"id\": 30114, \"firstName\": \"haidar\" }\n        }\n    ],\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 10\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/13",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "13"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success - Full Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 13,\n        \"customerId\": 52,\n        \"customer\": {\n            \"id\": 52,\n            \"firstName\": \"Sama\",\n            \"lastName\": \"Customer\",\n            \"phone\": \"+963970000001\"\n        },\n        \"ownerId\": 30114,\n        \"owner\": { \"id\": 30114, \"firstName\": \"haidar nasser\", \"lastName\": \"habib\" },\n        \"paymentMethod\": \"CASH\",\n        \"status\": \"PREPARING\",\n        \"deliveryDeadline\": \"2026-03-23T10:08:24.647Z\",\n        \"deliveryCoordinates\": {\n            \"address\": \"123 Customer Street\",\n            \"latitude\": 33.5138,\n            \"longitude\": 36.2765\n        },\n        \"items\": [\n            {\n                \"id\": 12,\n                \"productId\": 5111,\n                \"originalUnitPrice\": 100,\n                \"unitPrice\": 90,\n                \"quantity\": 2,\n                \"commissionRate\": 5,\n                \"commissionAmount\": 5,\n                \"totalCommissionAmount\": 10,\n                \"productDiscountValue\": 10,\n                \"totalProductDiscountValue\": 20,\n                \"totalPrice\": 190,\n                \"product\": {\n                    \"id\": 5111,\n                    \"name\": \"test 2\",\n                    \"images\": [\n                        { \"id\": 255, \"url\": \"products/5111/image.webp\", \"mobileUrl\": \"products/5111/image_mobile.webp\", \"thumbnailUrl\": \"products/5111/image_thumb.webp\", \"isMain\": true }\n                    ]\n                }\n            }\n                \"productDiscountValue\": 10,\n                \"totalProductDiscountValue\": 20,\n                \"totalPrice\": 190\n            }\n        ],\n        \"offers\": [\n            {\n                \"id\": 29,\n                \"name\": \"عرض الصيف الخاص\",\n                \"discountType\": \"PERCENTAGE\",\n                \"discountValue\": 25,\n                \"isActive\": true,\n                \"merchantId\": 30114,\n                \"products\": [\n                    {\n                        \"id\": 16,\n                        \"productId\": 5112,\n                        \"product\": {\n                            \"id\": 5112,\n                            \"merchantId\": 30114,\n                            \"name\": \"test 2\",\n                            \"price\": 100,\n                            \"commissionRate\": 5\n                        },\n                        \"quantity\": 2,\n                        \"originalUnitPrice\": 100,\n                        \"unitPrice\": 90,\n                        \"commissionRate\": 5,\n                        \"commissionAmount\": 5,\n                        \"productDiscountValue\": 10\n                    }\n                ],\n                \"totalQuantity\": 2,\n                \"productInternalQuantity\": 2,\n                \"subtotal\": 400,\n                \"productDiscount\": 40,\n                \"offerDiscount\": 95,\n                \"total\": 285,\n                \"commissionRate\": 5,\n                \"totalCommissionAmount\": 20,\n                \"totalProductDiscountValue\": 40\n            }\n        ],\n        \"subtotal\": 380,\n        \"priceBeforeDiscount\": 420,\n        \"productDiscount\": 40,\n        \"offerDiscount\": 47,\n        \"totalAmount\": 363,\n        \"totalCommissionAmount\": 30,\n        \"platformCommission\": 30,\n        \"ownerRevenue\": 310,\n        \"deliveryFee\": 0,\n        \"currencyCode\": \"SAR\",\n        \"createdAt\": \"2026-03-23T09:23:24.647Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "6. Cancel Order (Customer)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Changed my mind\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "cancel"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CANCELLED\",\n        \"previousStatus\": \"PENDING\",\n        \"cancelledAt\": \"2026-03-24T10:30:00.000Z\",\n        \"updatedAt\": \"2026-03-24T10:30:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "7a. Update Order Items (by productId)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"itemsByProductId\": [\n        { \"productId\": 5111, \"quantity\": 3 },\n        { \"productId\": 5112, \"quantity\": 0 }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"items\": [\n            {\n                \"id\": 100,\n                \"productId\": 5111,\n                \"quantity\": 3,\n                \"totalPrice\": 285,\n                \"product\": {\n                    \"id\": 5111,\n                    \"name\": \"test 2\",\n                    \"images\": [\n                        { \"id\": 255, \"url\": \"products/5111/image.webp\", \"mobileUrl\": \"products/5111/image_mobile.webp\", \"thumbnailUrl\": \"products/5111/image_thumb.webp\", \"isMain\": true }\n                    ]\n                }\n            }\n        ],\n        \"totalAmount\": 285,\n        \"totalCommissionAmount\": 15\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "7b. Update Order Items (by order item ID)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"itemsById\": [\n        { \"id\": 100, \"quantity\": 5 },\n        { \"id\": 101, \"quantity\": 0 }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"items\": [\n            { \"id\": 100, \"productId\": 5111, \"quantity\": 5, \"totalPrice\": 475 }\n        ],\n        \"totalAmount\": 475,\n        \"totalCommissionAmount\": 25\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "7c. Delete Products and Offers (by IDs)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"deletedProducts\": [5111, 5112],\n    \"deletedOffers\": [29]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"items\": [],\n        \"offers\": [],\n        \"totalAmount\": 0\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "7d. Combined Update (multiple methods)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"itemsByProductId\": [\n        { \"productId\": 5111, \"quantity\": 3 }\n    ],\n    \"itemsById\": [\n        { \"id\": 100, \"quantity\": 5 }\n    ],\n    \"deletedProducts\": [5112],\n    \"deletedOffers\": [29]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"items\": [\n            { \"id\": 100, \"productId\": 5111, \"quantity\": 5, \"totalPrice\": 475 }\n        ],\n        \"offers\": [],\n        \"totalAmount\": 475,\n        \"totalCommissionAmount\": 25\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Orders - Merchant",
+      "item": [
+        {
+          "name": "1. Get Merchant Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10&status=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "PENDING" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 127,\n            \"customerId\": 52,\n            \"status\": \"PENDING\",\n            \"totalAmount\": 325,\n            \"createdAt\": \"2026-03-24T10:00:00.000Z\",\n            \"customer\": { \"id\": 52, \"firstName\": \"Sama\", \"lastName\": \"Customer\" }\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Confirm Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"mealPreparationTime\": 15,\n    \"deliveryTime\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "confirm"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CONFIRMED\",\n        \"mealPreparationTime\": 15,\n        \"deliveryTime\": 30,\n        \"deliveryDeadline\": \"2026-03-24T11:00:00.000Z\",\n        \"updatedAt\": \"2026-03-24T10:15:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Start Preparing",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Started preparing\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/preparing",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "preparing"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PREPARING\",\n        \"updatedAt\": \"2026-03-24T10:20:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Ready for Pickup",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Order ready\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/ready-for-pickup",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "ready-for-pickup"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"READY_FOR_PICKUP\",\n        \"updatedAt\": \"2026-03-24T10:30:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Reject Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Product not available\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/reject",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "reject"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"REJECTED\",\n        \"updatedAt\": \"2026-03-24T10:15:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "6. Cancel Order (Merchant)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Restaurant closed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "cancel"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CANCELLED\",\n        \"previousStatus\": \"CONFIRMED\",\n        \"cancelledAt\": \"2026-03-24T10:15:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "7. Restore Cancelled Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/orders/123/pending",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "pending"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"previousStatus\": null,\n        \"cancelledAt\": null,\n        \"updatedAt\": \"2026-03-24T10:17:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "8. Send Delivery Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchant_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/send-delivery-notifications",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "send-delivery-notifications"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Delivery notifications sent successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🚗 Orders - Delivery",
+      "item": [
+        {
+          "name": "1. Get Available Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{delivery_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10&status=READY_FOR_PICKUP",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "READY_FOR_PICKUP" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": [\n        {\n            \"id\": 123,\n            \"status\": \"READY_FOR_PICKUP\",\n            \"totalAmount\": 325,\n            \"deliveryCoordinates\": {\n                \"latitude\": 33.5138,\n                \"longitude\": 36.2765,\n                \"address\": \"123 Customer Street\"\n            },\n            \"customer\": { \"id\": 52, \"firstName\": \"Sama\", \"phone\": \"+963970000001\" }\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Accept Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{delivery_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/accept-delivery",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "accept-delivery"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"orderId\": 123,\n        \"deliveryId\": 100,\n        \"status\": \"ASSIGNED\",\n        \"assignedAt\": \"2026-03-24T10:35:00.000Z\",\n        \"acceptedAt\": \"2026-03-24T10:35:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Reject Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{delivery_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Too far from my location\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/reject-delivery",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "reject-delivery"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Picked Up",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{delivery_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Picked up from restaurant\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/picked-up",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "picked-up"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PICKED_UP\",\n        \"updatedAt\": \"2026-03-24T10:40:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. On The Way",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{delivery_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"On the way to customer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/on-the-way",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "on-the-way"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"ON_THE_WAY\",\n        \"updatedAt\": \"2026-03-24T10:45:00.000Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "6. Delivered",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{delivery_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Delivered successfully\",\n    \"finalLocation\": {\n        \"lat\": 33.5138,\n        \"lng\": 36.2765\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/delivered",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "delivered"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"DELIVERED\",\n        \"finalLocation\": { \"lat\": 33.5138, \"lng\": 36.2765 },\n        \"updatedAt\": \"2026-03-24T11:00:00.000Z\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👑 Orders - Admin",
+      "item": [
+        {
+          "name": "1. Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        { \"id\": 127, \"customerId\": 52, \"ownerId\": 30114, \"status\": \"PENDING\", \"totalAmount\": 325 }\n    ],\n    \"total\": 50,\n    \"page\": 1,\n    \"limit\": 20\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"customerId\": 52,\n        \"ownerId\": 30114,\n        \"status\": \"DELIVERED\",\n        ...\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"CONFIRMED\",\n    \"reason\": \"Admin confirmed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "confirm"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CONFIRMED\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Cancel Order (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Cancelled by admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "cancel"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CANCELLED\",\n        \"cancelledAt\": \"2026-03-24T11:00:00.000Z\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📋 Query Parameters",
+      "item": [
+        {
+          "name": "All Query Parameters",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10&status=PENDING&search=123&ownerId=30114&categoryId=10",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "description": "PENDING, CONFIRMED, PREPARING, READY_FOR_PICKUP, ASSIGNED, PICKED_UP, ON_THE_WAY, DELIVERED, CANCELLED, REJECTED"
+                },
+                {
+                  "key": "search",
+                  "value": "123",
+                  "description": "Search by order ID or customer name"
+                },
+                {
+                  "key": "ownerId",
+                  "value": "30114",
+                  "description": "Filter by merchant"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "10",
+                  "description": "Filter by product category"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": [...],\n    \"total\": 5,\n    \"page\": 1,\n    \"limit\": 10\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+

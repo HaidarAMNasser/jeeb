@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';
-import 'package:jeeb_app/core/common/models/base_response_model.dart';
 import 'package:jeeb_app/core/common/utils/error_handler.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
 import 'package:jeeb_app/features/order/order_details/data/data_sources/order_details_data_source.dart';
@@ -23,35 +22,32 @@ class OrderDetailsRepository {
       try {
         final response = await _remoteDataSource.getOrderDetails(id);
 
-        BaseResponseModel<OrderModel> baseResponseModel =
-            BaseResponseModel<OrderModel>.fromJson(
-          response.data!,
-          (json) => OrderModel.fromJson(json as Map<String, dynamic>),
-        );
-
-        if (baseResponseModel.status == 200 ||
-            baseResponseModel.success == true ||
-            baseResponseModel.statusCode == 200) {
-          if (baseResponseModel.data == null) {
-            return Left(ErrorHandler.handle(DioException(
-              type: DioExceptionType.badResponse,
-              response: response,
-              requestOptions: RequestOptions(),
-            )));
-          }
-
-          try {
-            return Right(baseResponseModel.data!.toDomain());
-          } catch (domainError) {
-            return Left(ErrorHandler.handle(domainError));
-          }
-        } else {
+        final statusCode = response.statusCode ?? 0;
+        if (statusCode < 200 || statusCode >= 300) {
           return Left(ErrorHandler.handle(DioException(
             type: DioExceptionType.badResponse,
             response: response,
-            requestOptions: RequestOptions(),
+            requestOptions: response.requestOptions,
           )));
         }
+
+        final raw = response.data;
+        if (raw is! Map<String, dynamic>) {
+          return Left(ErrorHandler.handle(
+            FormatException('Order details response is not a JSON object'),
+          ));
+        }
+
+        Map<String, dynamic> orderJson;
+        final data = raw['data'];
+        if (data is Map<String, dynamic>) {
+          orderJson = data;
+        } else {
+          orderJson = raw;
+        }
+
+        final model = OrderModel.fromJson(orderJson);
+        return Right(model.toDomain());
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }
@@ -60,4 +56,3 @@ class OrderDetailsRepository {
     }
   }
 }
-

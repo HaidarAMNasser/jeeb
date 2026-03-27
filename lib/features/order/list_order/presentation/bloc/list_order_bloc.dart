@@ -17,40 +17,39 @@ class ListOrderBloc extends Bloc<ListOrderEvent, ListOrderState> {
           // Load more orders
           final currentState = state;
           if (currentState is ListOrderLoaded) {
-            emit(ListOrderLoadingMore(
-              orders: currentState.orders,
-              currentPage: currentState.currentPage,
-              search: currentState.search,
-              merchantId: currentState.merchantId,
-            ));
+            emit(
+              ListOrderLoadingMore(
+                orders: currentState.orders,
+                currentPage: currentState.currentPage,
+                search: currentState.search,
+                merchantId: currentState.merchantId,
+              ),
+            );
 
             final nextPage = currentState.currentPage + 1;
             final searchQuery = event.search ?? currentState.search;
-            final merchantId = event.merchantId ?? currentState.merchantId;
+            final ownerId = event.merchantId ?? currentState.merchantId;
             final result = await _repository.getOrders(
               page: nextPage,
               limit: _pageSize,
               search: searchQuery,
-              merchantId: merchantId,
+              ownerId: ownerId,
             );
 
-            result.fold(
-              (l) => emit(ListOrderError(
-                  message: l is Exception ? l.toString() : (l as dynamic).message?.toString() ?? 'Unknown error')),
-              (newOrders) {
-                final updatedOrders = [
-                  ...currentState.orders,
-                  ...newOrders,
-                ];
-                emit(ListOrderLoaded(
+            result.fold((l) => emit(ListOrderError(message: l.message)), (
+              newOrders,
+            ) {
+              final updatedOrders = [...currentState.orders, ...newOrders];
+              emit(
+                ListOrderLoaded(
                   orders: updatedOrders,
                   hasMore: newOrders.length == _pageSize,
                   currentPage: nextPage,
                   search: searchQuery,
-                  merchantId: merchantId,
-                ));
-              },
-            );
+                  merchantId: ownerId,
+                ),
+              );
+            });
           }
         } else {
           // Initial load or refresh
@@ -59,23 +58,23 @@ class ListOrderBloc extends Bloc<ListOrderEvent, ListOrderState> {
             page: 1,
             limit: _pageSize,
             search: event.search,
-            merchantId: event.merchantId,
+            ownerId: event.merchantId,
           );
 
           result.fold(
-            (l) => emit(ListOrderError(
-                message: l is Exception ? l.toString() : (l as dynamic).message?.toString() ?? 'Unknown error')),
-            (orders) => emit(ListOrderLoaded(
-              orders: orders,
-              hasMore: orders.length == _pageSize,
-              currentPage: 1,
-              search: event.search,
-              merchantId: event.merchantId,
-            )),
+            (l) => emit(ListOrderError(message: l.message)),
+            (orders) => emit(
+              ListOrderLoaded(
+                orders: orders,
+                hasMore: orders.length == _pageSize,
+                currentPage: 1,
+                search: event.search,
+                merchantId: event.merchantId,
+              ),
+            ),
           );
         }
       }
     });
   }
 }
-

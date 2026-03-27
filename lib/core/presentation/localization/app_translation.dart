@@ -265,12 +265,36 @@ class AppTranslation {
   static String get total => 'total'.tr();
   static String get quantity => 'quantity'.tr();
   static String get createOrder => 'create_order'.tr();
+  static String get confirmOrder => 'confirm_order'.tr();
+
+  // Order status tracking screen (`OrderStatusPage` — keys in en.json / ar.json)
+  static String get orderStatusTrackingTitle =>
+      'order_status_tracking_title'.tr();
+  static String get orderStatusTrackingSubtitle =>
+      'order_status_tracking_subtitle'.tr();
+  static String get orderStatusProblemBanner =>
+      'order_status_problem_banner'.tr();
+  static String get orderStepPlaced => 'order_step_placed'.tr();
+  static String get orderStepConfirmed => 'order_step_confirmed'.tr();
+  static String get orderStepPreparing => 'order_step_preparing'.tr();
+  static String get orderStepReady => 'order_step_ready'.tr();
+  static String get orderStepWithDriver => 'order_step_with_driver'.tr();
+  static String get orderStepOnTheWay => 'order_step_on_the_way'.tr();
+  static String get orderStepDelivered => 'order_step_delivered'.tr();
+  static String get orderStatusViewDetails => 'order_status_view_details'.tr();
+  static String get orderStatusDemoStart => 'order_status_demo_start'.tr();
+  static String get orderStatusDemoStop => 'order_status_demo_stop'.tr();
+  static String get orderNumberLabel => 'order_number_label'.tr();
+  static String get orderOwnerRequired => 'order_owner_required'.tr();
+  static String get orderItemsInvalid => 'order_items_invalid'.tr();
   static String get payOnDelivery => 'pay_on_delivery'.tr();
   static String get selectedLocation => 'selected_location'.tr();
   static String get country => 'country'.tr();
   static String get city => 'city'.tr();
   static String get street => 'street'.tr();
   static String get addressDetails => 'address_details'.tr();
+  static String get fullName => 'full_name'.tr();
+  static String get enterFullName => 'enter_full_name'.tr();
 
   static String get locationUnavailable => 'location_unavailable'.tr();
   static String get chooseLocationOnMap => 'choose_location_on_map'.tr();

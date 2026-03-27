@@ -32,6 +32,7 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
               originalItems: [],
               currentItems: [],
               merchantName: '',
+              merchantOwnerId: null,
               customerPhone: '',
             ),
           );
@@ -69,6 +70,7 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
             originalItems: mergedDraft,
             currentItems: mergedDraft,
             merchantName: basket.merchantName ?? '',
+            merchantOwnerId: basket.merchantId,
             customerPhone: basket.customerPhone ?? '',
           ),
         );
@@ -191,6 +193,7 @@ class ListCartBloc extends Bloc<ListCartEvent, ListCartState> {
           originalItems: [],
           currentItems: [],
           merchantName: '',
+          merchantOwnerId: null,
           customerPhone: '',
           noticeMessage: 'Cart cleared successfully',
           noticeIsError: false,

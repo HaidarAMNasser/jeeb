@@ -52,6 +52,8 @@ import '../../../features/merchant/merchant_details/data/repositories/merchant_d
 
 import '../../../features/order/list_order/data/data_sources/list_order_data_source.dart';
 import '../../../features/order/list_order/data/repositories/list_order_repository.dart';
+import '../../../features/order/create_order/data/data_sources/create_order_remote_data_source.dart';
+import '../../../features/order/create_order/data/repositories/create_order_repository.dart';
 import '../../../features/order/order_details/data/data_sources/order_details_data_source.dart';
 import '../../../features/order/order_details/data/repositories/order_details_repository.dart';
 
@@ -221,6 +223,12 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ListOrderRepository(sl(), sl()));
   sl.registerFactory(() => ListOrderBloc(sl()));
+
+  //! Create order (used by [BasketConfirmationBloc])
+  sl.registerFactory<CreateOrderRemoteDataSource>(
+    () => CreateOrderRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => CreateOrderRepository(sl(), sl()));
 
   //! Order Details Dependencies
   sl.registerFactory<OrderDetailsRemoteDataSource>(

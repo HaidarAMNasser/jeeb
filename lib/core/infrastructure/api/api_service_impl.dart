@@ -367,14 +367,14 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final headers = <String, dynamic>{};
-    final data = <String, dynamic>{'token': token, 'platform': platform};
+    final data = <String, dynamic>{'firebaseToken': token};
 
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(
         Options(method: 'POST', headers: headers, extra: extra)
             .compose(
               dio.options,
-              'auth/device-token',
+              'users/firebase-token',
               queryParameters: queryParameters,
               data: data,
             )
@@ -1168,20 +1168,50 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     int? page,
     int? limit,
     String? search,
-    String? merchantId,
+    String? status,
+    String? ownerId,
   }) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     if (page != null) queryParameters['page'] = page;
     if (limit != null) queryParameters['limit'] = limit;
-    if (search != null) queryParameters['search'] = search;
+    if (search != null && search.isNotEmpty) {
+      queryParameters['search'] = search;
+    }
+    if (status != null && status.isNotEmpty) {
+      queryParameters['status'] = status;
+    }
+    if (ownerId != null && ownerId.isNotEmpty) {
+      queryParameters['ownerId'] = ownerId;
+    }
     final headers = <String, dynamic>{};
-    if (merchantId != null) headers['merchantId'] = merchantId;
 
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(
         Options(method: 'GET', headers: headers, extra: extra)
             .compose(dio.options, 'orders', queryParameters: queryParameters)
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
+  Future<Response> createOrder(Map<String, dynamic> body) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'POST', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'orders',
+              queryParameters: queryParameters,
+              data: body,
+            )
             .copyWith(baseUrl: baseUrlApi),
       ),
     );

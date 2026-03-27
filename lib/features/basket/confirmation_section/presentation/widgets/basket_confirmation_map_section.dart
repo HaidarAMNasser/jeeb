@@ -7,27 +7,24 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/resolved_address_caption.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
-/// Same address formatting as registration ([ResolvedAddressCaption] + geocoding),
-/// not a single `country city street` line (order and sanitization differ).
-class ConfirmationLocationCard extends StatelessWidget {
+/// Picked map location + optional re-pick.
+class BasketConfirmationMapSection extends StatelessWidget {
   final double latitude;
   final double longitude;
   final bool isResolvingAddress;
   final String? country;
   final String? city;
-  final String? street;
-
-  /// Opens location choice again (current vs map).
+  final String? streetPreview;
   final VoidCallback? onUpdateLocation;
 
-  const ConfirmationLocationCard({
+  const BasketConfirmationMapSection({
     super.key,
     required this.latitude,
     required this.longitude,
     required this.isResolvingAddress,
     this.country,
     this.city,
-    this.street,
+    this.streetPreview,
     this.onUpdateLocation,
   });
 
@@ -75,8 +72,7 @@ class ConfirmationLocationCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: AppHeight.s5),
-          if (isResolvingAddress) ...[
-            SizedBox(height: AppHeight.s8),
+          if (isResolvingAddress)
             Row(
               children: [
                 SizedBox(
@@ -95,13 +91,13 @@ class ConfirmationLocationCard extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ] else ...[
+            )
+          else ...[
             SizedBox(height: AppHeight.s5),
             ResolvedAddressCaption(
               country: country,
               city: city,
-              street: street,
+              street: streetPreview,
               fallbackLine: AppTranslation.locationSetFormat,
               latitude: latitude,
               longitude: longitude,

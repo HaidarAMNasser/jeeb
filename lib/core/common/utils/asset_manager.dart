@@ -14,6 +14,44 @@ class ImageAsset {
   static const String defaultMarchent = 'assets/images/default_marchent.avif';
   static const String offerDefault = 'assets/images/offer_default.webp';
 
+  /// Order tracking illustrations; folder: `assets/images/order_status/`.
+  static const String _orderStatus = 'assets/images/order_status';
+  static const String orderStatusPending = '$_orderStatus/pending.png';
+  static const String orderStatusConfirmed = '$_orderStatus/confirmed.png';
+  static const String orderStatusPreparing = '$_orderStatus/preparing.png';
+  static const String orderStatusReadyForPickup =
+      '$_orderStatus/ready_for_pickup.png';
+  static const String orderStatusAssigned = '$_orderStatus/assigned.png';
+  /// Same artwork as [orderStatusAssigned] (shared timeline step).
+  static const String orderStatusPickedUp = orderStatusAssigned;
+  static const String orderStatusOnTheWay = '$_orderStatus/on_the_way.png';
+  static const String orderStatusDelivered = '$_orderStatus/delivered.png';
+  /// Same artwork as [orderStatusDelivered].
+  static const String orderStatusCompleted = orderStatusDelivered;
+
+  /// Illustration for the journey inner plate; [stepIndex] 0–6 matches
+  /// [orderStatusToTimelineIndex] / timeline order (pending → delivered).
+  static String timelineStepImagePath(int stepIndex) {
+    switch (stepIndex.clamp(0, 6)) {
+      case 0:
+        return orderStatusPending;
+      case 1:
+        return orderStatusConfirmed;
+      case 2:
+        return orderStatusPreparing;
+      case 3:
+        return orderStatusReadyForPickup;
+      case 4:
+        return orderStatusAssigned;
+      case 5:
+        return orderStatusOnTheWay;
+      case 6:
+        return orderStatusDelivered;
+      default:
+        return orderStatusPending;
+    }
+  }
+
   // Add more image paths here as needed
   // Example:
   // static const String placeholder = 'assets/images/placeholder.png';

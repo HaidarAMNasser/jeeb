@@ -133,7 +133,7 @@ abstract class AppApiServiceClient {
   @POST("auth/logout")
   Future<Response> logout();
 
-  @POST("auth/device-token")
+  @POST("users/firebase-token")
   Future<Response> updateDeviceToken({
     @Field('token') required String token,
     @Field('platform') required String platform,
@@ -262,8 +262,12 @@ abstract class AppApiServiceClient {
     @Query('page') int? page,
     @Query('limit') int? limit,
     @Query('search') String? search,
-    @Header('merchantId') String? merchantId,
+    @Query('status') String? status,
+    @Query('ownerId') String? ownerId,
   });
+
+  @POST("orders")
+  Future<Response> createOrder(Map<String, dynamic> body);
 
   @GET("orders/{id}")
   Future<Response> getOrderDetails(@Path('id') String id);

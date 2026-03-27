@@ -6,9 +6,9 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/basket_empty_state.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/basket_confirmation_flow_helper.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/basket_loaded_content.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_empty_state.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_confirmation_flow_helper.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_loaded_content.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class BasketPage extends StatelessWidget {

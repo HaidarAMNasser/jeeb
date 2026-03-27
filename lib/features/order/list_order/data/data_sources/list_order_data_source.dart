@@ -6,7 +6,7 @@ abstract class ListOrderRemoteDataSource {
     int? page,
     int? limit,
     String? search,
-    String? merchantId,
+    String? ownerId,
   });
 }
 
@@ -20,13 +20,13 @@ class ListOrderRemoteDataSourceImpl implements ListOrderRemoteDataSource {
     int? page,
     int? limit,
     String? search,
-    String? merchantId,
+    String? ownerId,
   }) {
     return _appApiServiceClient.getOrders(
       page: page,
       limit: limit,
       search: search,
-      merchantId: merchantId,
+      ownerId: ownerId,
     );
   }
 }

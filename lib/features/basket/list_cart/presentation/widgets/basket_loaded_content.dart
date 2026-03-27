@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/basket_item_card.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/basket_save_bar.dart';
-import 'package:jeeb_app/features/basket/list_cart/presentation/basket/widgets/basket_summary_card.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_item_card.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_save_bar.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_summary_card.dart';
 
 class BasketLoadedContent extends StatelessWidget {
   final ListCartLoaded state;

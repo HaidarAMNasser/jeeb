@@ -2,6 +2,102 @@ import 'package:jeeb_app/features/city/data/models/city_model.dart';
 import 'package:jeeb_app/features/country/data/models/country_model.dart';
 import 'package:jeeb_app/features/product/list_product/data/models/product_model.dart';
 
+String _localized(dynamic v) {
+  if (v == null) return '';
+  if (v is String) return v;
+  if (v is Map) {
+    final en = v['en'];
+    final ar = v['ar'];
+    if (en is String && en.isNotEmpty) return en;
+    if (ar is String && ar.isNotEmpty) return ar;
+    for (final e in v.values) {
+      if (e is String && e.isNotEmpty) return e;
+    }
+  }
+  return v.toString();
+}
+
+double? _toDouble(dynamic v) {
+  if (v == null) return null;
+  if (v is num) return v.toDouble();
+  return double.tryParse(v.toString());
+}
+
+int? _toInt(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  return int.tryParse(v.toString());
+}
+
+List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
+  final out = <ProductModel>[];
+
+  final legacy = json['products'];
+  if (legacy is List && legacy.isNotEmpty) {
+    for (final item in legacy) {
+      if (item is Map<String, dynamic>) {
+        out.add(ProductModel.fromJson(item));
+      } else if (item is Map) {
+        out.add(ProductModel.fromJson(item.cast<String, dynamic>()));
+      }
+    }
+    return out;
+  }
+
+  final items = json['items'];
+  if (items is List) {
+    for (final raw in items) {
+      if (raw is! Map) continue;
+      final m = Map<String, dynamic>.from(raw);
+      final qty = _toInt(m['quantity']) ?? 1;
+      final productJson = m['product'];
+      if (productJson is Map) {
+        final pj = Map<String, dynamic>.from(productJson);
+        pj['name'] = '${_localized(pj['name'])} ×$qty';
+        final unit = m['unitPrice'];
+        if (unit is num) {
+          pj['price'] = unit.toInt();
+        }
+        out.add(ProductModel.fromJson(pj));
+      } else {
+        final name = _localized(m['productName']);
+        final unit = m['unitPrice'];
+        out.add(
+          ProductModel.fromJson({
+            'id': m['productId']?.toString() ?? '',
+            'name': name.isEmpty ? 'Item ×$qty' : '$name ×$qty',
+            'price': unit is num ? unit.toInt() : 0,
+            'images': [],
+          }),
+        );
+      }
+    }
+  }
+
+  final offers = json['offers'];
+  if (offers is List) {
+    for (final raw in offers) {
+      if (raw is! Map) continue;
+      final m = Map<String, dynamic>.from(raw);
+      final oid = m['id']?.toString() ?? '';
+      final title = _localized(m['name']);
+      final total = m['total'];
+      out.add(
+        ProductModel.fromJson({
+          'id': 'offer_$oid',
+          'name': title.isEmpty ? 'Offer bundle' : title,
+          'description': 'Offer',
+          'price': total is num ? total.toInt() : 0,
+          'images': [],
+        }),
+      );
+    }
+  }
+
+  return out;
+}
+
 class OrderModel {
   final String id;
   final List<ProductModel>? products;
@@ -30,39 +126,62 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
+    final lineProducts = _productsFromOrderApiJson(json);
+
+    double? lat;
+    double? lng;
+    final dc = json['deliveryCoordinates'];
+    if (dc is Map) {
+      final m = Map<String, dynamic>.from(dc);
+      lat = _toDouble(m['latitude']);
+      lng = _toDouble(m['longitude']);
+    }
+    lat ??= _toDouble(json['latitude']);
+    lng ??= _toDouble(json['longitude']);
+
+    DeliveryManModel? deliveryMan;
+    if (json['deliveryMan'] != null) {
+      deliveryMan = DeliveryManModel.fromJson(
+        Map<String, dynamic>.from(json['deliveryMan'] as Map),
+      );
+    } else {
+      final da = json['deliveryAssignment'];
+      if (da is Map && da['delivery'] != null) {
+        deliveryMan = DeliveryManModel.fromJson(
+          Map<String, dynamic>.from(da['delivery'] as Map),
+        );
+      }
+    }
+
+    final createdAt = json['createdAt']?.toString();
+    final ownerId = json['ownerId'] ?? json['merchantId'];
+
+    int? people;
+    final items = json['items'];
+    if (items is List && items.isNotEmpty) {
+      final first = items.first;
+      if (first is Map && first['product'] is Map) {
+        final p = first['product'] as Map;
+        people = _toInt(p['personCount']);
+      }
+    }
+
     return OrderModel(
       id: json['id']?.toString() ?? '',
-      products: json['products'] != null
-          ? (json['products'] as List)
-                .map(
-                  (item) => ProductModel.fromJson(item as Map<String, dynamic>),
-                )
-                .toList()
-          : null,
-      deliveryMan: json['deliveryMan'] != null
-          ? DeliveryManModel.fromJson(
-              json['deliveryMan'] as Map<String, dynamic>,
-            )
-          : null,
-      date: json['date']?.toString(),
-      longitude: json['longitude'] != null
-          ? (json['longitude'] is num
-                ? (json['longitude'] as num).toDouble()
-                : double.tryParse(json['longitude'].toString()))
-          : null,
-      latitude: json['latitude'] != null
-          ? (json['latitude'] is num
-                ? (json['latitude'] as num).toDouble()
-                : double.tryParse(json['latitude'].toString()))
-          : null,
-      numberOfPeople: json['numberOfPeople'] != null
-          ? (json['numberOfPeople'] is int
-                ? json['numberOfPeople'] as int
-                : int.tryParse(json['numberOfPeople'].toString()))
-          : null,
+      products: lineProducts.isEmpty ? null : lineProducts,
+      deliveryMan: deliveryMan,
+      date: createdAt ?? json['date']?.toString(),
+      longitude: lng,
+      latitude: lat,
+      numberOfPeople: people ??
+          (json['numberOfPeople'] != null
+              ? (json['numberOfPeople'] is int
+                    ? json['numberOfPeople'] as int
+                    : int.tryParse(json['numberOfPeople'].toString()))
+              : null),
       status: json['status']?.toString(),
-      merchantId: json['merchantId']?.toString(),
-      createdAt: json['createdAt']?.toString(),
+      merchantId: ownerId?.toString(),
+      createdAt: createdAt,
       updatedAt: json['updatedAt']?.toString(),
     );
   }

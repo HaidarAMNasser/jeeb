@@ -19,6 +19,8 @@ class ListCartLoaded extends ListCartState {
   final List<CartDraftItem> originalItems;
   final List<CartDraftItem> currentItems;
   final String merchantName;
+  /// Merchant / owner user id for `POST /orders` (`ownerId`).
+  final String? merchantOwnerId;
   final String customerPhone;
   final bool isSaving;
   final String? noticeMessage;
@@ -28,6 +30,7 @@ class ListCartLoaded extends ListCartState {
     required this.originalItems,
     required this.currentItems,
     required this.merchantName,
+    this.merchantOwnerId,
     this.customerPhone = '',
     this.isSaving = false,
     this.noticeMessage,
@@ -54,6 +57,7 @@ class ListCartLoaded extends ListCartState {
     List<CartDraftItem>? originalItems,
     List<CartDraftItem>? currentItems,
     String? merchantName,
+    String? merchantOwnerId,
     String? customerPhone,
     bool? isSaving,
     String? noticeMessage,
@@ -64,6 +68,7 @@ class ListCartLoaded extends ListCartState {
       originalItems: originalItems ?? this.originalItems,
       currentItems: currentItems ?? this.currentItems,
       merchantName: merchantName ?? this.merchantName,
+      merchantOwnerId: merchantOwnerId ?? this.merchantOwnerId,
       customerPhone: customerPhone ?? this.customerPhone,
       isSaving: isSaving ?? this.isSaving,
       noticeMessage: clearNotice ? null : (noticeMessage ?? this.noticeMessage),
@@ -76,6 +81,7 @@ class ListCartLoaded extends ListCartState {
         originalItems,
         currentItems,
         merchantName,
+        merchantOwnerId,
         customerPhone,
         isSaving,
         noticeMessage,

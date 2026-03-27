@@ -82,6 +82,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  image: ^4.5.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -94,6 +95,7 @@ flutter:
   assets:
     - assets/images/app_logo.png
     - assets/images/
+    - assets/images/order_status/
     - assets/lang/
     - assets/fonts/
     - assets/icons/

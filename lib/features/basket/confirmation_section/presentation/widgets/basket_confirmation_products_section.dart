@@ -7,11 +7,12 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
 
-class ConfirmationItemsSection extends StatelessWidget {
+/// Line items for the merchant (products + offers).
+class BasketConfirmationProductsSection extends StatelessWidget {
   final List<ConfirmationItem> items;
   final String merchantName;
 
-  const ConfirmationItemsSection({
+  const BasketConfirmationProductsSection({
     super.key,
     required this.items,
     required this.merchantName,

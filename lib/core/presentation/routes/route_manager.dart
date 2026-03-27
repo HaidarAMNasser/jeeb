@@ -30,6 +30,7 @@ import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
 import '../../../features/order/list_order/presentation/pages/list_order_page.dart';
 import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dart';
+import '../../../features/basket/order_status_section/presentation/pages/order_status_page.dart';
 import '../../../features/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
@@ -234,8 +235,29 @@ class AppRouter {
           const ListOrderPage(),
           settings,
           providers: [
-            BlocProvider<ListOrderBloc>(create: (_) => di.sl<ListOrderBloc>()),
+            BlocProvider<ListOrderBloc>(
+              create: (_) =>
+                  di.sl<ListOrderBloc>()..add(const GetOrdersEvent()),
+            ),
           ],
+        );
+
+      case Routes.orderStatus:
+        final osArgs = settings.arguments as Map<String, dynamic>?;
+        final orderStatusId = osArgs?['orderId'] as String? ?? '';
+        final initialStatus = osArgs?['initialStatus'] as String? ?? 'PENDING';
+        if (orderStatusId.isEmpty) {
+          return _buildRoute(
+            Scaffold(body: Center(child: Text('Order ID not provided'))),
+            settings,
+          );
+        }
+        return _buildRoute(
+          OrderStatusPage(
+            orderId: orderStatusId,
+            initialStatus: initialStatus,
+          ),
+          settings,
         );
 
       case Routes.orderDetails:

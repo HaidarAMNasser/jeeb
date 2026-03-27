@@ -25,6 +25,7 @@ class Routes {
   static const String addDelivery = '/add-delivery';
   static const String orders = '/orders';
   static const String orderDetails = '/order-details';
+  static const String orderStatus = '/order-status';
   static const String offers = '/offers';
   static const String addOffer = '/add-offer';
   static const String offerDetails = '/offer-details';

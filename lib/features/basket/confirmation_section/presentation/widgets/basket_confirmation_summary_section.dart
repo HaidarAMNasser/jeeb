@@ -6,10 +6,17 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
-class ConfirmationPaymentNoticeCard extends StatelessWidget {
-  final String totalText;
+/// Total + payment notice (cash on delivery).
+class BasketConfirmationSummarySection extends StatelessWidget {
+  final int totalMinorUnits;
 
-  const ConfirmationPaymentNoticeCard({super.key, required this.totalText});
+  const BasketConfirmationSummarySection({
+    super.key,
+    required this.totalMinorUnits,
+  });
+
+  String get _totalLabel =>
+      '${AppTranslation.total}: \$${(totalMinorUnits / 100).toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +30,7 @@ class ConfirmationPaymentNoticeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
-            text: totalText,
+            text: _totalLabel,
             textStyle: getBoldStyle(
               fontSize: AppFontSize.s20,
               color: ColorManager.defaultWhite,
