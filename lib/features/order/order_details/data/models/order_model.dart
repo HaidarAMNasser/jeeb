@@ -14,6 +14,15 @@ class OrderModel {
   final String? merchantId;
   final String? createdAt;
   final String? updatedAt;
+  final String? pickupAddress;
+  final String? deliveryAddress;
+  final String? distance;
+  final String? customerName;
+  final String? customerPhone;
+  final double? totalPrice;
+  final double? deliveryFee;
+  final double? deliveryEarning;
+  final int? preparationTime;
 
   OrderModel({
     required this.id,
@@ -27,6 +36,15 @@ class OrderModel {
     this.merchantId,
     this.createdAt,
     this.updatedAt,
+    this.pickupAddress,
+    this.deliveryAddress,
+    this.distance,
+    this.customerName,
+    this.customerPhone,
+    this.totalPrice,
+    this.deliveryFee,
+    this.deliveryEarning,
+    this.preparationTime,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -38,7 +56,14 @@ class OrderModel {
                   (item) => ProductModel.fromJson(item as Map<String, dynamic>),
                 )
                 .toList()
-          : null,
+          : (json['items'] != null
+                ? (json['items'] as List)
+                      .map(
+                        (item) =>
+                            ProductModel.fromJson(item as Map<String, dynamic>),
+                      )
+                      .toList()
+                : null),
       deliveryMan: json['deliveryMan'] != null
           ? DeliveryManModel.fromJson(
               json['deliveryMan'] as Map<String, dynamic>,
@@ -64,6 +89,31 @@ class OrderModel {
       merchantId: json['merchantId']?.toString(),
       createdAt: json['createdAt']?.toString(),
       updatedAt: json['updatedAt']?.toString(),
+      pickupAddress: json['pickup_address']?.toString(),
+      deliveryAddress: json['delivery_address']?.toString(),
+      distance: json['distance']?.toString(),
+      customerName: json['customer_name']?.toString(),
+      customerPhone: json['customer_phone']?.toString(),
+      totalPrice: json['total_price'] != null
+          ? (json['total_price'] is num
+                ? (json['total_price'] as num).toDouble()
+                : double.tryParse(json['total_price'].toString()))
+          : null,
+      deliveryFee: json['delivery_fee'] != null
+          ? (json['delivery_fee'] is num
+                ? (json['delivery_fee'] as num).toDouble()
+                : double.tryParse(json['delivery_fee'].toString()))
+          : null,
+      deliveryEarning: json['delivery_earning'] != null
+          ? (json['delivery_earning'] is num
+                ? (json['delivery_earning'] as num).toDouble()
+                : double.tryParse(json['delivery_earning'].toString()))
+          : null,
+      preparationTime: json['preparation_time'] != null
+          ? (json['preparation_time'] is int
+                ? json['preparation_time'] as int
+                : int.tryParse(json['preparation_time'].toString()))
+          : null,
     );
   }
 
@@ -80,6 +130,15 @@ class OrderModel {
       'merchantId': merchantId,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'pickup_address': pickupAddress,
+      'delivery_address': deliveryAddress,
+      'distance': distance,
+      'customer_name': customerName,
+      'customer_phone': customerPhone,
+      'total_price': totalPrice,
+      'delivery_fee': deliveryFee,
+      'delivery_earning': deliveryEarning,
+      'preparation_time': preparationTime,
     };
   }
 }

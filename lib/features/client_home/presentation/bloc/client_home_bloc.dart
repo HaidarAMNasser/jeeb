@@ -383,10 +383,6 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
             .map((e) => e.offer)
             .toList();
 
-        print(
-          'ClientHomeBloc._onGlobalSearch: merchants=${merchants.length}, products=${products.length}, offers=${offers.length}',
-        );
-
         emit(
           state.copyWith(
             isMerchantsLoading: false,

@@ -30,7 +30,7 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
           providers: [
             BlocProvider<DeliveryHomeBloc>(
               create: (_) =>
-                  DeliveryHomeBloc()..add(const LoadDeliveryHomeEvent()),
+                  di.sl<DeliveryHomeBloc>()..add(const LoadDeliveryHomeEvent()),
             ),
             BlocProvider<ProfileBloc>(
               create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),

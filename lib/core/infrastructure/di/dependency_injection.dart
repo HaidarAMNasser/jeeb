@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:jeeb_app/features/delivery/home/presentation/bloc/delivery_home_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../network/network_info.dart';
 import '../../presentation/routes/navigation_service.dart';
@@ -54,6 +55,9 @@ import '../../../features/order/list_order/data/data_sources/list_order_data_sou
 import '../../../features/order/list_order/data/repositories/list_order_repository.dart';
 import '../../../features/order/order_details/data/data_sources/order_details_data_source.dart';
 import '../../../features/order/order_details/data/repositories/order_details_repository.dart';
+import '../../../features/order/manage_order/data/data_sources/manage_order_remote_data_source.dart';
+import '../../../features/order/manage_order/data/repositories/manage_order_repository.dart';
+import '../../../features/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 
 import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/offer/list_offer/data/data_sources/list_offer_data_source.dart';
@@ -91,7 +95,9 @@ Future<void> init() async {
   //! Core Services
   sl.registerLazySingleton<StorageService>(() => StorageServiceImpl(sl()));
   sl.registerLazySingleton(() => NavigationService());
-  sl.registerLazySingleton<NotificationService>(() => NotificationService(sl()));
+  sl.registerLazySingleton<NotificationService>(
+    () => NotificationService(sl()),
+  );
 
   //! Network
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
@@ -228,6 +234,15 @@ Future<void> init() async {
   );
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(() => OrderDetailsBloc(sl()));
+
+  //! Manage Order Dependencies
+  sl.registerFactory<ManageOrderRemoteDataSource>(
+    () => ManageOrderRemoteDataSourceImpl(sl()),
+  );
+  sl.registerFactory(() => ManageOrderRepository(sl(), sl()));
+  sl.registerFactory(() => ManageOrderBloc(sl()));
+
+  sl.registerFactory(() => DeliveryHomeBloc(sl()));
 
   sl.registerFactory<ListOfferRemoteDataSource>(
     () => ListOfferRemoteDataSourceImpl(sl()),

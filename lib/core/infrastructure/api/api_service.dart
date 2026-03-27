@@ -268,6 +268,32 @@ abstract class AppApiServiceClient {
   @GET("orders/{id}")
   Future<Response> getOrderDetails(@Path('id') String id);
 
+  @POST("orders/{id}/accept-delivery")
+  Future<Response> acceptDelivery(
+    @Path('id') String id,
+    @Field('deliveryTime') int deliveryTime,
+  );
+
+  @PATCH("orders/{id}/picked-up")
+  Future<Response> confirmPickup(
+    @Path('id') String id,
+    @Field('reason') String reason,
+  );
+
+  @PATCH("orders/{id}/delivered")
+  Future<Response> markAsDelivered(
+    @Path('id') String id,
+    @Field('reason') String reason,
+    @Field('lat') double lat,
+    @Field('lng') double lng,
+  );
+
+  @POST("orders/{id}/reject-delivery")
+  Future<Response> rejectDelivery(
+    @Path('id') String id,
+    @Field('reason') String reason,
+  );
+
   @POST("orders/{id}/complete")
   Future<Response> completeOrder(@Path('id') String id);
 
