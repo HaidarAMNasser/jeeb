@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -23,57 +22,52 @@ class OrderStatusPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bg,
-      body: SafeArea(
-        top: false,
-        child: BlocBuilder<OrderStatusBloc, OrderStatusState>(
-          builder: (context, state) {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  OrderStatusHeroImage(timelineStepIndex: state.displayIndex),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: AppHeight.s12),
-                        if (state.showProblemBanner)
-                          const OrderStatusProblemBanner(),
-                        OrderStatusHorizontalTimeline(
-                          labels: OrderStatusStepLabels.asList(),
-                          activeIndex: state.displayIndex,
-                          routeStatus: state.routeStatus,
-                          demoRunning: state.demoRunning,
-                        ),
-                        SizedBox(height: 200,),
-                        Padding(
-                          padding: EdgeInsets.zero,
-                          // symmetric(
-                          //   horizontal: AppPadding.p16,
-                          //   vertical: AppSize.s10.h,
-                          // ),
-                          child: OrderBadgeWidget(
-                            enableSmallBadge: true,
-                            width: AppSize.s100.w,
-                            caption: AppTranslation.orderStatusViewDetails,
-                            accentColor: ColorManager.primary,
-                            onTap: () {
-                              AppRouter.navigateTo(
-                                context,
-                                Routes.orderDetails,
-                                arguments: {'orderId': state.orderId},
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+      body: BlocBuilder<OrderStatusBloc, OrderStatusState>(
+        builder: (context, state) {
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: OrderStatusHeroImage(
+                  timelineStepIndex: state.displayIndex,
+                ),
               ),
-            );
-          },
-        ),
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
+                  child: Column(
+                    spacing: AppHeight.s16,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (state.showProblemBanner)
+                        const OrderStatusProblemBanner(),
+                      OrderStatusHorizontalTimeline(
+                        labels: OrderStatusStepLabels.asList(),
+                        activeIndex: state.displayIndex,
+                        routeStatus: state.routeStatus,
+                        demoRunning: state.demoRunning,
+                      ),
+
+                      OrderBadgeWidget(
+                        normalDesign: true,
+                        enableSmallBadge: true,
+                        caption: AppTranslation.orderStatusViewDetails,
+                        accentColor: ColorManager.primary,
+                        onTap: () {
+                          AppRouter.navigateTo(
+                            context,
+                            Routes.orderDetails,
+                            arguments: {'orderId': state.orderId},
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

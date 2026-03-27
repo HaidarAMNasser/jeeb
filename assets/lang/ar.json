@@ -299,7 +299,7 @@
   "order_step_with_driver": "مع ساعي التوصيل",
   "order_step_on_the_way": "في الطريق إليك",
   "order_step_delivered": "تم التسليم",
-  "order_status_view_details": "تفاصيل الطلب",
+  "order_status_view_details": "عرض كامل تفاصيل الطلب",
   "order_status_demo_start": "تشغيل عرض الحالة (تجربة)",
   "order_status_demo_stop": "إيقاف العرض التجريبي",
   "order_number_label": "الطلب",

@@ -11,6 +11,7 @@ class OrderBadgeWidget extends StatelessWidget {
     required this.caption,
     required this.accentColor,
     this.enableSmallBadge = false,
+    this.normalDesign = false,
     this.width,
     this.icon,
     this.onTap,
@@ -19,6 +20,7 @@ class OrderBadgeWidget extends StatelessWidget {
   final String caption;
   final Color accentColor;
   final IconData? icon;
+  final bool normalDesign;
   final double? width;
   final bool enableSmallBadge;
   final VoidCallback? onTap;
@@ -33,19 +35,21 @@ class OrderBadgeWidget extends StatelessWidget {
           vertical: enableSmallBadge ? AppPadding.p8 : AppPadding.p14,
         ),
         decoration: BoxDecoration(
-          color: accentColor.withValues(alpha: 0.14),
+          color: normalDesign ? accentColor : accentColor.withValues(alpha: 0.14),
           borderRadius: BorderRadius.circular(AppRadius.r20),
           border: Border.all(
             color: accentColor.withValues(alpha: 0.55),
             width: 2,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          boxShadow: normalDesign
+              ? null
+              : [
+                  BoxShadow(
+                    color: accentColor.withValues(alpha: 0.18),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +63,9 @@ class OrderBadgeWidget extends StatelessWidget {
               child: CustomText(
                 text: caption,
                 textStyle: getBoldStyle(
-                  fontSize: enableSmallBadge ? AppFontSize.s12 : AppFontSize.s16,
+                  fontSize: enableSmallBadge
+                      ? AppFontSize.s12
+                      : AppFontSize.s16,
                   color: const Color(0xFFFFF5EC),
                 ),
                 maxLines: 2,
