@@ -37,6 +37,9 @@ class OrderListItem extends StatelessWidget {
             arguments: {
               'orderId': order.id,
               'initialStatus': order.status,
+              if (order.latitude != null) 'deliveryLatitude': order.latitude,
+              if (order.longitude != null)
+                'deliveryLongitude': order.longitude,
             },
           );
         }

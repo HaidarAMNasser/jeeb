@@ -18,9 +18,35 @@ class OrderStatusDemoTick extends OrderStatusEvent {
   List<Object?> get props => [];
 }
 
-/// Internal: timer-driven refetch of order status from REST.
-class OrderStatusPollTick extends OrderStatusEvent {
-  const OrderStatusPollTick();
+/// Internal: snapshot from Firebase RTDB `/orders/{id}/status`.
+class OrderStatusRealtimeSnapshot extends OrderStatusEvent {
+  const OrderStatusRealtimeSnapshot(this.statusWire);
+
+  final String? statusWire;
+
+  @override
+  List<Object?> get props => [statusWire];
+}
+
+/// Internal: new driver coordinates from Firebase RTDB `/drivers/{deliveryId}`.
+class OrderStatusDriverLocationUpdated extends OrderStatusEvent {
+  const OrderStatusDriverLocationUpdated({
+    required this.latitude,
+    required this.longitude,
+    required this.isOnline,
+  });
+
+  final double latitude;
+  final double longitude;
+  final bool isOnline;
+
+  @override
+  List<Object?> get props => [latitude, longitude, isOnline];
+}
+
+/// Internal: clear current driver marker.
+class OrderStatusDriverLocationCleared extends OrderStatusEvent {
+  const OrderStatusDriverLocationCleared();
 
   @override
   List<Object?> get props => [];

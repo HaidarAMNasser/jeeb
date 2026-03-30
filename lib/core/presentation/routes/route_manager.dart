@@ -32,7 +32,7 @@ import '../../../features/order/list_order/presentation/pages/list_order_page.da
 import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/basket/order_status_section/presentation/bloc/order_status_bloc.dart';
 import '../../../features/basket/order_status_section/presentation/pages/order_status_page.dart';
-import '../../../features/order/order_details/data/repositories/order_details_repository.dart';
+import '../../../core/infrastructure/realtime/order_status_rtdb_service.dart';
 import '../../../features/order/order_details/domain/entities/order_status.dart';
 import '../../../features/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
@@ -57,6 +57,12 @@ import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
 import '../../../features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
+
+double? _routeArgAsDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value.toString());
+}
 
 /// Application Router
 class AppRouter {
@@ -252,6 +258,8 @@ class AppRouter {
         final initialStatus = OrderStatus.fromString(
           osArgs?['initialStatus'] as String?,
         );
+        final deliveryLat = _routeArgAsDouble(osArgs?['deliveryLatitude']);
+        final deliveryLng = _routeArgAsDouble(osArgs?['deliveryLongitude']);
         if (orderStatusId.isEmpty) {
           return _buildRoute(
             Scaffold(body: Center(child: Text('Order ID not provided'))),
@@ -266,7 +274,9 @@ class AppRouter {
               create: (_) => OrderStatusBloc(
                 orderId: orderStatusId,
                 initialStatus: initialStatus,
-                orderDetailsRepository: di.sl<OrderDetailsRepository>(),
+                deliveryLatitude: deliveryLat,
+                deliveryLongitude: deliveryLng,
+                orderStatusRtdb: di.sl<OrderStatusRtdbService>(),
               ),
             ),
           ],

@@ -4,6 +4,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:jeeb_app/features/delivery/home/presentation/bloc/delivery_home_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../network/network_info.dart';
+import '../realtime/order_status_rtdb_service.dart';
 import '../../presentation/routes/navigation_service.dart';
 import '../services/storage_service.dart';
 import '../services/dio_factory.dart';
@@ -60,13 +61,11 @@ import '../../../features/order/order_details/data/repositories/order_details_re
 import '../../../features/order/manage_order/data/data_sources/manage_order_remote_data_source.dart';
 import '../../../features/order/manage_order/data/repositories/manage_order_repository.dart';
 import '../../../features/order/manage_order/presentation/bloc/manage_order_bloc.dart';
-
 import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/offer/list_offer/data/data_sources/list_offer_data_source.dart';
 import '../../../features/offer/list_offer/data/repositories/list_offer_repository.dart';
 import '../../../features/offer/offer_details/data/data_sources/offer_details_data_source.dart';
 import '../../../features/offer/offer_details/data/repositories/offer_details_repository.dart';
-
 import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/client_home/presentation/bloc/client_home_bloc.dart';
 import '../../../features/favorites/data/data_sources/favorites_remote_data_source.dart';
@@ -242,6 +241,9 @@ Future<void> init() async {
   );
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(() => OrderDetailsBloc(sl()));
+
+  //! Firebase RTDB — live order status (order tracking screen)
+  sl.registerLazySingleton<OrderStatusRtdbService>(() => OrderStatusRtdbService());
 
   //! Manage Order Dependencies
   sl.registerFactory<ManageOrderRemoteDataSource>(
