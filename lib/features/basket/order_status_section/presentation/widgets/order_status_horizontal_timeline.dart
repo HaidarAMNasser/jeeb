@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_timeline_rail.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_badge_helper.dart';
 

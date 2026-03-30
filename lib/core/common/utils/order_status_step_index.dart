@@ -1,4 +1,4 @@
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 /// Delivered, completed, cancelled, or rejected — finished orders (open [Routes.orderDetails]).
 /// Any other status should prefer the live tracking screen ([Routes.orderStatus]).

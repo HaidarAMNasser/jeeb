@@ -6,11 +6,11 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/features/delivery/home/presentation/pages/delivery_home_page.dart';
-import 'package:jeeb_app/features/delivery/orders/presentation/pages/delivery_orders_page.dart';
-import 'package:jeeb_app/features/delivery/home/presentation/bloc/delivery_home_bloc.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/pages/delivery_home_page.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders/screens/delivery_orders_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
-import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
 
 class DeliveryNavigation extends StatefulWidget {
@@ -29,11 +29,11 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
         return MultiBlocProvider(
           providers: [
             BlocProvider<DeliveryHomeBloc>(
-              create: (_) =>
-                  di.sl<DeliveryHomeBloc>()..add(const LoadDeliveryHomeEvent()),
+              create: (_) => di.sl<DeliveryHomeBloc>()
+                ..add(const LoadDeliveryHomeEvent()),
             ),
-            BlocProvider<ProfileBloc>(
-              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
+            BlocProvider<ManageOrderBloc>(
+              create: (_) => di.sl<ManageOrderBloc>(),
             ),
           ],
           child: const DeliveryHomePage(),
@@ -41,13 +41,8 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
       case 1:
         return const DeliveryOrdersPage();
       case 2:
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider<ProfileBloc>(
-              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
-            ),
-            BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
-          ],
+        return BlocProvider<LogoutBloc>(
+          create: (_) => di.sl<LogoutBloc>(),
           child: const ProfilePage(),
         );
       default:

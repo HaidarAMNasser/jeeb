@@ -12,6 +12,7 @@ import 'core/presentation/localization/localization_manager.dart';
 import 'core/infrastructure/services/notification_service.dart';
 import 'core/infrastructure/services/storage_service.dart';
 import 'features/notification/update_token/presentation/bloc/update_token_bloc.dart';
+import 'features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
@@ -65,12 +66,14 @@ class _MyAppState extends State<MyApp> {
   // Chucker
   Offset _chuckerButtonOffset = const Offset(300, 500);
   late final UpdateTokenBloc _updateTokenBloc;
+  late final ProfileBloc _profileBloc;
 
   @override
   void initState() {
     super.initState();
     _updateTokenBloc = di.sl<UpdateTokenBloc>();
     _updateTokenBloc.add(const UpdateTokenInitializeRequested());
+    _profileBloc = di.sl<ProfileBloc>()..add(const GetProfile());
     _initNotifications();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
@@ -89,8 +92,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _updateTokenBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _updateTokenBloc),
+        BlocProvider.value(value: _profileBloc),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         minTextAdapt: true,

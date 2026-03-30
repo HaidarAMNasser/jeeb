@@ -28,15 +28,15 @@ import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
-import '../../../features/order/list_order/presentation/pages/list_order_page.dart';
-import '../../../features/order/list_order/presentation/bloc/list_order_bloc.dart';
+import '../../../features/delivery/order/list_order/presentation/pages/list_order_page.dart';
+import '../../../features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/basket/order_status_section/presentation/bloc/order_status_bloc.dart';
 import '../../../features/basket/order_status_section/presentation/pages/order_status_page.dart';
-import '../../../features/order/order_details/data/repositories/order_details_repository.dart';
-import '../../../features/order/order_details/domain/entities/order_status.dart';
-import '../../../features/order/order_details/presentation/pages/order_details_page.dart';
-import '../../../features/order/order_details/presentation/bloc/order_details_bloc.dart';
-import '../../../features/delivery/orders/presentation/pages/delivery_order_details_page.dart';
+import '../../../features/delivery/order/order_details/data/repositories/order_details_repository.dart';
+import '../../../features/delivery/order/order_details/domain/entities/order_status.dart';
+import '../../../features/delivery/order/order_details/presentation/pages/order_details_page.dart';
+import '../../../features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
+import '../../../features/delivery/delivery_section/delivery_order_details/screens/delivery_order_details_page.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
 import '../../../features/client_home/presentation/pages/client_home_page.dart';
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
@@ -132,9 +132,6 @@ class AppRouter {
           const ProfilePage(),
           settings,
           providers: [
-            BlocProvider<ProfileBloc>(
-              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
-            ),
             BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
           ],
         );
@@ -189,9 +186,6 @@ class AppRouter {
               BlocProvider<FavoritesBloc>.value(value: di.sl<FavoritesBloc>()),
               BlocProvider<ClientHomeBloc>(
                 create: (_) => di.sl<ClientHomeBloc>(),
-              ),
-              BlocProvider<ProfileBloc>(
-                create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
               ),
             ],
             child: const ClientHomePage(),

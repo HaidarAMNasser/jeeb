@@ -10,7 +10,7 @@ import 'package:jeeb_app/features/basket/list_cart/presentation/checkout_locatio
 import 'package:jeeb_app/features/auth/profile/data/repositories/profile_repository.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_bloc.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/pages/basket_confirmation_page.dart';
-import 'package:jeeb_app/features/order/create_order/data/repositories/create_order_repository.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/data/repositories/create_order_repository.dart';
 
 class BasketConfirmationFlowHelper {
   /// Opens confirmation. Reuses [BasketOrderLocationSession] until the app restarts.

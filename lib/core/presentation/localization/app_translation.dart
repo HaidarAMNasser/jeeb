@@ -276,6 +276,7 @@ class AppTranslation {
       'order_status_problem_banner'.tr();
   static String get orderStatusPendingFriendly =>
       'order_status_pending_friendly'.tr();
+
   /// API [OrderStatus] short labels (lists, badges, `OrderStatus.displayLabel`).
   static String get orderStatusLabelConfirmed =>
       'order_status_label_confirmed'.tr();
@@ -344,6 +345,12 @@ class AppTranslation {
   static String get deliveryPrice => 'delivery_price'.tr();
   static String get deliveryEarning => 'delivery_earning'.tr();
   static String get preparationTime => 'preparation_time'.tr();
+  static String get searchPlace => 'search_place'.tr();
+  static String get enterLocationName => 'enter_location_name'.tr();
+  static String get locationNotFound => 'location_not_found'.tr();
+  static String get mapView => 'map_view'.tr();
+  static String get myLocation => 'my_location'.tr();
+  static String get search => 'search'.tr();
   static String get pending => 'pending'.tr();
   static String get completed => 'completed'.tr();
   static String get cancelled => 'cancelled'.tr();
@@ -389,8 +396,10 @@ class AppTranslation {
   // Order
   static String get orders => 'orders'.tr();
   static String get orderDetails => 'order_details'.tr();
+
   /// Map preview on order details when status is on the way (live tracking later).
   static String get orderDeliveryMapBadge => 'order_delivery_map_badge'.tr();
+
   /// Opens [Routes.orderStatus] from order details while the order is still active.
   static String get orderTrackOrderCta => 'order_track_order_cta'.tr();
   static String get noOrdersFound => 'no_orders_found'.tr();
@@ -446,4 +455,16 @@ class AppTranslation {
 
   static String get favorites => 'favorites'.tr();
   static String get noFavoritesFound => 'no_favorites_found'.tr();
+  static String get noPendingOrders => 'no_pending_orders'.tr();
+  static String get noCompletedOrders => 'no_completed_orders'.tr();
+  static String get noCancelledOrders => 'no_cancelled_orders'.tr();
+  static String get callCustomer => 'call_customer'.tr();
+  static String get acceptDelivery => 'accept_delivery'.tr();
+  static String get confirmPickup => 'confirm_pickup'.tr();
+  static String get rejectDelivery => 'reject_delivery'.tr();
+  static String get markAsDelivered => 'mark_as_delivered'.tr();
+  static String get orderNumber => 'order_number'.tr();
+  static String get unableToDeliver => 'unable_to_deliver'.tr();
+  static String get pickedUp => 'picked_up'.tr();
+  static String get handedToCustomer => 'handed_to_customer'.tr();
 }

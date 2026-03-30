@@ -9,9 +9,9 @@ import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item
 import 'package:jeeb_app/features/basket/list_cart/presentation/basket_order_location_session.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_event.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_state.dart';
-import 'package:jeeb_app/features/order/create_order/data/repositories/create_order_repository.dart';
-import 'package:jeeb_app/features/order/create_order/domain/entities/create_order_params.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/data/repositories/create_order_repository.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/domain/entities/create_order_params.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 class BasketConfirmationBloc
     extends Bloc<BasketConfirmationEvent, BasketConfirmationState> {
@@ -29,19 +29,19 @@ class BasketConfirmationBloc
     required CreateOrderRepository orderRepository,
     required ProfileRepository profileRepository,
     required NavigationService navigationService,
-  })  : _orderRepository = orderRepository,
-        _profileRepository = profileRepository,
-        _navigationService = navigationService,
-        super(
-          BasketConfirmationState.initial(
-            items: items,
-            merchantName: merchantName,
-            merchantOwnerId: merchantOwnerId,
-            latitude: latitude,
-            longitude: longitude,
-            initialPhone: initialPhone,
-          ),
-        ) {
+  }) : _orderRepository = orderRepository,
+       _profileRepository = profileRepository,
+       _navigationService = navigationService,
+       super(
+         BasketConfirmationState.initial(
+           items: items,
+           merchantName: merchantName,
+           merchantOwnerId: merchantOwnerId,
+           latitude: latitude,
+           longitude: longitude,
+           initialPhone: initialPhone,
+         ),
+       ) {
     on<BasketConfirmationStarted>(_onStarted);
     on<BasketConfirmationNameChanged>(_onNameChanged);
     on<BasketConfirmationStreetChanged>(_onStreetChanged);
@@ -231,8 +231,9 @@ class BasketConfirmationBloc
         ? street
         : (extra.isNotEmpty ? extra : null);
     final landmark = s.city?.trim();
-    final landmarkValue =
-        landmark != null && landmark.isNotEmpty ? landmark : null;
+    final landmarkValue = landmark != null && landmark.isNotEmpty
+        ? landmark
+        : null;
 
     final params = CreateOrderParams(
       ownerId: ownerId,
@@ -254,12 +255,11 @@ class BasketConfirmationBloc
     emit(s.copyWith(isSubmitting: true, clearSubmitError: true));
     final result = await _orderRepository.createOrder(params);
     if (isClosed) return;
-    result.fold(
-      (failure) => _emitSubmitError(failure.message, emit),
-      (orderId) {
-        emit(state.copyWith(isSubmitting: false));
-        _navigateAfterOrderSuccess(orderId);
-      },
-    );
+    result.fold((failure) => _emitSubmitError(failure.message, emit), (
+      orderId,
+    ) {
+      emit(state.copyWith(isSubmitting: false));
+      _navigateAfterOrderSuccess(orderId);
+    });
   }
 }

@@ -106,6 +106,12 @@ class ProductModel {
       merchantEmail = mer['email']?.toString();
       hidePhoneNumber = mer['hidePhoneNumber'] == true;
     }
+    // Flat merchant fields (orders/list responses)
+    merchantName ??= _stringFromJson(json['merchantName']);
+    merchantAddress ??= _stringFromJson(json['merchantAddress']);
+    merchantPhone ??= _stringFromJson(json['merchantPhone']);
+    merchantEmail ??= _stringFromJson(json['merchantEmail']);
+    hidePhoneNumber = hidePhoneNumber || json['hidePhoneNumber'] == true;
 
     return ProductModel(
       id: json['id']?.toString() ?? '',

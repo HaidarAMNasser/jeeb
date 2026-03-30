@@ -4,9 +4,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/config/order_status_poll_config.dart';
-import 'package:jeeb_app/features/order/order_details/data/repositories/order_details_repository.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_entity.dart';
-import 'package:jeeb_app/features/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/data/repositories/order_details_repository.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 part 'order_status_event.dart';
 part 'order_status_state.dart';
@@ -16,9 +16,9 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
     required String orderId,
     required OrderStatus initialStatus,
     required OrderDetailsRepository orderDetailsRepository,
-  })  : _orderDetailsRepository = orderDetailsRepository,
-        _lastPolledStatusWire = initialStatus.apiWireValue,
-        super(OrderStatusState.initial(orderId, initialStatus)) {
+  }) : _orderDetailsRepository = orderDetailsRepository,
+       _lastPolledStatusWire = initialStatus.apiWireValue,
+       super(OrderStatusState.initial(orderId, initialStatus)) {
     on<OrderStatusToggleDemo>(_onToggleDemo);
     on<OrderStatusDemoTick>(_onDemoTick);
     on<OrderStatusPollTick>(_onPollTick);
@@ -121,10 +121,7 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
     });
   }
 
-  void _onDemoTick(
-    OrderStatusDemoTick event,
-    Emitter<OrderStatusState> emit,
-  ) {
+  void _onDemoTick(OrderStatusDemoTick event, Emitter<OrderStatusState> emit) {
     if (!state.demoRunning) return;
     emit(state.copyWith(liveStepIndex: (state.liveStepIndex + 1) % 7));
   }
