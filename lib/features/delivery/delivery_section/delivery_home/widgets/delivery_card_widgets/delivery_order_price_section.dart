@@ -6,20 +6,39 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
+/// Order totals from API: `itemsTotal`, `offersTotal`, `deliveryFee`, `totalAmount`.
 class DeliveryOrderPriceSection extends StatelessWidget {
+  final int itemsTotal;
+  final int offersTotal;
   final int deliveryFee;
-  final int deliveryEarning;
+  final int totalAmount;
 
   const DeliveryOrderPriceSection({
     super.key,
+    required this.itemsTotal,
+    required this.offersTotal,
     required this.deliveryFee,
-    required this.deliveryEarning,
+    required this.totalAmount,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _buildPriceRow(
+          icon: Icons.shopping_bag_outlined,
+          label: AppTranslation.orderItemsTotal,
+          value: itemsTotal,
+          color: ColorManager.titlesColor,
+        ),
+        SizedBox(height: AppHeight.s8),
+        _buildPriceRow(
+          icon: Icons.local_offer_outlined,
+          label: AppTranslation.orderOffersTotal,
+          value: offersTotal,
+          color: ColorManager.titlesColor,
+        ),
+        SizedBox(height: AppHeight.s8),
         _buildPriceRow(
           icon: Icons.delivery_dining_outlined,
           label: AppTranslation.deliveryPrice,
@@ -28,9 +47,9 @@ class DeliveryOrderPriceSection extends StatelessWidget {
         ),
         SizedBox(height: AppHeight.s8),
         _buildPriceRow(
-          icon: Icons.account_balance_wallet_outlined,
-          label: AppTranslation.deliveryEarning,
-          value: deliveryEarning,
+          icon: Icons.payments_outlined,
+          label: AppTranslation.total,
+          value: totalAmount,
           color: ColorManager.primary,
           isBold: true,
         ),

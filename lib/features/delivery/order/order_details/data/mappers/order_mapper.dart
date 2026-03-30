@@ -8,6 +8,35 @@ extension OrderOwnerLocationMapper on OrderOwnerLocationModel {
   }
 }
 
+extension OrderCustomerMapper on OrderCustomerModel {
+  OrderCustomerEntity toDomain() {
+    return OrderCustomerEntity(
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      email: email,
+      address: address,
+    );
+  }
+}
+
+extension OrderRemainingTimeTextMapper on OrderRemainingTimeTextModel {
+  OrderRemainingTimeTextEntity toDomain() {
+    return OrderRemainingTimeTextEntity(
+      text: text,
+      minutes: minutes,
+      seconds: seconds,
+    );
+  }
+}
+
+extension OrderRemainingTimeMapper on OrderRemainingTimeModel {
+  OrderRemainingTimeEntity toDomain() {
+    return OrderRemainingTimeEntity(text: text?.toDomain());
+  }
+}
+
 extension OrderOwnerMapper on OrderOwnerModel {
   OrderOwnerEntity toDomain() {
     return OrderOwnerEntity(
@@ -45,12 +74,19 @@ extension OrderMapper on OrderModel {
       customerName: customerName,
       customerPhone: customerPhone,
       totalPrice: totalPrice,
+      itemsTotal: itemsTotal,
+      offersTotal: offersTotal,
       deliveryFee: deliveryFee,
       deliveryEarning: deliveryEarning,
       preparationTime: preparationTime,
       merchantPhone: merchantPhone,
       hideMerchantPhone: hideMerchantPhone,
       owner: owner?.toDomain(),
+      remainingTime: remainingTime?.toDomain(),
+      customer: customer?.toDomain(),
+      deliveryDeadline: deliveryDeadline != null
+          ? DateTime.tryParse(deliveryDeadline!)
+          : null,
     );
   }
 }

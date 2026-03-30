@@ -19,7 +19,6 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widget
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_items_list.dart';
 import '../widgets/order_details_status_badge.dart';
 import '../widgets/order_details_action_buttons.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
@@ -88,6 +87,26 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, OrderEntity order) {
     final status = OrderStatus.fromString(order.status);
+    final productsSumMinor = order.products.fold<int>(
+      0,
+      (s, p) => s + p.displayPrice,
+    );
+    final feeMinor = (order.deliveryFee ?? 0).round();
+    final itemsMinor = order.itemsTotal != null
+        ? order.itemsTotal!.round()
+        : productsSumMinor;
+    final offersMinor = order.offersTotal?.round() ?? 0;
+    final totalMinor = order.totalPrice != null
+        ? order.totalPrice!.round()
+        : productsSumMinor + feeMinor;
+    final fromOwnerRestaurant = order.owner?.restaurantName?.trim();
+    final restaurantName = (fromOwnerRestaurant != null &&
+            fromOwnerRestaurant.isNotEmpty)
+        ? fromOwnerRestaurant
+        : (order.products.isNotEmpty
+            ? order.products.first.merchantName ??
+                AppTranslation.restaurantName
+            : AppTranslation.restaurantName);
 
     return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: AppPadding.p25),
@@ -126,8 +145,9 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                     BitmapDescriptor.hueOrange,
                   ),
                   infoWindow: InfoWindow(
-                    title: order.customerName ?? AppTranslation.customer,
-                    snippet: order.deliveryAddress,
+                    title: order.displayCustomerName ?? AppTranslation.customer,
+                    snippet: order.displayCustomerAddressLine ??
+                        order.deliveryAddress,
                   ),
                 ),
             },
@@ -144,18 +164,18 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                 _buildSectionCard(
                   child: DeliveryOrderHeader(
                     recipientName:
-                        order.customerName ?? AppTranslation.customer,
-                    recipientAddress: order.deliveryAddress ?? '',
-                    totalPrice: (order.totalPrice ?? 0).toInt(),
+                        order.displayCustomerName ?? AppTranslation.customer,
+                    recipientAddress:
+                        order.displayCustomerAddressLine ??
+                            order.deliveryAddress ??
+                            '',
+                    totalPrice: totalMinor,
                   ),
                 ),
                 SizedBox(height: AppHeight.s16),
                 _buildSectionCard(
                   child: DeliveryOrderMerchant(
-                    restaurantName: order.products.isNotEmpty
-                        ? order.products.first.merchantName ??
-                              AppTranslation.restaurantName
-                        : AppTranslation.restaurantName,
+                    restaurantName: restaurantName,
                     preparationDuration: Duration(
                       minutes: order.preparationTime ?? 15,
                     ),
@@ -168,8 +188,10 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                 SizedBox(height: AppHeight.s16),
                 _buildSectionCard(
                   child: DeliveryOrderPriceSection(
-                    deliveryFee: (order.deliveryFee ?? 0).toInt(),
-                    deliveryEarning: (order.deliveryEarning ?? 0).toInt(),
+                    itemsTotal: itemsMinor,
+                    offersTotal: offersMinor,
+                    deliveryFee: feeMinor,
+                    totalAmount: totalMinor,
                   ),
                 ),
               ],

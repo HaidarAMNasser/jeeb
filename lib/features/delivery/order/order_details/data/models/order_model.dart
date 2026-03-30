@@ -114,6 +114,106 @@ OrderOwnerModel? _orderOwnerFromJson(dynamic v) {
   return OrderOwnerModel.fromJson(Map<String, dynamic>.from(v));
 }
 
+class OrderCustomerModel {
+  final String id;
+  final String? firstName;
+  final String? lastName;
+  final String? phone;
+  final String? email;
+  final String? address;
+
+  const OrderCustomerModel({
+    required this.id,
+    this.firstName,
+    this.lastName,
+    this.phone,
+    this.email,
+    this.address,
+  });
+
+  factory OrderCustomerModel.fromJson(Map<String, dynamic> json) {
+    return OrderCustomerModel(
+      id: json['id']?.toString() ?? '',
+      firstName: json['firstName']?.toString(),
+      lastName: json['lastName']?.toString(),
+      phone: json['phone']?.toString(),
+      email: json['email']?.toString(),
+      address: json['address']?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'firstName': firstName,
+        'lastName': lastName,
+        'phone': phone,
+        'email': email,
+        'address': address,
+      };
+
+  String get fullName {
+    final f = firstName ?? '';
+    final l = lastName ?? '';
+    return '$f $l'.trim();
+  }
+}
+
+OrderCustomerModel? _orderCustomerFromJson(dynamic v) {
+  if (v is! Map) return null;
+  return OrderCustomerModel.fromJson(Map<String, dynamic>.from(v));
+}
+
+/// `remainingTime.text` from order list/detail (`text`, `minutes`, `seconds`).
+class OrderRemainingTimeTextModel {
+  final String? text;
+  final int? minutes;
+  final int? seconds;
+
+  const OrderRemainingTimeTextModel({
+    this.text,
+    this.minutes,
+    this.seconds,
+  });
+
+  factory OrderRemainingTimeTextModel.fromJson(Map<String, dynamic> json) {
+    return OrderRemainingTimeTextModel(
+      text: json['text']?.toString(),
+      minutes: _toInt(json['minutes']),
+      seconds: _toInt(json['seconds']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'minutes': minutes,
+        'seconds': seconds,
+      };
+}
+
+class OrderRemainingTimeModel {
+  final OrderRemainingTimeTextModel? text;
+
+  const OrderRemainingTimeModel({this.text});
+
+  factory OrderRemainingTimeModel.fromJson(Map<String, dynamic> json) {
+    OrderRemainingTimeTextModel? inner;
+    final t = json['text'];
+    if (t is Map) {
+      inner = OrderRemainingTimeTextModel.fromJson(
+        Map<String, dynamic>.from(t),
+      );
+    }
+    return OrderRemainingTimeModel(text: inner);
+  }
+
+  Map<String, dynamic> toJson() => {'text': text?.toJson()};
+}
+
+OrderRemainingTimeModel? _remainingTimeFromJson(dynamic v) {
+  if (v is! Map) return null;
+  return OrderRemainingTimeModel.fromJson(Map<String, dynamic>.from(v));
+}
+
 List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
   final out = <ProductModel>[];
 
@@ -165,6 +265,10 @@ List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
         if (unit is num) {
           pj['price'] = unit.toInt();
         }
+        final lineTotal = m['totalPrice'];
+        if (lineTotal is num) {
+          pj['finalPrice'] = lineTotal.toInt();
+        }
         pj['merchantId'] ??= ownerId;
         pj['merchantName'] ??= ownerMerchantName;
         pj['merchantPhone'] ??= ownerPhone;
@@ -172,11 +276,13 @@ List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
       } else {
         final name = _localized(m['productName']);
         final unit = m['unitPrice'];
+        final lineTotal = m['totalPrice'];
         out.add(
           ProductModel.fromJson({
             'id': m['productId']?.toString() ?? '',
             'name': name.isEmpty ? 'Item ×$qty' : '$name ×$qty',
             'price': unit is num ? unit.toInt() : 0,
+            if (lineTotal is num) 'finalPrice': lineTotal.toInt(),
             'merchantId': ownerId,
             'merchantName': ownerMerchantName,
             'merchantPhone': ownerPhone,
@@ -228,12 +334,17 @@ class OrderModel {
   final String? customerName;
   final String? customerPhone;
   final double? totalPrice;
+  final double? itemsTotal;
+  final double? offersTotal;
   final double? deliveryFee;
   final double? deliveryEarning;
   final int? preparationTime;
   final String? merchantPhone;
   final bool? hideMerchantPhone;
   final OrderOwnerModel? owner;
+  final OrderRemainingTimeModel? remainingTime;
+  final OrderCustomerModel? customer;
+  final String? deliveryDeadline;
 
   OrderModel({
     required this.id,
@@ -253,17 +364,24 @@ class OrderModel {
     this.customerName,
     this.customerPhone,
     this.totalPrice,
+    this.itemsTotal,
+    this.offersTotal,
     this.deliveryFee,
     this.deliveryEarning,
     this.preparationTime,
     this.merchantPhone,
     this.hideMerchantPhone,
     this.owner,
+    this.remainingTime,
+    this.customer,
+    this.deliveryDeadline,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     final lineProducts = _productsFromOrderApiJson(json);
     final ownerModel = _orderOwnerFromJson(json['owner']);
+    final remainingTimeModel = _remainingTimeFromJson(json['remainingTime']);
+    final customerModel = _orderCustomerFromJson(json['customer']);
 
     double? lat;
     double? lng;
@@ -282,6 +400,10 @@ class OrderModel {
     if (json['deliveryMan'] != null) {
       deliveryMan = DeliveryManModel.fromJson(
         Map<String, dynamic>.from(json['deliveryMan'] as Map),
+      );
+    } else if (json['delivery'] is Map) {
+      deliveryMan = DeliveryManModel.fromJson(
+        Map<String, dynamic>.from(json['delivery'] as Map),
       );
     } else {
       final da = json['deliveryAssignment'];
@@ -329,19 +451,9 @@ class OrderModel {
       pickupAddress: json['pickup_address']?.toString() ?? ownerModel?.address,
       deliveryAddress: deliveryAddress ?? json['delivery_address']?.toString(),
       distance: json['distance']?.toString(),
-      customerName: () {
-        final direct = json['customerName']?.toString();
-        if (direct != null && direct.isNotEmpty) return direct;
-        final c = json['customer'];
-        if (c is Map) {
-          final m = Map<String, dynamic>.from(c);
-          final first = m['firstName']?.toString() ?? '';
-          final last = m['lastName']?.toString() ?? '';
-          final full = '$first $last'.trim();
-          if (full.isNotEmpty) return full;
-        }
-        return json['customer_name']?.toString();
-      }(),
+      // Top-level only; use [customer] for nested fallback in UI.
+      customerName:
+          json['customerName']?.toString() ?? json['customer_name']?.toString(),
       customerPhone: () {
         final direct = json['phone']?.toString();
         if (direct != null && direct.isNotEmpty) return direct;
@@ -358,25 +470,41 @@ class OrderModel {
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),
+      itemsTotal: () {
+        final v = json['itemsTotal'];
+        if (v is num) return v.toDouble();
+        return double.tryParse(v?.toString() ?? '');
+      }(),
+      offersTotal: () {
+        final v = json['offersTotal'];
+        if (v is num) return v.toDouble();
+        return double.tryParse(v?.toString() ?? '');
+      }(),
       deliveryFee: () {
         final v = json['deliveryFee'] ?? json['delivery_fee'];
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),
       deliveryEarning: () {
-        // API doesn't provide explicit delivery earning in this response; best available:
-        // prefer "ownerRevenue" if present (what the UI currently shows as earning tag).
-        final v = json['deliveryEarning'] ??
-            json['delivery_earning'] ??
-            json['ownerRevenue'];
+        final v = json['deliveryEarning'] ?? json['delivery_earning'];
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),
-      preparationTime: json['preparation_time'] != null
-          ? (json['preparation_time'] is int
-                ? json['preparation_time'] as int
-                : int.tryParse(json['preparation_time'].toString()))
-          : null,
+      preparationTime: () {
+        final mp = json['mealPreparationTime'];
+        if (mp != null) {
+          return mp is int ? mp : int.tryParse(mp.toString());
+        }
+        final dt = json['deliveryTime'];
+        if (dt != null) {
+          return dt is int ? dt : int.tryParse(dt.toString());
+        }
+        final legacy = json['preparation_time'];
+        if (legacy != null) {
+          return legacy is int ? legacy : int.tryParse(legacy.toString());
+        }
+        return null;
+      }(),
       merchantPhone: () {
         final p = ownerModel?.phone;
         if (p != null && p.isNotEmpty) return p;
@@ -385,6 +513,9 @@ class OrderModel {
       hideMerchantPhone:
           json['hideMerchantPhone'] == true || json['hide_restaurant_number'] == true,
       owner: ownerModel,
+      remainingTime: remainingTimeModel,
+      customer: customerModel,
+      deliveryDeadline: json['deliveryDeadline']?.toString(),
     );
   }
 
@@ -407,10 +538,15 @@ class OrderModel {
       'customer_name': customerName,
       'customer_phone': customerPhone,
       'total_price': totalPrice,
+      'itemsTotal': itemsTotal,
+      'offersTotal': offersTotal,
       'delivery_fee': deliveryFee,
       'delivery_earning': deliveryEarning,
       'preparation_time': preparationTime,
       'owner': owner?.toJson(),
+      'remainingTime': remainingTime?.toJson(),
+      'customer': customer?.toJson(),
+      'deliveryDeadline': deliveryDeadline,
     };
   }
 }

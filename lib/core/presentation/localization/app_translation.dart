@@ -344,6 +344,9 @@ class AppTranslation {
   static String moreItemsN(int n) => 'more_items'.tr(args: [n.toString()]);
   static String get deliveryPrice => 'delivery_price'.tr();
   static String get deliveryEarning => 'delivery_earning'.tr();
+  static String get orderItemsTotal => 'order_items_total'.tr();
+  static String get orderOffersTotal => 'order_offers_total'.tr();
+  static String get orderSubtotal => 'order_subtotal'.tr();
   static String get preparationTime => 'preparation_time'.tr();
   static String get searchPlace => 'search_place'.tr();
   static String get enterLocationName => 'enter_location_name'.tr();

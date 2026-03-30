@@ -53,6 +53,62 @@ class OrderOwnerEntity extends Equatable {
       ];
 }
 
+/// Nested `customer` on order payloads when top-level names are null.
+class OrderCustomerEntity extends Equatable {
+  final String id;
+  final String? firstName;
+  final String? lastName;
+  final String? phone;
+  final String? email;
+  final String? address;
+
+  const OrderCustomerEntity({
+    required this.id,
+    this.firstName,
+    this.lastName,
+    this.phone,
+    this.email,
+    this.address,
+  });
+
+  String get fullName {
+    final f = firstName ?? '';
+    final l = lastName ?? '';
+    return '$f $l'.trim();
+  }
+
+  @override
+  List<Object?> get props =>
+      [id, firstName, lastName, phone, email, address];
+}
+
+/// Inner `remainingTime.text` (human label + optional parts).
+class OrderRemainingTimeTextEntity extends Equatable {
+  final String? text;
+  final int? minutes;
+  final int? seconds;
+
+  const OrderRemainingTimeTextEntity({
+    this.text,
+    this.minutes,
+    this.seconds,
+  });
+
+  @override
+  List<Object?> get props => [text, minutes, seconds];
+}
+
+class OrderRemainingTimeEntity extends Equatable {
+  final OrderRemainingTimeTextEntity? text;
+
+  const OrderRemainingTimeEntity({this.text});
+
+  String? get displayLabel => text?.text;
+
+  @override
+  List<Object?> get props => [text];
+}
+
 class OrderEntity extends Equatable {
   final String id;
   final List<ProductEntity> products;
@@ -71,12 +127,17 @@ class OrderEntity extends Equatable {
   final String? customerName;
   final String? customerPhone;
   final double? totalPrice;
+  final double? itemsTotal;
+  final double? offersTotal;
   final double? deliveryFee;
   final double? deliveryEarning;
   final int? preparationTime;
   final String? merchantPhone;
   final bool? hideMerchantPhone;
   final OrderOwnerEntity? owner;
+  final OrderRemainingTimeEntity? remainingTime;
+  final OrderCustomerEntity? customer;
+  final DateTime? deliveryDeadline;
 
   const OrderEntity({
     required this.id,
@@ -96,13 +157,34 @@ class OrderEntity extends Equatable {
     this.customerName,
     this.customerPhone,
     this.totalPrice,
+    this.itemsTotal,
+    this.offersTotal,
     this.deliveryFee,
     this.deliveryEarning,
     this.preparationTime,
     this.merchantPhone,
     this.hideMerchantPhone,
     this.owner,
+    this.remainingTime,
+    this.customer,
+    this.deliveryDeadline,
   });
+
+  /// Order-level `customerName` if set; otherwise nested `customer` full name.
+  String? get displayCustomerName {
+    final n = customerName?.trim();
+    if (n != null && n.isNotEmpty) return n;
+    final c = customer?.fullName;
+    if (c != null && c.isNotEmpty) return c;
+    return null;
+  }
+
+  /// Drop-off address: `deliveryCoordinates` / `deliveryAddress`, else customer address.
+  String? get displayCustomerAddressLine {
+    final d = deliveryAddress?.trim();
+    if (d != null && d.isNotEmpty) return d;
+    return customer?.address?.trim();
+  }
 
   @override
   List<Object?> get props => [
@@ -123,12 +205,17 @@ class OrderEntity extends Equatable {
     customerName,
     customerPhone,
     totalPrice,
+    itemsTotal,
+    offersTotal,
     deliveryFee,
     deliveryEarning,
     preparationTime,
     merchantPhone,
     hideMerchantPhone,
     owner,
+    remainingTime,
+    customer,
+    deliveryDeadline,
   ];
 }
 

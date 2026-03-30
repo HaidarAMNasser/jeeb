@@ -24,11 +24,17 @@ class DeliveryOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total price from products
-    final totalPrice = order.products.fold<int>(
+    final productsSumMinor = order.products.fold<int>(
       0,
       (sum, p) => sum + p.displayPrice,
     );
+    final itemsMinor =
+        order.itemsTotal != null ? order.itemsTotal!.round() : productsSumMinor;
+    final offersMinor = order.offersTotal?.round() ?? 0;
+    final deliveryFeeMinor = (order.deliveryFee ?? 0).round();
+    final totalMinor = order.totalPrice != null
+        ? order.totalPrice!.round()
+        : (productsSumMinor + deliveryFeeMinor);
 
     // Merchant (Restaurant) info — prefer API `owner.restaurantName`
     final fromOwner = order.owner?.restaurantName?.trim();
@@ -39,15 +45,11 @@ class DeliveryOrderCard extends StatelessWidget {
             : AppTranslation.restaurantName);
 
     // Recipient (Customer) info
-    final recipientName =
-        order.customerName ??
+    final recipientName = order.displayCustomerName ??
         (order.deliveryMan?.name ?? AppTranslation.customer);
-    final recipientAddress =
-        order.deliveryAddress ?? (order.deliveryMan?.cityName ?? '');
+    final recipientAddress = order.displayCustomerAddressLine ??
+        (order.deliveryMan?.cityName ?? '');
 
-    // Get delivery fees from order entity
-    final deliveryFee = (order.deliveryFee ?? 0).toInt();
-    final deliveryEarning = (order.deliveryEarning ?? 0).toInt();
     final preparationMinutes = order.preparationTime ?? 15;
 
     return Padding(
@@ -88,10 +90,7 @@ class DeliveryOrderCard extends StatelessWidget {
                         DeliveryOrderHeader(
                           recipientName: recipientName,
                           recipientAddress: recipientAddress,
-                          totalPrice:
-                              (order.totalPrice ??
-                                      (totalPrice + deliveryFee).toDouble())
-                                  .toInt(),
+                          totalPrice: totalMinor,
                         ),
                         SizedBox(height: AppHeight.s20),
                         DeliveryOrderMerchant(
@@ -104,8 +103,10 @@ class DeliveryOrderCard extends StatelessWidget {
                         DeliveryOrderItemsList(products: order.products),
                         SizedBox(height: AppHeight.s12),
                         DeliveryOrderPriceSection(
-                          deliveryFee: deliveryFee,
-                          deliveryEarning: deliveryEarning,
+                          itemsTotal: itemsMinor,
+                          offersTotal: offersMinor,
+                          deliveryFee: deliveryFeeMinor,
+                          totalAmount: totalMinor,
                         ),
                         if (order.merchantPhone != null &&
                             order.merchantPhone!.isNotEmpty &&

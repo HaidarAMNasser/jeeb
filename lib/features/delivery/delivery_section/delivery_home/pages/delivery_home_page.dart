@@ -180,6 +180,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => DeliveryAvailableOrderCard(
                     order: loadedState.availableOrders[index],
+                    onTimerExpired: () {
+                      context.read<DeliveryHomeBloc>().add(
+                        const LoadDeliveryHomeEvent(),
+                      );
+                    },
                     onTap: () {
                       Navigator.pushNamed(
                         context,
@@ -279,7 +284,7 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
                 BitmapDescriptor.hueOrange,
               ),
               infoWindow: InfoWindow(
-                title: o.customerName ?? AppTranslation.customer,
+                title: o.displayCustomerName ?? AppTranslation.customer,
               ),
             ),
           );
@@ -297,7 +302,7 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
                 BitmapDescriptor.hueAzure,
               ),
               infoWindow: InfoWindow(
-                title: o.customerName ?? AppTranslation.customer,
+                title: o.displayCustomerName ?? AppTranslation.customer,
               ),
             ),
           );
