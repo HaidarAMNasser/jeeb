@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 
 /// Maps backend [OrderStatus] strings (e.g. PENDING, DELIVERED).
 enum OrderStatus {
@@ -128,7 +129,7 @@ enum OrderStatus {
       case OrderStatus.assigned:
       case OrderStatus.pickedUp:
       case OrderStatus.onTheWay:
-        return Colors.blue;
+        return ColorManager.defaultBlue;
       case OrderStatus.unknown:
         return Colors.grey;
     }

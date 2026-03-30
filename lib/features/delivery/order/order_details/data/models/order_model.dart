@@ -411,6 +411,10 @@ class OrderModel {
         deliveryMan = DeliveryManModel.fromJson(
           Map<String, dynamic>.from(da['delivery'] as Map),
         );
+      } else if (json['delivery'] is Map) {
+        deliveryMan = DeliveryManModel.fromJson(
+          Map<String, dynamic>.from(json['delivery'] as Map),
+        );
       }
     }
 

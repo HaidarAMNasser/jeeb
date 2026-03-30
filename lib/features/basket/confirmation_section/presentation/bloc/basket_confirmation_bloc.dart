@@ -73,6 +73,8 @@ class BasketConfirmationBloc
       arguments: {
         'orderId': orderId,
         'initialStatus': OrderStatus.pending.apiWireValue,
+        'deliveryLatitude': state.latitude,
+        'deliveryLongitude': state.longitude,
       },
     );
   }

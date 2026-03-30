@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
@@ -24,7 +25,6 @@ import '../../../features/auth/forgot_password/presentation/bloc/forgot_password
 import '../../../features/auth/reset_password/presentation/pages/reset_password_page.dart';
 import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
 import '../../../features/auth/profile/presentation/pages/profile_page.dart';
-import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
@@ -32,7 +32,6 @@ import '../../../features/delivery/order/list_order/presentation/pages/list_orde
 import '../../../features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/basket/order_status_section/presentation/bloc/order_status_bloc.dart';
 import '../../../features/basket/order_status_section/presentation/pages/order_status_page.dart';
-import '../../../features/delivery/order/order_details/data/repositories/order_details_repository.dart';
 import '../../../features/delivery/order/order_details/domain/entities/order_status.dart';
 import '../../../features/delivery/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
@@ -57,6 +56,12 @@ import '../../../features/favorites/presentation/bloc/favorites_bloc.dart';
 import '../../../features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
 
 import '../../infrastructure/di/dependency_injection.dart' as di;
+
+double? _routeArgAsDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value.toString());
+}
 
 /// Application Router
 class AppRouter {
@@ -246,6 +251,8 @@ class AppRouter {
         final initialStatus = OrderStatus.fromString(
           osArgs?['initialStatus'] as String?,
         );
+        final deliveryLat = _routeArgAsDouble(osArgs?['deliveryLatitude']);
+        final deliveryLng = _routeArgAsDouble(osArgs?['deliveryLongitude']);
         if (orderStatusId.isEmpty) {
           return _buildRoute(
             Scaffold(body: Center(child: Text('Order ID not provided'))),
@@ -260,7 +267,9 @@ class AppRouter {
               create: (_) => OrderStatusBloc(
                 orderId: orderStatusId,
                 initialStatus: initialStatus,
-                orderDetailsRepository: di.sl<OrderDetailsRepository>(),
+                deliveryLatitude: deliveryLat,
+                deliveryLongitude: deliveryLng,
+                orderStatusRtdb: di.sl<OrderStatusRtdbService>(),
               ),
             ),
           ],

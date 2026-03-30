@@ -4,6 +4,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../network/network_info.dart';
+import '../realtime/order_status_rtdb_service.dart';
 import '../../presentation/routes/navigation_service.dart';
 import '../services/storage_service.dart';
 import '../services/dio_factory.dart';
@@ -242,6 +243,11 @@ Future<void> init() async {
   );
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(() => OrderDetailsBloc(sl()));
+
+  //! Firebase RTDB — live order status (order tracking screen)
+  sl.registerLazySingleton<OrderStatusRtdbService>(
+    () => OrderStatusRtdbService(),
+  );
 
   //! Manage Order Dependencies
   sl.registerFactory<ManageOrderRemoteDataSource>(

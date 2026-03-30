@@ -11,6 +11,7 @@ class ColorManager {
   static const Color primaryLight = Color(0xFF7C8FFF);
   static const Color defaultYellow = Color(0xFFF59E0B);
   static const Color defaultWhite = Color.fromARGB(255, 255, 234, 222);
+  static const Color defaultBlue = Color.fromARGB(255, 13, 122, 211);
   static const Color transparent = Colors.transparent;
 
   // Secondary Colors

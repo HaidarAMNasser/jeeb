@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
-import 'package:jeeb_app/features/basket/order_status_section/presentation/config/order_status_poll_config.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/data/repositories/order_details_repository.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 part 'order_status_event.dart';
@@ -15,23 +13,36 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
   OrderStatusBloc({
     required String orderId,
     required OrderStatus initialStatus,
-    required OrderDetailsRepository orderDetailsRepository,
-  }) : _orderDetailsRepository = orderDetailsRepository,
-       _lastPolledStatusWire = initialStatus.apiWireValue,
-       super(OrderStatusState.initial(orderId, initialStatus)) {
+    required OrderStatusRtdbService orderStatusRtdb,
+    double? deliveryLatitude,
+    double? deliveryLongitude,
+  }) : _orderStatusRtdb = orderStatusRtdb,
+       _lastStatusWire = initialStatus.apiWireValue,
+       super(
+         OrderStatusState.initial(
+           orderId,
+           initialStatus,
+           deliveryLatitude: deliveryLatitude,
+           deliveryLongitude: deliveryLongitude,
+         ),
+       ) {
     on<OrderStatusToggleDemo>(_onToggleDemo);
     on<OrderStatusDemoTick>(_onDemoTick);
-    on<OrderStatusPollTick>(_onPollTick);
-    _startStatusPolling();
+    on<OrderStatusRealtimeSnapshot>(_onRealtimeSnapshot);
+    on<OrderStatusDriverLocationUpdated>(_onDriverLocationUpdated);
+    on<OrderStatusDriverLocationCleared>(_onDriverLocationCleared);
+    _startRealtimeListener();
   }
 
-  final OrderDetailsRepository _orderDetailsRepository;
+  final OrderStatusRtdbService _orderStatusRtdb;
 
-  /// Last `status` string from GET /orders/:id (uppercase). Detects changes [OrderStatus] might collapse.
-  String _lastPolledStatusWire;
+  String _lastStatusWire;
 
   Timer? _demoTimer;
-  Timer? _pollTimer;
+  StreamSubscription<String?>? _rtdbSub;
+  StreamSubscription<int?>? _deliveryIdSub;
+  StreamSubscription<DriverLiveLocation?>? _driverLocationSub;
+  int? _lastDeliveryId;
 
   static bool _isTerminalStatus(OrderStatus s) {
     switch (s) {
@@ -45,47 +56,88 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
     }
   }
 
-  void _startStatusPolling() {
+  void _startRealtimeListener() {
     if (_isTerminalStatus(state.routeStatus)) return;
-    add(const OrderStatusPollTick());
-    _pollTimer = Timer.periodic(OrderStatusPollConfig.interval, (_) {
-      if (isClosed) return;
-      add(const OrderStatusPollTick());
-    });
+    _rtdbSub?.cancel();
+    _rtdbSub = _orderStatusRtdb
+        .watchOrderStatusWire(state.orderId)
+        .listen(
+          (wire) {
+            if (isClosed) return;
+            add(OrderStatusRealtimeSnapshot(wire));
+          },
+          onError: (_) {
+            // RTDB errors are ignored; UI keeps last known status from route / previous events.
+          },
+        );
+
+    _deliveryIdSub?.cancel();
+    _deliveryIdSub = _orderStatusRtdb
+        .watchOrderDeliveryId(state.orderId)
+        .listen((deliveryId) {
+          if (isClosed) return;
+          _listenToDriverLocation(deliveryId);
+        }, onError: (_) {});
   }
 
-  void _stopStatusPolling() {
-    _pollTimer?.cancel();
-    _pollTimer = null;
+  void _stopRealtimeListener() {
+    _rtdbSub?.cancel();
+    _rtdbSub = null;
+    _deliveryIdSub?.cancel();
+    _deliveryIdSub = null;
+    _driverLocationSub?.cancel();
+    _driverLocationSub = null;
+    _lastDeliveryId = null;
   }
 
-  Future<void> _onPollTick(
-    OrderStatusPollTick event,
+  void _listenToDriverLocation(int? deliveryId) {
+    if (deliveryId == null || deliveryId <= 0) {
+      _driverLocationSub?.cancel();
+      _driverLocationSub = null;
+      _lastDeliveryId = null;
+      if (!isClosed) add(const OrderStatusDriverLocationCleared());
+      return;
+    }
+    if (_lastDeliveryId == deliveryId && _driverLocationSub != null) {
+      return;
+    }
+    _lastDeliveryId = deliveryId;
+    _driverLocationSub?.cancel();
+    _driverLocationSub = _orderStatusRtdb
+        .watchDriverLiveLocation(deliveryId)
+        .listen((location) {
+          if (isClosed || location == null) return;
+          add(
+            OrderStatusDriverLocationUpdated(
+              latitude: location.latitude,
+              longitude: location.longitude,
+              isOnline: location.isOnline,
+            ),
+          );
+        }, onError: (_) {});
+  }
+
+  void _onRealtimeSnapshot(
+    OrderStatusRealtimeSnapshot event,
     Emitter<OrderStatusState> emit,
-  ) async {
+  ) {
     if (_isTerminalStatus(state.routeStatus)) {
-      _stopStatusPolling();
+      _stopRealtimeListener();
       return;
     }
 
-    final result = await _orderDetailsRepository.getOrderDetails(state.orderId);
-    if (isClosed) return;
-
-    final order = result.fold<OrderEntity?>((_) => null, (r) => r);
-    if (order == null) return;
-
-    final wire = order.status?.trim();
+    final wire = event.statusWire?.trim();
     if (wire == null || wire.isEmpty) return;
 
     final normalized = wire.toUpperCase();
-    if (normalized == _lastPolledStatusWire) {
+    if (normalized == _lastStatusWire) {
       if (_isTerminalStatus(OrderStatus.fromString(wire))) {
-        _stopStatusPolling();
+        _stopRealtimeListener();
       }
       return;
     }
 
-    _lastPolledStatusWire = normalized;
+    _lastStatusWire = normalized;
     final next = OrderStatus.fromString(wire);
 
     emit(
@@ -93,12 +145,33 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
         routeStatus: next,
         liveStepIndex: OrderStatusState._staticTimelineIndex(next),
         demoRunning: false,
+        clearDriverLocation: next != OrderStatus.onTheWay,
       ),
     );
 
     if (_isTerminalStatus(next)) {
-      _stopStatusPolling();
+      _stopRealtimeListener();
     }
+  }
+
+  void _onDriverLocationUpdated(
+    OrderStatusDriverLocationUpdated event,
+    Emitter<OrderStatusState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        driverLatitude: event.latitude,
+        driverLongitude: event.longitude,
+        driverOnline: event.isOnline,
+      ),
+    );
+  }
+
+  void _onDriverLocationCleared(
+    OrderStatusDriverLocationCleared event,
+    Emitter<OrderStatusState> emit,
+  ) {
+    emit(state.copyWith(clearDriverLocation: true));
   }
 
   void _onToggleDemo(
@@ -129,7 +202,7 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
   @override
   Future<void> close() {
     _demoTimer?.cancel();
-    _stopStatusPolling();
+    _stopRealtimeListener();
     return super.close();
   }
 }
