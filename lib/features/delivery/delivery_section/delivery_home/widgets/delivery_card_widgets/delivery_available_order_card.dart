@@ -24,9 +24,12 @@ class DeliveryAvailableOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final restaurantName = order.products.isNotEmpty
-        ? order.products.first.merchantName ?? AppTranslation.restaurantName
-        : AppTranslation.restaurantName;
+    final fromOwner = order.owner?.restaurantName?.trim();
+    final restaurantName = (fromOwner != null && fromOwner.isNotEmpty)
+        ? fromOwner
+        : (order.products.isNotEmpty
+            ? order.products.first.merchantName ?? AppTranslation.restaurantName
+            : AppTranslation.restaurantName);
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -108,9 +111,10 @@ class DeliveryAvailableOrderCard extends StatelessWidget {
                               color: ColorManager.primary,
                             ),
                           ),
-                          // Assuming we have restaurant address or using a placeholder
                           CustomText(
-                            text: AppTranslation.pickUpPoint,
+                            text: (order.pickupAddress?.trim().isNotEmpty == true)
+                                ? order.pickupAddress!.trim()
+                                : AppTranslation.pickUpPoint,
                             textStyle: getRegularStyle(
                               fontSize: AppFontSize.s12,
                               color: ColorManager.textSecondary,

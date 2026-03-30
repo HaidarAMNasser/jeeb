@@ -30,10 +30,13 @@ class DeliveryOrderCard extends StatelessWidget {
       (sum, p) => sum + p.displayPrice,
     );
 
-    // Merchant (Restaurant) info
-    final restaurantName = order.products.isNotEmpty
-        ? order.products.first.merchantName ?? AppTranslation.restaurantName
-        : AppTranslation.restaurantName;
+    // Merchant (Restaurant) info — prefer API `owner.restaurantName`
+    final fromOwner = order.owner?.restaurantName?.trim();
+    final restaurantName = (fromOwner != null && fromOwner.isNotEmpty)
+        ? fromOwner
+        : (order.products.isNotEmpty
+            ? order.products.first.merchantName ?? AppTranslation.restaurantName
+            : AppTranslation.restaurantName);
 
     // Recipient (Customer) info
     final recipientName =

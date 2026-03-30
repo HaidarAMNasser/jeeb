@@ -2,6 +2,27 @@ import 'package:jeeb_app/features/delivery/order/order_details/data/models/order
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
 
+extension OrderOwnerLocationMapper on OrderOwnerLocationModel {
+  OrderOwnerLocationEntity toDomain() {
+    return OrderOwnerLocationEntity(lat: lat, lng: lng);
+  }
+}
+
+extension OrderOwnerMapper on OrderOwnerModel {
+  OrderOwnerEntity toDomain() {
+    return OrderOwnerEntity(
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      email: email,
+      address: address,
+      restaurantName: restaurantName,
+      location: location?.toDomain(),
+    );
+  }
+}
+
 extension OrderMapper on OrderModel {
   OrderEntity toDomain() {
     return OrderEntity(
@@ -29,6 +50,7 @@ extension OrderMapper on OrderModel {
       preparationTime: preparationTime,
       merchantPhone: merchantPhone,
       hideMerchantPhone: hideMerchantPhone,
+      owner: owner?.toDomain(),
     );
   }
 }

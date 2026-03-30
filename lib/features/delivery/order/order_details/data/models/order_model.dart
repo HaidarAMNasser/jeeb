@@ -30,18 +30,109 @@ int? _toInt(dynamic v) {
   return int.tryParse(v.toString());
 }
 
+/// Restaurant / merchant owner on order payloads (`owner` in API).
+class OrderOwnerLocationModel {
+  final double? lat;
+  final double? lng;
+
+  const OrderOwnerLocationModel({this.lat, this.lng});
+
+  factory OrderOwnerLocationModel.fromJson(Map<String, dynamic> json) {
+    return OrderOwnerLocationModel(
+      lat: _toDouble(json['lat']),
+      lng: _toDouble(json['lng']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {'lat': lat, 'lng': lng};
+}
+
+class OrderOwnerModel {
+  final String id;
+  final String? firstName;
+  final String? lastName;
+  final String? phone;
+  final String? email;
+  final String? address;
+  final String? restaurantName;
+  final OrderOwnerLocationModel? location;
+
+  const OrderOwnerModel({
+    required this.id,
+    this.firstName,
+    this.lastName,
+    this.phone,
+    this.email,
+    this.address,
+    this.restaurantName,
+    this.location,
+  });
+
+  factory OrderOwnerModel.fromJson(Map<String, dynamic> json) {
+    OrderOwnerLocationModel? loc;
+    final locJson = json['location'];
+    if (locJson is Map) {
+      loc = OrderOwnerLocationModel.fromJson(
+        Map<String, dynamic>.from(locJson),
+      );
+    }
+
+    return OrderOwnerModel(
+      id: json['id']?.toString() ?? '',
+      firstName: json['firstName']?.toString(),
+      lastName: json['lastName']?.toString(),
+      phone: json['phone']?.toString(),
+      email: json['email']?.toString(),
+      address: json['address']?.toString(),
+      restaurantName: json['restaurantName']?.toString(),
+      location: loc,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'phone': phone,
+      'email': email,
+      'address': address,
+      'restaurantName': restaurantName,
+      'location': location?.toJson(),
+    };
+  }
+
+  String get fullName {
+    final f = firstName ?? '';
+    final l = lastName ?? '';
+    return '$f $l'.trim();
+  }
+}
+
+OrderOwnerModel? _orderOwnerFromJson(dynamic v) {
+  if (v is! Map) return null;
+  return OrderOwnerModel.fromJson(Map<String, dynamic>.from(v));
+}
+
 List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
   final out = <ProductModel>[];
 
-  String? ownerName;
+  /// Shown as restaurant name on delivery cards: prefer API `restaurantName`, else owner full name.
+  String? ownerMerchantName;
   String? ownerPhone;
   String? ownerId;
   final owner = json['owner'];
   if (owner is Map) {
     final m = Map<String, dynamic>.from(owner);
-    final first = m['firstName']?.toString() ?? '';
-    final last = m['lastName']?.toString() ?? '';
-    ownerName = '$first $last'.trim().isEmpty ? null : '$first $last'.trim();
+    final restaurant = m['restaurantName']?.toString().trim();
+    if (restaurant != null && restaurant.isNotEmpty) {
+      ownerMerchantName = restaurant;
+    } else {
+      final first = m['firstName']?.toString() ?? '';
+      final last = m['lastName']?.toString() ?? '';
+      ownerMerchantName =
+          '$first $last'.trim().isEmpty ? null : '$first $last'.trim();
+    }
     ownerPhone = m['phone']?.toString();
     ownerId = m['id']?.toString();
   } else {
@@ -75,7 +166,7 @@ List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
           pj['price'] = unit.toInt();
         }
         pj['merchantId'] ??= ownerId;
-        pj['merchantName'] ??= ownerName;
+        pj['merchantName'] ??= ownerMerchantName;
         pj['merchantPhone'] ??= ownerPhone;
         out.add(ProductModel.fromJson(pj));
       } else {
@@ -87,7 +178,7 @@ List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
             'name': name.isEmpty ? 'Item ×$qty' : '$name ×$qty',
             'price': unit is num ? unit.toInt() : 0,
             'merchantId': ownerId,
-            'merchantName': ownerName,
+            'merchantName': ownerMerchantName,
             'merchantPhone': ownerPhone,
             'images': [],
           }),
@@ -142,6 +233,7 @@ class OrderModel {
   final int? preparationTime;
   final String? merchantPhone;
   final bool? hideMerchantPhone;
+  final OrderOwnerModel? owner;
 
   OrderModel({
     required this.id,
@@ -166,10 +258,12 @@ class OrderModel {
     this.preparationTime,
     this.merchantPhone,
     this.hideMerchantPhone,
+    this.owner,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     final lineProducts = _productsFromOrderApiJson(json);
+    final ownerModel = _orderOwnerFromJson(json['owner']);
 
     double? lat;
     double? lng;
@@ -199,7 +293,9 @@ class OrderModel {
     }
 
     final createdAt = json['createdAt']?.toString();
-    final ownerId = json['ownerId'] ?? json['merchantId'];
+    final ownerId = json['ownerId'] ??
+        json['merchantId'] ??
+        (ownerModel != null && ownerModel.id.isNotEmpty ? ownerModel.id : null);
 
     int? people;
     final items = json['items'];
@@ -230,7 +326,7 @@ class OrderModel {
       merchantId: ownerId?.toString(),
       createdAt: createdAt,
       updatedAt: json['updatedAt']?.toString(),
-      pickupAddress: json['pickup_address']?.toString(),
+      pickupAddress: json['pickup_address']?.toString() ?? ownerModel?.address,
       deliveryAddress: deliveryAddress ?? json['delivery_address']?.toString(),
       distance: json['distance']?.toString(),
       customerName: () {
@@ -282,16 +378,13 @@ class OrderModel {
                 : int.tryParse(json['preparation_time'].toString()))
           : null,
       merchantPhone: () {
-        final owner = json['owner'];
-        if (owner is Map) {
-          final m = Map<String, dynamic>.from(owner);
-          final p = m['phone']?.toString();
-          if (p != null && p.isNotEmpty) return p;
-        }
+        final p = ownerModel?.phone;
+        if (p != null && p.isNotEmpty) return p;
         return json['merchant_phone']?.toString();
       }(),
       hideMerchantPhone:
           json['hideMerchantPhone'] == true || json['hide_restaurant_number'] == true,
+      owner: ownerModel,
     );
   }
 
@@ -317,6 +410,7 @@ class OrderModel {
       'delivery_fee': deliveryFee,
       'delivery_earning': deliveryEarning,
       'preparation_time': preparationTime,
+      'owner': owner?.toJson(),
     };
   }
 }

@@ -1,6 +1,58 @@
 import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
+/// Geo point for restaurant/owner location on order `owner.location`.
+class OrderOwnerLocationEntity extends Equatable {
+  final double? lat;
+  final double? lng;
+
+  const OrderOwnerLocationEntity({this.lat, this.lng});
+
+  @override
+  List<Object?> get props => [lat, lng];
+}
+
+/// Merchant (restaurant owner) embedded on order responses.
+class OrderOwnerEntity extends Equatable {
+  final String id;
+  final String? firstName;
+  final String? lastName;
+  final String? phone;
+  final String? email;
+  final String? address;
+  final String? restaurantName;
+  final OrderOwnerLocationEntity? location;
+
+  const OrderOwnerEntity({
+    required this.id,
+    this.firstName,
+    this.lastName,
+    this.phone,
+    this.email,
+    this.address,
+    this.restaurantName,
+    this.location,
+  });
+
+  String get fullName {
+    final f = firstName ?? '';
+    final l = lastName ?? '';
+    return '$f $l'.trim();
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        firstName,
+        lastName,
+        phone,
+        email,
+        address,
+        restaurantName,
+        location,
+      ];
+}
+
 class OrderEntity extends Equatable {
   final String id;
   final List<ProductEntity> products;
@@ -24,6 +76,7 @@ class OrderEntity extends Equatable {
   final int? preparationTime;
   final String? merchantPhone;
   final bool? hideMerchantPhone;
+  final OrderOwnerEntity? owner;
 
   const OrderEntity({
     required this.id,
@@ -48,6 +101,7 @@ class OrderEntity extends Equatable {
     this.preparationTime,
     this.merchantPhone,
     this.hideMerchantPhone,
+    this.owner,
   });
 
   @override
@@ -74,6 +128,7 @@ class OrderEntity extends Equatable {
     preparationTime,
     merchantPhone,
     hideMerchantPhone,
+    owner,
   ];
 }
 
