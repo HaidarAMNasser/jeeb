@@ -109,6 +109,76 @@ class OrderRemainingTimeEntity extends Equatable {
   List<Object?> get props => [text];
 }
 
+/// Product row on order `items[]` or inside an offer bundle.
+class OrderLineProductEntity extends Equatable {
+  final String lineId;
+  final String? productId;
+  final String productName;
+  final int quantity;
+  final int unitPriceMinor;
+  final int? originalUnitPriceMinor;
+  final int lineTotalMinor;
+  final int? productDiscountValueMinor;
+
+  const OrderLineProductEntity({
+    required this.lineId,
+    this.productId,
+    required this.productName,
+    required this.quantity,
+    required this.unitPriceMinor,
+    this.originalUnitPriceMinor,
+    required this.lineTotalMinor,
+    this.productDiscountValueMinor,
+  });
+
+  bool get hasUnitDiscount =>
+      originalUnitPriceMinor != null &&
+      originalUnitPriceMinor! > unitPriceMinor;
+
+  @override
+  List<Object?> get props => [
+        lineId,
+        productId,
+        productName,
+        quantity,
+        unitPriceMinor,
+        originalUnitPriceMinor,
+        lineTotalMinor,
+        productDiscountValueMinor,
+      ];
+}
+
+class OrderOfferBundleEntity extends Equatable {
+  final String id;
+  final String name;
+  final String? description;
+  final int? subtotalMinor;
+  final int? offerDiscountMinor;
+  final int? totalMinor;
+  final List<OrderLineProductEntity> lines;
+
+  const OrderOfferBundleEntity({
+    required this.id,
+    required this.name,
+    this.description,
+    this.subtotalMinor,
+    this.offerDiscountMinor,
+    this.totalMinor,
+    this.lines = const [],
+  });
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        description,
+        subtotalMinor,
+        offerDiscountMinor,
+        totalMinor,
+        lines,
+      ];
+}
+
 class OrderEntity extends Equatable {
   final String id;
   final List<ProductEntity> products;
@@ -132,12 +202,18 @@ class OrderEntity extends Equatable {
   final double? deliveryFee;
   final double? deliveryEarning;
   final int? preparationTime;
+  /// From API `mealPreparationTime` only (minutes).
+  final int? mealPreparationMinutes;
+  /// From API `deliveryTime` (minutes), if present.
+  final int? deliveryTimeMinutes;
   final String? merchantPhone;
   final bool? hideMerchantPhone;
   final OrderOwnerEntity? owner;
   final OrderRemainingTimeEntity? remainingTime;
   final OrderCustomerEntity? customer;
   final DateTime? deliveryDeadline;
+  final List<OrderLineProductEntity> itemLines;
+  final List<OrderOfferBundleEntity> offerBundles;
 
   const OrderEntity({
     required this.id,
@@ -162,12 +238,16 @@ class OrderEntity extends Equatable {
     this.deliveryFee,
     this.deliveryEarning,
     this.preparationTime,
+    this.mealPreparationMinutes,
+    this.deliveryTimeMinutes,
     this.merchantPhone,
     this.hideMerchantPhone,
     this.owner,
     this.remainingTime,
     this.customer,
     this.deliveryDeadline,
+    this.itemLines = const [],
+    this.offerBundles = const [],
   });
 
   /// Order-level `customerName` if set; otherwise nested `customer` full name.
@@ -210,12 +290,16 @@ class OrderEntity extends Equatable {
     deliveryFee,
     deliveryEarning,
     preparationTime,
+    mealPreparationMinutes,
+    deliveryTimeMinutes,
     merchantPhone,
     hideMerchantPhone,
     owner,
     remainingTime,
     customer,
     deliveryDeadline,
+    itemLines,
+    offerBundles,
   ];
 }
 

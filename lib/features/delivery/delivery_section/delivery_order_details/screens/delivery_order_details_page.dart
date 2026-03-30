@@ -13,10 +13,10 @@ import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart'
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_header.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_merchant.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_price_section.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_home_map.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_items_list.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/delivery_order_details_lines_section.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/delivery_order_details_restaurant_section.dart';
 import '../widgets/order_details_status_badge.dart';
 import '../widgets/order_details_action_buttons.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
@@ -75,7 +75,7 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                 isSuccess: (s) => s is OrderDetailsLoaded,
                 successBuilder: (context, s) {
                   final order = (s as OrderDetailsLoaded).order;
-                  return _buildContent(context, order);
+                  return _buildContent(context, order, orderId);
                 },
               );
             },
@@ -85,8 +85,16 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, OrderEntity order) {
+  Widget _buildContent(
+    BuildContext context,
+    OrderEntity order,
+    String orderId,
+  ) {
     final status = OrderStatus.fromString(order.status);
+    void refreshDetails() {
+      context.read<OrderDetailsBloc>().add(GetOrderDetailsEvent(orderId));
+    }
+
     final productsSumMinor = order.products.fold<int>(
       0,
       (s, p) => s + p.displayPrice,
@@ -94,7 +102,12 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
     final feeMinor = (order.deliveryFee ?? 0).round();
     final itemsMinor = order.itemsTotal != null
         ? order.itemsTotal!.round()
-        : productsSumMinor;
+        : (order.itemLines.isEmpty
+            ? productsSumMinor
+            : order.itemLines.fold<int>(
+                0,
+                (s, e) => s + e.lineTotalMinor,
+              ));
     final offersMinor = order.offersTotal?.round() ?? 0;
     final totalMinor = order.totalPrice != null
         ? order.totalPrice!.round()
@@ -174,16 +187,19 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                 ),
                 SizedBox(height: AppHeight.s16),
                 _buildSectionCard(
-                  child: DeliveryOrderMerchant(
+                  child: DeliveryOrderDetailsRestaurantSection(
+                    order: order,
                     restaurantName: restaurantName,
-                    preparationDuration: Duration(
-                      minutes: order.preparationTime ?? 15,
-                    ),
+                    onMealPrepElapsed: refreshDetails,
                   ),
                 ),
                 SizedBox(height: AppHeight.s16),
                 _buildSectionCard(
-                  child: DeliveryOrderItemsList(products: order.products),
+                  child: DeliveryOrderDetailsLinesSection(
+                    itemLines: order.itemLines,
+                    offerBundles: order.offerBundles,
+                    fallbackProducts: order.products,
+                  ),
                 ),
                 SizedBox(height: AppHeight.s16),
                 _buildSectionCard(
@@ -192,6 +208,7 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                     offersTotal: offersMinor,
                     deliveryFee: feeMinor,
                     totalAmount: totalMinor,
+                    detailsTotalsOrder: true,
                   ),
                 ),
               ],
@@ -201,7 +218,11 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
           SizedBox(height: AppHeight.s32),
 
           // Action Buttons
-          OrderDetailsActionButtons(order: order, status: status),
+          OrderDetailsActionButtons(
+            order: order,
+            status: status,
+            onRefreshOrder: refreshDetails,
+          ),
         ],
       ),
     );

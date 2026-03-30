@@ -5,7 +5,9 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/delivery_order_deadline_countdown.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
@@ -14,11 +16,13 @@ import 'package:url_launcher/url_launcher.dart';
 class OrderDetailsActionButtons extends StatelessWidget {
   final OrderEntity order;
   final OrderStatus status;
+  final VoidCallback? onRefreshOrder;
 
   const OrderDetailsActionButtons({
     super.key,
     required this.order,
     required this.status,
+    this.onRefreshOrder,
   });
 
   @override
@@ -44,7 +48,35 @@ class OrderDetailsActionButtons extends StatelessWidget {
                 ),
                 SizedBox(height: AppHeight.s12),
               ],
-              if (status == OrderStatus.readyForPickup)
+              if (status == OrderStatus.searching ||
+                  status == OrderStatus.pending) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: AppTranslation.acceptDelivery,
+                        height: AppHeight.s45,
+                        isLoading: isLoading,
+                        onPressed: () => context.read<ManageOrderBloc>().add(
+                              AcceptDeliveryEvent(
+                                id: order.id,
+                                deliveryTime: 30,
+                              ),
+                            ),
+                      ),
+                    ),
+                    SizedBox(width: AppWidth.s16),
+                    DeliveryOrderDeadlineCountdown(
+                      key: ValueKey(
+                        '${order.id}_${order.deliveryDeadline}_${order.remainingTime?.text?.text}_${order.remainingTime?.text?.minutes}_${order.remainingTime?.text?.seconds}',
+                      ),
+                      order: order,
+                      onExpired: onRefreshOrder,
+                    ),
+                  ],
+                ),
+              ] else if (status == OrderStatus.readyForPickup)
                 _buildButton(
                   text: AppTranslation.acceptDelivery,
                   color: ColorManager.primary,

@@ -12,6 +12,8 @@ class DeliveryOrderPriceSection extends StatelessWidget {
   final int offersTotal;
   final int deliveryFee;
   final int totalAmount;
+  /// Details screen: delivery fee → offers → items → grand total.
+  final bool detailsTotalsOrder;
 
   const DeliveryOrderPriceSection({
     super.key,
@@ -19,40 +21,50 @@ class DeliveryOrderPriceSection extends StatelessWidget {
     required this.offersTotal,
     required this.deliveryFee,
     required this.totalAmount,
+    this.detailsTotalsOrder = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final delivery = _buildPriceRow(
+      icon: Icons.delivery_dining_outlined,
+      label: AppTranslation.deliveryPrice,
+      value: deliveryFee,
+      color: ColorManager.titlesColor,
+    );
+    final offers = _buildPriceRow(
+      icon: Icons.local_offer_outlined,
+      label: AppTranslation.orderOffersTotal,
+      value: offersTotal,
+      color: ColorManager.titlesColor,
+    );
+    final items = _buildPriceRow(
+      icon: Icons.shopping_bag_outlined,
+      label: AppTranslation.orderItemsTotal,
+      value: itemsTotal,
+      color: ColorManager.titlesColor,
+    );
+    final total = _buildPriceRow(
+      icon: Icons.payments_outlined,
+      label: AppTranslation.total,
+      value: totalAmount,
+      color: ColorManager.primary,
+      isBold: true,
+    );
+
+    final mid = detailsTotalsOrder
+        ? [delivery, offers, items]
+        : [items, offers, delivery];
+
     return Column(
       children: [
-        _buildPriceRow(
-          icon: Icons.shopping_bag_outlined,
-          label: AppTranslation.orderItemsTotal,
-          value: itemsTotal,
-          color: ColorManager.titlesColor,
-        ),
+        mid[0],
         SizedBox(height: AppHeight.s8),
-        _buildPriceRow(
-          icon: Icons.local_offer_outlined,
-          label: AppTranslation.orderOffersTotal,
-          value: offersTotal,
-          color: ColorManager.titlesColor,
-        ),
+        mid[1],
         SizedBox(height: AppHeight.s8),
-        _buildPriceRow(
-          icon: Icons.delivery_dining_outlined,
-          label: AppTranslation.deliveryPrice,
-          value: deliveryFee,
-          color: ColorManager.titlesColor,
-        ),
+        mid[2],
         SizedBox(height: AppHeight.s8),
-        _buildPriceRow(
-          icon: Icons.payments_outlined,
-          label: AppTranslation.total,
-          value: totalAmount,
-          color: ColorManager.primary,
-          isBold: true,
-        ),
+        total,
       ],
     );
   }

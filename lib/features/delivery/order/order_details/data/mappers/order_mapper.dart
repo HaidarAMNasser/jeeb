@@ -37,6 +37,35 @@ extension OrderRemainingTimeMapper on OrderRemainingTimeModel {
   }
 }
 
+extension OrderLineProductMapper on OrderLineProductModel {
+  OrderLineProductEntity toDomain() {
+    return OrderLineProductEntity(
+      lineId: lineId,
+      productId: productId,
+      productName: productName,
+      quantity: quantity,
+      unitPriceMinor: unitPriceMinor,
+      originalUnitPriceMinor: originalUnitPriceMinor,
+      lineTotalMinor: lineTotalMinor,
+      productDiscountValueMinor: productDiscountValueMinor,
+    );
+  }
+}
+
+extension OrderOfferBundleMapper on OrderOfferBundleModel {
+  OrderOfferBundleEntity toDomain() {
+    return OrderOfferBundleEntity(
+      id: id,
+      name: name,
+      description: description?.isEmpty == true ? null : description,
+      subtotalMinor: subtotalMinor,
+      offerDiscountMinor: offerDiscountMinor,
+      totalMinor: totalMinor,
+      lines: lines.map((e) => e.toDomain()).toList(),
+    );
+  }
+}
+
 extension OrderOwnerMapper on OrderOwnerModel {
   OrderOwnerEntity toDomain() {
     return OrderOwnerEntity(
@@ -79,6 +108,8 @@ extension OrderMapper on OrderModel {
       deliveryFee: deliveryFee,
       deliveryEarning: deliveryEarning,
       preparationTime: preparationTime,
+      mealPreparationMinutes: mealPreparationMinutes,
+      deliveryTimeMinutes: deliveryTimeMinutes,
       merchantPhone: merchantPhone,
       hideMerchantPhone: hideMerchantPhone,
       owner: owner?.toDomain(),
@@ -87,6 +118,8 @@ extension OrderMapper on OrderModel {
       deliveryDeadline: deliveryDeadline != null
           ? DateTime.tryParse(deliveryDeadline!)
           : null,
+      itemLines: orderItemLines.map((e) => e.toDomain()).toList(),
+      offerBundles: orderOfferBundles.map((e) => e.toDomain()).toList(),
     );
   }
 }

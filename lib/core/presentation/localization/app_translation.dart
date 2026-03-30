@@ -348,6 +348,17 @@ class AppTranslation {
   static String get orderOffersTotal => 'order_offers_total'.tr();
   static String get orderSubtotal => 'order_subtotal'.tr();
   static String get preparationTime => 'preparation_time'.tr();
+  static String get orderMealPrepRemaining => 'order_meal_prep_remaining'.tr();
+  static String get orderDetailsOffers => 'order_details_offers'.tr();
+  static String get orderDetailsItems => 'order_details_items'.tr();
+  static String get orderUnitPrice => 'order_unit_price'.tr();
+  static String get orderLineTotal => 'order_line_total'.tr();
+  static String get orderDiscount => 'order_discount'.tr();
+  static String get orderQty => 'order_qty'.tr();
+  static String get orderOfferSubtotal => 'order_offer_subtotal'.tr();
+  static String get orderOfferDiscount => 'order_offer_discount'.tr();
+  static String orderEstimatedDeliveryMinutes(int minutes) =>
+      'order_estimated_delivery_minutes'.tr(args: [minutes.toString()]);
   static String get searchPlace => 'search_place'.tr();
   static String get enterLocationName => 'enter_location_name'.tr();
   static String get locationNotFound => 'location_not_found'.tr();
