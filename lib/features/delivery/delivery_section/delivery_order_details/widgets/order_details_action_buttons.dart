@@ -20,7 +20,6 @@ class DeliveryOrderActionButtons extends StatelessWidget {
   final VoidCallback? onRefreshOrder;
   final EdgeInsetsGeometry padding;
   final bool dense;
-  final bool showRejectButton;
 
   const DeliveryOrderActionButtons({
     super.key,
@@ -29,7 +28,6 @@ class DeliveryOrderActionButtons extends StatelessWidget {
     this.onRefreshOrder,
     this.padding = EdgeInsets.zero,
     this.dense = false,
-    this.showRejectButton = true,
   });
 
   @override
@@ -111,7 +109,7 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                     );
                   },
                 )
-              else if (status == OrderStatus.assigned) ...[
+              else if (status == OrderStatus.assigned)
                 _buildButton(
                   text: AppTranslation.confirmPickup,
                   color: Colors.blue,
@@ -120,23 +118,8 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                   onPressed: () => context.read<ManageOrderBloc>().add(
                     ConfirmPickupEvent(id: order.id, reason: AppTranslation.pickedUp),
                   ),
-                ),
-                if (showRejectButton) ...[
-                  SizedBox(height: gap),
-                  _buildButton(
-                    text: AppTranslation.rejectDelivery,
-                    color: Colors.red,
-                    icon: Icons.cancel_outlined,
-                    isLoading: isLoading,
-                    onPressed: () => context.read<ManageOrderBloc>().add(
-                      RejectDeliveryEvent(
-                        id: order.id,
-                        reason: AppTranslation.unableToDeliver,
-                      ),
-                    ),
-                  ),
-                ],
-              ] else if (status == OrderStatus.pickedUp)
+                )
+              else if (status == OrderStatus.pickedUp)
                 _buildButton(
                   text: AppTranslation.markAsDelivered,
                   color: Colors.green,

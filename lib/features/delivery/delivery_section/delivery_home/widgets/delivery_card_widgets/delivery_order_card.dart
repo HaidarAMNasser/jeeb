@@ -129,7 +129,6 @@ class DeliveryOrderCard extends StatelessWidget {
                     status: status,
                     padding: EdgeInsets.zero,
                     dense: true,
-                    showRejectButton: false,
                   ),
                 ],
               ),
