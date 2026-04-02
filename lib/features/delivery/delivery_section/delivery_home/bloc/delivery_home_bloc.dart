@@ -20,17 +20,20 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
     Emitter<DeliveryHomeState> emit,
   ) async {
     emit(const DeliveryHomeLoading());
-    await _fetchData(emit);
+    await _fetchData(emit, markRefresh: false);
   }
 
   Future<void> _onRefreshHome(
     RefreshDeliveryHomeEvent event,
     Emitter<DeliveryHomeState> emit,
   ) async {
-    await _fetchData(emit);
+    await _fetchData(emit, markRefresh: true);
   }
 
-  Future<void> _fetchData(Emitter<DeliveryHomeState> emit) async {
+  Future<void> _fetchData(
+    Emitter<DeliveryHomeState> emit, {
+    required bool markRefresh,
+  }) async {
     // 1. Fetch assigned orders (PICKED_UP or ASSIGNED)
     final assignedResult = await _repository.getOrders(
       status: '${OrderStatus.assigned.apiWireValue},${OrderStatus.pickedUp.apiWireValue}',
@@ -51,6 +54,7 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       emit(DeliveryHomeLoaded(
         availableOrders: const [],
         assignedOrder: assignedOrder,
+        refreshedAt: markRefresh ? DateTime.now() : null,
       ));
       return;
     }
@@ -65,6 +69,7 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       (orders) => emit(DeliveryHomeLoaded(
         availableOrders: orders,
         assignedOrder: null,
+        refreshedAt: markRefresh ? DateTime.now() : null,
       )),
     );
   }

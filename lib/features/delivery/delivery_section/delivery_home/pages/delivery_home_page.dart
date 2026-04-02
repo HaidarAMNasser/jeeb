@@ -135,6 +135,23 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     }
   }
 
+  bool _canPullToRefreshDeliveryHome(DeliveryHomeState state) {
+    return state is DeliveryHomeLoaded || state is DeliveryHomeError;
+  }
+
+  Future<void> _pullToRefreshDeliveryHome() async {
+    final bloc = context.read<DeliveryHomeBloc>();
+    final next = bloc.stream.firstWhere(
+      (s) => s is DeliveryHomeLoaded || s is DeliveryHomeError,
+    );
+    bloc.add(const RefreshDeliveryHomeEvent());
+    try {
+      await next.timeout(const Duration(seconds: 45));
+    } on TimeoutException {
+      // Allow RefreshIndicator to hide if no new state is emitted.
+    }
+  }
+
   void _safeAutoRefreshHome() {
     final now = DateTime.now();
     final last = _lastAutoRefreshAt;
@@ -167,11 +184,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
         body: BlocBuilder<DeliveryHomeBloc, DeliveryHomeState>(
           builder: (context, state) {
             return RefreshIndicator(
-              onRefresh: () async {
-                context.read<DeliveryHomeBloc>().add(
-                  const RefreshDeliveryHomeEvent(),
-                );
+              notificationPredicate: (ScrollNotification notification) {
+                if (!_canPullToRefreshDeliveryHome(state)) return false;
+                return notification.depth == 0;
               },
+              onRefresh: () => _pullToRefreshDeliveryHome(),
               color: ColorManager.primary,
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
