@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
