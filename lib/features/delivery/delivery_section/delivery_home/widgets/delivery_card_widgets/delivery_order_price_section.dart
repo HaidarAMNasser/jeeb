@@ -5,6 +5,7 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_money.dart';
 
 /// Order totals from API: `itemsTotal`, `offersTotal`, `deliveryFee`, `totalAmount`.
 class DeliveryOrderPriceSection extends StatelessWidget {
@@ -12,8 +13,17 @@ class DeliveryOrderPriceSection extends StatelessWidget {
   final int offersTotal;
   final int deliveryFee;
   final int totalAmount;
+
   /// Details screen: delivery fee → offers → items → grand total.
   final bool detailsTotalsOrder;
+
+  final bool showGrandTotal;
+
+  /// Tighter rows for list cards.
+  final bool compactRows;
+
+  /// Prominent grand total bar (cards only).
+  final bool capstoneGrandTotal;
 
   const DeliveryOrderPriceSection({
     super.key,
@@ -22,6 +32,9 @@ class DeliveryOrderPriceSection extends StatelessWidget {
     required this.deliveryFee,
     required this.totalAmount,
     this.detailsTotalsOrder = false,
+    this.showGrandTotal = true,
+    this.compactRows = false,
+    this.capstoneGrandTotal = false,
   });
 
   @override
@@ -44,28 +57,79 @@ class DeliveryOrderPriceSection extends StatelessWidget {
       value: itemsTotal,
       color: ColorManager.titlesColor,
     );
-    final total = _buildPriceRow(
-      icon: Icons.payments_outlined,
-      label: AppTranslation.total,
-      value: totalAmount,
-      color: ColorManager.primary,
-      isBold: true,
-    );
 
     final mid = detailsTotalsOrder
         ? [delivery, offers, items]
         : [items, offers, delivery];
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         mid[0],
-        SizedBox(height: AppHeight.s8),
+        SizedBox(height: compactRows ? AppHeight.s5 : AppHeight.s8),
         mid[1],
-        SizedBox(height: AppHeight.s8),
+        SizedBox(height: compactRows ? AppHeight.s5 : AppHeight.s8),
         mid[2],
-        SizedBox(height: AppHeight.s8),
-        total,
+        if (showGrandTotal) ...[
+          SizedBox(height: compactRows ? AppHeight.s12 : AppHeight.s8),
+          capstoneGrandTotal
+              ? _buildCapstoneTotal()
+              : _buildStandardTotalRow(),
+        ],
       ],
+    );
+  }
+
+  Widget _buildStandardTotalRow() {
+    return _buildPriceRow(
+      icon: Icons.payments_outlined,
+      label: AppTranslation.total,
+      value: totalAmount,
+      color: ColorManager.primary,
+      isBold: true,
+    );
+  }
+
+  Widget _buildCapstoneTotal() {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppPadding.p14,
+        vertical: AppPadding.p14,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppSize.s16),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            ColorManager.primary.withOpacity(0.14),
+            ColorManager.titlesColor.withOpacity(0.06),
+          ],
+        ),
+        border: Border.all(
+          color: ColorManager.primary.withOpacity(0.28),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            AppTranslation.total.toUpperCase(),
+            style: TextStyle(
+              fontSize: AppFontSize.s10,
+              letterSpacing: 1.15,
+              fontWeight: FontWeight.w600,
+              color: ColorManager.textSecondary.withOpacity(0.95),
+            ),
+          ),
+          OrderMoneyText(
+            minor: totalAmount,
+            style: OrderMoneyStyle.capstone,
+          ),
+        ],
+      ),
     );
   }
 
@@ -76,13 +140,20 @@ class DeliveryOrderPriceSection extends StatelessWidget {
     required Color color,
     bool isBold = false,
   }) {
+    final pad = compactRows ? AppPadding.p10 : AppPadding.p12;
+    final iconSize = compactRows ? AppSize.s16 : AppSize.s18;
+    final labelSize = compactRows ? AppFontSize.s12 : AppFontSize.s14;
+    final valueSize = compactRows ? AppFontSize.s13 : AppFontSize.s16;
+
     return Container(
-      padding: EdgeInsets.all(AppPadding.p12),
+      padding: EdgeInsets.all(pad),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(AppSize.s12),
+        color: color.withOpacity(compactRows ? 0.04 : 0.05),
+        borderRadius: BorderRadius.circular(
+          compactRows ? AppSize.s10 : AppSize.s12,
+        ),
         border: Border.all(
-          color: color.withOpacity(0.1),
+          color: color.withOpacity(0.09),
         ),
       ),
       child: Row(
@@ -90,24 +161,30 @@ class DeliveryOrderPriceSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: AppSize.s18, color: color),
+              Icon(icon, size: iconSize, color: color.withOpacity(0.9)),
               SizedBox(width: AppWidth.s8),
               CustomText(
                 text: label,
                 textStyle: (isBold ? getSemiBoldStyle : getRegularStyle)(
-                  fontSize: AppFontSize.s14,
+                  fontSize: labelSize,
                   color: color,
                 ),
               ),
             ],
           ),
-          CustomText(
-            text: '\$${(value / 100).toStringAsFixed(2)}',
-            textStyle: (isBold ? getBoldStyle : getSemiBoldStyle)(
-              fontSize: AppFontSize.s16,
-              color: color,
+          if (isBold)
+            CustomText(
+              text: '\$${(value / 100).toStringAsFixed(2)}',
+              textStyle: getBoldStyle(
+                fontSize: valueSize,
+                color: color,
+              ),
+            )
+          else
+            OrderMoneyText(
+              minor: value,
+              style: OrderMoneyStyle.inline,
             ),
-          ),
         ],
       ),
     );

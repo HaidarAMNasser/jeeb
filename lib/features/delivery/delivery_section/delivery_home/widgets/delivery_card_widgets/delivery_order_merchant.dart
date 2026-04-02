@@ -10,12 +10,14 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 class DeliveryOrderMerchant extends StatelessWidget {
   final String restaurantName;
+  final String pickupAddressLine;
   final Duration preparationDuration;
   final bool showPreparationTimer;
 
   const DeliveryOrderMerchant({
     super.key,
     required this.restaurantName,
+    this.pickupAddressLine = '',
     required this.preparationDuration,
     this.showPreparationTimer = true,
   });
@@ -39,13 +41,15 @@ class DeliveryOrderMerchant extends StatelessWidget {
                   color: ColorManager.primary,
                 ),
               ),
-              CustomText(
-                text: AppTranslation.pickUpPoint,
-                textStyle: getRegularStyle(
-                  fontSize: AppFontSize.s12,
-                  color: ColorManager.textSecondary,
+              if (pickupAddressLine.isNotEmpty)
+                CustomText(
+                  text: pickupAddressLine,
+                  textStyle: getRegularStyle(
+                    fontSize: AppFontSize.s12,
+                    color: ColorManager.textSecondary,
+                  ),
+                  maxLines: 3,
                 ),
-              ),
             ],
           ),
         ),

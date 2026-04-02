@@ -42,15 +42,15 @@ class OrderOwnerEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        firstName,
-        lastName,
-        phone,
-        email,
-        address,
-        restaurantName,
-        location,
-      ];
+    id,
+    firstName,
+    lastName,
+    phone,
+    email,
+    address,
+    restaurantName,
+    location,
+  ];
 }
 
 /// Nested `customer` on order payloads when top-level names are null.
@@ -78,8 +78,7 @@ class OrderCustomerEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, firstName, lastName, phone, email, address];
+  List<Object?> get props => [id, firstName, lastName, phone, email, address];
 }
 
 /// Inner `remainingTime.text` (human label + optional parts).
@@ -139,15 +138,15 @@ class OrderLineProductEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        lineId,
-        productId,
-        productName,
-        quantity,
-        unitPriceMinor,
-        originalUnitPriceMinor,
-        lineTotalMinor,
-        productDiscountValueMinor,
-      ];
+    lineId,
+    productId,
+    productName,
+    quantity,
+    unitPriceMinor,
+    originalUnitPriceMinor,
+    lineTotalMinor,
+    productDiscountValueMinor,
+  ];
 }
 
 class OrderOfferBundleEntity extends Equatable {
@@ -171,14 +170,14 @@ class OrderOfferBundleEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        subtotalMinor,
-        offerDiscountMinor,
-        totalMinor,
-        lines,
-      ];
+    id,
+    name,
+    description,
+    subtotalMinor,
+    offerDiscountMinor,
+    totalMinor,
+    lines,
+  ];
 }
 
 class OrderEntity extends Equatable {
@@ -204,8 +203,10 @@ class OrderEntity extends Equatable {
   final double? deliveryFee;
   final double? deliveryEarning;
   final int? preparationTime;
+
   /// From API `mealPreparationTime` only (minutes).
   final int? mealPreparationMinutes;
+
   /// From API `deliveryTime` (minutes), if present.
   final int? deliveryTimeMinutes;
   final String? merchantPhone;
@@ -214,6 +215,7 @@ class OrderEntity extends Equatable {
   final OrderRemainingTimeEntity? remainingTime;
   final OrderCustomerEntity? customer;
   final DateTime? deliveryDeadline;
+
   /// Customer drop-off when set; otherwise use [latitude]/[longitude] from `deliveryCoordinates`.
   final OrderOwnerLocationEntity? finalLocation;
   final List<OrderLineProductEntity> itemLines;
@@ -286,6 +288,37 @@ class OrderEntity extends Equatable {
   /// Drop-off: `finalLocation` if present, else `deliveryCoordinates` ([latitude]/[longitude]).
   double? get dropoffLatitude => finalLocation?.lat ?? latitude;
   double? get dropoffLongitude => finalLocation?.lng ?? longitude;
+
+  /// Lines for card summaries: [itemLines] when non-empty, otherwise all [offerBundles] lines.
+  List<OrderLineProductEntity> get displayLineProducts {
+    if (itemLines.isNotEmpty) return itemLines;
+    return [for (final b in offerBundles) ...b.lines];
+  }
+
+  /// [displayCustomerAddressLine] with [customerPhone] stripped when the API repeats it in the address.
+  String get displayCustomerAddressWithoutPhone {
+    var addr = displayCustomerAddressLine?.trim() ?? '';
+    final p = customerPhone?.trim();
+    if (p != null && p.isNotEmpty && addr.contains(p)) {
+      addr = addr.replaceAll(p, '');
+      addr = addr.replaceAll(RegExp(r'\s+'), ' ').trim();
+      addr = addr.replaceAll(RegExp(r',\s*,|,?\s*$|^\s*,'), '').trim();
+    }
+    return addr;
+  }
+
+  /// Pickup / restaurant address: `pickupAddress`, else `owner.address`, else first product `merchantAddress`.
+  String get displayRestaurantPickupAddressLine {
+    final pu = pickupAddress?.trim();
+    if (pu != null && pu.isNotEmpty) return pu;
+    final oa = owner?.address?.trim();
+    if (oa != null && oa.isNotEmpty) return oa;
+    if (products.isNotEmpty) {
+      final ma = products.first.merchantAddress?.trim();
+      if (ma != null && ma.isNotEmpty) return ma;
+    }
+    return '';
+  }
 
   @override
   List<Object?> get props => [

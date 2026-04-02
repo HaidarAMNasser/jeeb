@@ -27,12 +27,16 @@ class DeliveryOrdersList extends StatelessWidget {
           padding: EdgeInsets.only(bottom: AppPadding.p16),
           child: DeliveryOrderCard(
             order: orders[index],
-            onTap: () {
-              Navigator.pushNamed(
+            onTap: () async {
+              await Navigator.pushNamed<void>(
                 context,
                 Routes.deliveryOrderDetails,
                 arguments: {'orderId': orders[index].id},
               );
+              if (!context.mounted) return;
+              context.read<ListOrderBloc>().add(
+                    GetOrdersEvent(status: status),
+                  );
             },
           ),
         ),

@@ -51,13 +51,21 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     super.initState();
     _startLocationUpdates();
     context.read<DeliveryHomeBloc>().add(const LoadDeliveryHomeEvent());
-    _ensureProfileLoaded();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _ensureProfileLoaded();
+    });
   }
 
+  /// Fetches profile when missing, failed, or loaded without a usable name (avoids sticking on default label).
   void _ensureProfileLoaded() {
+    if (!mounted) return;
     final profileBloc = context.read<ProfileBloc>();
     final s = profileBloc.state;
-    if (s is ProfileLoaded || s is ProfileLoading) return;
+    if (s is ProfileLoading) return;
+    if (s is ProfileLoaded) {
+      final fullName = '${s.user.firstName} ${s.user.lastName}'.trim();
+      if (fullName.isNotEmpty) return;
+    }
     profileBloc.add(const GetProfile());
   }
 
