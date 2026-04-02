@@ -39,8 +39,8 @@ class OrderOwnerLocationModel {
 
   factory OrderOwnerLocationModel.fromJson(Map<String, dynamic> json) {
     return OrderOwnerLocationModel(
-      lat: _toDouble(json['lat']),
-      lng: _toDouble(json['lng']),
+      lat: _toDouble(json['lat'] ?? json['latitude']),
+      lng: _toDouble(json['lng'] ?? json['longitude']),
     );
   }
 
@@ -163,14 +163,16 @@ OrderCustomerModel? _orderCustomerFromJson(dynamic v) {
   return OrderCustomerModel.fromJson(Map<String, dynamic>.from(v));
 }
 
-/// `remainingTime.text` from order list/detail (`text`, `minutes`, `seconds`).
+/// `remainingTime.text` from order list/detail (`text`, `hours`, `minutes`, `seconds`).
 class OrderRemainingTimeTextModel {
   final String? text;
+  final int? hours;
   final int? minutes;
   final int? seconds;
 
   const OrderRemainingTimeTextModel({
     this.text,
+    this.hours,
     this.minutes,
     this.seconds,
   });
@@ -178,6 +180,7 @@ class OrderRemainingTimeTextModel {
   factory OrderRemainingTimeTextModel.fromJson(Map<String, dynamic> json) {
     return OrderRemainingTimeTextModel(
       text: json['text']?.toString(),
+      hours: _toInt(json['hours'] ?? json['hour']),
       minutes: _toInt(json['minutes']),
       seconds: _toInt(json['seconds']),
     );
@@ -185,6 +188,7 @@ class OrderRemainingTimeTextModel {
 
   Map<String, dynamic> toJson() => {
         'text': text,
+        'hours': hours,
         'minutes': minutes,
         'seconds': seconds,
       };
@@ -198,9 +202,24 @@ class OrderRemainingTimeModel {
   factory OrderRemainingTimeModel.fromJson(Map<String, dynamic> json) {
     OrderRemainingTimeTextModel? inner;
     final t = json['text'];
+    // API variants:
+    // - Old: { "text": { "text": "...", "minutes": 1, "seconds": 59 } }
+    // - New: { "text": "...", "minutes": 0, "seconds": 0 }
     if (t is Map) {
-      inner = OrderRemainingTimeTextModel.fromJson(
-        Map<String, dynamic>.from(t),
+      inner = OrderRemainingTimeTextModel.fromJson(Map<String, dynamic>.from(t));
+    } else if (t != null) {
+      inner = OrderRemainingTimeTextModel(
+        text: t.toString(),
+        hours: _toInt(json['hours'] ?? json['hour']),
+        minutes: _toInt(json['minutes']),
+        seconds: _toInt(json['seconds']),
+      );
+    } else if (json['minutes'] != null || json['seconds'] != null) {
+      inner = OrderRemainingTimeTextModel(
+        text: null,
+        hours: _toInt(json['hours'] ?? json['hour']),
+        minutes: _toInt(json['minutes']),
+        seconds: _toInt(json['seconds']),
       );
     }
     return OrderRemainingTimeModel(text: inner);
@@ -478,6 +497,7 @@ class OrderModel {
   final OrderRemainingTimeModel? remainingTime;
   final OrderCustomerModel? customer;
   final String? deliveryDeadline;
+  final OrderOwnerLocationModel? finalLocation;
   final List<OrderLineProductModel> orderItemLines;
   final List<OrderOfferBundleModel> orderOfferBundles;
   final int? mealPreparationMinutes;
@@ -512,6 +532,7 @@ class OrderModel {
     this.remainingTime,
     this.customer,
     this.deliveryDeadline,
+    this.finalLocation,
     this.orderItemLines = const [],
     this.orderOfferBundles = const [],
     this.mealPreparationMinutes,
@@ -525,6 +546,14 @@ class OrderModel {
     final customerModel = _orderCustomerFromJson(json['customer']);
     final parsedItemLines = _orderItemLinesFromJson(json['items']);
     final parsedOfferBundles = _orderOfferBundlesFromJson(json['offers']);
+
+    OrderOwnerLocationModel? finalLocationModel;
+    final fl = json['finalLocation'];
+    if (fl is Map) {
+      finalLocationModel = OrderOwnerLocationModel.fromJson(
+        Map<String, dynamic>.from(fl),
+      );
+    }
 
     double? lat;
     double? lng;
@@ -661,6 +690,7 @@ class OrderModel {
       remainingTime: remainingTimeModel,
       customer: customerModel,
       deliveryDeadline: json['deliveryDeadline']?.toString(),
+      finalLocation: finalLocationModel,
       orderItemLines: parsedItemLines,
       orderOfferBundles: parsedOfferBundles,
     );
@@ -694,6 +724,7 @@ class OrderModel {
       'remainingTime': remainingTime?.toJson(),
       'customer': customer?.toJson(),
       'deliveryDeadline': deliveryDeadline,
+      'finalLocation': finalLocation?.toJson(),
       'mealPreparationMinutes': mealPreparationMinutes,
       'deliveryTimeMinutes': deliveryTimeMinutes,
       'orderItemLines': orderItemLines.map((e) => e.toJson()).toList(),

@@ -6,7 +6,7 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_common.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/delivery_order_meal_prep_countdown.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/preperation_countdoun/delivery_order_meal_prep_countdown.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,13 +27,13 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
     final addr = order.owner?.address?.trim().isNotEmpty == true
         ? order.owner!.address!.trim()
         : (order.pickupAddress?.trim().isNotEmpty == true
-            ? order.pickupAddress!.trim()
-            : '');
+              ? order.pickupAddress!.trim()
+              : '');
     final phone = order.owner?.phone?.trim().isNotEmpty == true
         ? order.owner!.phone!.trim()
         : (order.merchantPhone?.trim().isNotEmpty == true
-            ? order.merchantPhone!.trim()
-            : null);
+              ? order.merchantPhone!.trim()
+              : null);
 
     final mealMins = order.mealPreparationMinutes ?? order.preparationTime;
     final deliveryMins = order.deliveryTimeMinutes;

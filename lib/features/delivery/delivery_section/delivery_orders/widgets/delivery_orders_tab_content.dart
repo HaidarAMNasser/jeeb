@@ -46,9 +46,9 @@ class _DeliveryOrdersTabContentBodyState
   String get _status {
     switch (widget.type) {
       case DeliveryOrderTabType.pending:
-        return '${OrderStatus.pending.apiWireValue},${OrderStatus.assigned.apiWireValue},${OrderStatus.searching.apiWireValue}';
+        return OrderStatus.assigned.apiWireValue;
       case DeliveryOrderTabType.completed:
-        return '${OrderStatus.completed.apiWireValue},${OrderStatus.delivered.apiWireValue}';
+        return OrderStatus.completed.apiWireValue;
       case DeliveryOrderTabType.cancelled:
         return OrderStatus.cancelled.apiWireValue;
     }
@@ -100,8 +100,8 @@ class _DeliveryOrdersTabContentBodyState
 
     switch (widget.type) {
       case DeliveryOrderTabType.pending:
-        message = AppTranslation.noPendingOrders;
-        icon = Icons.hourglass_empty_rounded;
+        message = AppTranslation.noAssignedOrders;
+        icon = Icons.delivery_dining_rounded;
         break;
       case DeliveryOrderTabType.completed:
         message = AppTranslation.noCompletedOrders;

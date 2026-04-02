@@ -14,7 +14,7 @@ import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_header.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_price_section.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_home_map.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/map_details/delivery_order_details_route_map.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/delivery_order_details_lines_section.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/delivery_order_details_restaurant_section.dart';
 import '../widgets/order_details_status_badge.dart';
@@ -23,12 +23,29 @@ import 'package:jeeb_app/features/delivery/order/order_details/presentation/bloc
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class DeliveryOrderDetailsPage extends StatelessWidget {
+class DeliveryOrderDetailsPage extends StatefulWidget {
   final String orderId;
 
   const DeliveryOrderDetailsPage({super.key, required this.orderId});
+
+  @override
+  State<DeliveryOrderDetailsPage> createState() =>
+      _DeliveryOrderDetailsPageState();
+}
+
+class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
+  DateTime? _lastAutoRefreshAt;
+  static const Duration _autoRefreshCooldown = Duration(seconds: 8);
+
+  void _safeRefreshDetails(BuildContext context) {
+    final now = DateTime.now();
+    final last = _lastAutoRefreshAt;
+    if (last != null && now.difference(last) < _autoRefreshCooldown) return;
+    if (context.read<OrderDetailsBloc>().state is OrderDetailsLoading) return;
+    _lastAutoRefreshAt = now;
+    context.read<OrderDetailsBloc>().add(GetOrderDetailsEvent(widget.orderId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +53,8 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) =>
-              di.sl<OrderDetailsBloc>()..add(GetOrderDetailsEvent(orderId)),
+              di.sl<OrderDetailsBloc>()
+                ..add(GetOrderDetailsEvent(widget.orderId)),
         ),
         BlocProvider(create: (context) => di.sl<ManageOrderBloc>()),
       ],
@@ -50,9 +68,7 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                 context,
               ).showSnackBar(SnackBar(content: Text(state.message)));
               // Refresh order details after successful action
-              context.read<OrderDetailsBloc>().add(
-                GetOrderDetailsEvent(orderId),
-              );
+              _safeRefreshDetails(context);
             } else if (state is ManageOrderError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -75,7 +91,7 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                 isSuccess: (s) => s is OrderDetailsLoaded,
                 successBuilder: (context, s) {
                   final order = (s as OrderDetailsLoaded).order;
-                  return _buildContent(context, order, orderId);
+                  return _buildContent(context, order);
                 },
               );
             },
@@ -85,14 +101,10 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    OrderEntity order,
-    String orderId,
-  ) {
+  Widget _buildContent(BuildContext context, OrderEntity order) {
     final status = OrderStatus.fromString(order.status);
     void refreshDetails() {
-      context.read<OrderDetailsBloc>().add(GetOrderDetailsEvent(orderId));
+      _safeRefreshDetails(context);
     }
 
     final productsSumMinor = order.products.fold<int>(
@@ -103,23 +115,20 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
     final itemsMinor = order.itemsTotal != null
         ? order.itemsTotal!.round()
         : (order.itemLines.isEmpty
-            ? productsSumMinor
-            : order.itemLines.fold<int>(
-                0,
-                (s, e) => s + e.lineTotalMinor,
-              ));
+              ? productsSumMinor
+              : order.itemLines.fold<int>(0, (s, e) => s + e.lineTotalMinor));
     final offersMinor = order.offersTotal?.round() ?? 0;
     final totalMinor = order.totalPrice != null
         ? order.totalPrice!.round()
         : productsSumMinor + feeMinor;
     final fromOwnerRestaurant = order.owner?.restaurantName?.trim();
-    final restaurantName = (fromOwnerRestaurant != null &&
-            fromOwnerRestaurant.isNotEmpty)
+    final restaurantName =
+        (fromOwnerRestaurant != null && fromOwnerRestaurant.isNotEmpty)
         ? fromOwnerRestaurant
         : (order.products.isNotEmpty
-            ? order.products.first.merchantName ??
-                AppTranslation.restaurantName
-            : AppTranslation.restaurantName);
+              ? order.products.first.merchantName ??
+                    AppTranslation.restaurantName
+              : AppTranslation.restaurantName);
 
     return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: AppPadding.p25),
@@ -145,25 +154,12 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
             ),
           ),
 
-          // Map
-          DeliveryHomeMap(
-            latitude: order.latitude,
-            longitude: order.longitude,
-            markers: {
-              if (order.latitude != null && order.longitude != null)
-                Marker(
-                  markerId: MarkerId(order.id),
-                  position: LatLng(order.latitude!, order.longitude!),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueOrange,
-                  ),
-                  infoWindow: InfoWindow(
-                    title: order.displayCustomerName ?? AppTranslation.customer,
-                    snippet: order.displayCustomerAddressLine ??
-                        order.deliveryAddress,
-                  ),
-                ),
-            },
+          // Map: restaurant vs customer drop-off + route
+          DeliveryOrderDetailsRouteMap(
+            key: ValueKey(
+              '${order.id}_${order.restaurantLatitude}_${order.restaurantLongitude}_${order.dropoffLatitude}_${order.dropoffLongitude}',
+            ),
+            order: order,
           ),
 
           SizedBox(height: AppHeight.s24),
@@ -180,8 +176,8 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
                         order.displayCustomerName ?? AppTranslation.customer,
                     recipientAddress:
                         order.displayCustomerAddressLine ??
-                            order.deliveryAddress ??
-                            '',
+                        order.deliveryAddress ??
+                        '',
                     totalPrice: totalMinor,
                   ),
                 ),
@@ -218,10 +214,11 @@ class DeliveryOrderDetailsPage extends StatelessWidget {
           SizedBox(height: AppHeight.s32),
 
           // Action Buttons
-          OrderDetailsActionButtons(
+          DeliveryOrderActionButtons(
             order: order,
             status: status,
             onRefreshOrder: refreshDetails,
+            padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
           ),
         ],
       ),

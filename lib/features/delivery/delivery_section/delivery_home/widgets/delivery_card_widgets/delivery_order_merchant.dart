@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_common.dart';
-import 'package:slide_countdown/slide_countdown.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/preperation_countdoun/delivery_order_hms_slide_countdown.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -11,11 +11,13 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 class DeliveryOrderMerchant extends StatelessWidget {
   final String restaurantName;
   final Duration preparationDuration;
+  final bool showPreparationTimer;
 
   const DeliveryOrderMerchant({
     super.key,
     required this.restaurantName,
     required this.preparationDuration,
+    this.showPreparationTimer = true,
   });
 
   @override
@@ -47,7 +49,7 @@ class DeliveryOrderMerchant extends StatelessWidget {
             ],
           ),
         ),
-        _buildPreparationTimer(),
+        if (showPreparationTimer) _buildPreparationTimer(),
       ],
     );
   }
@@ -65,24 +67,10 @@ class DeliveryOrderMerchant extends StatelessWidget {
           ),
         ),
         SizedBox(height: AppHeight.s4),
-        SlideCountdown(
-          duration: preparationDuration,
-          decoration: BoxDecoration(
-            color: ColorManager.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(AppSize.s8),
-          ),
-          style: getSemiBoldStyle(
-            fontSize: AppFontSize.s12,
-            color: ColorManager.primary,
-          ),
-          separatorStyle: getSemiBoldStyle(
-            fontSize: AppFontSize.s12,
-            color: ColorManager.primary,
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: AppPadding.p8,
-            vertical: AppPadding.p2,
-          ),
+        DeliveryOrderHmsSlideCountdown(
+          remaining: preparationDuration,
+          variant: DeliveryOrderCountdownVariant.mealPrep,
+          dense: true,
         ),
       ],
     );

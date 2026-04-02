@@ -25,6 +25,7 @@ extension OrderRemainingTimeTextMapper on OrderRemainingTimeTextModel {
   OrderRemainingTimeTextEntity toDomain() {
     return OrderRemainingTimeTextEntity(
       text: text,
+      hours: hours,
       minutes: minutes,
       seconds: seconds,
     );
@@ -118,6 +119,7 @@ extension OrderMapper on OrderModel {
       deliveryDeadline: deliveryDeadline != null
           ? DateTime.tryParse(deliveryDeadline!)
           : null,
+      finalLocation: finalLocation?.toDomain(),
       itemLines: orderItemLines.map((e) => e.toDomain()).toList(),
       offerBundles: orderOfferBundles.map((e) => e.toDomain()).toList(),
     );

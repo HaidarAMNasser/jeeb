@@ -349,6 +349,7 @@ class AppTranslation {
   static String get orderSubtotal => 'order_subtotal'.tr();
   static String get preparationTime => 'preparation_time'.tr();
   static String get orderMealPrepRemaining => 'order_meal_prep_remaining'.tr();
+  static String get deliveryAcceptTimeLeft => 'delivery_accept_time_left'.tr();
   static String get orderDetailsOffers => 'order_details_offers'.tr();
   static String get orderDetailsItems => 'order_details_items'.tr();
   static String get orderUnitPrice => 'order_unit_price'.tr();
@@ -470,6 +471,7 @@ class AppTranslation {
   static String get favorites => 'favorites'.tr();
   static String get noFavoritesFound => 'no_favorites_found'.tr();
   static String get noPendingOrders => 'no_pending_orders'.tr();
+  static String get noAssignedOrders => 'no_assigned_orders'.tr();
   static String get noCompletedOrders => 'no_completed_orders'.tr();
   static String get noCancelledOrders => 'no_cancelled_orders'.tr();
   static String get callCustomer => 'call_customer'.tr();

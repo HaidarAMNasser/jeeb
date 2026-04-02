@@ -85,17 +85,19 @@ class OrderCustomerEntity extends Equatable {
 /// Inner `remainingTime.text` (human label + optional parts).
 class OrderRemainingTimeTextEntity extends Equatable {
   final String? text;
+  final int? hours;
   final int? minutes;
   final int? seconds;
 
   const OrderRemainingTimeTextEntity({
     this.text,
+    this.hours,
     this.minutes,
     this.seconds,
   });
 
   @override
-  List<Object?> get props => [text, minutes, seconds];
+  List<Object?> get props => [text, hours, minutes, seconds];
 }
 
 class OrderRemainingTimeEntity extends Equatable {
@@ -212,6 +214,8 @@ class OrderEntity extends Equatable {
   final OrderRemainingTimeEntity? remainingTime;
   final OrderCustomerEntity? customer;
   final DateTime? deliveryDeadline;
+  /// Customer drop-off when set; otherwise use [latitude]/[longitude] from `deliveryCoordinates`.
+  final OrderOwnerLocationEntity? finalLocation;
   final List<OrderLineProductEntity> itemLines;
   final List<OrderOfferBundleEntity> offerBundles;
 
@@ -246,6 +250,7 @@ class OrderEntity extends Equatable {
     this.remainingTime,
     this.customer,
     this.deliveryDeadline,
+    this.finalLocation,
     this.itemLines = const [],
     this.offerBundles = const [],
   });
@@ -265,6 +270,14 @@ class OrderEntity extends Equatable {
     if (d != null && d.isNotEmpty) return d;
     return customer?.address?.trim();
   }
+
+  /// Restaurant (`owner.location`).
+  double? get restaurantLatitude => owner?.location?.lat;
+  double? get restaurantLongitude => owner?.location?.lng;
+
+  /// Drop-off: `finalLocation` if present, else `deliveryCoordinates` ([latitude]/[longitude]).
+  double? get dropoffLatitude => finalLocation?.lat ?? latitude;
+  double? get dropoffLongitude => finalLocation?.lng ?? longitude;
 
   @override
   List<Object?> get props => [
@@ -298,6 +311,7 @@ class OrderEntity extends Equatable {
     remainingTime,
     customer,
     deliveryDeadline,
+    finalLocation,
     itemLines,
     offerBundles,
   ];
