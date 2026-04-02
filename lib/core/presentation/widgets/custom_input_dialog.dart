@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -15,6 +16,7 @@ class CustomInputDialog extends StatefulWidget {
   final String? initialValue;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomInputDialog({
     super.key,
@@ -24,6 +26,7 @@ class CustomInputDialog extends StatefulWidget {
     this.initialValue,
     this.keyboardType = TextInputType.text,
     this.validator,
+    this.inputFormatters,
   });
 
   /// Shows the dialog and returns the entered text if confirmed, otherwise null.
@@ -35,6 +38,7 @@ class CustomInputDialog extends StatefulWidget {
     String? initialValue,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return showDialog<String>(
       context: context,
@@ -45,6 +49,7 @@ class CustomInputDialog extends StatefulWidget {
         initialValue: initialValue,
         keyboardType: keyboardType,
         validator: validator,
+        inputFormatters: inputFormatters,
       ),
     );
   }
@@ -105,6 +110,7 @@ class _CustomInputDialogState extends State<CustomInputDialog> {
               child: TextFormField(
                 controller: _controller,
                 keyboardType: widget.keyboardType,
+                inputFormatters: widget.inputFormatters,
                 style: getRegularStyle(
                   fontSize: AppFontSize.s14,
                   color: ColorManager.titlesColor,

@@ -26,16 +26,9 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
   Widget _buildScreen(int index) {
     switch (index) {
       case 0:
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider<DeliveryHomeBloc>(
-              create: (_) => di.sl<DeliveryHomeBloc>()
-                ..add(const LoadDeliveryHomeEvent()),
-            ),
-            BlocProvider<ManageOrderBloc>(
-              create: (_) => di.sl<ManageOrderBloc>(),
-            ),
-          ],
+        return BlocProvider<DeliveryHomeBloc>(
+          create: (_) => di.sl<DeliveryHomeBloc>()
+            ..add(const LoadDeliveryHomeEvent()),
           child: const DeliveryHomePage(),
         );
       case 1:
@@ -52,9 +45,11 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorManager.background,
-      body: _buildScreen(_currentIndex),
+    return BlocProvider<ManageOrderBloc>(
+      create: (_) => di.sl<ManageOrderBloc>(),
+      child: Scaffold(
+        backgroundColor: ColorManager.background,
+        body: _buildScreen(_currentIndex),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: ColorManager.primaryDark,
@@ -99,6 +94,7 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

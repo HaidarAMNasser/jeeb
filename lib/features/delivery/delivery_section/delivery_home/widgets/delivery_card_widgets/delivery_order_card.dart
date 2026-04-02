@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
-import 'package:flutter/services.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/order_details_action_buttons.dart';
 import 'delivery_order_header.dart';
 import 'delivery_order_merchant.dart';
 import '../delivery_order_items_list.dart';
 import 'delivery_order_price_section.dart';
+import 'delivery_merchant_phone_row.dart';
+import 'delivery_order_card_footer.dart';
 
 class DeliveryOrderCard extends StatelessWidget {
   final OrderEntity order;
@@ -24,6 +20,7 @@ class DeliveryOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = OrderStatus.fromString(order.status);
     final productsSumMinor = order.products.fold<int>(
       0,
       (sum, p) => sum + p.displayPrice,
@@ -47,10 +44,13 @@ class DeliveryOrderCard extends StatelessWidget {
     // Recipient (Customer) info
     final recipientName = order.displayCustomerName ??
         (order.deliveryMan?.name ?? AppTranslation.customer);
-    final recipientAddress = order.displayCustomerAddressLine ??
-        (order.deliveryMan?.cityName ?? '');
+    final recipientAddress = order.displayCustomerAddressLine ?? '';
 
-    final preparationMinutes = order.preparationTime ?? 15;
+    final preparationMinutes = order.mealPreparationMinutes ?? order.preparationTime;
+    final showPreparationTimer =
+        status == OrderStatus.assigned &&
+        preparationMinutes != null &&
+        preparationMinutes > 0;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
@@ -96,8 +96,9 @@ class DeliveryOrderCard extends StatelessWidget {
                         DeliveryOrderMerchant(
                           restaurantName: restaurantName,
                           preparationDuration: Duration(
-                            minutes: preparationMinutes,
+                            minutes: preparationMinutes ?? 0,
                           ),
+                          showPreparationTimer: showPreparationTimer,
                         ),
                         SizedBox(height: AppHeight.s24),
                         DeliveryOrderItemsList(products: order.products),
@@ -112,10 +113,10 @@ class DeliveryOrderCard extends StatelessWidget {
                             order.merchantPhone!.isNotEmpty &&
                             order.hideMerchantPhone != true) ...[
                           SizedBox(height: AppHeight.s16),
-                          _buildMerchantPhone(context, order.merchantPhone!),
+                          DeliveryMerchantPhoneRow(phone: order.merchantPhone!),
                         ],
                         SizedBox(height: AppHeight.s16),
-                        _DeliveryOrderFooter(
+                        DeliveryOrderCardFooter(
                           orderId: order.id,
                           status: order.status,
                         ),
@@ -123,176 +124,19 @@ class DeliveryOrderCard extends StatelessWidget {
                     ),
                   ),
                   // Driver Action Section (In-card details)
-                  _buildActionSection(context),
+                  DeliveryOrderActionButtons(
+                    order: order,
+                    status: status,
+                    padding: EdgeInsets.zero,
+                    dense: true,
+                    showRejectButton: false,
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildMerchantPhone(BuildContext context, String phone) {
-    return Row(
-      children: [
-        Icon(
-          Icons.phone_android,
-          size: AppSize.s16,
-          color: ColorManager.textSecondary,
-        ),
-        SizedBox(width: AppWidth.s8),
-        CustomText(
-          text: phone,
-          textStyle: getMediumStyle(
-            fontSize: AppFontSize.s14,
-            color: ColorManager.titlesColor,
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          icon: Icon(
-            Icons.copy_all_outlined,
-            size: AppSize.s20,
-            color: ColorManager.primary,
-          ),
-          onPressed: () {
-            Clipboard.setData(ClipboardData(text: phone));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Phone copied to clipboard')),
-            );
-          },
-          constraints: const BoxConstraints(),
-          padding: EdgeInsets.zero,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionSection(BuildContext context) {
-    final status = OrderStatus.fromString(order.status);
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(AppPadding.p16),
-      decoration: BoxDecoration(
-        color: ColorManager.primary.withOpacity(0.05),
-        border: Border(
-          top: BorderSide(
-            color: ColorManager.primary.withOpacity(0.1),
-            width: 1,
-          ),
-        ),
-      ),
-      child: Column(
-        children: [
-          if (order.customerPhone != null &&
-              order.customerPhone!.isNotEmpty) ...[
-            _buildActionButton(
-              text: '${AppTranslation.callCustomer} (${order.customerPhone})',
-              color: Colors.blueGrey,
-              icon: Icons.phone,
-              onPressed: () =>
-                  launchUrl(Uri.parse('tel:${order.customerPhone}')),
-            ),
-            SizedBox(height: AppHeight.s12),
-          ],
-          if (status == OrderStatus.assigned)
-            _buildActionButton(
-              text: AppTranslation.confirmPickup,
-              color: Colors.blue,
-              icon: Icons.shopping_bag_outlined,
-              onPressed: () => context.read<ManageOrderBloc>().add(
-                ConfirmPickupEvent(
-                  id: order.id,
-                  reason: AppTranslation.pickedUp,
-                ),
-              ),
-            )
-          else if (status == OrderStatus.pickedUp)
-            _buildActionButton(
-              text: AppTranslation.markAsDelivered,
-              color: Colors.green,
-              icon: Icons.delivery_dining,
-              onPressed: () => context.read<ManageOrderBloc>().add(
-                MarkAsDeliveredEvent(
-                  id: order.id,
-                  reason: AppTranslation.handedToCustomer,
-                  lat: 0,
-                  lng: 0,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required String text,
-    required Color color,
-    required VoidCallback onPressed,
-    IconData? icon,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: AppHeight.s45,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSize.s12),
-          ),
-          elevation: 0,
-        ),
-        onPressed: onPressed,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: Colors.white, size: 18),
-              SizedBox(width: AppWidth.s8),
-            ],
-            CustomText(
-              text: text,
-              textStyle: getBoldStyle(
-                fontSize: AppFontSize.s14,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DeliveryOrderFooter extends StatelessWidget {
-  final String orderId;
-  final String? status;
-
-  const _DeliveryOrderFooter({required this.orderId, this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CustomText(
-          text: status ?? '',
-          textStyle: getSemiBoldStyle(
-            fontSize: AppFontSize.s10,
-            color: ColorManager.primary.withOpacity(0.7),
-          ),
-        ),
-        CustomText(
-          text: 'Order #$orderId',
-          textStyle: TextStyle(
-            fontSize: AppFontSize.s10,
-            color: ColorManager.textSecondary.withOpacity(0.5),
-          ),
-        ),
-      ],
     );
   }
 }

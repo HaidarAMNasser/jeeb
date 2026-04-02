@@ -27,7 +27,7 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
     result.fold(
       (failure) => emit(ManageOrderError(message: failure.message)),
       (_) => emit(
-        const ManageOrderSuccess(message: 'Order assigned successfully'),
+        const ManageOrderSuccess(kind: ManageOrderSuccessKind.acceptDelivery),
       ),
     );
   }
@@ -41,7 +41,7 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
     result.fold(
       (failure) => emit(ManageOrderError(message: failure.message)),
       (_) => emit(
-        const ManageOrderSuccess(message: 'Order picked up successfully'),
+        const ManageOrderSuccess(kind: ManageOrderSuccessKind.confirmPickup),
       ),
     );
   }
@@ -60,7 +60,7 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
     result.fold(
       (failure) => emit(ManageOrderError(message: failure.message)),
       (_) => emit(
-        const ManageOrderSuccess(message: 'Order delivered successfully'),
+        const ManageOrderSuccess(kind: ManageOrderSuccessKind.markDelivered),
       ),
     );
   }
@@ -74,7 +74,7 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
     result.fold(
       (failure) => emit(ManageOrderError(message: failure.message)),
       (_) => emit(
-        const ManageOrderSuccess(message: 'Order released back to pool'),
+        const ManageOrderSuccess(kind: ManageOrderSuccessKind.rejectDelivery),
       ),
     );
   }

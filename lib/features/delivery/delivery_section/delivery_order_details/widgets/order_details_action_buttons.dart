@@ -5,29 +5,41 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching cards/delivery_accept_timer_badge.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class OrderDetailsActionButtons extends StatelessWidget {
+class DeliveryOrderActionButtons extends StatelessWidget {
   final OrderEntity order;
   final OrderStatus status;
+  final VoidCallback? onRefreshOrder;
+  final EdgeInsetsGeometry padding;
+  final bool dense;
+  final bool showRejectButton;
 
-  const OrderDetailsActionButtons({
+  const DeliveryOrderActionButtons({
     super.key,
     required this.order,
     required this.status,
+    this.onRefreshOrder,
+    this.padding = EdgeInsets.zero,
+    this.dense = false,
+    this.showRejectButton = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
+      padding: padding,
       child: BlocBuilder<ManageOrderBloc, ManageOrderState>(
         builder: (context, state) {
           final isLoading = state is ManageOrderLoading;
+          final gap = dense ? AppHeight.s8 : AppHeight.s12;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -42,17 +54,62 @@ class OrderDetailsActionButtons extends StatelessWidget {
                   onPressed: () =>
                       launchUrl(Uri.parse('tel:${order.customerPhone}')),
                 ),
-                SizedBox(height: AppHeight.s12),
+                SizedBox(height: gap),
               ],
-              if (status == OrderStatus.readyForPickup)
+              if (status == OrderStatus.searching ||
+                  status == OrderStatus.pending) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: AppTranslation.acceptDelivery,
+                        height: AppHeight.s45,
+                        isLoading: isLoading,
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                                final minutes =
+                                    await AcceptDeliveryEstimatedTimeDialog.show(
+                                  context,
+                                );
+                                if (!context.mounted || minutes == null) {
+                                  return;
+                                }
+                                context.read<ManageOrderBloc>().add(
+                                      AcceptDeliveryEvent(
+                                        id: order.id,
+                                        deliveryTime: minutes,
+                                      ),
+                                    );
+                              },
+                      ),
+                    ),
+                    SizedBox(width: dense ? AppWidth.s12 : AppWidth.s16),
+                    DeliveryAcceptTimerBadge(
+                      key: ValueKey('accept_badge_${order.id}'),
+                      order: order,
+                      onExpired: onRefreshOrder,
+                    ),
+                  ],
+                ),
+              ] else if (status == OrderStatus.readyForPickup)
                 _buildButton(
                   text: AppTranslation.acceptDelivery,
                   color: ColorManager.primary,
                   icon: Icons.check_circle_outline,
                   isLoading: isLoading,
-                  onPressed: () => context.read<ManageOrderBloc>().add(
-                    AcceptDeliveryEvent(id: order.id, deliveryTime: 30),
-                  ),
+                  onPressed: () async {
+                    final minutes =
+                        await AcceptDeliveryEstimatedTimeDialog.show(context);
+                    if (!context.mounted || minutes == null) return;
+                    context.read<ManageOrderBloc>().add(
+                      AcceptDeliveryEvent(
+                        id: order.id,
+                        deliveryTime: minutes,
+                      ),
+                    );
+                  },
                 )
               else if (status == OrderStatus.assigned) ...[
                 _buildButton(
@@ -64,19 +121,21 @@ class OrderDetailsActionButtons extends StatelessWidget {
                     ConfirmPickupEvent(id: order.id, reason: AppTranslation.pickedUp),
                   ),
                 ),
-                SizedBox(height: AppHeight.s12),
-                _buildButton(
-                  text: AppTranslation.rejectDelivery,
-                  color: Colors.red,
-                  icon: Icons.cancel_outlined,
-                  isLoading: isLoading,
-                  onPressed: () => context.read<ManageOrderBloc>().add(
-                    RejectDeliveryEvent(
-                      id: order.id,
-                      reason: AppTranslation.unableToDeliver,
+                if (showRejectButton) ...[
+                  SizedBox(height: gap),
+                  _buildButton(
+                    text: AppTranslation.rejectDelivery,
+                    color: Colors.red,
+                    icon: Icons.cancel_outlined,
+                    isLoading: isLoading,
+                    onPressed: () => context.read<ManageOrderBloc>().add(
+                      RejectDeliveryEvent(
+                        id: order.id,
+                        reason: AppTranslation.unableToDeliver,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ] else if (status == OrderStatus.pickedUp)
                 _buildButton(
                   text: AppTranslation.markAsDelivered,
@@ -108,7 +167,7 @@ class OrderDetailsActionButtons extends StatelessWidget {
   }) {
     return SizedBox(
       width: double.infinity,
-      height: AppHeight.s50,
+      height: dense ? AppHeight.s45 : AppHeight.s50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
@@ -137,7 +196,7 @@ class OrderDetailsActionButtons extends StatelessWidget {
                   CustomText(
                     text: text,
                     textStyle: getBoldStyle(
-                      fontSize: AppFontSize.s16,
+                      fontSize: dense ? AppFontSize.s14 : AppFontSize.s16,
                       color: Colors.white,
                     ),
                   ),
@@ -146,4 +205,15 @@ class OrderDetailsActionButtons extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Backwards-compatible alias (old name used in details page).
+@Deprecated('Use DeliveryOrderActionButtons')
+class OrderDetailsActionButtons extends DeliveryOrderActionButtons {
+  const OrderDetailsActionButtons({
+    super.key,
+    required super.order,
+    required super.status,
+    super.onRefreshOrder,
+  });
 }

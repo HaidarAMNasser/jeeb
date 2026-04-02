@@ -1,5 +1,13 @@
 part of 'manage_order_bloc.dart';
 
+/// Which manage-order action succeeded (used for localized snackbars).
+enum ManageOrderSuccessKind {
+  acceptDelivery,
+  confirmPickup,
+  markDelivered,
+  rejectDelivery,
+}
+
 abstract class ManageOrderState extends Equatable {
   const ManageOrderState();
 
@@ -16,12 +24,12 @@ class ManageOrderLoading extends ManageOrderState {
 }
 
 class ManageOrderSuccess extends ManageOrderState {
-  final String message;
+  final ManageOrderSuccessKind kind;
 
-  const ManageOrderSuccess({required this.message});
+  const ManageOrderSuccess({required this.kind});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [kind];
 }
 
 class ManageOrderError extends ManageOrderState {

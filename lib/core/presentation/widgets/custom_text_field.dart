@@ -69,6 +69,7 @@ class CustomTextField extends StatelessWidget {
           onSubmitted: onSubmitted,
           inputFormatters: inputFormatters,
           maxLength: maxLength,
+          cursorColor: ColorManager.primary,
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: prefixIcon,
@@ -97,9 +98,10 @@ class CustomTextField extends StatelessWidget {
             filled: true,
             fillColor: filledColor ?? ColorManager.defaultWhite,
           ),
+          // Dark text on light fill — defaultWhite fill + defaultWhite text was invisible.
           style: getRegularStyle(
             fontSize: AppFontSize.s14,
-            color: textColor ?? ColorManager.defaultWhite,
+            color: textColor ?? ColorManager.productNameColor,
           ),
         ),
       ],

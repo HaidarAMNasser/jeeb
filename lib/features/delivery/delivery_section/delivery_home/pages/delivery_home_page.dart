@@ -18,11 +18,16 @@ import 'package:geolocator/geolocator.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_card.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_home_map.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 
-import 'package:jeeb_app/core/presentation/widgets/confirmation_dialog.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_available_order_card.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/manage_order_success_message.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching%20cards/delivery_searching_order_card.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
+import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 
 class DeliveryHomePage extends StatefulWidget {
   const DeliveryHomePage({super.key});
@@ -35,18 +40,72 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
   double? _currentLat;
   double? _currentLng;
   StreamSubscription<Position>? _locationSubscription;
+  DateTime? _lastAutoRefreshAt;
+  static const Duration _autoRefreshCooldown = Duration(seconds: 8);
+
+  final Map<String, StreamSubscription<String?>> _statusSubs = {};
+  final Map<String, String?> _lastKnownStatus = {};
 
   @override
   void initState() {
     super.initState();
     _startLocationUpdates();
     context.read<DeliveryHomeBloc>().add(const LoadDeliveryHomeEvent());
+    _ensureProfileLoaded();
+  }
+
+  void _ensureProfileLoaded() {
+    final profileBloc = context.read<ProfileBloc>();
+    final s = profileBloc.state;
+    if (s is ProfileLoaded || s is ProfileLoading) return;
+    profileBloc.add(const GetProfile());
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
+    _cancelAllStatusSubs();
     super.dispose();
+  }
+
+  void _watchOrderStatuses(List<OrderEntity> orders) {
+    final activeIds = orders.map((o) => o.id).toSet();
+
+    // Cancel subs for orders no longer visible.
+    _statusSubs.keys
+        .where((id) => !activeIds.contains(id))
+        .toList()
+        .forEach((id) {
+      _statusSubs.remove(id)?.cancel();
+      _lastKnownStatus.remove(id);
+    });
+
+    // Start subs for new orders.
+    for (final order in orders) {
+      if (_statusSubs.containsKey(order.id)) continue;
+      _lastKnownStatus[order.id] = order.status;
+      _statusSubs[order.id] = di
+          .sl<OrderStatusRtdbService>()
+          .watchOrderStatusWire(order.id)
+          .listen((wire) {
+        if (!mounted || wire == null || wire.trim().isEmpty) return;
+        final prev = _lastKnownStatus[order.id];
+        final normalizedWire = wire.trim().toUpperCase();
+        final normalizedPrev = prev?.trim().toUpperCase();
+        if (normalizedWire != normalizedPrev) {
+          _lastKnownStatus[order.id] = wire;
+          _safeAutoRefreshHome();
+        }
+      }, onError: (_) {});
+    }
+  }
+
+  void _cancelAllStatusSubs() {
+    for (final sub in _statusSubs.values) {
+      sub.cancel();
+    }
+    _statusSubs.clear();
+    _lastKnownStatus.clear();
   }
 
   Future<void> _startLocationUpdates() async {
@@ -58,17 +117,31 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
               distanceFilter: 5,
             ),
           )
-          .listen((position) {
-            if (mounted) {
-              setState(() {
-                _currentLat = position.latitude;
-                _currentLng = position.longitude;
-              });
-            }
-          });
+          .listen(
+            (position) {
+              if (mounted) {
+                setState(() {
+                  _currentLat = position.latitude;
+                  _currentLng = position.longitude;
+                });
+              }
+            },
+            onError: (_) {
+              // Permission denied / stream failure: ignore and keep home usable.
+            },
+          );
     } catch (_) {
       // Permission handled in helper
     }
+  }
+
+  void _safeAutoRefreshHome() {
+    final now = DateTime.now();
+    final last = _lastAutoRefreshAt;
+    if (last != null && now.difference(last) < _autoRefreshCooldown) return;
+    if (context.read<DeliveryHomeBloc>().state is DeliveryHomeLoading) return;
+    _lastAutoRefreshAt = now;
+    context.read<DeliveryHomeBloc>().add(const RefreshDeliveryHomeEvent());
   }
 
   @override
@@ -78,20 +151,12 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
         BlocListener<ManageOrderBloc, ManageOrderState>(
           listener: (context, state) {
             if (state is ManageOrderSuccess) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-              // Refresh home data
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.kind.localized)),
+              );
               context.read<DeliveryHomeBloc>().add(
                 const LoadDeliveryHomeEvent(),
               );
-              // Navigate to details if accepted
-              if (state.message.toLowerCase().contains('accepted') ||
-                  state.message.contains('تم قبول')) {
-                // We'll need the order ID from the event if possible,
-                // but since we don't have it in the state, we can use a callback
-                // or just rely on the UI refresh for now.
-              }
             }
           },
         ),
@@ -146,6 +211,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
       successBuilder: (context, s) {
         final loadedState = s as DeliveryHomeLoaded;
 
+        // Start realtime status listeners for searching orders only.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _watchOrderStatuses(loadedState.availableOrders);
+        });
+
         // Case 1: Assigned Order Exists
         if (loadedState.assignedOrder != null) {
           return SliverToBoxAdapter(
@@ -178,19 +248,23 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => DeliveryAvailableOrderCard(
+                  (context, index) => DeliverySearchingOrderCard(
+                    key: ValueKey(
+                      'searching_${loadedState.availableOrders[index].id}',
+                    ),
                     order: loadedState.availableOrders[index],
-                    onTimerExpired: () {
-                      context.read<DeliveryHomeBloc>().add(
-                        const LoadDeliveryHomeEvent(),
-                      );
-                    },
+                    onTimerExpired: null,
                     onTap: () {
+                      final o = loadedState.availableOrders[index];
+                      if (OrderStatus.fromString(o.status) ==
+                          OrderStatus.searching) {
+                        return;
+                      }
                       Navigator.pushNamed(
                         context,
                         Routes.deliveryOrderDetails,
                         arguments: {
-                          'orderId': loadedState.availableOrders[index].id,
+                          'orderId': o.id,
                         },
                       );
                     },
@@ -255,16 +329,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     );
   }
 
-  void _confirmAcceptOrder(OrderEntity order) {
-    ConfirmationDialog.show(
-      context: context,
-      title: AppTranslation.confirmDelivery,
-      onConfirm: () {
-        context.read<ManageOrderBloc>().add(
-          AcceptDeliveryEvent(id: order.id, deliveryTime: 30),
-        );
-        // Navigation to details happens after success listener in build
-      },
+  Future<void> _confirmAcceptOrder(OrderEntity order) async {
+    final minutes = await AcceptDeliveryEstimatedTimeDialog.show(context);
+    if (!mounted || minutes == null) return;
+    context.read<ManageOrderBloc>().add(
+      AcceptDeliveryEvent(id: order.id, deliveryTime: minutes),
     );
   }
 

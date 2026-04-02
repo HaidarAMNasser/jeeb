@@ -348,6 +348,18 @@ class AppTranslation {
   static String get orderOffersTotal => 'order_offers_total'.tr();
   static String get orderSubtotal => 'order_subtotal'.tr();
   static String get preparationTime => 'preparation_time'.tr();
+  static String get orderMealPrepRemaining => 'order_meal_prep_remaining'.tr();
+  static String get deliveryAcceptTimeLeft => 'delivery_accept_time_left'.tr();
+  static String get orderDetailsOffers => 'order_details_offers'.tr();
+  static String get orderDetailsItems => 'order_details_items'.tr();
+  static String get orderUnitPrice => 'order_unit_price'.tr();
+  static String get orderLineTotal => 'order_line_total'.tr();
+  static String get orderDiscount => 'order_discount'.tr();
+  static String get orderQty => 'order_qty'.tr();
+  static String get orderOfferSubtotal => 'order_offer_subtotal'.tr();
+  static String get orderOfferDiscount => 'order_offer_discount'.tr();
+  static String orderEstimatedDeliveryMinutes(int minutes) =>
+      'order_estimated_delivery_minutes'.tr(args: [minutes.toString()]);
   static String get searchPlace => 'search_place'.tr();
   static String get enterLocationName => 'enter_location_name'.tr();
   static String get locationNotFound => 'location_not_found'.tr();
@@ -459,6 +471,7 @@ class AppTranslation {
   static String get favorites => 'favorites'.tr();
   static String get noFavoritesFound => 'no_favorites_found'.tr();
   static String get noPendingOrders => 'no_pending_orders'.tr();
+  static String get noAssignedOrders => 'no_assigned_orders'.tr();
   static String get noCompletedOrders => 'no_completed_orders'.tr();
   static String get noCancelledOrders => 'no_cancelled_orders'.tr();
   static String get callCustomer => 'call_customer'.tr();
@@ -470,4 +483,27 @@ class AppTranslation {
   static String get unableToDeliver => 'unable_to_deliver'.tr();
   static String get pickedUp => 'picked_up'.tr();
   static String get handedToCustomer => 'handed_to_customer'.tr();
+
+  /// Driver enters ETA (minutes) before calling accept-delivery API.
+  static String get acceptDeliveryEstimatedTimeTitle =>
+      'accept_delivery_estimated_time_title'.tr();
+  static String get acceptDeliveryEstimatedTimeLabel =>
+      'accept_delivery_estimated_time_label'.tr();
+  static String get acceptDeliveryEstimatedTimeHint =>
+      'accept_delivery_estimated_time_hint'.tr();
+  static String get acceptDeliveryEstimatedTimeEmpty =>
+      'accept_delivery_estimated_time_empty'.tr();
+  static String acceptDeliveryEstimatedTimeInvalid(int min, int max) =>
+      'accept_delivery_estimated_time_invalid'
+          .tr(args: [min.toString(), max.toString()]);
+
+  /// [ManageOrderBloc] success snackbars (after accept / pickup / delivered / reject).
+  static String get manageOrderSuccessAcceptDelivery =>
+      'manage_order_success_accept_delivery'.tr();
+  static String get manageOrderSuccessConfirmPickup =>
+      'manage_order_success_confirm_pickup'.tr();
+  static String get manageOrderSuccessMarkDelivered =>
+      'manage_order_success_mark_delivered'.tr();
+  static String get manageOrderSuccessRejectDelivery =>
+      'manage_order_success_reject_delivery'.tr();
 }

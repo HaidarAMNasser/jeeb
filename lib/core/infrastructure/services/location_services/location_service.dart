@@ -18,7 +18,9 @@ class LocationService {
     if (!hasPermission) {
       final granted = await LocationPermissionHelper.requestLocationPermission();
       if (!granted) {
-        throw Exception('Location permission not granted');
+        // Don't throw from a stream: callers won't catch it with try/catch around
+        // `.listen()`. Instead, return an empty stream so screens can still load.
+        return;
       }
     }
 

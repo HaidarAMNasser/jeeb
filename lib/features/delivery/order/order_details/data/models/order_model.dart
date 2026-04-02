@@ -39,8 +39,8 @@ class OrderOwnerLocationModel {
 
   factory OrderOwnerLocationModel.fromJson(Map<String, dynamic> json) {
     return OrderOwnerLocationModel(
-      lat: _toDouble(json['lat']),
-      lng: _toDouble(json['lng']),
+      lat: _toDouble(json['lat'] ?? json['latitude']),
+      lng: _toDouble(json['lng'] ?? json['longitude']),
     );
   }
 
@@ -163,14 +163,16 @@ OrderCustomerModel? _orderCustomerFromJson(dynamic v) {
   return OrderCustomerModel.fromJson(Map<String, dynamic>.from(v));
 }
 
-/// `remainingTime.text` from order list/detail (`text`, `minutes`, `seconds`).
+/// `remainingTime.text` from order list/detail (`text`, `hours`, `minutes`, `seconds`).
 class OrderRemainingTimeTextModel {
   final String? text;
+  final int? hours;
   final int? minutes;
   final int? seconds;
 
   const OrderRemainingTimeTextModel({
     this.text,
+    this.hours,
     this.minutes,
     this.seconds,
   });
@@ -178,6 +180,7 @@ class OrderRemainingTimeTextModel {
   factory OrderRemainingTimeTextModel.fromJson(Map<String, dynamic> json) {
     return OrderRemainingTimeTextModel(
       text: json['text']?.toString(),
+      hours: _toInt(json['hours'] ?? json['hour']),
       minutes: _toInt(json['minutes']),
       seconds: _toInt(json['seconds']),
     );
@@ -185,6 +188,7 @@ class OrderRemainingTimeTextModel {
 
   Map<String, dynamic> toJson() => {
         'text': text,
+        'hours': hours,
         'minutes': minutes,
         'seconds': seconds,
       };
@@ -198,9 +202,24 @@ class OrderRemainingTimeModel {
   factory OrderRemainingTimeModel.fromJson(Map<String, dynamic> json) {
     OrderRemainingTimeTextModel? inner;
     final t = json['text'];
+    // API variants:
+    // - Old: { "text": { "text": "...", "minutes": 1, "seconds": 59 } }
+    // - New: { "text": "...", "minutes": 0, "seconds": 0 }
     if (t is Map) {
-      inner = OrderRemainingTimeTextModel.fromJson(
-        Map<String, dynamic>.from(t),
+      inner = OrderRemainingTimeTextModel.fromJson(Map<String, dynamic>.from(t));
+    } else if (t != null) {
+      inner = OrderRemainingTimeTextModel(
+        text: t.toString(),
+        hours: _toInt(json['hours'] ?? json['hour']),
+        minutes: _toInt(json['minutes']),
+        seconds: _toInt(json['seconds']),
+      );
+    } else if (json['minutes'] != null || json['seconds'] != null) {
+      inner = OrderRemainingTimeTextModel(
+        text: null,
+        hours: _toInt(json['hours'] ?? json['hour']),
+        minutes: _toInt(json['minutes']),
+        seconds: _toInt(json['seconds']),
       );
     }
     return OrderRemainingTimeModel(text: inner);
@@ -316,6 +335,139 @@ List<ProductModel> _productsFromOrderApiJson(Map<String, dynamic> json) {
   return out;
 }
 
+/// Single product line on an order (`items[]` or offer `products[]`).
+class OrderLineProductModel {
+  final String lineId;
+  final String? productId;
+  final String productName;
+  final int quantity;
+  final int unitPriceMinor;
+  final int? originalUnitPriceMinor;
+  final int lineTotalMinor;
+  final int? productDiscountValueMinor;
+
+  const OrderLineProductModel({
+    required this.lineId,
+    this.productId,
+    required this.productName,
+    required this.quantity,
+    required this.unitPriceMinor,
+    this.originalUnitPriceMinor,
+    required this.lineTotalMinor,
+    this.productDiscountValueMinor,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'lineId': lineId,
+        'productId': productId,
+        'productName': productName,
+        'quantity': quantity,
+        'unitPriceMinor': unitPriceMinor,
+        'originalUnitPriceMinor': originalUnitPriceMinor,
+        'lineTotalMinor': lineTotalMinor,
+        'productDiscountValueMinor': productDiscountValueMinor,
+      };
+}
+
+class OrderOfferBundleModel {
+  final String id;
+  final String name;
+  final String? description;
+  final int? subtotalMinor;
+  final int? offerDiscountMinor;
+  final int? totalMinor;
+  final List<OrderLineProductModel> lines;
+
+  const OrderOfferBundleModel({
+    required this.id,
+    required this.name,
+    this.description,
+    this.subtotalMinor,
+    this.offerDiscountMinor,
+    this.totalMinor,
+    this.lines = const [],
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'subtotalMinor': subtotalMinor,
+        'offerDiscountMinor': offerDiscountMinor,
+        'totalMinor': totalMinor,
+        'lines': lines.map((e) => e.toJson()).toList(),
+      };
+}
+
+OrderLineProductModel _orderLineProductFromItemMap(Map<String, dynamic> m) {
+  final qty = _toInt(m['quantity']) ?? 1;
+  String name = '';
+  Map<String, dynamic>? pj;
+  final productJson = m['product'];
+  if (productJson is Map) {
+    pj = Map<String, dynamic>.from(productJson);
+    name = _localized(pj['name']);
+  } else {
+    name = _localized(m['productName']);
+  }
+  if (name.isEmpty) name = 'Item';
+  final unit = _toInt(m['unitPrice']) ?? 0;
+  final orig = _toInt(m['originalUnitPrice']);
+  final total = _toInt(m['totalPrice']) ?? 0;
+  final disc = _toInt(m['productDiscountValue']);
+  return OrderLineProductModel(
+    lineId: m['id']?.toString() ?? '',
+    productId: m['productId']?.toString() ?? pj?['id']?.toString(),
+    productName: name,
+    quantity: qty,
+    unitPriceMinor: unit,
+    originalUnitPriceMinor: orig,
+    lineTotalMinor: total,
+    productDiscountValueMinor: disc,
+  );
+}
+
+List<OrderLineProductModel> _orderItemLinesFromJson(dynamic items) {
+  final out = <OrderLineProductModel>[];
+  if (items is! List) return out;
+  for (final raw in items) {
+    if (raw is! Map) continue;
+    out.add(_orderLineProductFromItemMap(Map<String, dynamic>.from(raw)));
+  }
+  return out;
+}
+
+List<OrderOfferBundleModel> _orderOfferBundlesFromJson(dynamic offers) {
+  final out = <OrderOfferBundleModel>[];
+  if (offers is! List) return out;
+  for (final raw in offers) {
+    if (raw is! Map) continue;
+    final m = Map<String, dynamic>.from(raw);
+    final lineList = <OrderLineProductModel>[];
+    final prods = m['products'];
+    if (prods is List) {
+      for (final p in prods) {
+        if (p is! Map) continue;
+        lineList.add(
+          _orderLineProductFromItemMap(Map<String, dynamic>.from(p)),
+        );
+      }
+    }
+    out.add(
+      OrderOfferBundleModel(
+        id: m['id']?.toString() ?? '',
+        name: _localized(m['name']),
+        description: _localized(m['description']),
+        subtotalMinor: _toInt(m['subtotal']),
+        offerDiscountMinor: _toInt(m['offerDiscount']),
+        totalMinor: _toInt(m['total']),
+        lines: lineList,
+      ),
+    );
+  }
+  return out;
+}
+
 class OrderModel {
   final String id;
   final List<ProductModel>? products;
@@ -345,6 +497,11 @@ class OrderModel {
   final OrderRemainingTimeModel? remainingTime;
   final OrderCustomerModel? customer;
   final String? deliveryDeadline;
+  final OrderOwnerLocationModel? finalLocation;
+  final List<OrderLineProductModel> orderItemLines;
+  final List<OrderOfferBundleModel> orderOfferBundles;
+  final int? mealPreparationMinutes;
+  final int? deliveryTimeMinutes;
 
   OrderModel({
     required this.id,
@@ -375,6 +532,11 @@ class OrderModel {
     this.remainingTime,
     this.customer,
     this.deliveryDeadline,
+    this.finalLocation,
+    this.orderItemLines = const [],
+    this.orderOfferBundles = const [],
+    this.mealPreparationMinutes,
+    this.deliveryTimeMinutes,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -382,6 +544,16 @@ class OrderModel {
     final ownerModel = _orderOwnerFromJson(json['owner']);
     final remainingTimeModel = _remainingTimeFromJson(json['remainingTime']);
     final customerModel = _orderCustomerFromJson(json['customer']);
+    final parsedItemLines = _orderItemLinesFromJson(json['items']);
+    final parsedOfferBundles = _orderOfferBundlesFromJson(json['offers']);
+
+    OrderOwnerLocationModel? finalLocationModel;
+    final fl = json['finalLocation'];
+    if (fl is Map) {
+      finalLocationModel = OrderOwnerLocationModel.fromJson(
+        Map<String, dynamic>.from(fl),
+      );
+    }
 
     double? lat;
     double? lng;
@@ -389,9 +561,15 @@ class OrderModel {
     final dc = json['deliveryCoordinates'];
     if (dc is Map) {
       final m = Map<String, dynamic>.from(dc);
-      lat = _toDouble(m['latitude']);
-      lng = _toDouble(m['longitude']);
-      deliveryAddress = m['address']?.toString();
+      lat = _toDouble(m['latitude'] ?? m['lat']);
+      lng = _toDouble(m['longitude'] ?? m['lng'] ?? m['long']);
+      final addr = m['address']?.toString().trim();
+      if (addr != null && addr.isNotEmpty) {
+        deliveryAddress = addr;
+      } else {
+        final fa = m['fullAddress']?.toString().trim();
+        if (fa != null && fa.isNotEmpty) deliveryAddress = fa;
+      }
     }
     lat ??= _toDouble(json['latitude']);
     lng ??= _toDouble(json['longitude']);
@@ -452,8 +630,14 @@ class OrderModel {
       merchantId: ownerId?.toString(),
       createdAt: createdAt,
       updatedAt: json['updatedAt']?.toString(),
-      pickupAddress: json['pickup_address']?.toString() ?? ownerModel?.address,
-      deliveryAddress: deliveryAddress ?? json['delivery_address']?.toString(),
+      pickupAddress: () {
+        final oa = ownerModel?.address?.trim();
+        if (oa != null && oa.isNotEmpty) return ownerModel!.address;
+        return json['pickup_address']?.toString() ?? ownerModel?.address;
+      }(),
+      deliveryAddress: deliveryAddress ??
+          json['delivery_address']?.toString() ??
+          json['deliveryAddress']?.toString(),
       distance: json['distance']?.toString(),
       // Top-level only; use [customer] for nested fallback in UI.
       customerName:
@@ -494,15 +678,13 @@ class OrderModel {
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),
+      mealPreparationMinutes: _toInt(json['mealPreparationTime']),
+      deliveryTimeMinutes: _toInt(json['deliveryTime']),
       preparationTime: () {
-        final mp = json['mealPreparationTime'];
-        if (mp != null) {
-          return mp is int ? mp : int.tryParse(mp.toString());
-        }
-        final dt = json['deliveryTime'];
-        if (dt != null) {
-          return dt is int ? dt : int.tryParse(dt.toString());
-        }
+        final mp = _toInt(json['mealPreparationTime']);
+        if (mp != null) return mp;
+        final dt = _toInt(json['deliveryTime']);
+        if (dt != null) return dt;
         final legacy = json['preparation_time'];
         if (legacy != null) {
           return legacy is int ? legacy : int.tryParse(legacy.toString());
@@ -520,6 +702,9 @@ class OrderModel {
       remainingTime: remainingTimeModel,
       customer: customerModel,
       deliveryDeadline: json['deliveryDeadline']?.toString(),
+      finalLocation: finalLocationModel,
+      orderItemLines: parsedItemLines,
+      orderOfferBundles: parsedOfferBundles,
     );
   }
 
@@ -551,6 +736,11 @@ class OrderModel {
       'remainingTime': remainingTime?.toJson(),
       'customer': customer?.toJson(),
       'deliveryDeadline': deliveryDeadline,
+      'finalLocation': finalLocation?.toJson(),
+      'mealPreparationMinutes': mealPreparationMinutes,
+      'deliveryTimeMinutes': deliveryTimeMinutes,
+      'orderItemLines': orderItemLines.map((e) => e.toJson()).toList(),
+      'orderOfferBundles': orderOfferBundles.map((e) => e.toJson()).toList(),
     };
   }
 }
