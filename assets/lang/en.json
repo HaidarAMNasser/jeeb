@@ -382,5 +382,14 @@
   "order_number": "Order #",
   "unable_to_deliver": "Unable to deliver",
   "picked_up": "Picked up",
-  "handed_to_customer": "Handed to customer"
+  "handed_to_customer": "Handed to customer",
+  "accept_delivery_estimated_time_title": "Estimated delivery time",
+  "accept_delivery_estimated_time_label": "Minutes until delivery",
+  "accept_delivery_estimated_time_hint": "e.g. 30",
+  "accept_delivery_estimated_time_empty": "Please enter the estimated time in minutes",
+  "accept_delivery_estimated_time_invalid": "Enter a number between %s and %s minutes",
+  "manage_order_success_accept_delivery": "Delivery accepted successfully",
+  "manage_order_success_confirm_pickup": "Pickup confirmed successfully",
+  "manage_order_success_mark_delivered": "Order marked as delivered",
+  "manage_order_success_reject_delivery": "Order released — it is available for other drivers"
 }

@@ -264,11 +264,19 @@ class OrderEntity extends Equatable {
     return null;
   }
 
-  /// Drop-off address: `deliveryCoordinates` / `deliveryAddress`, else customer address.
+  /// Customer drop-off line: `deliveryCoordinates.address` (and top-level delivery fields
+  /// merged in [OrderModel]), then lat/lng from those coordinates, then `customer.address`.
   String? get displayCustomerAddressLine {
     final d = deliveryAddress?.trim();
     if (d != null && d.isNotEmpty) return d;
-    return customer?.address?.trim();
+    final lat = latitude;
+    final lng = longitude;
+    if (lat != null && lng != null) {
+      return '${lat.toStringAsFixed(6)}, ${lng.toStringAsFixed(6)}';
+    }
+    final c = customer?.address?.trim();
+    if (c != null && c.isNotEmpty) return c;
+    return null;
   }
 
   /// Restaurant (`owner.location`).

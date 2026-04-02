@@ -44,8 +44,7 @@ class DeliveryOrderCard extends StatelessWidget {
     // Recipient (Customer) info
     final recipientName = order.displayCustomerName ??
         (order.deliveryMan?.name ?? AppTranslation.customer);
-    final recipientAddress = order.displayCustomerAddressLine ??
-        (order.deliveryMan?.cityName ?? '');
+    final recipientAddress = order.displayCustomerAddressLine ?? '';
 
     final preparationMinutes = order.mealPreparationMinutes ?? order.preparationTime;
     final showPreparationTimer =

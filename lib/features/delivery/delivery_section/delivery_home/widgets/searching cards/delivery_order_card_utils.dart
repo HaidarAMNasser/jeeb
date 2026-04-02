@@ -27,8 +27,6 @@ String restaurantNameForOrder(OrderEntity order, String fallback) {
 String restaurantAddressForOrder(OrderEntity order) {
   final fromOwner = order.owner?.address?.trim();
   if (fromOwner != null && fromOwner.isNotEmpty) return fromOwner;
-  final pickup = order.pickupAddress?.trim();
-  if (pickup != null && pickup.isNotEmpty) return pickup;
   return '';
 }
 

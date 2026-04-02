@@ -26,9 +26,7 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final addr = order.owner?.address?.trim().isNotEmpty == true
         ? order.owner!.address!.trim()
-        : (order.pickupAddress?.trim().isNotEmpty == true
-              ? order.pickupAddress!.trim()
-              : '');
+        : '';
     final phone = order.owner?.phone?.trim().isNotEmpty == true
         ? order.owner!.phone!.trim()
         : (order.merchantPhone?.trim().isNotEmpty == true

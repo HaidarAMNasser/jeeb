@@ -561,9 +561,15 @@ class OrderModel {
     final dc = json['deliveryCoordinates'];
     if (dc is Map) {
       final m = Map<String, dynamic>.from(dc);
-      lat = _toDouble(m['latitude']);
-      lng = _toDouble(m['longitude']);
-      deliveryAddress = m['address']?.toString();
+      lat = _toDouble(m['latitude'] ?? m['lat']);
+      lng = _toDouble(m['longitude'] ?? m['lng'] ?? m['long']);
+      final addr = m['address']?.toString().trim();
+      if (addr != null && addr.isNotEmpty) {
+        deliveryAddress = addr;
+      } else {
+        final fa = m['fullAddress']?.toString().trim();
+        if (fa != null && fa.isNotEmpty) deliveryAddress = fa;
+      }
     }
     lat ??= _toDouble(json['latitude']);
     lng ??= _toDouble(json['longitude']);
@@ -624,8 +630,14 @@ class OrderModel {
       merchantId: ownerId?.toString(),
       createdAt: createdAt,
       updatedAt: json['updatedAt']?.toString(),
-      pickupAddress: json['pickup_address']?.toString() ?? ownerModel?.address,
-      deliveryAddress: deliveryAddress ?? json['delivery_address']?.toString(),
+      pickupAddress: () {
+        final oa = ownerModel?.address?.trim();
+        if (oa != null && oa.isNotEmpty) return ownerModel!.address;
+        return json['pickup_address']?.toString() ?? ownerModel?.address;
+      }(),
+      deliveryAddress: deliveryAddress ??
+          json['delivery_address']?.toString() ??
+          json['deliveryAddress']?.toString(),
       distance: json['distance']?.toString(),
       // Top-level only; use [customer] for nested fallback in UI.
       customerName:

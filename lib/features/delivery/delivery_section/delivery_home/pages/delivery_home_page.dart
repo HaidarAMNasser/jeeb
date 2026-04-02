@@ -20,8 +20,9 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widget
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_home_map.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 
-import 'package:jeeb_app/core/presentation/widgets/confirmation_dialog.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/manage_order_success_message.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching%20cards/delivery_searching_order_card.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
@@ -150,20 +151,12 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
         BlocListener<ManageOrderBloc, ManageOrderState>(
           listener: (context, state) {
             if (state is ManageOrderSuccess) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-              // Refresh home data
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.kind.localized)),
+              );
               context.read<DeliveryHomeBloc>().add(
                 const LoadDeliveryHomeEvent(),
               );
-              // Navigate to details if accepted
-              if (state.message.toLowerCase().contains('accepted') ||
-                  state.message.contains('تم قبول')) {
-                // We'll need the order ID from the event if possible,
-                // but since we don't have it in the state, we can use a callback
-                // or just rely on the UI refresh for now.
-              }
             }
           },
         ),
@@ -336,16 +329,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     );
   }
 
-  void _confirmAcceptOrder(OrderEntity order) {
-    ConfirmationDialog.show(
-      context: context,
-      title: AppTranslation.confirmDelivery,
-      onConfirm: () {
-        context.read<ManageOrderBloc>().add(
-          AcceptDeliveryEvent(id: order.id, deliveryTime: 30),
-        );
-        // Navigation to details happens after success listener in build
-      },
+  Future<void> _confirmAcceptOrder(OrderEntity order) async {
+    final minutes = await AcceptDeliveryEstimatedTimeDialog.show(context);
+    if (!mounted || minutes == null) return;
+    context.read<ManageOrderBloc>().add(
+      AcceptDeliveryEvent(id: order.id, deliveryTime: minutes),
     );
   }
 

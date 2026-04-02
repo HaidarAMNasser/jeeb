@@ -483,4 +483,27 @@ class AppTranslation {
   static String get unableToDeliver => 'unable_to_deliver'.tr();
   static String get pickedUp => 'picked_up'.tr();
   static String get handedToCustomer => 'handed_to_customer'.tr();
+
+  /// Driver enters ETA (minutes) before calling accept-delivery API.
+  static String get acceptDeliveryEstimatedTimeTitle =>
+      'accept_delivery_estimated_time_title'.tr();
+  static String get acceptDeliveryEstimatedTimeLabel =>
+      'accept_delivery_estimated_time_label'.tr();
+  static String get acceptDeliveryEstimatedTimeHint =>
+      'accept_delivery_estimated_time_hint'.tr();
+  static String get acceptDeliveryEstimatedTimeEmpty =>
+      'accept_delivery_estimated_time_empty'.tr();
+  static String acceptDeliveryEstimatedTimeInvalid(int min, int max) =>
+      'accept_delivery_estimated_time_invalid'
+          .tr(args: [min.toString(), max.toString()]);
+
+  /// [ManageOrderBloc] success snackbars (after accept / pickup / delivered / reject).
+  static String get manageOrderSuccessAcceptDelivery =>
+      'manage_order_success_accept_delivery'.tr();
+  static String get manageOrderSuccessConfirmPickup =>
+      'manage_order_success_confirm_pickup'.tr();
+  static String get manageOrderSuccessMarkDelivered =>
+      'manage_order_success_mark_delivered'.tr();
+  static String get manageOrderSuccessRejectDelivery =>
+      'manage_order_success_reject_delivery'.tr();
 }

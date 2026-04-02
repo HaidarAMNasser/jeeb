@@ -9,6 +9,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching cards/delivery_accept_timer_badge.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -65,12 +66,23 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                         text: AppTranslation.acceptDelivery,
                         height: AppHeight.s45,
                         isLoading: isLoading,
-                        onPressed: () => context.read<ManageOrderBloc>().add(
-                              AcceptDeliveryEvent(
-                                id: order.id,
-                                deliveryTime: 30,
-                              ),
-                            ),
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                                final minutes =
+                                    await AcceptDeliveryEstimatedTimeDialog.show(
+                                  context,
+                                );
+                                if (!context.mounted || minutes == null) {
+                                  return;
+                                }
+                                context.read<ManageOrderBloc>().add(
+                                      AcceptDeliveryEvent(
+                                        id: order.id,
+                                        deliveryTime: minutes,
+                                      ),
+                                    );
+                              },
                       ),
                     ),
                     SizedBox(width: dense ? AppWidth.s12 : AppWidth.s16),
@@ -87,9 +99,17 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                   color: ColorManager.primary,
                   icon: Icons.check_circle_outline,
                   isLoading: isLoading,
-                  onPressed: () => context.read<ManageOrderBloc>().add(
-                    AcceptDeliveryEvent(id: order.id, deliveryTime: 30),
-                  ),
+                  onPressed: () async {
+                    final minutes =
+                        await AcceptDeliveryEstimatedTimeDialog.show(context);
+                    if (!context.mounted || minutes == null) return;
+                    context.read<ManageOrderBloc>().add(
+                      AcceptDeliveryEvent(
+                        id: order.id,
+                        deliveryTime: minutes,
+                      ),
+                    );
+                  },
                 )
               else if (status == OrderStatus.assigned) ...[
                 _buildButton(

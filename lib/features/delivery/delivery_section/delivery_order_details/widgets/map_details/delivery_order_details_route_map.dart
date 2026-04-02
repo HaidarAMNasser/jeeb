@@ -145,7 +145,7 @@ class _DeliveryOrderDetailsRouteMapState
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(
             title: restaurantName,
-            snippet: o.pickupAddress ?? o.owner?.address,
+            snippet: o.owner?.address ?? o.pickupAddress,
           ),
         ),
       );
@@ -160,7 +160,8 @@ class _DeliveryOrderDetailsRouteMapState
           ),
           infoWindow: InfoWindow(
             title: o.displayCustomerName ?? AppTranslation.customer,
-            snippet: o.displayCustomerAddressLine ?? o.deliveryAddress,
+            snippet:
+                o.displayCustomerAddressLine ?? o.deliveryAddress ?? o.customer?.address,
           ),
         ),
       );

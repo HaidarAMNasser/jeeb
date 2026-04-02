@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
@@ -21,6 +22,7 @@ import '../widgets/order_details_status_badge.dart';
 import '../widgets/order_details_action_buttons.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/manage_order_success_message.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
@@ -64,15 +66,14 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
         body: BlocListener<ManageOrderBloc, ManageOrderState>(
           listener: (context, state) {
             if (state is ManageOrderSuccess) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-              // Refresh order details after successful action
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.kind.localized)),
+              );
               _safeRefreshDetails(context);
             } else if (state is ManageOrderError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.message),
+                  content: Text(state.message.tr()),
                   backgroundColor: Colors.red,
                 ),
               );
