@@ -58,6 +58,7 @@ class OrderBeforeConfirmPreview extends Equatable {
   const OrderBeforeConfirmPreview({
     required this.tipPerKilometerMinorUnits,
     required this.mediatorCommissionRatePercent,
+    required this.deliveryCostWithCommission,
     required this.merchant,
     required this.products,
     required this.productsTotalMinorUnits,
@@ -73,6 +74,7 @@ class OrderBeforeConfirmPreview extends Equatable {
   final int tipPerKilometerMinorUnits;
   final double mediatorCommissionRatePercent;
   final OrderBeforeConfirmMerchant merchant;
+  final int deliveryCostWithCommission;
   final List<OrderBeforeConfirmProductLine> products;
   final int productsTotalMinorUnits;
   final int distanceMeters;

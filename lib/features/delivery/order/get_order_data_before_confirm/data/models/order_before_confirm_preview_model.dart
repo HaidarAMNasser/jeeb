@@ -33,6 +33,7 @@ class OrderBeforeConfirmPreviewModel {
     }
 
     return OrderBeforeConfirmPreview(
+      deliveryCostWithCommission: _asInt(m['deliveryCostWithCommission']),
       tipPerKilometerMinorUnits: _asInt(m['tipPerKilometer']),
       mediatorCommissionRatePercent:
           _asDouble(m['mediatorCommissionRate']) ?? 0,

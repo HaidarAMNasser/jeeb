@@ -35,7 +35,7 @@ class BasketConfirmationDeliveryPreviewSection extends StatelessWidget {
           ),
           _row(
             AppTranslation.orderPreviewDeliveryCost,
-            '\$${preview.deliveryCostMinorUnits}',
+            '\$${preview.deliveryCostWithCommission}',
           ),
           SizedBox(height: AppHeight.s12),
           Divider(color: ColorManager.textSecondary.withValues(alpha: 0.2)),
