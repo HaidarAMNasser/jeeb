@@ -29,10 +29,10 @@ class ImageAsset {
   /// Same artwork as [orderStatusDelivered].
   static const String orderStatusCompleted = orderStatusDelivered;
 
-  /// Illustration for the journey inner plate; [stepIndex] 0–6 matches
-  /// [orderStatusToTimelineIndex] / timeline order (pending → delivered).
+  /// Illustration for the journey inner plate; [stepIndex] 0–8 matches
+  /// [orderStatusToTimelineIndex] (pending → delivered). Reuses assets where needed.
   static String timelineStepImagePath(int stepIndex) {
-    switch (stepIndex.clamp(0, 6)) {
+    switch (stepIndex.clamp(0, 8)) {
       case 0:
         return orderStatusPending;
       case 1:
@@ -40,12 +40,16 @@ class ImageAsset {
       case 2:
         return orderStatusPreparing;
       case 3:
-        return orderStatusReadyForPickup;
-      case 4:
         return orderStatusAssigned;
+      case 4:
+        return orderStatusPreparing;
       case 5:
-        return orderStatusOnTheWay;
+        return orderStatusReadyForPickup;
       case 6:
+        return orderStatusAssigned;
+      case 7:
+        return orderStatusOnTheWay;
+      case 8:
         return orderStatusDelivered;
       default:
         return orderStatusPending;

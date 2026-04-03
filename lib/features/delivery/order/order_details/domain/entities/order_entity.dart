@@ -287,6 +287,91 @@ class OrderEntity extends Equatable {
   double? get dropoffLatitude => finalLocation?.lat ?? latitude;
   double? get dropoffLongitude => finalLocation?.lng ?? longitude;
 
+  /// Line shown on order details (restaurant name from API).
+  String? get displayRestaurantName {
+    final r = owner?.restaurantName?.trim();
+    if (r != null && r.isNotEmpty) return r;
+    final o = owner;
+    if (o != null) {
+      final n = o.fullName.trim();
+      if (n.isNotEmpty) return n;
+    }
+    return null;
+  }
+
+  OrderEntity copyWith({
+    String? id,
+    List<ProductEntity>? products,
+    DeliveryManEntity? deliveryMan,
+    DateTime? date,
+    double? longitude,
+    double? latitude,
+    int? numberOfPeople,
+    String? status,
+    String? merchantId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? pickupAddress,
+    String? deliveryAddress,
+    String? distance,
+    String? customerName,
+    String? customerPhone,
+    double? totalPrice,
+    double? itemsTotal,
+    double? offersTotal,
+    double? deliveryFee,
+    double? deliveryEarning,
+    int? preparationTime,
+    int? mealPreparationMinutes,
+    int? deliveryTimeMinutes,
+    String? merchantPhone,
+    bool? hideMerchantPhone,
+    OrderOwnerEntity? owner,
+    OrderRemainingTimeEntity? remainingTime,
+    OrderCustomerEntity? customer,
+    DateTime? deliveryDeadline,
+    OrderOwnerLocationEntity? finalLocation,
+    List<OrderLineProductEntity>? itemLines,
+    List<OrderOfferBundleEntity>? offerBundles,
+  }) {
+    return OrderEntity(
+      id: id ?? this.id,
+      products: products ?? this.products,
+      deliveryMan: deliveryMan ?? this.deliveryMan,
+      date: date ?? this.date,
+      longitude: longitude ?? this.longitude,
+      latitude: latitude ?? this.latitude,
+      numberOfPeople: numberOfPeople ?? this.numberOfPeople,
+      status: status ?? this.status,
+      merchantId: merchantId ?? this.merchantId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      pickupAddress: pickupAddress ?? this.pickupAddress,
+      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
+      distance: distance ?? this.distance,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      totalPrice: totalPrice ?? this.totalPrice,
+      itemsTotal: itemsTotal ?? this.itemsTotal,
+      offersTotal: offersTotal ?? this.offersTotal,
+      deliveryFee: deliveryFee ?? this.deliveryFee,
+      deliveryEarning: deliveryEarning ?? this.deliveryEarning,
+      preparationTime: preparationTime ?? this.preparationTime,
+      mealPreparationMinutes:
+          mealPreparationMinutes ?? this.mealPreparationMinutes,
+      deliveryTimeMinutes: deliveryTimeMinutes ?? this.deliveryTimeMinutes,
+      merchantPhone: merchantPhone ?? this.merchantPhone,
+      hideMerchantPhone: hideMerchantPhone ?? this.hideMerchantPhone,
+      owner: owner ?? this.owner,
+      remainingTime: remainingTime ?? this.remainingTime,
+      customer: customer ?? this.customer,
+      deliveryDeadline: deliveryDeadline ?? this.deliveryDeadline,
+      finalLocation: finalLocation ?? this.finalLocation,
+      itemLines: itemLines ?? this.itemLines,
+      offerBundles: offerBundles ?? this.offerBundles,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

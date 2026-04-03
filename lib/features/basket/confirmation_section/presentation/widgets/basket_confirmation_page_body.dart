@@ -9,6 +9,7 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_bloc.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_event.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_state.dart';
+import 'package:jeeb_app/features/basket/confirmation_section/data/helpers/basket_confirmation_submit_hint.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_map_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_products_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_summary_section.dart';
@@ -98,9 +99,21 @@ class BasketConfirmationPageBody extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: state.isSubmitting
                     ? null
-                    : () => context.read<BasketConfirmationBloc>().add(
-                          const BasketConfirmationSubmitRequested(),
-                        ),
+                    : () {
+                        if (state.canSubmitOrder) {
+                          context.read<BasketConfirmationBloc>().add(
+                                const BasketConfirmationSubmitRequested(),
+                              );
+                        } else {
+                          showBasketConfirmationSubmitHintToast(
+                            isResolvingAddress: state.isResolvingAddress,
+                            name: state.name,
+                            street: state.street,
+                            addressDetails: state.addressDetails,
+                            phone: state.phone,
+                          );
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
                   padding: EdgeInsets.symmetric(

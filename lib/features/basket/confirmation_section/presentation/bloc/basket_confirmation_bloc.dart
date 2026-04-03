@@ -196,6 +196,22 @@ class BasketConfirmationBloc
     Emitter<BasketConfirmationState> emit,
   ) async {
     final s = state;
+    if (s.isResolvingAddress) {
+      _emitSubmitError(AppTranslation.basketConfirmWaitAddress, emit);
+      return;
+    }
+    if (s.name.trim().isEmpty) {
+      _emitSubmitError(AppTranslation.pleaseEnterFullName, emit);
+      return;
+    }
+    if (s.street.trim().isEmpty) {
+      _emitSubmitError(AppTranslation.pleaseEnterStreet, emit);
+      return;
+    }
+    if (s.addressDetails.trim().isEmpty) {
+      _emitSubmitError(AppTranslation.pleaseEnterAddressDetails, emit);
+      return;
+    }
     final ownerId = int.tryParse(s.merchantOwnerId ?? '');
     if (ownerId == null) {
       _emitSubmitError(AppTranslation.orderOwnerRequired, emit);
@@ -250,7 +266,7 @@ class BasketConfirmationBloc
       ),
       tipAmount: 0,
       cityId: s.profileCityId,
-      customerName: s.name.trim().isNotEmpty ? s.name.trim() : null,
+      customerName: s.name.trim(),
       customerPhone: phone,
     );
 

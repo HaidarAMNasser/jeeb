@@ -1,6 +1,6 @@
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 
-/// Localized copy for the 7 tracking steps (order matches timeline indices 0–6).
+/// Localized titles for the 9 tracking steps (indices 0–8, see [orderStatusToTimelineIndex]).
 class OrderStatusStepLabels {
   OrderStatusStepLabels._();
 
@@ -8,8 +8,10 @@ class OrderStatusStepLabels {
         AppTranslation.orderStepPlaced,
         AppTranslation.orderStepConfirmed,
         AppTranslation.orderStepSearching,
+        AppTranslation.orderStepAssigned,
+        AppTranslation.orderStepPreparing,
         AppTranslation.orderStepReady,
-        AppTranslation.orderStepWithDriver,
+        AppTranslation.orderStepPickedUpTimeline,
         AppTranslation.orderStepOnTheWay,
         AppTranslation.orderStepDelivered,
       ];

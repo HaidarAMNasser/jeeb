@@ -114,6 +114,18 @@ class BasketConfirmationState extends Equatable {
     );
   }
 
+  /// Profile + reverse geocode (or post–map-pick geocode) has finished.
+  bool get isAddressDataReady => !isResolvingAddress;
+
+  bool get hasAllRequiredFormFields =>
+      name.trim().isNotEmpty &&
+      street.trim().isNotEmpty &&
+      addressDetails.trim().isNotEmpty &&
+      phone.trim().isNotEmpty;
+
+  bool get canSubmitOrder =>
+      isAddressDataReady && hasAllRequiredFormFields && !isSubmitting;
+
   @override
   List<Object?> get props => [
         items,

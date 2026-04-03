@@ -16,6 +16,8 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
     required OrderStatusRtdbService orderStatusRtdb,
     double? deliveryLatitude,
     double? deliveryLongitude,
+    String? deliveryManName,
+    String? deliveryManPhone,
   }) : _orderStatusRtdb = orderStatusRtdb,
        _lastStatusWire = initialStatus.apiWireValue,
        super(
@@ -24,6 +26,8 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
            initialStatus,
            deliveryLatitude: deliveryLatitude,
            deliveryLongitude: deliveryLongitude,
+           deliveryManName: deliveryManName,
+           deliveryManPhone: deliveryManPhone,
          ),
        ) {
     on<OrderStatusToggleDemo>(_onToggleDemo);
@@ -196,7 +200,11 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
 
   void _onDemoTick(OrderStatusDemoTick event, Emitter<OrderStatusState> emit) {
     if (!state.demoRunning) return;
-    emit(state.copyWith(liveStepIndex: (state.liveStepIndex + 1) % 7));
+    emit(
+      state.copyWith(
+        liveStepIndex: (state.liveStepIndex + 1) % (kOrderTimelineStepMax + 1),
+      ),
+    );
   }
 
   @override

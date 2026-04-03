@@ -308,6 +308,28 @@ class AppTranslation {
   static String get orderStepWithDriver => 'order_step_with_driver'.tr();
   static String get orderStepOnTheWay => 'order_step_on_the_way'.tr();
   static String get orderStepDelivered => 'order_step_delivered'.tr();
+  static String get orderStepAssigned => 'order_step_assigned'.tr();
+  static String get orderStepPickedUpTimeline => 'order_step_picked_up_timeline'.tr();
+
+  /// Tracking screen — one-line explanation under the status title.
+  static String get orderTrackHintPending => 'order_track_hint_pending'.tr();
+  static String get orderTrackHintConfirmed => 'order_track_hint_confirmed'.tr();
+  static String get orderTrackHintSearching => 'order_track_hint_searching'.tr();
+  static String get orderTrackHintAssigned => 'order_track_hint_assigned'.tr();
+  static String orderTrackHintAssignedCourier(String name, String phone) =>
+      'order_track_hint_assigned_courier'.tr(
+        namedArgs: {'name': name, 'phone': phone.isEmpty ? '—' : phone},
+      );
+  static String get orderTrackHintPreparing => 'order_track_hint_preparing'.tr();
+  static String get orderTrackHintReadyForPickup =>
+      'order_track_hint_ready_for_pickup'.tr();
+  static String get orderTrackHintPickedUp => 'order_track_hint_picked_up'.tr();
+  static String get orderTrackHintOnTheWay => 'order_track_hint_on_the_way'.tr();
+  static String get orderTrackHintDelivered => 'order_track_hint_delivered'.tr();
+  static String get orderTrackHintCancelled => 'order_track_hint_cancelled'.tr();
+  static String get orderTrackHintRejected => 'order_track_hint_rejected'.tr();
+  static String get orderTrackHintUnknown => 'order_track_hint_unknown'.tr();
+
   static String get orderStatusViewDetails => 'order_status_view_details'.tr();
   static String get orderStatusDemoStart => 'order_status_demo_start'.tr();
   static String get orderStatusDemoStop => 'order_status_demo_stop'.tr();
@@ -322,6 +344,13 @@ class AppTranslation {
   static String get addressDetails => 'address_details'.tr();
   static String get fullName => 'full_name'.tr();
   static String get enterFullName => 'enter_full_name'.tr();
+  static String get pleaseEnterFullName => 'please_enter_full_name'.tr();
+  static String get pleaseEnterStreet => 'please_enter_street'.tr();
+  static String get basketConfirmWaitAddress =>
+      'basket_confirm_wait_address'.tr();
+
+  static String get pleaseEnterAddressDetails =>
+      'please_enter_address_details'.tr();
 
   static String get locationUnavailable => 'location_unavailable'.tr();
   static String get chooseLocationOnMap => 'choose_location_on_map'.tr();

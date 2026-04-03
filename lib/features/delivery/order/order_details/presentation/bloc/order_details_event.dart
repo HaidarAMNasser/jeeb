@@ -16,3 +16,12 @@ class GetOrderDetailsEvent extends OrderDetailsEvent {
   List<Object> get props => [id];
 }
 
+class OrderDetailsRtdbStatusChanged extends OrderDetailsEvent {
+  final String statusWire;
+
+  const OrderDetailsRtdbStatusChanged(this.statusWire);
+
+  @override
+  List<Object> get props => [statusWire];
+}
+

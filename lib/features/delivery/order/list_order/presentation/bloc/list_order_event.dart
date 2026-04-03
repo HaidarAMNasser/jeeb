@@ -29,3 +29,16 @@ class GetOrdersEvent extends ListOrderEvent {
   ];
 }
 
+class ListOrderRtdbStatusChanged extends ListOrderEvent {
+  final String orderId;
+  final String statusWire;
+
+  const ListOrderRtdbStatusChanged({
+    required this.orderId,
+    required this.statusWire,
+  });
+
+  @override
+  List<Object> get props => [orderId, statusWire];
+}
+

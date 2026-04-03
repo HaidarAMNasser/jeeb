@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/common/utils/asset_manager.dart';
+import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 
 /// Hero card: step image fills the **entire** rounded card (edge to edge).
@@ -10,7 +11,7 @@ class OrderStatusHeroImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final idx = timelineStepIndex.clamp(0, 6);
+    final idx = timelineStepIndex.clamp(0, kOrderTimelineStepMax);
     final path = ImageAsset.timelineStepImagePath(idx);
 
     return ClipRRect(

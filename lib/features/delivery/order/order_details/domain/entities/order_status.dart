@@ -3,13 +3,14 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 
 /// Maps backend [OrderStatus] strings (e.g. PENDING, DELIVERED).
+/// Declaration order matches the customer tracking timeline (see [orderStatusToTimelineIndex]).
 enum OrderStatus {
   pending,
   confirmed,
   searching,
+  assigned,
   preparing,
   readyForPickup,
-  assigned,
   pickedUp,
   onTheWay,
   delivered,
@@ -138,6 +139,45 @@ enum OrderStatus {
   /// True if complete/cancel actions are allowed (e.g. only for pending).
   bool get canCompleteOrCancel =>
       this == OrderStatus.pending || this == OrderStatus.readyForPickup;
+}
+
+/// Short explanation under the status badge on the tracking screen.
+extension OrderStatusTrackingCopy on OrderStatus {
+  /// Friendly line; for [assigned], pass courier name/phone when known.
+  String trackingHint({String? deliveryName, String? deliveryPhone}) {
+    switch (this) {
+      case OrderStatus.pending:
+        return AppTranslation.orderTrackHintPending;
+      case OrderStatus.confirmed:
+        return AppTranslation.orderTrackHintConfirmed;
+      case OrderStatus.searching:
+        return AppTranslation.orderTrackHintSearching;
+      case OrderStatus.assigned:
+        final n = deliveryName?.trim() ?? '';
+        final p = deliveryPhone?.trim() ?? '';
+        if (n.isNotEmpty) {
+          return AppTranslation.orderTrackHintAssignedCourier(n, p);
+        }
+        return AppTranslation.orderTrackHintAssigned;
+      case OrderStatus.preparing:
+        return AppTranslation.orderTrackHintPreparing;
+      case OrderStatus.readyForPickup:
+        return AppTranslation.orderTrackHintReadyForPickup;
+      case OrderStatus.pickedUp:
+        return AppTranslation.orderTrackHintPickedUp;
+      case OrderStatus.onTheWay:
+        return AppTranslation.orderTrackHintOnTheWay;
+      case OrderStatus.delivered:
+      case OrderStatus.completed:
+        return AppTranslation.orderTrackHintDelivered;
+      case OrderStatus.cancelled:
+        return AppTranslation.orderTrackHintCancelled;
+      case OrderStatus.rejected:
+        return AppTranslation.orderTrackHintRejected;
+      case OrderStatus.unknown:
+        return AppTranslation.orderTrackHintUnknown;
+    }
+  }
 }
 
 /// Icons for tracking / details UI (timeline, badges).

@@ -8,6 +8,8 @@ class OrderStatusState extends Equatable {
     required this.liveStepIndex,
     this.deliveryLatitude,
     this.deliveryLongitude,
+    this.deliveryManName,
+    this.deliveryManPhone,
     this.driverLatitude,
     this.driverLongitude,
     this.driverOnline = false,
@@ -20,6 +22,9 @@ class OrderStatusState extends Equatable {
   /// Customer drop-off from order `deliveryCoordinates` (map centers here first).
   final double? deliveryLatitude;
   final double? deliveryLongitude;
+  /// Shown on the assigned step when provided (from order details / list).
+  final String? deliveryManName;
+  final String? deliveryManPhone;
   final double? driverLatitude;
   final double? driverLongitude;
   final bool driverOnline;
@@ -27,11 +32,13 @@ class OrderStatusState extends Equatable {
   static int _staticTimelineIndex(OrderStatus status) {
     var idx = orderStatusToTimelineIndex(status);
     if (idx < 0) idx = 0;
-    return idx.clamp(0, 6);
+    return idx.clamp(0, kOrderTimelineStepMax);
   }
 
   int get displayIndex =>
-      demoRunning ? liveStepIndex.clamp(0, 6) : _staticTimelineIndex(routeStatus);
+      demoRunning
+          ? liveStepIndex.clamp(0, kOrderTimelineStepMax)
+          : _staticTimelineIndex(routeStatus);
 
   bool get showProblemBanner => orderStatusToTimelineIndex(routeStatus) < 0;
 
@@ -40,6 +47,8 @@ class OrderStatusState extends Equatable {
     OrderStatus routeStatus, {
     double? deliveryLatitude,
     double? deliveryLongitude,
+    String? deliveryManName,
+    String? deliveryManPhone,
   }) {
     return OrderStatusState(
       orderId: orderId,
@@ -48,6 +57,8 @@ class OrderStatusState extends Equatable {
       liveStepIndex: _staticTimelineIndex(routeStatus),
       deliveryLatitude: deliveryLatitude,
       deliveryLongitude: deliveryLongitude,
+      deliveryManName: deliveryManName,
+      deliveryManPhone: deliveryManPhone,
     );
   }
 
@@ -58,6 +69,8 @@ class OrderStatusState extends Equatable {
     int? liveStepIndex,
     double? deliveryLatitude,
     double? deliveryLongitude,
+    String? deliveryManName,
+    String? deliveryManPhone,
     double? driverLatitude,
     double? driverLongitude,
     bool? driverOnline,
@@ -70,6 +83,8 @@ class OrderStatusState extends Equatable {
       liveStepIndex: liveStepIndex ?? this.liveStepIndex,
       deliveryLatitude: deliveryLatitude ?? this.deliveryLatitude,
       deliveryLongitude: deliveryLongitude ?? this.deliveryLongitude,
+      deliveryManName: deliveryManName ?? this.deliveryManName,
+      deliveryManPhone: deliveryManPhone ?? this.deliveryManPhone,
       driverLatitude: clearDriverLocation
           ? null
           : (driverLatitude ?? this.driverLatitude),
@@ -88,6 +103,8 @@ class OrderStatusState extends Equatable {
         liveStepIndex,
         deliveryLatitude,
         deliveryLongitude,
+        deliveryManName,
+        deliveryManPhone,
         driverLatitude,
         driverLongitude,
         driverOnline,

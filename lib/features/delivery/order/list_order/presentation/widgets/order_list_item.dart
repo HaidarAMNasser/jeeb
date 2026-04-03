@@ -40,6 +40,10 @@ class OrderListItem extends StatelessWidget {
               if (order.latitude != null) 'deliveryLatitude': order.latitude,
               if (order.longitude != null)
                 'deliveryLongitude': order.longitude,
+              if (order.deliveryMan != null) ...{
+                'deliveryManName': order.deliveryMan!.name,
+                'deliveryManPhone': order.deliveryMan!.phone,
+              },
             },
           );
         }

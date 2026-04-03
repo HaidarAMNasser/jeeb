@@ -63,6 +63,15 @@ double? _routeArgAsDouble(dynamic value) {
   return double.tryParse(value.toString());
 }
 
+String? _routeArgString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) {
+    final t = value.trim();
+    return t.isEmpty ? null : t;
+  }
+  return value.toString().trim().isEmpty ? null : value.toString().trim();
+}
+
 /// Application Router
 class AppRouter {
   AppRouter._();
@@ -253,6 +262,8 @@ class AppRouter {
         );
         final deliveryLat = _routeArgAsDouble(osArgs?['deliveryLatitude']);
         final deliveryLng = _routeArgAsDouble(osArgs?['deliveryLongitude']);
+        final deliveryManName = _routeArgString(osArgs?['deliveryManName']);
+        final deliveryManPhone = _routeArgString(osArgs?['deliveryManPhone']);
         if (orderStatusId.isEmpty) {
           return _buildRoute(
             Scaffold(body: Center(child: Text('Order ID not provided'))),
@@ -269,6 +280,8 @@ class AppRouter {
                 initialStatus: initialStatus,
                 deliveryLatitude: deliveryLat,
                 deliveryLongitude: deliveryLng,
+                deliveryManName: deliveryManName,
+                deliveryManPhone: deliveryManPhone,
                 orderStatusRtdb: di.sl<OrderStatusRtdbService>(),
               ),
             ),

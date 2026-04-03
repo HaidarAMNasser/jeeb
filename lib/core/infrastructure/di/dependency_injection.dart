@@ -225,11 +225,18 @@ Future<void> init() async {
   );
   sl.registerFactory(() => MerchantDetailsRepository(sl(), sl()));
 
+  //! Firebase RTDB — live order status (tracking, list, details)
+  sl.registerLazySingleton<OrderStatusRtdbService>(
+    () => OrderStatusRtdbService(),
+  );
+
   sl.registerFactory<ListOrderRemoteDataSource>(
     () => ListOrderRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => ListOrderRepository(sl(), sl()));
-  sl.registerFactory(() => ListOrderBloc(sl()));
+  sl.registerFactory(
+    () => ListOrderBloc(sl(), sl<OrderStatusRtdbService>()),
+  );
 
   //! Create order (used by [BasketConfirmationBloc])
   sl.registerFactory<CreateOrderRemoteDataSource>(
@@ -242,11 +249,8 @@ Future<void> init() async {
     () => OrderDetailsRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
-  sl.registerFactory(() => OrderDetailsBloc(sl()));
-
-  //! Firebase RTDB — live order status (order tracking screen)
-  sl.registerLazySingleton<OrderStatusRtdbService>(
-    () => OrderStatusRtdbService(),
+  sl.registerFactory(
+    () => OrderDetailsBloc(sl(), sl<OrderStatusRtdbService>()),
   );
 
   //! Manage Order Dependencies

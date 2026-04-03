@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
+import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_date_card.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_delivery_man_card.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_delivery_map_preview.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_header_card.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_location_card.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_people_card.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_products_section.dart';
 
 class OrderDetailsContent extends StatelessWidget {
@@ -23,15 +20,46 @@ class OrderDetailsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final routeStatus = OrderStatus.fromString(order.status);
+    final restaurant = order.displayRestaurantName;
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(AppPadding.p16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Order ID and Status
-          OrderHeaderCard(order: order),
-          if (!orderStatusIsTerminal(routeStatus)) ...[
+          if (restaurant != null && restaurant.isNotEmpty) ...[
+            CustomText(
+              text: restaurant,
+              textStyle: getBoldStyle(
+                fontSize: AppFontSize.s20,
+                color: ColorManager.primary,
+              ),
+              maxLines: 3,
+              textOverflow: TextOverflow.ellipsis,
+            ),
             SizedBox(height: AppHeight.s12),
+          ],
+          if (order.status != null) ...[
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppPadding.p8,
+                vertical: AppPadding.p4,
+              ),
+              decoration: BoxDecoration(
+                color: routeStatus.color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppRadius.r8),
+              ),
+              child: CustomText(
+                text: routeStatus.displayLabel,
+                textStyle: getSemiBoldStyle(
+                  fontSize: AppFontSize.s11,
+                  color: routeStatus.color,
+                ),
+              ),
+            ),
+            SizedBox(height: AppHeight.s12),
+          ],
+          if (routeStatus == OrderStatus.onTheWay) ...[
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -39,11 +67,11 @@ class OrderDetailsContent extends StatelessWidget {
                   backgroundColor: ColorManager.primary,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
-                    vertical: AppPadding.p14,
-                    horizontal: AppPadding.p16,
+                    vertical: AppPadding.p12,
+                    horizontal: AppPadding.p14,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.r14),
+                    borderRadius: BorderRadius.circular(AppRadius.r12),
                   ),
                 ),
                 onPressed: () {
@@ -57,51 +85,23 @@ class OrderDetailsContent extends StatelessWidget {
                         'deliveryLatitude': order.latitude,
                       if (order.longitude != null)
                         'deliveryLongitude': order.longitude,
+                      if (order.deliveryMan != null) ...{
+                        'deliveryManName': order.deliveryMan!.name,
+                        'deliveryManPhone': order.deliveryMan!.phone,
+                      },
                     },
                   );
                 },
-                icon: const Icon(Icons.local_shipping_outlined),
+                icon: const Icon(Icons.my_location_outlined, size: 20),
                 label: Text(AppTranslation.orderTrackOrderCta),
               ),
             ),
-          ],
-          SizedBox(height: AppHeight.s16),
-
-          if (OrderStatus.fromString(order.status) == OrderStatus.onTheWay) ...[
-            OrderDeliveryMapSection(
-              mapBadgeLabel: AppTranslation.orderDeliveryMapBadge,
-              deliveryStatus: routeStatus,
-              latitude: order.latitude,
-              longitude: order.longitude,
-            ),
             SizedBox(height: AppHeight.s16),
           ],
-
-          // Date
-          if (order.date != null) ...[
-            OrderDateCard(date: order.date!),
-            SizedBox(height: AppHeight.s16),
-          ],
-
-          // Number of People
-          if (order.numberOfPeople != null) ...[
-            OrderPeopleCard(numberOfPeople: order.numberOfPeople!),
-            SizedBox(height: AppHeight.s16),
-          ],
-          // Products
           OrderProductsSection(products: order.products),
-
-          // Delivery Man
           if (order.deliveryMan != null) ...[
+            SizedBox(height: AppHeight.s16),
             OrderDeliveryManCard(deliveryMan: order.deliveryMan!),
-            SizedBox(height: AppHeight.s16),
-          ], // Location
-          if (order.latitude != null && order.longitude != null) ...[
-            OrderLocationCard(
-              latitude: order.latitude!,
-              longitude: order.longitude!,
-            ),
-            SizedBox(height: AppHeight.s16),
           ],
         ],
       ),
