@@ -93,14 +93,29 @@ class LocationPermissionHelper {
       return (latitude: null, longitude: null, permissionGranted: false);
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 400));
+    // After the OS permission dialog, the first fix is often delayed — retry.
+    await Future<void>.delayed(const Duration(milliseconds: 350));
 
-    Position? position = await getCurrentPosition();
-    if (position == null) {
+    Position? position;
+    for (var attempt = 0; attempt < 6; attempt++) {
+      if (attempt > 0) {
+        await Future<void>.delayed(
+          Duration(milliseconds: 350 + attempt * 250),
+        );
+      }
+
+      position = await _tryCurrentPosition(accuracy: LocationAccuracy.low);
+      if (position != null) break;
+
       try {
         position = await Geolocator.getLastKnownPosition();
       } catch (_) {}
+      if (position != null) break;
+
+      position = await _tryCurrentPosition(accuracy: LocationAccuracy.medium);
+      if (position != null) break;
     }
+
     if (position == null) {
       return (latitude: null, longitude: null, permissionGranted: true);
     }
@@ -109,5 +124,19 @@ class LocationPermissionHelper {
       longitude: position.longitude,
       permissionGranted: true,
     );
+  }
+
+  static Future<Position?> _tryCurrentPosition({
+    required LocationAccuracy accuracy,
+  }) async {
+    try {
+      if (!await isLocationPermissionGranted()) return null;
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      return await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(accuracy: accuracy),
+      );
+    } catch (_) {
+      return null;
+    }
   }
 }

@@ -8,7 +8,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/live_tracking_map_card.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/bloc/order_status_bloc.dart';
-import 'package:jeeb_app/features/basket/order_status_section/presentation/utils/order_status_step_labels.dart';
+import 'package:jeeb_app/core/common/classes/order_status_step_labels.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_badge_helper.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_hero_image.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_horizontal_timeline.dart';

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart'
-    show AppTranslation;
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
@@ -11,6 +9,7 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
+import 'package:jeeb_app/features/delivery/order/list_order/presentation/widgets/order_product_section.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
@@ -84,9 +83,9 @@ class OrderListItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: '${AppTranslation.order} #${order.id}',
-                            textStyle: getBoldStyle(
-                              fontSize: AppFontSize.s18,
+                            text:order.displayCustomerName ?? '',
+                            textStyle: getSemiBoldStyle(
+                              fontSize: AppFontSize.s16,
                               color: ColorManager.productNameColor,
                             ),
                             maxLines: 2,
@@ -149,37 +148,8 @@ class OrderListItem extends StatelessWidget {
                   ],
                 ),
               ],
-              if (order.products.isNotEmpty) ...[
-                SizedBox(height: AppHeight.s8),
-                CustomText(
-                  text:
-                      '${order.products.length} ${AppTranslation.productsCount}',
-                  textStyle: getRegularStyle(
-                    fontSize: AppFontSize.s12,
-                    color: ColorManager.descriptionColor,
-                  ),
-                ),
-              ],
-              if (order.numberOfPeople != null) ...[
-                SizedBox(height: AppHeight.s8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.people,
-                      size: AppSize.s16,
-                      color: ColorManager.descriptionColor,
-                    ),
-                    SizedBox(width: AppWidth.s4),
-                    CustomText(
-                      text: '${order.numberOfPeople} ${AppTranslation.people}',
-                      textStyle: getRegularStyle(
-                        fontSize: AppFontSize.s12,
-                        color: ColorManager.descriptionColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              OrderProductSection(order: order),
+
             ],
           ),
         ),

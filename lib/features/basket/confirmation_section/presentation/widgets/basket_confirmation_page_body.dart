@@ -10,9 +10,9 @@ import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_event.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_state.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/data/helpers/basket_confirmation_submit_hint.dart';
+import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_delivery_preview_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_map_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_products_section.dart';
-import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_summary_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_user_fields_section.dart';
 
 /// Main column + scroll + submit bar for [BasketConfirmationPage] (presentation only).
@@ -36,7 +36,7 @@ class BasketConfirmationPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = state.items.fold<int>(0, (sum, i) => sum + i.totalPrice);
+    // final total = state.items.fold<int>(0, (sum, i) => sum + i.totalPrice);
 
     return Column(
       children: [
@@ -44,7 +44,12 @@ class BasketConfirmationPageBody extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.all(AppPadding.p16),
             children: [
-              BasketConfirmationSummarySection(totalMinorUnits: total),
+              if (state.deliveryPreview != null) ...[
+                SizedBox(height: AppHeight.s12),
+                BasketConfirmationDeliveryPreviewSection(
+                  preview: state.deliveryPreview!,
+                ),
+              ],
               SizedBox(height: AppHeight.s16),
               BasketConfirmationProductsSection(
                 items: state.items,
@@ -102,8 +107,8 @@ class BasketConfirmationPageBody extends StatelessWidget {
                     : () {
                         if (state.canSubmitOrder) {
                           context.read<BasketConfirmationBloc>().add(
-                                const BasketConfirmationSubmitRequested(),
-                              );
+                            const BasketConfirmationSubmitRequested(),
+                          );
                         } else {
                           showBasketConfirmationSubmitHintToast(
                             isResolvingAddress: state.isResolvingAddress,
@@ -116,9 +121,7 @@ class BasketConfirmationPageBody extends StatelessWidget {
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
-                  padding: EdgeInsets.symmetric(
-                    vertical: AppPadding.p14,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: AppPadding.p14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.r12),
                   ),

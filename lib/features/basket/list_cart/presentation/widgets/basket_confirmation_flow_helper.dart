@@ -11,10 +11,16 @@ import 'package:jeeb_app/features/auth/profile/data/repositories/profile_reposit
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_bloc.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/pages/basket_confirmation_page.dart';
 import 'package:jeeb_app/features/delivery/order/create_order/data/repositories/create_order_repository.dart';
+import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/domain/entities/order_before_confirm_preview.dart';
 
 class BasketConfirmationFlowHelper {
   /// Opens confirmation. Reuses [BasketOrderLocationSession] until the app restarts.
-  static Future<void> open(BuildContext context, ListCartLoaded state) async {
+  /// [deliveryPreview] is the quote from `POST distance/calculate-delivery-cost`, if any.
+  static Future<void> open(
+    BuildContext context,
+    ListCartLoaded state, {
+    OrderBeforeConfirmPreview? deliveryPreview,
+  }) async {
     if (!BasketOrderLocationSession.hasCoordinates) {
       final picked = await pickCheckoutLocation(context);
       if (picked == null) return;
@@ -51,6 +57,7 @@ class BasketConfirmationFlowHelper {
             orderRepository: di.sl<CreateOrderRepository>(),
             profileRepository: di.sl<ProfileRepository>(),
             navigationService: di.sl<NavigationService>(),
+            deliveryPreview: deliveryPreview,
           ),
           child: const BasketConfirmationPage(),
         ),

@@ -1220,6 +1220,28 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   }
 
   @override
+  Future<Response> calculateDeliveryCost(Map<String, dynamic> body) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'POST', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'distance/calculate-delivery-cost',
+              queryParameters: queryParameters,
+              data: body,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
   Future<Response> getOrderDetails(String id) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

@@ -14,6 +14,7 @@ import 'package:jeeb_app/features/delivery/order/list_order/presentation/pages/l
 import 'package:jeeb_app/features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/pages/basket_page.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 
 class ClientNavigation extends StatefulWidget {
@@ -52,8 +53,15 @@ class _ClientNavigationState extends State<ClientNavigation> {
           child: const ListOrderPage(),
         );
       case 3:
-        return BlocProvider<ListCartBloc>.value(
-          value: di.sl<ListCartBloc>()..add(const LoadCartEvent()),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<ListCartBloc>.value(
+              value: di.sl<ListCartBloc>()..add(const LoadCartEvent()),
+            ),
+            BlocProvider<OrderBeforeConfirmBloc>(
+              create: (_) => di.sl<OrderBeforeConfirmBloc>(),
+            ),
+          ],
           child: const BasketPage(),
         );
       default:

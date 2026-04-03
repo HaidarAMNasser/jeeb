@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
+import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/domain/entities/order_before_confirm_preview.dart';
 
 /// Tells the UI to copy [BasketConfirmationState] into text controllers once.
 enum BasketConfirmationFieldSync {
@@ -28,6 +29,7 @@ class BasketConfirmationState extends Equatable {
   final bool isSubmitting;
   final String? submitError;
   final BasketConfirmationFieldSync pendingFieldSync;
+  final OrderBeforeConfirmPreview? deliveryPreview;
 
   const BasketConfirmationState({
     required this.items,
@@ -47,6 +49,7 @@ class BasketConfirmationState extends Equatable {
     required this.isSubmitting,
     this.submitError,
     this.pendingFieldSync = BasketConfirmationFieldSync.none,
+    this.deliveryPreview,
   });
 
   factory BasketConfirmationState.initial({
@@ -56,6 +59,7 @@ class BasketConfirmationState extends Equatable {
     required double latitude,
     required double longitude,
     required String initialPhone,
+    OrderBeforeConfirmPreview? deliveryPreview,
   }) {
     return BasketConfirmationState(
       items: items,
@@ -70,6 +74,7 @@ class BasketConfirmationState extends Equatable {
       phone: initialPhone,
       locationVersion: 0,
       isSubmitting: false,
+      deliveryPreview: deliveryPreview,
     );
   }
 
@@ -91,6 +96,7 @@ class BasketConfirmationState extends Equatable {
     bool? isSubmitting,
     String? submitError,
     BasketConfirmationFieldSync? pendingFieldSync,
+    OrderBeforeConfirmPreview? deliveryPreview,
     bool clearSubmitError = false,
   }) {
     return BasketConfirmationState(
@@ -111,6 +117,7 @@ class BasketConfirmationState extends Equatable {
       isSubmitting: isSubmitting ?? this.isSubmitting,
       submitError: clearSubmitError ? null : (submitError ?? this.submitError),
       pendingFieldSync: pendingFieldSync ?? this.pendingFieldSync,
+      deliveryPreview: deliveryPreview ?? this.deliveryPreview,
     );
   }
 
@@ -145,5 +152,6 @@ class BasketConfirmationState extends Equatable {
         isSubmitting,
         submitError,
         pendingFieldSync,
+        deliveryPreview,
       ];
 }

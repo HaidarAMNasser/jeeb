@@ -269,6 +269,10 @@ abstract class AppApiServiceClient {
   @POST("orders")
   Future<Response> createOrder(Map<String, dynamic> body);
 
+  /// Pre-checkout delivery quote (merchant + customer destination ± cart lines).
+  @POST("distance/calculate-delivery-cost")
+  Future<Response> calculateDeliveryCost(Map<String, dynamic> body);
+
   @GET("orders/{id}")
   Future<Response> getOrderDetails(@Path('id') String id);
 

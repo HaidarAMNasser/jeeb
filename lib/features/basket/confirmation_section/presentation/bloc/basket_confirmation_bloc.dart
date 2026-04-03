@@ -11,6 +11,7 @@ import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_state.dart';
 import 'package:jeeb_app/features/delivery/order/create_order/data/repositories/create_order_repository.dart';
 import 'package:jeeb_app/features/delivery/order/create_order/domain/entities/create_order_params.dart';
+import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/domain/entities/order_before_confirm_preview.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 class BasketConfirmationBloc
@@ -29,6 +30,7 @@ class BasketConfirmationBloc
     required CreateOrderRepository orderRepository,
     required ProfileRepository profileRepository,
     required NavigationService navigationService,
+    OrderBeforeConfirmPreview? deliveryPreview,
   }) : _orderRepository = orderRepository,
        _profileRepository = profileRepository,
        _navigationService = navigationService,
@@ -40,6 +42,7 @@ class BasketConfirmationBloc
            latitude: latitude,
            longitude: longitude,
            initialPhone: initialPhone,
+           deliveryPreview: deliveryPreview,
          ),
        ) {
     on<BasketConfirmationStarted>(_onStarted);

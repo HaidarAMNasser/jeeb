@@ -337,6 +337,21 @@ class AppTranslation {
   static String get orderOwnerRequired => 'order_owner_required'.tr();
   static String get orderItemsInvalid => 'order_items_invalid'.tr();
   static String get payOnDelivery => 'pay_on_delivery'.tr();
+  static String get orderPreviewTitle => 'order_preview_title'.tr();
+  static String get orderPreviewRestaurant => 'order_preview_restaurant'.tr();
+  static String get orderPreviewDistanceM => 'order_preview_distance_m'.tr();
+  static String get orderPreviewDistanceKm => 'order_preview_distance_km'.tr();
+  static String get orderPreviewPricePerKm => 'order_preview_price_per_km'.tr();
+  static String get orderPreviewCommissionRate =>
+      'order_preview_commission_rate'.tr();
+  static String get orderPreviewDeliveryCost =>
+      'order_preview_delivery_cost'.tr();
+  static String get orderPreviewMediatorCommission =>
+      'order_preview_mediator_commission'.tr();
+  static String get orderPreviewGrandTotal => 'order_preview_grand_total'.tr();
+  static String get orderPreviewDestination => 'order_preview_destination'.tr();
+  static String get orderPreviewPricedItems =>
+      'order_preview_priced_items'.tr();
   static String get selectedLocation => 'selected_location'.tr();
   static String get country => 'country'.tr();
   static String get city => 'city'.tr();

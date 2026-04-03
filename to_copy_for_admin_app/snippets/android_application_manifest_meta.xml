@@ -1,4 +1,0 @@
-        <!-- Google Maps SDK (Flutter google_maps_flutter) -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="${GOOGLE_MAPS_API_KEY}" />

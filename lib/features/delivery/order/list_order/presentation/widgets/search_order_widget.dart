@@ -10,10 +10,10 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
-class OrderHeaderCard extends StatelessWidget {
+class OrderHeaderWidget extends StatelessWidget {
   final OrderEntity order;
 
-  const OrderHeaderCard({super.key, required this.order});
+  const OrderHeaderWidget({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {

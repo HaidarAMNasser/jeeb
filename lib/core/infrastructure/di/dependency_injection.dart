@@ -56,6 +56,9 @@ import '../../../features/delivery/order/list_order/data/data_sources/list_order
 import '../../../features/delivery/order/list_order/data/repositories/list_order_repository.dart';
 import '../../../features/delivery/order/create_order/data/data_sources/create_order_remote_data_source.dart';
 import '../../../features/delivery/order/create_order/data/repositories/create_order_repository.dart';
+import '../../../features/delivery/order/get_order_data_before_confirm/data/data_sources/order_before_confirm_remote_data_source.dart';
+import '../../../features/delivery/order/get_order_data_before_confirm/data/repositories/order_before_confirm_repository.dart';
+import '../../../features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
 import '../../../features/delivery/order/order_details/data/data_sources/order_details_data_source.dart';
 import '../../../features/delivery/order/order_details/data/repositories/order_details_repository.dart';
 import '../../../features/delivery/order/manage_order/data/data_sources/manage_order_remote_data_source.dart';
@@ -243,6 +246,13 @@ Future<void> init() async {
     () => CreateOrderRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => CreateOrderRepository(sl(), sl()));
+
+  //! Pre-confirm delivery quote (`POST distance/calculate-delivery-cost`)
+  sl.registerFactory<OrderBeforeConfirmRemoteDataSource>(
+    () => OrderBeforeConfirmRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => OrderBeforeConfirmRepository(sl(), sl()));
+  sl.registerFactory(() => OrderBeforeConfirmBloc(sl()));
 
   //! Order Details Dependencies
   sl.registerFactory<OrderDetailsRemoteDataSource>(
