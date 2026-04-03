@@ -374,7 +374,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
         Options(method: 'POST', headers: headers, extra: extra)
             .compose(
               dio.options,
-              'users/firebase-token',
+              'auth/firebase-token',
               queryParameters: queryParameters,
               data: data,
             )

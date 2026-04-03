@@ -133,7 +133,7 @@ abstract class AppApiServiceClient {
   @POST("auth/logout")
   Future<Response> logout();
 
-  @POST("users/firebase-token")
+  @POST("auth/firebase-token")
   Future<Response> updateDeviceToken({
     @Field('token') required String token,
     @Field('platform') required String platform,

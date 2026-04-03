@@ -1,0 +1,8 @@
+// 1) Imports at top of dependency_injection.dart:
+import 'package:YOUR_ADMIN_PACKAGE/core/infrastructure/realtime/order_status_rtdb_service.dart';
+
+// 2) Inside your init/register function (e.g. after Firebase is initialized):
+  //! Firebase RTDB — live order status + driver location (tracking screen)
+  sl.registerLazySingleton<OrderStatusRtdbService>(
+    () => OrderStatusRtdbService(),
+  );
