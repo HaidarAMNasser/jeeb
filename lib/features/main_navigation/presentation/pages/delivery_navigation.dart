@@ -8,6 +8,7 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/pages/delivery_home_page.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_persistent_tracking_scope.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders/screens/delivery_orders_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
@@ -23,78 +24,74 @@ class DeliveryNavigation extends StatefulWidget {
 class _DeliveryNavigationState extends State<DeliveryNavigation> {
   int _currentIndex = 0;
 
-  Widget _buildScreen(int index) {
-    switch (index) {
-      case 0:
-        return BlocProvider<DeliveryHomeBloc>(
-          create: (_) => di.sl<DeliveryHomeBloc>()
-            ..add(const LoadDeliveryHomeEvent()),
-          child: const DeliveryHomePage(),
-        );
-      case 1:
-        return const DeliveryOrdersPage();
-      case 2:
-        return BlocProvider<LogoutBloc>(
-          create: (_) => di.sl<LogoutBloc>(),
-          child: const ProfilePage(),
-        );
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageOrderBloc>(
       create: (_) => di.sl<ManageOrderBloc>(),
-      child: Scaffold(
-        backgroundColor: ColorManager.background,
-        body: _buildScreen(_currentIndex),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: ColorManager.primaryDark,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+      child: BlocProvider<DeliveryHomeBloc>(
+        create: (_) => di.sl<DeliveryHomeBloc>()
+          ..add(const LoadDeliveryHomeEvent()),
+        child: DeliveryPersistentTrackingScope(
+          child: Scaffold(
+            backgroundColor: ColorManager.background,
+            body: IndexedStack(
+              index: _currentIndex,
+              children: [
+                const DeliveryHomePage(),
+                const DeliveryOrdersPage(),
+                BlocProvider<LogoutBloc>(
+                  create: (_) => di.sl<LogoutBloc>(),
+                  child: const ProfilePage(),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          backgroundColor: ColorManager.primaryDark,
-          selectedItemColor: ColorManager.primary,
-          unselectedItemColor: ColorManager.textSecondary,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: getSemiBoldStyle(
-            fontSize: AppFontSize.s12,
-            color: ColorManager.primary,
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                color: ColorManager.primaryDark,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) => setState(() => _currentIndex = index),
+                backgroundColor: ColorManager.primaryDark,
+                selectedItemColor: ColorManager.primary,
+                unselectedItemColor: ColorManager.textSecondary,
+                type: BottomNavigationBarType.fixed,
+                selectedLabelStyle: getSemiBoldStyle(
+                  fontSize: AppFontSize.s12,
+                  color: ColorManager.primary,
+                ),
+                unselectedLabelStyle: getRegularStyle(
+                  fontSize: AppFontSize.s12,
+                  color: ColorManager.textSecondary,
+                ),
+                items: [
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.home_outlined),
+                    activeIcon: const Icon(Icons.home),
+                    label: AppTranslation.home,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.local_shipping_outlined),
+                    activeIcon: const Icon(Icons.local_shipping),
+                    label: AppTranslation.myOrders,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.person_outline),
+                    activeIcon: const Icon(Icons.person),
+                    label: AppTranslation.profile,
+                  ),
+                ],
+              ),
+            ),
           ),
-          unselectedLabelStyle: getRegularStyle(
-            fontSize: AppFontSize.s12,
-            color: ColorManager.textSecondary,
-          ),
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home),
-              label: AppTranslation.home,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.local_shipping_outlined),
-              activeIcon: const Icon(Icons.local_shipping),
-              label: AppTranslation.myOrders,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: AppTranslation.profile,
-            ),
-          ],
         ),
-      ),
       ),
     );
   }

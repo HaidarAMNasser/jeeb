@@ -168,6 +168,7 @@
   "orders": "Orders",
   "order_details": "Order Details",
   "order_delivery_map_badge": "Delivery map",
+  "delivery_route_legend_walked": "Solid gradient: your path (live from tracking). Dashed: suggested drive.",
   "order_track_order_cta": "View live order status",
   "no_orders_found": "No orders found",
   "search_orders": "Search Orders",

@@ -331,6 +331,16 @@ abstract class AppApiServiceClient {
     @Query('page') int? page,
     @Query('limit') int? limit,
   });
+
+  /// Driver: appends `routeHistory` + `speed` on the order in Firebase (backend-only for other fields).
+  @POST("tracking/update-location")
+  Future<Response> updateDeliveryTrackingLocation(
+    @Field('orderId') int orderId,
+    @Field('lat') double lat,
+    @Field('lng') double lng,
+    @Field('timestamp') int timestamp,
+    @Field('speed') double speed,
+  );
 }
 
 // Annotations for API methods (simplified versions)

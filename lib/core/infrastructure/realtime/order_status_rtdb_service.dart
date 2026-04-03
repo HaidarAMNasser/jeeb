@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
 
 /// Backend RTDB URL (see `backend/real_taime/Firebase_Realtime_Database.md`).
 const String kOrderRtdbDatabaseUrl =
@@ -15,6 +16,17 @@ class OrderStatusRtdbService {
             );
 
   final FirebaseDatabase _db;
+
+  /// Live `/orders/{orderId}/routeHistory` (driver path; backend appends via tracking API).
+  Stream<List<RouteHistoryPoint>> watchOrderRouteHistory(String orderId) {
+    final id = orderId.trim();
+    if (id.isEmpty) {
+      return const Stream.empty();
+    }
+    return _db.ref('orders/$id/routeHistory').onValue.map((event) {
+      return RouteHistoryPoint.parseList(event.snapshot.value);
+    });
+  }
 
   /// Raw `status` string from RTDB (e.g. `PENDING`, `ON_THE_WAY`).
   Stream<String?> watchOrderStatusWire(String orderId) {
@@ -43,6 +55,23 @@ class OrderStatusRtdbService {
       if (v is double) return v.toInt();
       if (v is String) return int.tryParse(v.trim());
       return int.tryParse(v.toString());
+    });
+  }
+
+  /// Writes only `currentLat` / `currentLng` under `/drivers/{driverId}` (driver app; see Firebase doc).
+  Future<void> updateDriverLocation(int driverId, double lat, double lng) async {
+    if (driverId <= 0) return;
+    await _db.ref('drivers/$driverId').update({
+      'currentLat': lat,
+      'currentLng': lng,
+    });
+  }
+
+  /// Writes only `isOnline` under `/drivers/{driverId}`.
+  Future<void> updateDriverOnlineStatus(int driverId, bool isOnline) async {
+    if (driverId <= 0) return;
+    await _db.ref('drivers/$driverId').update({
+      'isOnline': isOnline,
     });
   }
 

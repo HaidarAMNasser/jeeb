@@ -34,9 +34,14 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
     Emitter<DeliveryHomeState> emit, {
     required bool markRefresh,
   }) async {
-    // 1. Fetch assigned orders (PICKED_UP or ASSIGNED)
+    // 1. Active delivery leg: driver keeps the order until delivered (incl. ON_THE_WAY for live map).
     final assignedResult = await _repository.getOrders(
-      status: '${OrderStatus.assigned.apiWireValue},${OrderStatus.pickedUp.apiWireValue}',
+      status: [
+        OrderStatus.assigned,
+        OrderStatus.readyForPickup,
+        OrderStatus.pickedUp,
+        OrderStatus.onTheWay,
+      ].map((s) => s.apiWireValue).join(','),
     );
 
     OrderEntity? assignedOrder;
