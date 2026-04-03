@@ -12,7 +12,6 @@ import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryOrderActionButtons extends StatelessWidget {
   final OrderEntity order;
@@ -20,7 +19,6 @@ class DeliveryOrderActionButtons extends StatelessWidget {
   final VoidCallback? onRefreshOrder;
   final EdgeInsetsGeometry padding;
   final bool dense;
-  final bool showRejectButton;
 
   const DeliveryOrderActionButtons({
     super.key,
@@ -29,7 +27,6 @@ class DeliveryOrderActionButtons extends StatelessWidget {
     this.onRefreshOrder,
     this.padding = EdgeInsets.zero,
     this.dense = false,
-    this.showRejectButton = true,
   });
 
   @override
@@ -39,23 +36,10 @@ class DeliveryOrderActionButtons extends StatelessWidget {
       child: BlocBuilder<ManageOrderBloc, ManageOrderState>(
         builder: (context, state) {
           final isLoading = state is ManageOrderLoading;
-          final gap = dense ? AppHeight.s8 : AppHeight.s12;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (order.customerPhone != null &&
-                  order.customerPhone!.isNotEmpty) ...[
-                _buildButton(
-                  text: '${AppTranslation.callCustomer} (${order.customerPhone})',
-                  color: Colors.blueGrey,
-                  icon: Icons.phone,
-                  isLoading: false,
-                  onPressed: () =>
-                      launchUrl(Uri.parse('tel:${order.customerPhone}')),
-                ),
-                SizedBox(height: gap),
-              ],
               if (status == OrderStatus.searching ||
                   status == OrderStatus.pending) ...[
                 Row(
@@ -111,7 +95,7 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                     );
                   },
                 )
-              else if (status == OrderStatus.assigned) ...[
+              else if (status == OrderStatus.assigned)
                 _buildButton(
                   text: AppTranslation.confirmPickup,
                   color: Colors.blue,
@@ -120,23 +104,8 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                   onPressed: () => context.read<ManageOrderBloc>().add(
                     ConfirmPickupEvent(id: order.id, reason: AppTranslation.pickedUp),
                   ),
-                ),
-                if (showRejectButton) ...[
-                  SizedBox(height: gap),
-                  _buildButton(
-                    text: AppTranslation.rejectDelivery,
-                    color: Colors.red,
-                    icon: Icons.cancel_outlined,
-                    isLoading: isLoading,
-                    onPressed: () => context.read<ManageOrderBloc>().add(
-                      RejectDeliveryEvent(
-                        id: order.id,
-                        reason: AppTranslation.unableToDeliver,
-                      ),
-                    ),
-                  ),
-                ],
-              ] else if (status == OrderStatus.pickedUp)
+                )
+              else if (status == OrderStatus.pickedUp)
                 _buildButton(
                   text: AppTranslation.markAsDelivered,
                   color: Colors.green,

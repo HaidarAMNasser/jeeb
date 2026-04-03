@@ -8,7 +8,6 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
-import 'package:jeeb_app/core/presentation/widgets/bloc_state_handler.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
@@ -28,6 +27,8 @@ import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/o
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
+import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
+import 'package:jeeb_app/core/presentation/maps/route_history_polyline_builder.dart';
 
 class DeliveryHomePage extends StatefulWidget {
   const DeliveryHomePage({super.key});
@@ -46,26 +47,80 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
   final Map<String, StreamSubscription<String?>> _statusSubs = {};
   final Map<String, String?> _lastKnownStatus = {};
 
+  StreamSubscription<List<RouteHistoryPoint>>? _assignedRouteHistorySub;
+  Set<Polyline> _assignedRoutePolylines = {};
+  String? _subscribedAssignedOrderId;
+
   @override
   void initState() {
     super.initState();
     _startLocationUpdates();
-    context.read<DeliveryHomeBloc>().add(const LoadDeliveryHomeEvent());
-    _ensureProfileLoaded();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _ensureProfileLoaded();
+      final homeBloc = context.read<DeliveryHomeBloc>();
+      // If load was queued before the first frame, state can still be Initial — recover.
+      if (homeBloc.state is DeliveryHomeInitial) {
+        homeBloc.add(const LoadDeliveryHomeEvent());
+      }
+      _syncAssignedRouteHistorySubscription(homeBloc.state);
+    });
   }
 
+  /// Ensures profile is loaded for the app bar (never skip while Loading — that left UI stuck on placeholder).
   void _ensureProfileLoaded() {
+    if (!mounted) return;
     final profileBloc = context.read<ProfileBloc>();
     final s = profileBloc.state;
-    if (s is ProfileLoaded || s is ProfileLoading) return;
+    if (s is ProfileLoaded) {
+      final fullName = '${s.user.firstName} ${s.user.lastName}'.trim();
+      if (fullName.isNotEmpty) return;
+    }
     profileBloc.add(const GetProfile());
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
+    _assignedRouteHistorySub?.cancel();
     _cancelAllStatusSubs();
     super.dispose();
+  }
+
+  String? _assignedOrderIdFromState(DeliveryHomeState state) {
+    if (state is DeliveryHomeLoaded && state.assignedOrder != null) {
+      return state.assignedOrder!.id;
+    }
+    return null;
+  }
+
+  /// RTDB walked path for the active assigned order (home map + fullscreen).
+  void _syncAssignedRouteHistorySubscription(DeliveryHomeState state) {
+    final key = _assignedOrderIdFromState(state);
+    // Same target as already subscribed (including both null) — skip.
+    if (key == _subscribedAssignedOrderId) return;
+    _subscribedAssignedOrderId = key;
+
+    _assignedRouteHistorySub?.cancel();
+    _assignedRouteHistorySub = null;
+    setState(() => _assignedRoutePolylines = {});
+
+    if (key == null || key.isEmpty) return;
+
+    _assignedRouteHistorySub =
+        di.sl<OrderStatusRtdbService>().watchOrderRouteHistory(key).listen(
+      (points) {
+        if (!mounted) return;
+        final latLngs = RouteHistoryPolylineBuilder.toLatLngs(points);
+        setState(() {
+          _assignedRoutePolylines = RouteHistoryPolylineBuilder.walkedPath(
+            orderId: key,
+            points: latLngs,
+          );
+        });
+      },
+      onError: (_) {},
+    );
   }
 
   void _watchOrderStatuses(List<OrderEntity> orders) {
@@ -135,6 +190,23 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     }
   }
 
+  bool _canPullToRefreshDeliveryHome(DeliveryHomeState state) {
+    return state is DeliveryHomeLoaded || state is DeliveryHomeError;
+  }
+
+  Future<void> _pullToRefreshDeliveryHome() async {
+    final bloc = context.read<DeliveryHomeBloc>();
+    final next = bloc.stream.firstWhere(
+      (s) => s is DeliveryHomeLoaded || s is DeliveryHomeError,
+    );
+    bloc.add(const RefreshDeliveryHomeEvent());
+    try {
+      await next.timeout(const Duration(seconds: 45));
+    } on TimeoutException {
+      // Allow RefreshIndicator to hide if no new state is emitted.
+    }
+  }
+
   void _safeAutoRefreshHome() {
     final now = DateTime.now();
     final last = _lastAutoRefreshAt;
@@ -164,123 +236,132 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
       child: Scaffold(
         backgroundColor: ColorManager.background,
         appBar: const DeliveryHomeAppBar(),
-        body: BlocBuilder<DeliveryHomeBloc, DeliveryHomeState>(
-          builder: (context, state) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<DeliveryHomeBloc>().add(
-                  const RefreshDeliveryHomeEvent(),
-                );
-              },
-              color: ColorManager.primary,
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: AppPadding.p16),
-                      child: DeliveryHomeMap(
-                        latitude: _currentLat,
-                        longitude: _currentLng,
-                        markers: _buildMarkers(state),
+        body: BlocListener<DeliveryHomeBloc, DeliveryHomeState>(
+          // Any real state change (Equatable): incl. Loading→Loaded with only searching orders.
+          listenWhen: (prev, cur) => prev != cur,
+          listener: (context, state) {
+            _syncAssignedRouteHistorySubscription(state);
+          },
+          child: BlocBuilder<DeliveryHomeBloc, DeliveryHomeState>(
+            builder: (context, state) {
+              return RefreshIndicator(
+                notificationPredicate: (ScrollNotification notification) {
+                  if (!_canPullToRefreshDeliveryHome(state)) return false;
+                  return notification.depth == 0;
+                },
+                onRefresh: () => _pullToRefreshDeliveryHome(),
+                color: ColorManager.primary,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: AppPadding.p16),
+                        child: DeliveryHomeMap(
+                          latitude: _currentLat,
+                          longitude: _currentLng,
+                          markers: _buildMarkers(state),
+                          routePolylines: _assignedRoutePolylines,
+                        ),
                       ),
                     ),
-                  ),
-                  _buildContent(state),
-                  SliverToBoxAdapter(child: SizedBox(height: AppHeight.s24)),
-                ],
-              ),
-            );
-          },
+                    _buildOrdersSliver(state),
+                    SliverToBoxAdapter(child: SizedBox(height: AppHeight.s24)),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildContent(DeliveryHomeState state) {
-    return BlocStateHandler<DeliveryHomeBloc, DeliveryHomeState>(
-      bloc: context.read<DeliveryHomeBloc>(),
-      isLoading: (s) => s is DeliveryHomeLoading || s is DeliveryHomeInitial,
-      loadingWidget: const SliverToBoxAdapter(child: CustomCircleIndicator()),
-      isError: (s) => s is DeliveryHomeError,
-      getErrorMessage: (s) => (s as DeliveryHomeError).message,
-      errorBuilder: (context, message, onRetry) => SliverToBoxAdapter(
-        child: ErrorStateWidget(message: message, onRetry: onRetry),
-      ),
-      isSuccess: (s) => s is DeliveryHomeLoaded,
-      successBuilder: (context, s) {
-        final loadedState = s as DeliveryHomeLoaded;
+  /// Single source of truth: same [state] as outer [BlocBuilder] (no nested bloc builder).
+  Widget _buildOrdersSliver(DeliveryHomeState state) {
+    if (state is DeliveryHomeLoading || state is DeliveryHomeInitial) {
+      return const SliverToBoxAdapter(child: CustomCircleIndicator());
+    }
+    if (state is DeliveryHomeError) {
+      return SliverToBoxAdapter(
+        child: ErrorStateWidget(
+          message: state.message,
+          onRetry: () => context.read<DeliveryHomeBloc>().add(
+                const LoadDeliveryHomeEvent(),
+              ),
+        ),
+      );
+    }
+    if (state is DeliveryHomeLoaded) {
+      final loadedState = state;
 
-        // Start realtime status listeners for searching orders only.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _watchOrderStatuses(loadedState.availableOrders);
-        });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _watchOrderStatuses(loadedState.availableOrders);
+      });
 
-        // Case 1: Assigned Order Exists
-        if (loadedState.assignedOrder != null) {
-          return SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildSectionHeader(AppTranslation.activeOrders),
-                DeliveryOrderCard(
-                  order: loadedState.assignedOrder!,
+      if (loadedState.assignedOrder != null) {
+        return SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildSectionHeader(AppTranslation.activeOrders),
+              DeliveryOrderCard(
+                order: loadedState.assignedOrder!,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    Routes.deliveryOrderDetails,
+                    arguments: {'orderId': loadedState.assignedOrder!.id},
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      }
+
+      if (loadedState.availableOrders.isNotEmpty) {
+        return SliverMainAxisGroup(
+          slivers: [
+            SliverToBoxAdapter(
+              child: _buildSectionHeader(AppTranslation.searchOrders),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => DeliverySearchingOrderCard(
+                  key: ValueKey(
+                    'searching_${loadedState.availableOrders[index].id}',
+                  ),
+                  order: loadedState.availableOrders[index],
+                  onTimerExpired: null,
                   onTap: () {
+                    final o = loadedState.availableOrders[index];
+                    if (OrderStatus.fromString(o.status) ==
+                        OrderStatus.searching) {
+                      return;
+                    }
                     Navigator.pushNamed(
                       context,
                       Routes.deliveryOrderDetails,
-                      arguments: {'orderId': loadedState.assignedOrder!.id},
+                      arguments: {
+                        'orderId': o.id,
+                      },
                     );
                   },
+                  onAccept: () =>
+                      _confirmAcceptOrder(loadedState.availableOrders[index]),
                 ),
-              ],
+                childCount: loadedState.availableOrders.length,
+              ),
             ),
-          );
-        }
+          ],
+        );
+      }
 
-        // Case 2: Available Orders
-        if (loadedState.availableOrders.isNotEmpty) {
-          return SliverMainAxisGroup(
-            slivers: [
-              SliverToBoxAdapter(
-                child: _buildSectionHeader(AppTranslation.searchOrders),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => DeliverySearchingOrderCard(
-                    key: ValueKey(
-                      'searching_${loadedState.availableOrders[index].id}',
-                    ),
-                    order: loadedState.availableOrders[index],
-                    onTimerExpired: null,
-                    onTap: () {
-                      final o = loadedState.availableOrders[index];
-                      if (OrderStatus.fromString(o.status) ==
-                          OrderStatus.searching) {
-                        return;
-                      }
-                      Navigator.pushNamed(
-                        context,
-                        Routes.deliveryOrderDetails,
-                        arguments: {
-                          'orderId': o.id,
-                        },
-                      );
-                    },
-                    onAccept: () =>
-                        _confirmAcceptOrder(loadedState.availableOrders[index]),
-                  ),
-                  childCount: loadedState.availableOrders.length,
-                ),
-              ),
-            ],
-          );
-        }
-
-        return _buildEmptyState();
-      },
-    );
+      return _buildEmptyState();
+    }
+    return const SliverToBoxAdapter(child: CustomCircleIndicator());
   }
 
   Widget _buildSectionHeader(String title) {

@@ -64,6 +64,9 @@ import '../../../features/delivery/order/order_details/data/repositories/order_d
 import '../../../features/delivery/order/manage_order/data/data_sources/manage_order_remote_data_source.dart';
 import '../../../features/delivery/order/manage_order/data/repositories/manage_order_repository.dart';
 import '../../../features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import '../../../features/delivery/tracking/data/datasources/delivery_tracking_remote_data_source.dart';
+import '../../../features/delivery/tracking/data/repositories/delivery_tracking_repository_impl.dart';
+import '../../../features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
 
 import '../../../features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/offer/list_offer/data/data_sources/list_offer_data_source.dart';
@@ -261,6 +264,14 @@ Future<void> init() async {
   sl.registerFactory(() => OrderDetailsRepository(sl(), sl()));
   sl.registerFactory(
     () => OrderDetailsBloc(sl(), sl<OrderStatusRtdbService>()),
+  );
+
+  //! Delivery tracking — POST `tracking/update-location` (routeHistory + speed)
+  sl.registerFactory<DeliveryTrackingRemoteDataSource>(
+    () => DeliveryTrackingRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory<DeliveryTrackingRepository>(
+    () => DeliveryTrackingRepositoryImpl(sl(), sl()),
   );
 
   //! Manage Order Dependencies

@@ -9,12 +9,15 @@ class DeliveryHomeMap extends StatefulWidget {
   final double? latitude;
   final double? longitude;
   final Set<Marker> markers;
+  /// Walked path from RTDB `routeHistory` (e.g. active assigned order).
+  final Set<Polyline> routePolylines;
 
   const DeliveryHomeMap({
     super.key,
     this.latitude,
     this.longitude,
     this.markers = const {},
+    this.routePolylines = const {},
   });
 
   @override
@@ -82,6 +85,7 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
             GoogleMap(
               initialCameraPosition: CameraPosition(target: center, zoom: 13),
               markers: combinedMarkers,
+              polylines: widget.routePolylines,
               myLocationEnabled: false, // Using custom orange marker instead
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
@@ -124,6 +128,7 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
           markers: widget.markers,
           currentLat: widget.latitude,
           currentLng: widget.longitude,
+          polylines: widget.routePolylines,
         ),
       ),
     );

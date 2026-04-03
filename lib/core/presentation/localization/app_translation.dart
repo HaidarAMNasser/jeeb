@@ -459,6 +459,10 @@ class AppTranslation {
   /// Map preview on order details when status is on the way (live tracking later).
   static String get orderDeliveryMapBadge => 'order_delivery_map_badge'.tr();
 
+  /// Delivery driver map: walked path vs suggested directions.
+  static String get deliveryRouteLegendWalked =>
+      'delivery_route_legend_walked'.tr();
+
   /// Opens [Routes.orderStatus] from order details while the order is still active.
   static String get orderTrackOrderCta => 'order_track_order_cta'.tr();
   static String get noOrdersFound => 'no_orders_found'.tr();

@@ -113,26 +113,35 @@ enum OrderStatus {
     }
   }
 
+  /// Distinct accent per lifecycle stage (badges, timeline dots).
   Color get color {
     switch (this) {
-      case OrderStatus.completed:
-      case OrderStatus.delivered:
-        return Colors.green;
-      case OrderStatus.cancelled:
-      case OrderStatus.rejected:
-        return Colors.red;
       case OrderStatus.pending:
-      case OrderStatus.readyForPickup:
-        return Colors.orange;
-      case OrderStatus.searching:
-      case OrderStatus.preparing:
+        return const Color(0xFFFFB74D);
       case OrderStatus.confirmed:
-      case OrderStatus.assigned:
-      case OrderStatus.pickedUp:
-      case OrderStatus.onTheWay:
+        return const Color(0xFF7986CB);
+      case OrderStatus.searching:
         return ColorManager.defaultBlue;
+      case OrderStatus.preparing:
+        return const Color(0xFF4DB6AC);
+      case OrderStatus.readyForPickup:
+        return const Color(0xFFFF8A65);
+      case OrderStatus.assigned:
+        return const Color(0xFF64B5F6);
+      case OrderStatus.pickedUp:
+        return const Color(0xFF4FC3F7);
+      case OrderStatus.onTheWay:
+        return const Color(0xFF9575CD);
+      case OrderStatus.delivered:
+        return const Color(0xFF81C784);
+      case OrderStatus.completed:
+        return const Color(0xFF66BB6A);
+      case OrderStatus.cancelled:
+        return const Color(0xFFE57373);
+      case OrderStatus.rejected:
+        return const Color(0xFFEF5350);
       case OrderStatus.unknown:
-        return Colors.grey;
+        return Colors.blueGrey;
     }
   }
 

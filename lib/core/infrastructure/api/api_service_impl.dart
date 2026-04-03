@@ -1546,4 +1546,39 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
 
     return result;
   }
+
+  @override
+  Future<Response> updateDeliveryTrackingLocation(
+    int orderId,
+    double lat,
+    double lng,
+    int timestamp,
+    double speed,
+  ) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final data = {
+      'orderId': orderId,
+      'lat': lat,
+      'lng': lng,
+      'timestamp': timestamp,
+      'speed': speed,
+    };
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'POST', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'tracking/update-location',
+              queryParameters: queryParameters,
+              data: data,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
 }

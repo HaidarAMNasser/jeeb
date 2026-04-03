@@ -164,6 +164,7 @@
   "orders": "الطلبات",
   "order_details": "تفاصيل الطلب",
   "order_delivery_map_badge": "خريطة التوصيل",
+  "delivery_route_legend_walked": "خط متدرّج: مسارك الفعلي (مباشر). المتقطع: اقتراح الطريق.",
   "order_track_order_cta": "عرض حالة الطلب المباشرة",
   "no_orders_found": "لم يتم العثور على طلبات",
   "search_orders": "البحث عن الطلبات",

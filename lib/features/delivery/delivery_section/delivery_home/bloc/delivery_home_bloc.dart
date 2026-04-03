@@ -20,20 +20,28 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
     Emitter<DeliveryHomeState> emit,
   ) async {
     emit(const DeliveryHomeLoading());
-    await _fetchData(emit);
+    await _fetchData(emit, markRefresh: false);
   }
 
   Future<void> _onRefreshHome(
     RefreshDeliveryHomeEvent event,
     Emitter<DeliveryHomeState> emit,
   ) async {
-    await _fetchData(emit);
+    await _fetchData(emit, markRefresh: true);
   }
 
-  Future<void> _fetchData(Emitter<DeliveryHomeState> emit) async {
-    // 1. Fetch assigned orders (PICKED_UP or ASSIGNED)
+  Future<void> _fetchData(
+    Emitter<DeliveryHomeState> emit, {
+    required bool markRefresh,
+  }) async {
+    // 1. Active delivery leg: driver keeps the order until delivered (incl. ON_THE_WAY for live map).
     final assignedResult = await _repository.getOrders(
-      status: '${OrderStatus.assigned.apiWireValue},${OrderStatus.pickedUp.apiWireValue}',
+      status: [
+        OrderStatus.assigned,
+        OrderStatus.readyForPickup,
+        OrderStatus.pickedUp,
+        OrderStatus.onTheWay,
+      ].map((s) => s.apiWireValue).join(','),
     );
 
     OrderEntity? assignedOrder;
@@ -51,6 +59,7 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       emit(DeliveryHomeLoaded(
         availableOrders: const [],
         assignedOrder: assignedOrder,
+        refreshedAt: markRefresh ? DateTime.now() : null,
       ));
       return;
     }
@@ -65,6 +74,7 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       (orders) => emit(DeliveryHomeLoaded(
         availableOrders: orders,
         assignedOrder: null,
+        refreshedAt: markRefresh ? DateTime.now() : null,
       )),
     );
   }

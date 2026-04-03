@@ -10,6 +10,7 @@ class FullscreenMapView extends StatelessWidget {
   final Set<Marker> markers;
   final double? currentLat;
   final double? currentLng;
+  final Set<Polyline> polylines;
 
   const FullscreenMapView({
     super.key,
@@ -17,6 +18,7 @@ class FullscreenMapView extends StatelessWidget {
     required this.markers,
     this.currentLat,
     this.currentLng,
+    this.polylines = const {},
   });
 
   @override
@@ -42,6 +44,7 @@ class FullscreenMapView extends StatelessWidget {
       body: GoogleMap(
         initialCameraPosition: CameraPosition(target: initialCenter, zoom: 15),
         markers: combinedMarkers,
+        polylines: polylines,
         myLocationEnabled: false,
         zoomControlsEnabled: true,
       ),

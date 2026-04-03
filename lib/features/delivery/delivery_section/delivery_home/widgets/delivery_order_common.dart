@@ -39,3 +39,4 @@ Widget buildPriceTag(int price) {
     ),
   );
 }
+

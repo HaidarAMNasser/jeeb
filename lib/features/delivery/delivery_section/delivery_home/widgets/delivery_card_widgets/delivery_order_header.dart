@@ -10,12 +10,14 @@ class DeliveryOrderHeader extends StatelessWidget {
   final String recipientName;
   final String recipientAddress;
   final int totalPrice;
+  final bool showPriceTag;
 
   const DeliveryOrderHeader({
     super.key,
     required this.recipientName,
     required this.recipientAddress,
     required this.totalPrice,
+    this.showPriceTag = true,
   });
 
   @override
@@ -47,7 +49,7 @@ class DeliveryOrderHeader extends StatelessWidget {
             ],
           ),
         ),
-        buildPriceTag(totalPrice),
+        if (showPriceTag) buildPriceTag(totalPrice),
       ],
     );
   }

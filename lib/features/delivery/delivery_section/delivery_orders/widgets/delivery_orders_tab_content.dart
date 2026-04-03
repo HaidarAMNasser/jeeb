@@ -46,9 +46,14 @@ class _DeliveryOrdersTabContentBodyState
   String get _status {
     switch (widget.type) {
       case DeliveryOrderTabType.pending:
-        return OrderStatus.assigned.apiWireValue;
+        return [
+          OrderStatus.readyForPickup.apiWireValue,
+          OrderStatus.assigned.apiWireValue,
+          OrderStatus.pickedUp.apiWireValue,
+          OrderStatus.onTheWay.apiWireValue,
+        ].join(',');
       case DeliveryOrderTabType.completed:
-        return OrderStatus.completed.apiWireValue;
+        return OrderStatus.delivered.apiWireValue;
       case DeliveryOrderTabType.cancelled:
         return OrderStatus.cancelled.apiWireValue;
     }
