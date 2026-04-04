@@ -75,7 +75,9 @@ class OrderStatusPage extends StatelessWidget {
                         ),
                         if (showLiveMap)
                           LiveTrackingMapCard(
+                            orderId: state.orderId,
                             title: AppTranslation.orderDeliveryMapBadge,
+                            routeHistory: state.routeHistoryPoints,
                             deliveryLatitude: dLat,
                             deliveryLongitude: dLng,
                             driverLatitude: drvLat,

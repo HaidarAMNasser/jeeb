@@ -51,3 +51,13 @@ class OrderStatusDriverLocationCleared extends OrderStatusEvent {
   @override
   List<Object?> get props => [];
 }
+
+/// Internal: points from Firebase RTDB `/orders/{id}/routeHistory`.
+class OrderStatusRouteHistorySnapshot extends OrderStatusEvent {
+  const OrderStatusRouteHistorySnapshot(this.points);
+
+  final List<RouteHistoryPoint> points;
+
+  @override
+  List<Object?> get props => [points];
+}
