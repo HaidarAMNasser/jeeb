@@ -11,6 +11,7 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
   ManageOrderBloc(this._repository) : super(const ManageOrderInitial()) {
     on<AcceptDeliveryEvent>(_onAcceptDelivery);
     on<ConfirmPickupEvent>(_onConfirmPickup);
+    on<MarkOnTheWayEvent>(_onMarkOnTheWay);
     on<MarkAsDeliveredEvent>(_onMarkAsDelivered);
     on<RejectDeliveryEvent>(_onRejectDelivery);
   }
@@ -42,6 +43,20 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
       (failure) => emit(ManageOrderError(message: failure.message)),
       (_) => emit(
         const ManageOrderSuccess(kind: ManageOrderSuccessKind.confirmPickup),
+      ),
+    );
+  }
+
+  Future<void> _onMarkOnTheWay(
+    MarkOnTheWayEvent event,
+    Emitter<ManageOrderState> emit,
+  ) async {
+    emit(const ManageOrderLoading());
+    final result = await _repository.markOnTheWay(event.id, event.reason);
+    result.fold(
+      (failure) => emit(ManageOrderError(message: failure.message)),
+      (_) => emit(
+        const ManageOrderSuccess(kind: ManageOrderSuccessKind.markOnTheWay),
       ),
     );
   }

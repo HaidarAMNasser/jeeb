@@ -29,6 +29,10 @@ import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
 import 'package:jeeb_app/core/presentation/maps/route_history_polyline_builder.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/google_directions_service.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_demo_bar.dart';
 
 class DeliveryHomePage extends StatefulWidget {
   const DeliveryHomePage({super.key});
@@ -50,6 +54,8 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
   StreamSubscription<List<RouteHistoryPoint>>? _assignedRouteHistorySub;
   Set<Polyline> _assignedRoutePolylines = {};
   String? _subscribedAssignedOrderId;
+  Polyline? _plannedRoutePolyline;
+  String? _plannedRouteGeoKey;
 
   @override
   void initState() {
@@ -59,11 +65,60 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
       if (!mounted) return;
       _ensureProfileLoaded();
       final homeBloc = context.read<DeliveryHomeBloc>();
-      // If load was queued before the first frame, state can still be Initial — recover.
-      if (homeBloc.state is DeliveryHomeInitial) {
-        homeBloc.add(const LoadDeliveryHomeEvent());
-      }
+      // After first frame so shell/role are ready; avoids racing [DeliveryNavigation] build.
+      homeBloc.add(const LoadDeliveryHomeEvent());
       _syncAssignedRouteHistorySubscription(homeBloc.state);
+      _syncPlannedDrivingRoute(homeBloc.state);
+    });
+  }
+
+  Future<void> _syncPlannedDrivingRoute(DeliveryHomeState state) async {
+    if (state is! DeliveryHomeLoaded || state.assignedOrder == null) {
+      if (_plannedRoutePolyline != null || _plannedRouteGeoKey != null) {
+        if (mounted) {
+          setState(() {
+            _plannedRoutePolyline = null;
+            _plannedRouteGeoKey = null;
+          });
+        }
+      }
+      return;
+    }
+    final o = state.assignedOrder!;
+    final rLat = o.restaurantLatitude;
+    final rLng = o.restaurantLongitude;
+    final dLat = o.dropoffLatitude;
+    final dLng = o.dropoffLongitude;
+    final key = '${o.id}_${rLat}_${rLng}_${dLat}_$dLng';
+    if (key == _plannedRouteGeoKey) return;
+
+    if (rLat == null || rLng == null || dLat == null || dLng == null) {
+      if (mounted) {
+        setState(() {
+          _plannedRoutePolyline = null;
+          _plannedRouteGeoKey = key;
+        });
+      }
+      return;
+    }
+
+    _plannedRouteGeoKey = key;
+    final pts = await GoogleDirectionsService.getDrivingPolyline(
+      originLat: rLat,
+      originLng: rLng,
+      destinationLat: dLat,
+      destinationLng: dLng,
+    );
+    if (!mounted || _plannedRouteGeoKey != key) return;
+    if (pts == null || pts.isEmpty) {
+      setState(() => _plannedRoutePolyline = null);
+      return;
+    }
+    setState(() {
+      _plannedRoutePolyline = RouteHistoryPolylineBuilder.plannedRoute(
+        orderId: o.id,
+        points: pts,
+      );
     });
   }
 
@@ -241,6 +296,7 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
           listenWhen: (prev, cur) => prev != cur,
           listener: (context, state) {
             _syncAssignedRouteHistorySubscription(state);
+            _syncPlannedDrivingRoute(state);
           },
           child: BlocBuilder<DeliveryHomeBloc, DeliveryHomeState>(
             builder: (context, state) {
@@ -254,14 +310,59 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
+                    if (state is DeliveryHomeLoaded &&
+                        state.assignedOrder != null &&
+                        DeliveryOrderLocationReporter.shouldTrack(
+                          OrderStatus.fromString(
+                            state.assignedOrder!.status,
+                          ),
+                        ))
+                      SliverToBoxAdapter(
+                        child: FakeDeliveryTrackingDemoBar(
+                          order: state.assignedOrder!,
+                        ),
+                      ),
+                    if (state is DeliveryHomeLoaded &&
+                        state.assignedOrder != null)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            AppPadding.p16,
+                            0,
+                            AppPadding.p16,
+                            AppPadding.p8,
+                          ),
+                          child: CustomText(
+                            text: AppTranslation.deliveryRouteLegendWalked,
+                            textStyle: getRegularStyle(
+                              fontSize: AppFontSize.s11,
+                              color: ColorManager.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: AppPadding.p16),
-                        child: DeliveryHomeMap(
-                          latitude: _currentLat,
-                          longitude: _currentLng,
-                          markers: _buildMarkers(state),
-                          routePolylines: _assignedRoutePolylines,
+                        child: ValueListenableBuilder<LatLng?>(
+                          valueListenable: di
+                              .sl<FakeDeliveryTrackingController>()
+                              .simulatedMapPosition,
+                          builder: (context, sim, _) {
+                            final routePolylines = <Polyline>{
+                              if (_plannedRoutePolyline != null)
+                                _plannedRoutePolyline!,
+                              ..._assignedRoutePolylines,
+                            };
+                            return DeliveryHomeMap(
+                              latitude: _currentLat,
+                              longitude: _currentLng,
+                              simulatedLatitude: sim?.latitude,
+                              simulatedLongitude: sim?.longitude,
+                              markers: _buildMarkers(state),
+                              routePolylines: routePolylines,
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -422,13 +523,55 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     if (state is DeliveryHomeLoaded) {
       final Set<Marker> markers = {};
 
-      // Show assigned order marker if exists
       if (state.assignedOrder != null) {
         final o = state.assignedOrder!;
-        if (o.latitude != null && o.longitude != null) {
+        final restaurantName =
+            o.owner?.restaurantName?.trim().isNotEmpty == true
+                ? o.owner!.restaurantName!
+                : AppTranslation.restaurantName;
+        final rLat = o.restaurantLatitude;
+        final rLng = o.restaurantLongitude;
+        final dLat = o.dropoffLatitude;
+        final dLng = o.dropoffLongitude;
+
+        if (rLat != null && rLng != null) {
           markers.add(
             Marker(
-              markerId: MarkerId(o.id),
+              markerId: MarkerId('pickup_${o.id}'),
+              position: LatLng(rLat, rLng),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen,
+              ),
+              infoWindow: InfoWindow(
+                title: restaurantName,
+                snippet: o.owner?.address ?? o.pickupAddress,
+              ),
+            ),
+          );
+        }
+        if (dLat != null && dLng != null) {
+          markers.add(
+            Marker(
+              markerId: MarkerId('dropoff_${o.id}'),
+              position: LatLng(dLat, dLng),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueOrange,
+              ),
+              infoWindow: InfoWindow(
+                title: o.displayCustomerName ?? AppTranslation.customer,
+                snippet: o.displayCustomerAddressLine ??
+                    o.deliveryAddress ??
+                    o.customer?.address,
+              ),
+            ),
+          );
+        }
+        if ((rLat == null || rLng == null || dLat == null || dLng == null) &&
+            o.latitude != null &&
+            o.longitude != null) {
+          markers.add(
+            Marker(
+              markerId: MarkerId('order_${o.id}'),
               position: LatLng(o.latitude!, o.longitude!),
               icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueOrange,

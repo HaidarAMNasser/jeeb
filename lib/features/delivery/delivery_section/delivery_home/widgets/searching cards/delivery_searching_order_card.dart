@@ -10,6 +10,7 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widget
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching%20cards/delivery_accept_timer_badge.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching%20cards/delivery_order_card_utils.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 class DeliverySearchingOrderCard extends StatelessWidget {
   final OrderEntity order;
@@ -27,6 +28,9 @@ class DeliverySearchingOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = OrderStatus.fromString(order.status);
+    final canAcceptDelivery = status == OrderStatus.searching;
+
     final restaurantName = restaurantNameForOrder(
       order,
       AppTranslation.restaurantName,
@@ -106,12 +110,14 @@ class DeliverySearchingOrderCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(width: AppWidth.s12),
-                    DeliveryAcceptTimerBadge(
-                      key: ValueKey('accept_badge_${order.id}'),
-                      order: order,
-                      onExpired: onTimerExpired,
-                    ),
+                    if (canAcceptDelivery) ...[
+                      SizedBox(width: AppWidth.s12),
+                      DeliveryAcceptTimerBadge(
+                        key: ValueKey('accept_badge_${order.id}'),
+                        order: order,
+                        onExpired: onTimerExpired,
+                      ),
+                    ],
                   ],
                 ),
                 SizedBox(height: AppHeight.s14),
@@ -140,23 +146,25 @@ class DeliverySearchingOrderCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: AppHeight.s16),
-                Row(
-                  children: [
-                    const Spacer(),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: AppWidth.s158),
-                      child: CustomButton(
-                        text: AppTranslation.acceptDelivery,
-                        onPressed: onAccept,
-                        height: AppHeight.s44,
-                        fontSize: AppFontSize.s13,
-                        borderRadius: AppRadius.r14,
+                if (canAcceptDelivery) ...[
+                  SizedBox(height: AppHeight.s16),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: AppWidth.s158),
+                        child: CustomButton(
+                          text: AppTranslation.acceptDelivery,
+                          onPressed: onAccept,
+                          height: AppHeight.s44,
+                          fontSize: AppFontSize.s13,
+                          borderRadius: AppRadius.r14,
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                  ],
-                ),
+                      const Spacer(),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

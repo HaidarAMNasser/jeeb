@@ -13,6 +13,8 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_home_map_search.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_map_chrome.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
 /// Restaurant + drop-off markers, optional planned road (dashed), and live **walked path**
@@ -175,6 +177,36 @@ class _DeliveryOrderDetailsRouteMapState
     }
   }
 
+  void _openFullscreenRouteMap(
+    BuildContext context,
+    Set<Marker> markers,
+    Set<Polyline> polylines,
+  ) {
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => FullscreenMapView(
+          initialCenter: _initialCenter,
+          markers: markers,
+          polylines: polylines,
+        ),
+      ),
+    );
+  }
+
+  void _showRouteMapSearch() {
+    showDialog<dynamic>(
+      context: context,
+      builder: (dialogContext) => const MapSearchDialog(),
+    ).then((result) {
+      if (result is LatLng && _controller != null) {
+        _controller!.animateCamera(
+          CameraUpdate.newLatLngZoom(result, 15),
+        );
+      }
+    });
+  }
+
   LatLng get _initialCenter {
     final o = widget.order;
     if (o.dropoffLatitude != null && o.dropoffLongitude != null) {
@@ -259,21 +291,49 @@ class _DeliveryOrderDetailsRouteMapState
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AppSize.s16),
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _initialCenter,
-                zoom: 12,
-              ),
-              markers: markers,
-              polylines: _polylines,
-              myLocationEnabled: false,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              mapToolbarEnabled: false,
-              onMapCreated: (controller) {
-                _controller = controller;
-                WidgetsBinding.instance.addPostFrameCallback((_) => _fitCamera());
-              },
+            child: Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: _initialCenter,
+                    zoom: 12,
+                  ),
+                  markers: markers,
+                  polylines: _polylines,
+                  myLocationEnabled: false,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                  mapToolbarEnabled: false,
+                  onMapCreated: (controller) {
+                    _controller = controller;
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => _fitCamera(),
+                    );
+                  },
+                ),
+                Positioned(
+                  top: AppPadding.p12,
+                  right: AppPadding.p12,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DeliveryMapChromeButton(
+                        icon: Icons.fullscreen,
+                        onPressed: () => _openFullscreenRouteMap(
+                          context,
+                          markers,
+                          _polylines,
+                        ),
+                      ),
+                      SizedBox(height: AppHeight.s8),
+                      DeliveryMapChromeButton(
+                        icon: Icons.search,
+                        onPressed: _showRouteMapSearch,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

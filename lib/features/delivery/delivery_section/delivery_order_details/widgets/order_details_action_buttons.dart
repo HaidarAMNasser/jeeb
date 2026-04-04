@@ -40,8 +40,7 @@ class DeliveryOrderActionButtons extends StatelessWidget {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (status == OrderStatus.searching ||
-                  status == OrderStatus.pending) ...[
+              if (status == OrderStatus.searching) ...[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -79,33 +78,31 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                 ),
               ] else if (status == OrderStatus.readyForPickup)
                 _buildButton(
-                  text: AppTranslation.acceptDelivery,
+                  text: AppTranslation.pickedUp,
                   color: ColorManager.primary,
-                  icon: Icons.check_circle_outline,
-                  isLoading: isLoading,
-                  onPressed: () async {
-                    final minutes =
-                        await AcceptDeliveryEstimatedTimeDialog.show(context);
-                    if (!context.mounted || minutes == null) return;
-                    context.read<ManageOrderBloc>().add(
-                      AcceptDeliveryEvent(
-                        id: order.id,
-                        deliveryTime: minutes,
-                      ),
-                    );
-                  },
-                )
-              else if (status == OrderStatus.assigned)
-                _buildButton(
-                  text: AppTranslation.confirmPickup,
-                  color: Colors.blue,
                   icon: Icons.shopping_bag_outlined,
                   isLoading: isLoading,
                   onPressed: () => context.read<ManageOrderBloc>().add(
-                    ConfirmPickupEvent(id: order.id, reason: AppTranslation.pickedUp),
+                    ConfirmPickupEvent(
+                      id: order.id,
+                      reason: AppTranslation.pickedUp,
+                    ),
                   ),
                 )
               else if (status == OrderStatus.pickedUp)
+                _buildButton(
+                  text: AppTranslation.markOnTheWay,
+                  color: Colors.deepOrange,
+                  icon: Icons.directions_bike,
+                  isLoading: isLoading,
+                  onPressed: () => context.read<ManageOrderBloc>().add(
+                    MarkOnTheWayEvent(
+                      id: order.id,
+                      reason: AppTranslation.onTheWayDefaultReason,
+                    ),
+                  ),
+                )
+              else if (status == OrderStatus.onTheWay)
                 _buildButton(
                   text: AppTranslation.markAsDelivered,
                   color: Colors.green,

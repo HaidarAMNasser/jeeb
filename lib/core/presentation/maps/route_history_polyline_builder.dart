@@ -10,34 +10,25 @@ abstract final class RouteHistoryPolylineBuilder {
   static List<LatLng> toLatLngs(List<RouteHistoryPoint> points) =>
       points.map((e) => LatLng(e.lat, e.lng)).toList();
 
-  /// One [Polyline] per segment so colors can vary (Google Maps has no gradient stroke).
+  /// Solid path from RTDB `routeHistory` (actual track) — above dashed planned route.
   static Set<Polyline> walkedPath({
     required String orderId,
     required List<LatLng> points,
-    int width = 7,
+    int width = 6,
   }) {
     if (points.length < 2) return {};
-    const start = Color(0xFFE25706); // primary-adjacent
-    const end = Color(0xFF00BFA5);
-    final out = <Polyline>{};
-    final n = points.length - 1;
-    for (var i = 0; i < n; i++) {
-      final t = n <= 1 ? 0.0 : i / (n - 1);
-      final color = Color.lerp(start, end, t)!.withOpacity(0.92);
-      out.add(
-        Polyline(
-          polylineId: PolylineId('walked_${orderId}_$i'),
-          points: [points[i], points[i + 1]],
-          color: color,
-          width: width,
-          zIndex: 3,
-          jointType: JointType.round,
-          startCap: Cap.roundCap,
-          endCap: Cap.roundCap,
-        ),
-      );
-    }
-    return out;
+    return {
+      Polyline(
+        polylineId: PolylineId('walked_$orderId'),
+        points: points,
+        color: const Color(0xFFD32F2F).withOpacity(0.92),
+        width: width,
+        zIndex: 3,
+        jointType: JointType.round,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+      ),
+    };
   }
 
   /// Planned road path (Directions API) — visually subordinate to walked path.

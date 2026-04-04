@@ -33,6 +33,19 @@ class ConfirmPickupEvent extends ManageOrderEvent {
   List<Object?> get props => [id, reason];
 }
 
+class MarkOnTheWayEvent extends ManageOrderEvent {
+  final String id;
+  final String reason;
+
+  const MarkOnTheWayEvent({
+    required this.id,
+    required this.reason,
+  });
+
+  @override
+  List<Object?> get props => [id, reason];
+}
+
 class MarkAsDeliveredEvent extends ManageOrderEvent {
   final String id;
   final String reason;

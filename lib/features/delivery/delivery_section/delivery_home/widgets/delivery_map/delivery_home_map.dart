@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'delivery_home_map_search.dart';
+import 'delivery_map_chrome.dart';
 
 class DeliveryHomeMap extends StatefulWidget {
   final double? latitude;
@@ -11,6 +11,9 @@ class DeliveryHomeMap extends StatefulWidget {
   final Set<Marker> markers;
   /// Walked path from RTDB `routeHistory` (e.g. active assigned order).
   final Set<Polyline> routePolylines;
+  /// Demo simulated driver position (same pipeline as real tracking).
+  final double? simulatedLatitude;
+  final double? simulatedLongitude;
 
   const DeliveryHomeMap({
     super.key,
@@ -18,6 +21,8 @@ class DeliveryHomeMap extends StatefulWidget {
     this.longitude,
     this.markers = const {},
     this.routePolylines = const {},
+    this.simulatedLatitude,
+    this.simulatedLongitude,
   });
 
   @override
@@ -59,9 +64,22 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
           markerId: const MarkerId('current_location'),
           position: LatLng(widget.latitude!, widget.longitude!),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueOrange,
+            BitmapDescriptor.hueAzure,
           ),
           infoWindow: InfoWindow(title: AppTranslation.myLocation),
+        ),
+      if (widget.simulatedLatitude != null &&
+          widget.simulatedLongitude != null)
+        Marker(
+          markerId: const MarkerId('simulated_driver'),
+          position: LatLng(
+            widget.simulatedLatitude!,
+            widget.simulatedLongitude!,
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueViolet,
+          ),
+          infoWindow: InfoWindow(title: AppTranslation.deliveryFakeGpsMapMarker),
         ),
     };
 
@@ -101,12 +119,12 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _MapActionButton(
+                  DeliveryMapChromeButton(
                     icon: Icons.fullscreen,
                     onPressed: () => _openFullscreenMap(context, center),
                   ),
                   SizedBox(height: AppHeight.s8),
-                  _MapActionButton(
+                  DeliveryMapChromeButton(
                     icon: Icons.search,
                     onPressed: () => _showSearchDialog(context),
                   ),
@@ -128,6 +146,8 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
           markers: widget.markers,
           currentLat: widget.latitude,
           currentLng: widget.longitude,
+          simulatedLat: widget.simulatedLatitude,
+          simulatedLng: widget.simulatedLongitude,
           polylines: widget.routePolylines,
         ),
       ),
@@ -143,35 +163,5 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         _mapController!.animateCamera(CameraUpdate.newLatLngZoom(result, 15));
       }
     });
-  }
-}
-
-class _MapActionButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  const _MapActionButton({required this.icon, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: ColorManager.primary),
-        onPressed: onPressed,
-        constraints: const BoxConstraints(),
-        padding: EdgeInsets.all(AppPadding.p8),
-      ),
-    );
   }
 }

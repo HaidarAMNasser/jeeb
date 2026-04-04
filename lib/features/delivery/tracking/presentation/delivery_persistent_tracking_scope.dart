@@ -7,6 +7,7 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/d
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 
 /// Hosts [DeliveryOrderLocationReporter] above the delivery tab body so GPS → API + RTDB
 /// `/drivers/{id}` keeps running when switching Home / My orders / Profile.
@@ -23,9 +24,28 @@ class DeliveryPersistentTrackingScope extends StatefulWidget {
 class _DeliveryPersistentTrackingScopeState
     extends State<DeliveryPersistentTrackingScope> {
   DeliveryOrderLocationReporter? _reporter;
+  late final FakeDeliveryTrackingController _fakeTracking;
+  bool _reporterUsedFakeStream = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fakeTracking = di.sl<FakeDeliveryTrackingController>();
+    _fakeTracking.addListener(_onFakeTrackingChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _syncReporter(context.read<DeliveryHomeBloc>().state);
+    });
+  }
+
+  void _onFakeTrackingChanged() {
+    if (!mounted) return;
+    _syncReporter(context.read<DeliveryHomeBloc>().state);
+  }
 
   @override
   void dispose() {
+    _fakeTracking.removeListener(_onFakeTrackingChanged);
     _reporter?.dispose();
     super.dispose();
   }
@@ -55,12 +75,14 @@ class _DeliveryPersistentTrackingScopeState
     if (driverId == null || driverId <= 0) {
       _reporter?.dispose();
       _reporter = null;
+      _reporterUsedFakeStream = false;
       return;
     }
 
     if (homeState is! DeliveryHomeLoaded || homeState.assignedOrder == null) {
       _reporter?.dispose();
       _reporter = null;
+      _reporterUsedFakeStream = false;
       return;
     }
 
@@ -70,10 +92,15 @@ class _DeliveryPersistentTrackingScopeState
     if (orderId == null || !DeliveryOrderLocationReporter.shouldTrack(status)) {
       _reporter?.dispose();
       _reporter = null;
+      _reporterUsedFakeStream = false;
       return;
     }
 
-    if (_reporter != null && _reporter!.orderId == orderId) {
+    final fake = di.sl<FakeDeliveryTrackingController>();
+    final useFake = fake.simulating;
+    if (_reporter != null &&
+        _reporter!.orderId == orderId &&
+        _reporterUsedFakeStream == useFake) {
       _reporter!.ensureStarted();
       return;
     }
@@ -84,17 +111,10 @@ class _DeliveryPersistentTrackingScopeState
       driverId: driverId,
       repository: di.sl<DeliveryTrackingRepository>(),
       rtdb: di.sl<OrderStatusRtdbService>(),
+      positionStream: useFake ? fake.movementStreamFor(order) : null,
     );
+    _reporterUsedFakeStream = useFake;
     _reporter!.ensureStarted();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _syncReporter(context.read<DeliveryHomeBloc>().state);
-    });
   }
 
   @override

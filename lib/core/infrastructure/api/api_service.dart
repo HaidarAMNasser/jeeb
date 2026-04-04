@@ -288,6 +288,12 @@ abstract class AppApiServiceClient {
     @Field('reason') String reason,
   );
 
+  @PATCH("orders/{id}/on-the-way")
+  Future<Response> markOnTheWay(
+    @Path('id') String id,
+    @Field('reason') String reason,
+  );
+
   @PATCH("orders/{id}/delivered")
   Future<Response> markAsDelivered(
     @Path('id') String id,

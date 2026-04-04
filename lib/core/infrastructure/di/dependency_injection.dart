@@ -67,6 +67,7 @@ import '../../../features/delivery/order/manage_order/presentation/bloc/manage_o
 import '../../../features/delivery/tracking/data/datasources/delivery_tracking_remote_data_source.dart';
 import '../../../features/delivery/tracking/data/repositories/delivery_tracking_repository_impl.dart';
 import '../../../features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
+import '../../../features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 
 import '../../../features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import '../../../features/offer/list_offer/data/data_sources/list_offer_data_source.dart';
@@ -189,7 +190,8 @@ Future<void> init() async {
     () => ProfileRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => ProfileRepository(sl(), sl()));
-  sl.registerFactory(
+  // One instance for root + delivery; factory previously left delivery on a stale bloc vs client.
+  sl.registerLazySingleton(
     () => ProfileBloc(sl<ProfileRepository>(), sl<StorageService>()),
   );
 
@@ -273,6 +275,7 @@ Future<void> init() async {
   sl.registerFactory<DeliveryTrackingRepository>(
     () => DeliveryTrackingRepositoryImpl(sl(), sl()),
   );
+  sl.registerLazySingleton(FakeDeliveryTrackingController.new);
 
   //! Manage Order Dependencies
   sl.registerFactory<ManageOrderRemoteDataSource>(

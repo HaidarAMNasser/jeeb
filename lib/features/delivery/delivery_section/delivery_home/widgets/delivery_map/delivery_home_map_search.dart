@@ -10,6 +10,8 @@ class FullscreenMapView extends StatelessWidget {
   final Set<Marker> markers;
   final double? currentLat;
   final double? currentLng;
+  final double? simulatedLat;
+  final double? simulatedLng;
   final Set<Polyline> polylines;
 
   const FullscreenMapView({
@@ -18,6 +20,8 @@ class FullscreenMapView extends StatelessWidget {
     required this.markers,
     this.currentLat,
     this.currentLng,
+    this.simulatedLat,
+    this.simulatedLng,
     this.polylines = const {},
   });
 
@@ -30,9 +34,18 @@ class FullscreenMapView extends StatelessWidget {
           markerId: const MarkerId('current_location'),
           position: LatLng(currentLat!, currentLng!),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueOrange,
+            BitmapDescriptor.hueAzure,
           ),
           infoWindow: InfoWindow(title: AppTranslation.myLocation),
+        ),
+      if (simulatedLat != null && simulatedLng != null)
+        Marker(
+          markerId: const MarkerId('simulated_driver'),
+          position: LatLng(simulatedLat!, simulatedLng!),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueViolet,
+          ),
+          infoWindow: InfoWindow(title: AppTranslation.deliveryFakeGpsMapMarker),
         ),
     };
 

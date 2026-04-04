@@ -1309,6 +1309,29 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   }
 
   @override
+  Future<Response> markOnTheWay(String id, String reason) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final data = {'reason': reason};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(method: 'PATCH', headers: headers, extra: extra)
+            .compose(
+              dio.options,
+              'orders/$id/on-the-way',
+              queryParameters: queryParameters,
+              data: data,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
   Future<Response> markAsDelivered(
     String id,
     String reason,

@@ -30,6 +30,7 @@ class GoogleDirectionsService {
         queryParameters: <String, dynamic>{
           'origin': '$originLat,$originLng',
           'destination': '$destinationLat,$destinationLng',
+          'mode': 'driving',
           'key': key,
         },
       );

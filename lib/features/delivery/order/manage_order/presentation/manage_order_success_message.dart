@@ -8,6 +8,8 @@ extension ManageOrderSuccessKindMessage on ManageOrderSuccessKind {
         return AppTranslation.manageOrderSuccessAcceptDelivery;
       case ManageOrderSuccessKind.confirmPickup:
         return AppTranslation.manageOrderSuccessConfirmPickup;
+      case ManageOrderSuccessKind.markOnTheWay:
+        return AppTranslation.manageOrderSuccessMarkOnTheWay;
       case ManageOrderSuccessKind.markDelivered:
         return AppTranslation.manageOrderSuccessMarkDelivered;
       case ManageOrderSuccessKind.rejectDelivery:

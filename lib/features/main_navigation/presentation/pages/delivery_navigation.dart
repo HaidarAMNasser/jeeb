@@ -29,8 +29,7 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
     return BlocProvider<ManageOrderBloc>(
       create: (_) => di.sl<ManageOrderBloc>(),
       child: BlocProvider<DeliveryHomeBloc>(
-        create: (_) => di.sl<DeliveryHomeBloc>()
-          ..add(const LoadDeliveryHomeEvent()),
+        create: (_) => di.sl<DeliveryHomeBloc>(),
         child: DeliveryPersistentTrackingScope(
           child: Scaffold(
             backgroundColor: ColorManager.background,

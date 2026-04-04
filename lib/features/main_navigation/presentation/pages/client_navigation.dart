@@ -36,8 +36,8 @@ class _ClientNavigationState extends State<ClientNavigation> {
             BlocProvider<ClientHomeBloc>(
               create: (_) => di.sl<ClientHomeBloc>(),
             ),
-            BlocProvider<ProfileBloc>(
-              create: (_) => di.sl<ProfileBloc>()..add(const GetProfile()),
+            BlocProvider<ProfileBloc>.value(
+              value: di.sl<ProfileBloc>(),
             ),
           ],
           child: const ClientHomePage(),

@@ -459,9 +459,16 @@ class AppTranslation {
   /// Map preview on order details when status is on the way (live tracking later).
   static String get orderDeliveryMapBadge => 'order_delivery_map_badge'.tr();
 
-  /// Delivery driver map: walked path vs suggested directions.
+  /// Delivery map: solid tracked path vs dashed Google driving route.
   static String get deliveryRouteLegendWalked =>
       'delivery_route_legend_walked'.tr();
+
+  /// Demo: simulate driver GPS (dev / QA).
+  static String get deliveryFakeGpsStart => 'delivery_fake_gps_start'.tr();
+  static String get deliveryFakeGpsStop => 'delivery_fake_gps_stop'.tr();
+  static String get deliveryFakeGpsHint => 'delivery_fake_gps_hint'.tr();
+  static String get deliveryFakeGpsMapMarker =>
+      'delivery_fake_gps_map_marker'.tr();
 
   /// Opens [Routes.orderStatus] from order details while the order is still active.
   static String get orderTrackOrderCta => 'order_track_order_cta'.tr();
@@ -527,6 +534,8 @@ class AppTranslation {
   static String get confirmPickup => 'confirm_pickup'.tr();
   static String get rejectDelivery => 'reject_delivery'.tr();
   static String get markAsDelivered => 'mark_as_delivered'.tr();
+  static String get markOnTheWay => 'mark_on_the_way'.tr();
+  static String get onTheWayDefaultReason => 'on_the_way_default_reason'.tr();
   static String get orderNumber => 'order_number'.tr();
   static String get unableToDeliver => 'unable_to_deliver'.tr();
   static String get pickedUp => 'picked_up'.tr();
@@ -550,6 +559,8 @@ class AppTranslation {
       'manage_order_success_accept_delivery'.tr();
   static String get manageOrderSuccessConfirmPickup =>
       'manage_order_success_confirm_pickup'.tr();
+  static String get manageOrderSuccessMarkOnTheWay =>
+      'manage_order_success_mark_on_the_way'.tr();
   static String get manageOrderSuccessMarkDelivered =>
       'manage_order_success_mark_delivered'.tr();
   static String get manageOrderSuccessRejectDelivery =>

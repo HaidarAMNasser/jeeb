@@ -4,6 +4,7 @@ import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 abstract class ManageOrderRemoteDataSource {
   Future<Response> acceptDelivery(String id, int deliveryTime);
   Future<Response> confirmPickup(String id, String reason);
+  Future<Response> markOnTheWay(String id, String reason);
   Future<Response> markAsDelivered(
     String id,
     String reason,
@@ -26,6 +27,11 @@ class ManageOrderRemoteDataSourceImpl implements ManageOrderRemoteDataSource {
   @override
   Future<Response> confirmPickup(String id, String reason) {
     return _appApiServiceClient.confirmPickup(id, reason);
+  }
+
+  @override
+  Future<Response> markOnTheWay(String id, String reason) {
+    return _appApiServiceClient.markOnTheWay(id, reason);
   }
 
   @override

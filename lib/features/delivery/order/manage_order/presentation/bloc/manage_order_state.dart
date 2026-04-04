@@ -4,6 +4,7 @@ part of 'manage_order_bloc.dart';
 enum ManageOrderSuccessKind {
   acceptDelivery,
   confirmPickup,
+  markOnTheWay,
   markDelivered,
   rejectDelivery,
 }

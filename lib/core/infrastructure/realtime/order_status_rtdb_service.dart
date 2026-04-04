@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
 
 /// Backend RTDB URL (see `backend/real_taime/Firebase_Realtime_Database.md`).
@@ -61,18 +62,32 @@ class OrderStatusRtdbService {
   /// Writes only `currentLat` / `currentLng` under `/drivers/{driverId}` (driver app; see Firebase doc).
   Future<void> updateDriverLocation(int driverId, double lat, double lng) async {
     if (driverId <= 0) return;
-    await _db.ref('drivers/$driverId').update({
-      'currentLat': lat,
-      'currentLng': lng,
-    });
+    try {
+      await _db.ref('drivers/$driverId').update({
+        'currentLat': lat,
+        'currentLng': lng,
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('OrderStatusRtdbService.updateDriverLocation: $e');
+      }
+      rethrow;
+    }
   }
 
   /// Writes only `isOnline` under `/drivers/{driverId}`.
   Future<void> updateDriverOnlineStatus(int driverId, bool isOnline) async {
     if (driverId <= 0) return;
-    await _db.ref('drivers/$driverId').update({
-      'isOnline': isOnline,
-    });
+    try {
+      await _db.ref('drivers/$driverId').update({
+        'isOnline': isOnline,
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('OrderStatusRtdbService.updateDriverOnlineStatus: $e');
+      }
+      rethrow;
+    }
   }
 
   /// Live driver location from `/drivers/{driverId}`.

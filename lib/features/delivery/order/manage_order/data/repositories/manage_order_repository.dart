@@ -39,6 +39,19 @@ class ManageOrderRepository {
     }
   }
 
+  Future<Either<Failure, bool>> markOnTheWay(String id, String reason) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        await _remoteDataSource.markOnTheWay(id, reason);
+        return const Right(true);
+      } catch (error) {
+        return Left(ErrorHandler.handle(error));
+      }
+    } else {
+      return const Left(NetworkFailure());
+    }
+  }
+
   Future<Either<Failure, bool>> markAsDelivered({
     required String id,
     required String reason,

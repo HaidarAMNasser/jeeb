@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
+import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/main_navigation/presentation/pages/client_navigation.dart';
 import 'package:jeeb_app/features/main_navigation/presentation/pages/delivery_navigation.dart';
 
@@ -31,6 +32,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     setState(() {
       _userRole = role;
       _isLoading = false;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      di.sl<ProfileBloc>().add(const GetProfile());
     });
   }
 
