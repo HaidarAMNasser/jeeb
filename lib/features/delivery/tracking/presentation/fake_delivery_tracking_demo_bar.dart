@@ -6,24 +6,17 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 
-/// QA / demo: toggles simulated GPS (same API + Firebase pipeline as real tracking).
+/// QA / demo: toggles live location tracking to RTDB `/drivers/{driverId}`.
+/// Works with or without an assigned order.
 class FakeDeliveryTrackingDemoBar extends StatelessWidget {
-  const FakeDeliveryTrackingDemoBar({super.key, required this.order});
+  const FakeDeliveryTrackingDemoBar({super.key, this.order});
 
-  final OrderEntity order;
+  final OrderEntity? order;
 
   @override
   Widget build(BuildContext context) {
-    if (!DeliveryOrderLocationReporter.shouldTrack(
-      OrderStatus.fromString(order.status),
-    )) {
-      return const SizedBox.shrink();
-    }
-
     final fake = di.sl<FakeDeliveryTrackingController>();
     return ListenableBuilder(
       listenable: fake,

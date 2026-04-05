@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -9,11 +11,19 @@ class DeliveryHomeMap extends StatefulWidget {
   final double? latitude;
   final double? longitude;
   final Set<Marker> markers;
+
   /// Walked path from RTDB `routeHistory` (e.g. active assigned order).
   final Set<Polyline> routePolylines;
+
   /// Demo simulated driver position (same pipeline as real tracking).
   final double? simulatedLatitude;
   final double? simulatedLongitude;
+
+  /// Requests a GPS fix and updates the parent-held coordinates (e.g. [recenterOnCurrentLocation]).
+  final Future<void> Function()? onMyLocationPressed;
+
+  /// Custom pin for the driver (current location); falls back to default azure marker.
+  final BitmapDescriptor? driverMarkerIcon;
 
   const DeliveryHomeMap({
     super.key,
@@ -23,6 +33,8 @@ class DeliveryHomeMap extends StatefulWidget {
     this.routePolylines = const {},
     this.simulatedLatitude,
     this.simulatedLongitude,
+    this.onMyLocationPressed,
+    this.driverMarkerIcon,
   });
 
   @override
@@ -31,6 +43,7 @@ class DeliveryHomeMap extends StatefulWidget {
 
 class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
   GoogleMapController? _mapController;
+  static const double _userLocationZoom = 15;
 
   @override
   void didUpdateWidget(covariant DeliveryHomeMap oldWidget) {
@@ -46,7 +59,10 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         widget.latitude != null &&
         widget.longitude != null) {
       _mapController!.animateCamera(
-        CameraUpdate.newLatLng(LatLng(widget.latitude!, widget.longitude!)),
+        CameraUpdate.newLatLngZoom(
+          LatLng(widget.latitude!, widget.longitude!),
+          _userLocationZoom,
+        ),
       );
     }
   }
@@ -63,13 +79,13 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         Marker(
           markerId: const MarkerId('current_location'),
           position: LatLng(widget.latitude!, widget.longitude!),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueAzure,
-          ),
+          icon: widget.driverMarkerIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure,
+              ),
           infoWindow: InfoWindow(title: AppTranslation.myLocation),
         ),
-      if (widget.simulatedLatitude != null &&
-          widget.simulatedLongitude != null)
+      if (widget.simulatedLatitude != null && widget.simulatedLongitude != null)
         Marker(
           markerId: const MarkerId('simulated_driver'),
           position: LatLng(
@@ -79,9 +95,14 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueViolet,
           ),
-          infoWindow: InfoWindow(title: AppTranslation.deliveryFakeGpsMapMarker),
+          infoWindow: InfoWindow(
+            title: AppTranslation.deliveryFakeGpsMapMarker,
+          ),
         ),
     };
+
+    final double initialZoom =
+        widget.latitude != null && widget.longitude != null ? _userLocationZoom : 13;
 
     return Container(
       height: AppHeight.s250,
@@ -90,7 +111,7 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         borderRadius: BorderRadius.circular(AppSize.s16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -101,18 +122,30 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         child: Stack(
           children: [
             GoogleMap(
-              initialCameraPosition: CameraPosition(target: center, zoom: 13),
+              mapType: MapType.normal,
+              trafficEnabled: true,
+              compassEnabled: true,
+              initialCameraPosition:
+                  CameraPosition(target: center, zoom: initialZoom),
               markers: combinedMarkers,
               polylines: widget.routePolylines,
-              myLocationEnabled: false, // Using custom orange marker instead
+              myLocationEnabled: false,
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               mapToolbarEnabled: false,
               onMapCreated: (controller) {
                 _mapController = controller;
+                _animateToLocation();
               },
             ),
-            // Map Buttons
+            Positioned(
+              left: AppPadding.p10,
+              right: 52,
+              top: AppPadding.p10,
+              child: DeliveryMapSearchBar(
+                onTap: () => _showSearchDialog(context),
+              ),
+            ),
             Positioned(
               top: AppPadding.p12,
               right: AppPadding.p12,
@@ -123,11 +156,18 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
                     icon: Icons.fullscreen,
                     onPressed: () => _openFullscreenMap(context, center),
                   ),
-                  SizedBox(height: AppHeight.s8),
-                  DeliveryMapChromeButton(
-                    icon: Icons.search,
-                    onPressed: () => _showSearchDialog(context),
-                  ),
+                  if (widget.onMyLocationPressed != null) ...[
+                    SizedBox(height: AppHeight.s8),
+                    Tooltip(
+                      message: AppTranslation.useMyLocation,
+                      child: DeliveryMapChromeButton(
+                        icon: Icons.my_location,
+                        onPressed: () {
+                          unawaited(widget.onMyLocationPressed!());
+                        },
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -149,6 +189,7 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
           simulatedLat: widget.simulatedLatitude,
           simulatedLng: widget.simulatedLongitude,
           polylines: widget.routePolylines,
+          driverMarkerIcon: widget.driverMarkerIcon,
         ),
       ),
     );

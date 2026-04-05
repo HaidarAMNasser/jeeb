@@ -8,7 +8,6 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_common.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/preperation_countdoun/delivery_order_meal_prep_countdown.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
   final OrderEntity order;
@@ -27,14 +26,9 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
     final addr = order.owner?.address?.trim().isNotEmpty == true
         ? order.owner!.address!.trim()
         : '';
-    final phone = order.owner?.phone?.trim().isNotEmpty == true
-        ? order.owner!.phone!.trim()
-        : (order.merchantPhone?.trim().isNotEmpty == true
-              ? order.merchantPhone!.trim()
-              : null);
+    final restaurantPhone = order.owner?.phone?.trim();
 
     final mealMins = order.mealPreparationMinutes ?? order.preparationTime;
-    final deliveryMins = order.deliveryTimeMinutes;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,47 +65,14 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
                   textOverflow: TextOverflow.ellipsis,
                 ),
               ],
-              if (phone != null) ...[
+              if (restaurantPhone != null && restaurantPhone.isNotEmpty) ...[
                 SizedBox(height: AppHeight.s8),
-                InkWell(
-                  onTap: () => launchUrl(Uri.parse('tel:$phone')),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.phone_in_talk_outlined,
-                        size: AppSize.s16,
-                        color: ColorManager.primary,
-                      ),
-                      SizedBox(width: AppWidth.s8),
-                      CustomText(
-                        text: phone,
-                        textStyle: getSemiBoldStyle(
-                          fontSize: AppFontSize.s13,
-                          color: ColorManager.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              if (deliveryMins != null && deliveryMins > 0) ...[
-                SizedBox(height: AppHeight.s8),
-                CustomText(
-                  text: AppTranslation.orderEstimatedDeliveryMinutes(
-                    deliveryMins,
-                  ),
-                  textStyle: getRegularStyle(
-                    fontSize: AppFontSize.s11,
-                    color: ColorManager.textSecondary,
-                  ),
-                ),
+                CopyablePhoneRow(phone: restaurantPhone),
               ],
               SizedBox(height: AppHeight.s10),
               DeliveryOrderMealPrepCountdown(
-                key: ValueKey(
-                  '${order.id}_${order.createdAt?.toIso8601String()}_$mealMins',
-                ),
+                key: ValueKey('meal_prep_${order.id}_$mealMins'),
+                orderId: order.id,
                 placedAt: order.createdAt,
                 preparationMinutes: mealMins,
                 onElapsed: onMealPrepElapsed,

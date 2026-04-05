@@ -38,9 +38,10 @@ class DeliveryOrderLocationReporter {
   Position? _lastSentPosition;
   bool _publishedOnline = false;
   bool _publishInFlight = false;
+  bool _started = false;
 
   /// Minimum time between publishes (order API + driver RTDB).
-  static const Duration _minInterval = Duration(seconds: 10);
+  static const Duration _minInterval = Duration(seconds: 8);
   static const double _minDistanceMeters = 12;
 
   /// Live GPS → API + RTDB only after the driver marks the order [OrderStatus.onTheWay].
@@ -51,26 +52,35 @@ class DeliveryOrderLocationReporter {
   bool get _usesRealGpsStream => positionStream == null;
 
   void ensureStarted() {
+    if (_started) return;
+    _started = true;
+
     if (_sub != null) return;
     final Stream<Position> stream = positionStream ??
         LocationService.instance.getPositionStream(
           locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.high,
-            distanceFilter: 8,
+            distanceFilter: 0,
           ),
         );
     _sub = stream.listen(
-      (p) => unawaited(_handlePosition(p, requireMovement: true)),
+      (p) => unawaited(_handlePosition(p, requireMovement: false)),
       onError: (_) {},
     );
 
-    // Real GPS: periodic poll so we still publish every [_minInterval] when not moving.
+    // Immediate first publish + periodic poll so we still publish when stationary.
     if (_usesRealGpsStream) {
+      unawaited(_pollCurrentLocation());
       _fixedIntervalTimer = Timer.periodic(_minInterval, (_) {
         unawaited(_pollCurrentLocation());
       });
-      unawaited(_pollCurrentLocation());
     }
+  }
+
+  /// GPS samples from the shared home map stream (see [externalFeedOnly]).
+  void reportPosition(Position p) {
+    if (!_started) return;
+    unawaited(_handlePosition(p, requireMovement: true));
   }
 
   Future<void> _pollCurrentLocation() async {
@@ -114,19 +124,41 @@ class DeliveryOrderLocationReporter {
       final speedKmh = (p.speed.isFinite ? p.speed : 0) * 3.6;
       final clampedSpeed = speedKmh.clamp(0.0, 200.0);
 
-      await _repository.pushLocationUpdate(
-        orderId: orderId,
-        lat: p.latitude,
-        lng: p.longitude,
-        timestampMs: DateTime.now().millisecondsSinceEpoch,
-        speedKmh: clampedSpeed,
-      );
+      if (orderId > 0) {
+        await _repository.pushLocationUpdate(
+          orderId: orderId,
+          lat: p.latitude,
+          lng: p.longitude,
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+          speedKmh: clampedSpeed,
+        );
+      }
+
+      if (kDebugMode) {
+        debugPrint(
+          '[DeliveryOrderLocationReporter] location sent '
+          '${orderId > 0 ? "→ API orderId=$orderId " : "(driver-only) "}'
+          'lat=${p.latitude.toStringAsFixed(6)} '
+          'lng=${p.longitude.toStringAsFixed(6)} speedKmh=${clampedSpeed.toStringAsFixed(1)}',
+        );
+      }
 
       if (driverId > 0) {
         try {
-          await _rtdb.updateDriverLocation(driverId, p.latitude, p.longitude);
-          await _rtdb.updateDriverOnlineStatus(driverId, true);
+          await _rtdb.updateDriverPresence(
+            driverId,
+            lat: p.latitude,
+            lng: p.longitude,
+            isOnline: true,
+          );
           _publishedOnline = true;
+          if (kDebugMode) {
+            debugPrint(
+              '[DeliveryOrderLocationReporter] RTDB updated → '
+              'driverId=$driverId lat=${p.latitude.toStringAsFixed(6)} '
+              'lng=${p.longitude.toStringAsFixed(6)} isOnline=true',
+            );
+          }
         } catch (e) {
           if (kDebugMode) {
             debugPrint(
@@ -141,6 +173,7 @@ class DeliveryOrderLocationReporter {
   }
 
   void dispose() {
+    _started = false;
     _fixedIntervalTimer?.cancel();
     _fixedIntervalTimer = null;
     _sub?.cancel();

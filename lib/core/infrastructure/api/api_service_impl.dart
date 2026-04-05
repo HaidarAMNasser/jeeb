@@ -1343,7 +1343,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     final headers = <String, dynamic>{};
     final data = {
       'reason': reason,
-      'finalLocation': {'lat': lat, 'lng': lng}
+      'finalLocation': {'lat': lat, 'lng': lng},
     };
 
     final result = await dio.fetch<Map<String, dynamic>>(

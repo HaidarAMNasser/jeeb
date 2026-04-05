@@ -37,7 +37,7 @@ class FakeDeliveryTrackingController extends ChangeNotifier {
       final pos = _tickToPosition(tick++, aLat, aLng, bLat, bLng, cycleTicks);
       simulatedMapPosition.value = LatLng(pos.latitude, pos.longitude);
       yield pos;
-      await Future<void>.delayed(const Duration(seconds: 10));
+      await Future<void>.delayed(const Duration(seconds: 8));
     }
   }
 

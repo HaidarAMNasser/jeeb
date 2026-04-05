@@ -281,6 +281,13 @@ class OrderEntity extends Equatable {
     return null;
   }
 
+  /// Top-level [customerPhone] if set; otherwise nested [customer.phone].
+  String? get resolvedCustomerPhone {
+    final p = customerPhone?.trim();
+    if (p != null && p.isNotEmpty) return p;
+    return customer?.phone?.trim();
+  }
+
   /// Restaurant (`owner.location`).
   double? get restaurantLatitude => owner?.location?.lat;
   double? get restaurantLongitude => owner?.location?.lng;

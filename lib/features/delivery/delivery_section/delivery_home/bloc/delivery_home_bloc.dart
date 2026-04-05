@@ -7,6 +7,43 @@ import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/o
 part 'delivery_home_event.dart';
 part 'delivery_home_state.dart';
 
+/// Lower = more urgent for the driver's current run (map + primary card).
+int _activeDeliveryPriority(OrderStatus s) {
+  switch (s) {
+    case OrderStatus.onTheWay:
+      return 0;
+    case OrderStatus.pickedUp:
+      return 1;
+    case OrderStatus.readyForPickup:
+      return 2;
+    case OrderStatus.assigned:
+      return 3;
+    case OrderStatus.preparing:
+      return 4;
+    default:
+      return 99;
+  }
+}
+
+/// Pipeline pool: show PREPARING before SEARCHING when both exist.
+int _pipelinePoolPriority(OrderStatus s) {
+  switch (s) {
+    case OrderStatus.preparing:
+      return 0;
+    case OrderStatus.searching:
+      return 1;
+    default:
+      return 2;
+  }
+}
+
+void _sortInPlaceBy<T>(
+  List<T> items,
+  int Function(T a) priority,
+) {
+  items.sort((a, b) => priority(a).compareTo(priority(b)));
+}
+
 class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
   final ListOrderRepository _repository;
 
@@ -34,10 +71,12 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
     Emitter<DeliveryHomeState> emit, {
     required bool markRefresh,
   }) async {
-    // 1. Active delivery leg: driver keeps the order until delivered (incl. ON_THE_WAY for live map).
+    // 1. Active delivery leg: assigned chain + PREPARING (restaurant cooking while driver is on the job).
+    //    PREPARING here drives map routes + "active" card; same query must be driver-scoped on the API.
     final assignedResult = await _repository.getOrders(
       status: [
         OrderStatus.assigned,
+        OrderStatus.preparing,
         OrderStatus.readyForPickup,
         OrderStatus.pickedUp,
         OrderStatus.onTheWay,
@@ -49,7 +88,12 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       (failure) => null, // Ignore failure for now, try available orders
       (orders) {
         if (orders.isNotEmpty) {
-          assignedOrder = orders.first;
+          final sorted = List<OrderEntity>.from(orders);
+          _sortInPlaceBy(
+            sorted,
+            (o) => _activeDeliveryPriority(OrderStatus.fromString(o.status)),
+          );
+          assignedOrder = sorted.first;
         }
       },
     );
@@ -64,18 +108,28 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       return;
     }
 
-    // 2. Fetch available orders (SEARCHING)
+    // 2. Fetch available orders (SEARCHING + PREPARING)
     final availableResult = await _repository.getOrders(
-      status: OrderStatus.searching.apiWireValue,
+      status: [
+        OrderStatus.searching,
+        OrderStatus.preparing,
+      ].map((s) => s.apiWireValue).join(','),
     );
 
     availableResult.fold(
       (failure) => emit(DeliveryHomeError(message: failure.message)),
-      (orders) => emit(DeliveryHomeLoaded(
-        availableOrders: orders,
-        assignedOrder: null,
-        refreshedAt: markRefresh ? DateTime.now() : null,
-      )),
+      (orders) {
+        final sorted = List<OrderEntity>.from(orders);
+        _sortInPlaceBy(
+          sorted,
+          (o) => _pipelinePoolPriority(OrderStatus.fromString(o.status)),
+        );
+        emit(DeliveryHomeLoaded(
+          availableOrders: sorted,
+          assignedOrder: null,
+          refreshedAt: markRefresh ? DateTime.now() : null,
+        ));
+      },
     );
   }
 }

@@ -15,6 +15,9 @@ class AppTranslation {
   static String get skip => 'skip'.tr();
   static String get next => 'next'.tr();
   static String get done => 'done'.tr();
+  static String get call => 'call'.tr();
+  static String get phoneCopied => 'phone_copied'.tr();
+  static String get copyPhone => 'copy_phone'.tr();
   static String get getStarted => 'get_started'.tr();
   static String get home => 'home'.tr();
   static String get settings => 'settings'.tr();

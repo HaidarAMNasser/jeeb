@@ -15,24 +15,33 @@ class GoogleDirectionsService {
   );
 
   /// Decoded path points for the first route, or null if unavailable / error.
+  /// [trafficAware] adds departure time + traffic model so routes follow current traffic.
   static Future<List<LatLng>?> getDrivingPolyline({
     required double originLat,
     required double originLng,
     required double destinationLat,
     required double destinationLng,
+    bool trafficAware = true,
   }) async {
     final key = GoogleApiConfig.directionsApiKey.trim();
     if (key.isEmpty) return null;
 
-    try {
+    Future<List<LatLng>?> fetch({required bool withTraffic}) async {
+      final queryParameters = <String, dynamic>{
+        'origin': '$originLat,$originLng',
+        'destination': '$destinationLat,$destinationLng',
+        'mode': 'driving',
+        'key': key,
+      };
+      if (withTraffic) {
+        queryParameters['departure_time'] =
+            DateTime.now().millisecondsSinceEpoch ~/ 1000;
+        queryParameters['traffic_model'] = 'best_guess';
+      }
+
       final res = await _dio.get<Map<String, dynamic>>(
         'https://maps.googleapis.com/maps/api/directions/json',
-        queryParameters: <String, dynamic>{
-          'origin': '$originLat,$originLng',
-          'destination': '$destinationLat,$destinationLng',
-          'mode': 'driving',
-          'key': key,
-        },
+        queryParameters: queryParameters,
       );
       final data = res.data;
       if (data == null) return null;
@@ -55,6 +64,15 @@ class GoogleDirectionsService {
             ),
           )
           .toList(growable: false);
+    }
+
+    try {
+      if (trafficAware) {
+        final withTraffic = await fetch(withTraffic: true);
+        if (withTraffic != null) return withTraffic;
+        return await fetch(withTraffic: false);
+      }
+      return await fetch(withTraffic: false);
     } catch (_) {
       return null;
     }

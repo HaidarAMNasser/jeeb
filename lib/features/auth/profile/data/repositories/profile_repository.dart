@@ -21,7 +21,7 @@ class ProfileRepository {
 
   Future<Either<Failure, UserEntity>> getProfile() async {
     if (!await _networkInfo.isConnected) {
-      return Right(_fakeUser());
+      return const Left(NetworkFailure());
     }
     try {
       final response = await _remoteDataSource.getProfile();
@@ -47,34 +47,8 @@ class ProfileRepository {
         ));
       }
     } catch (error) {
-      return Right(_fakeUser());
+      return Left(ErrorHandler.handle(error));
     }
-  }
-
-  static UserEntity _fakeUser({
-    double? latitude,
-    double? longitude,
-    bool? isActive,
-  }) {
-    final now = DateTime.now();
-    return UserEntity(
-      id: 1,
-      firstName: 'Dev',
-      lastName: 'User',
-      email: 'dev@test.com',
-      phone: '',
-      role: UserRole.merchant,
-      notificationChannel: NotificationChannel.email,
-      countryId: 0,
-      cityId: 0,
-      createdAt: now,
-      updatedAt: now,
-      address: null,
-      isActive: isActive ?? true,
-      isVerified: true,
-      currentLat: latitude,
-      currentLng: longitude,
-    );
   }
 
   Future<Either<Failure, UserEntity>> updateProfile({
@@ -90,11 +64,7 @@ class ProfileRepository {
     dynamic imageFile,
   }) async {
     if (!await _networkInfo.isConnected) {
-      return Right(_fakeUser(
-        latitude: latitude,
-        longitude: longitude,
-        isActive: isActive,
-      ));
+      return const Left(NetworkFailure());
     }
     try {
       File? file;
@@ -140,11 +110,7 @@ class ProfileRepository {
         ));
       }
     } catch (error) {
-      return Right(_fakeUser(
-        latitude: latitude,
-        longitude: longitude,
-        isActive: isActive,
-      ));
+      return Left(ErrorHandler.handle(error));
     }
   }
 }

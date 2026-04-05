@@ -47,6 +47,7 @@ class _DeliveryOrdersTabContentBodyState
     switch (widget.type) {
       case DeliveryOrderTabType.pending:
         return [
+          OrderStatus.preparing.apiWireValue,
           OrderStatus.readyForPickup.apiWireValue,
           OrderStatus.assigned.apiWireValue,
           OrderStatus.pickedUp.apiWireValue,

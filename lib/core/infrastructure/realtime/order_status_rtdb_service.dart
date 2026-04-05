@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -10,13 +11,46 @@ const String kOrderRtdbDatabaseUrl =
 /// Listens to `/orders/{orderId}/status` for live status updates (replaces REST polling).
 class OrderStatusRtdbService {
   OrderStatusRtdbService({FirebaseDatabase? database})
-      : _db = database ??
-            FirebaseDatabase.instanceFor(
-              app: Firebase.app(),
-              databaseURL: kOrderRtdbDatabaseUrl,
-            );
+    : _db =
+          database ??
+          FirebaseDatabase.instanceFor(
+            app: Firebase.app(),
+            databaseURL: kOrderRtdbDatabaseUrl,
+          );
 
   final FirebaseDatabase _db;
+
+  /// Uses [driverId] as the Firebase custom-token string so `auth.uid` matches the driver (per backend agreement).
+  Future<void> ensureFirebaseAuthForDriver(int driverId) async {
+    if (driverId <= 0) {
+      await _signInAnonymousIfNeeded();
+      return;
+    }
+    final token = driverId.toString();
+    final cur = FirebaseAuth.instance.currentUser;
+    if (cur?.uid == token) return;
+    try {
+      if (cur != null) await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signInWithCustomToken(token);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('OrderStatusRtdbService.ensureFirebaseAuthForDriver: $e');
+      }
+      await _signInAnonymousIfNeeded();
+    }
+  }
+
+  Future<void> _signInAnonymousIfNeeded() async {
+    try {
+      if (FirebaseAuth.instance.currentUser == null) {
+        await FirebaseAuth.instance.signInAnonymously();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('OrderStatusRtdbService._signInAnonymousIfNeeded: $e');
+      }
+    }
+  }
 
   /// Live `/orders/{orderId}/routeHistory` (driver path; backend appends via tracking API).
   Stream<List<RouteHistoryPoint>> watchOrderRouteHistory(String orderId) {
@@ -59,29 +93,53 @@ class OrderStatusRtdbService {
     });
   }
 
-  /// Writes only `currentLat` / `currentLng` under `/drivers/{driverId}` (driver app; see Firebase doc).
-  Future<void> updateDriverLocation(int driverId, double lat, double lng) async {
+  /// Writes driver presence under `/drivers/{driverId}`.
+  Future<void> updateDriverPresence(
+    int driverId, {
+    required double lat,
+    required double lng,
+    required bool isOnline,
+  }) async {
     if (driverId <= 0) return;
+    await ensureFirebaseAuthForDriver(driverId);
+
+    final path = 'drivers/$driverId';
+    final payload = {
+      'currentLat': lat,
+      'currentLng': lng,
+      'isOnline': isOnline,
+    };
+
+    if (kDebugMode) {
+      debugPrint('┌─── RTDB WRITE ───────────────────────────');
+      debugPrint('│ path:    /$path');
+      debugPrint('│ method:  update (patch)');
+      debugPrint(
+        '│ authUid: ${FirebaseAuth.instance.currentUser?.uid}',
+      );
+      debugPrint('│ payload: $payload');
+      debugPrint('└──────────────────────────────────────────');
+    }
+
     try {
-      await _db.ref('drivers/$driverId').update({
-        'currentLat': lat,
-        'currentLng': lng,
-      });
+      await _db.ref(path).update(payload);
+      if (kDebugMode) {
+        debugPrint('✅ RTDB WRITE SUCCESS → /$path');
+      }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('OrderStatusRtdbService.updateDriverLocation: $e');
+        debugPrint('❌ RTDB WRITE FAILED → /$path — $e');
       }
       rethrow;
     }
   }
 
-  /// Writes only `isOnline` under `/drivers/{driverId}`.
+  /// Writes only `isOnline` under `/drivers/{driverId}` (disconnect / dispose).
   Future<void> updateDriverOnlineStatus(int driverId, bool isOnline) async {
     if (driverId <= 0) return;
+    await ensureFirebaseAuthForDriver(driverId);
     try {
-      await _db.ref('drivers/$driverId').update({
-        'isOnline': isOnline,
-      });
+      await _db.ref('drivers/$driverId').update({'isOnline': isOnline});
     } catch (e) {
       if (kDebugMode) {
         debugPrint('OrderStatusRtdbService.updateDriverOnlineStatus: $e');
@@ -103,7 +161,11 @@ class OrderStatusRtdbService {
       final lng = _asDouble(raw['currentLng']);
       if (lat == null || lng == null) return null;
       final online = raw['isOnline'] == true;
-      return DriverLiveLocation(latitude: lat, longitude: lng, isOnline: online);
+      return DriverLiveLocation(
+        latitude: lat,
+        longitude: lng,
+        isOnline: online,
+      );
     });
   }
 

@@ -242,9 +242,7 @@ Future<void> init() async {
     () => ListOrderRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => ListOrderRepository(sl(), sl()));
-  sl.registerFactory(
-    () => ListOrderBloc(sl(), sl<OrderStatusRtdbService>()),
-  );
+  sl.registerFactory(() => ListOrderBloc(sl(), sl<OrderStatusRtdbService>()));
 
   //! Create order (used by [BasketConfirmationBloc])
   sl.registerFactory<CreateOrderRemoteDataSource>(

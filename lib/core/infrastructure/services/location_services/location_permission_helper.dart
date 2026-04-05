@@ -84,16 +84,9 @@ class LocationPermissionHelper {
     }
   }
 
-  /// Result of requesting location: position may be null even when permission
-  /// was granted (e.g. GPS off or first fix not yet available).
-  static Future<({double? latitude, double? longitude, bool permissionGranted})>
-      requestAndGetPosition() async {
-    final granted = await requestLocationPermission();
-    if (!granted) {
-      return (latitude: null, longitude: null, permissionGranted: false);
-    }
-
-    // After the OS permission dialog, the first fix is often delayed — retry.
+  /// Retries last-known and current position with backoff (cold GPS, first fix).
+  /// Call when location permission is already granted (e.g. after [requestLocationPermission]).
+  static Future<Position?> getCurrentPositionWithRetries() async {
     await Future<void>.delayed(const Duration(milliseconds: 350));
 
     Position? position;
@@ -115,6 +108,20 @@ class LocationPermissionHelper {
       position = await _tryCurrentPosition(accuracy: LocationAccuracy.medium);
       if (position != null) break;
     }
+
+    return position;
+  }
+
+  /// Result of requesting location: position may be null even when permission
+  /// was granted (e.g. GPS off or first fix not yet available).
+  static Future<({double? latitude, double? longitude, bool permissionGranted})>
+      requestAndGetPosition() async {
+    final granted = await requestLocationPermission();
+    if (!granted) {
+      return (latitude: null, longitude: null, permissionGranted: false);
+    }
+
+    final position = await getCurrentPositionWithRetries();
 
     if (position == null) {
       return (latitude: null, longitude: null, permissionGranted: true);

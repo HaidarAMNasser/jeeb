@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/google_directions_service.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
+import 'package:jeeb_app/core/infrastructure/services/location_services/location_service.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/maps/delivery_map_marker_bitmaps.dart';
 import 'package:jeeb_app/core/presentation/maps/route_history_polyline_builder.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -17,8 +21,7 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widget
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_map_chrome.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
-/// Restaurant + drop-off markers, optional planned road (dashed), and live **walked path**
-/// from Firebase `routeHistory` (gradient segments). See `Firebase_Realtime_Database.md`.
+/// Restaurant + drop-off + driver, Directions legs (dashed), walked path from RTDB.
 class DeliveryOrderDetailsRouteMap extends StatefulWidget {
   final OrderEntity order;
 
@@ -33,16 +36,75 @@ class _DeliveryOrderDetailsRouteMapState
     extends State<DeliveryOrderDetailsRouteMap> {
   GoogleMapController? _controller;
   StreamSubscription<List<RouteHistoryPoint>>? _routeHistorySub;
+  StreamSubscription<Position>? _positionSub;
+  Timer? _plannedDebounce;
+
   Set<Polyline> _polylines = {};
-  Polyline? _plannedPolyline;
+  Polyline? _plannedDropoff;
+  Polyline? _plannedPickup;
+  String? _dropoffKey;
+
+  DateTime? _lastPickupFetchAt;
+  double? _lastPickupDriverLat;
+  double? _lastPickupDriverLng;
+
+  double? _driverLat;
+  double? _driverLng;
+
+  BitmapDescriptor? _pickupIcon;
+  BitmapDescriptor? _dropoffIcon;
+  BitmapDescriptor? _driverIcon;
 
   OrderStatusRtdbService get _rtdb => di.sl<OrderStatusRtdbService>();
 
   @override
   void initState() {
     super.initState();
+    _loadIcons();
     _subscribeRouteHistory();
-    _loadPlannedRoute();
+    _subscribeDriverPosition();
+    _schedulePlannedRoutes();
+  }
+
+  Future<void> _loadIcons() async {
+    final p = await DeliveryMapMarkerBitmaps.pickup();
+    final d = await DeliveryMapMarkerBitmaps.dropoff();
+    final v = await DeliveryMapMarkerBitmaps.driver();
+    if (!mounted) return;
+    setState(() {
+      _pickupIcon = p;
+      _dropoffIcon = d;
+      _driverIcon = v;
+    });
+  }
+
+  void _subscribeDriverPosition() {
+    _positionSub?.cancel();
+    _positionSub = LocationService.instance
+        .getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 80,
+          ),
+        )
+        .listen(
+      (pos) {
+        if (!mounted) return;
+        setState(() {
+          _driverLat = pos.latitude;
+          _driverLng = pos.longitude;
+        });
+        _schedulePlannedRoutes();
+      },
+      onError: (_) {},
+    );
+  }
+
+  void _schedulePlannedRoutes() {
+    _plannedDebounce?.cancel();
+    _plannedDebounce = Timer(const Duration(milliseconds: 650), () {
+      if (mounted) unawaited(_loadPlannedRoutes());
+    });
   }
 
   @override
@@ -60,14 +122,15 @@ class _DeliveryOrderDetailsRouteMapState
         o.dropoffLatitude != old.dropoffLatitude ||
         o.dropoffLongitude != old.dropoffLongitude) {
       setState(() {
-        _plannedPolyline = null;
+        _plannedDropoff = null;
+        _plannedPickup = null;
+        _dropoffKey = null;
         _polylines = {..._walkedOnlyPolylines(_polylines)};
       });
-      _loadPlannedRoute();
+      _schedulePlannedRoutes();
     }
   }
 
-  /// Keep walked polylines when clearing planned route during rebuild.
   Set<Polyline> _walkedOnlyPolylines(Set<Polyline> all) {
     return all.where((p) => p.polylineId.value.startsWith('walked_')).toSet();
   }
@@ -84,7 +147,8 @@ class _DeliveryOrderDetailsRouteMapState
         );
         setState(() {
           _polylines = {
-            if (_plannedPolyline != null) _plannedPolyline!,
+            if (_plannedPickup != null) _plannedPickup!,
+            if (_plannedDropoff != null) _plannedDropoff!,
             ...walked,
           };
         });
@@ -93,40 +157,124 @@ class _DeliveryOrderDetailsRouteMapState
     );
   }
 
-  Future<void> _loadPlannedRoute() async {
+  Future<void> _loadPlannedRoutes() async {
     final o = widget.order;
-    final oLat = o.restaurantLatitude;
-    final oLng = o.restaurantLongitude;
+    final rLat = o.restaurantLatitude;
+    final rLng = o.restaurantLongitude;
     final dLat = o.dropoffLatitude;
     final dLng = o.dropoffLongitude;
-    if (oLat == null || oLng == null || dLat == null || dLng == null) {
+    if (rLat == null || rLng == null || dLat == null || dLng == null) {
       if (mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) => _fitCamera());
       }
       return;
     }
-    final pts = await GoogleDirectionsService.getDrivingPolyline(
-      originLat: oLat,
-      originLng: oLng,
-      destinationLat: dLat,
-      destinationLng: dLng,
-    );
-    if (!mounted) return;
-    if (pts != null && pts.isNotEmpty) {
-      final planned = RouteHistoryPolylineBuilder.plannedRoute(
-        orderId: o.id,
-        points: pts,
+
+    final dropKey = '${o.id}_drop_${rLat}_${rLng}_${dLat}_$dLng';
+    Polyline? newDropoff = _plannedDropoff;
+    if (_dropoffKey != dropKey) {
+      _dropoffKey = dropKey;
+      final pts = await GoogleDirectionsService.getDrivingPolyline(
+        originLat: rLat,
+        originLng: rLng,
+        destinationLat: dLat,
+        destinationLng: dLng,
       );
-      setState(() {
-        _plannedPolyline = planned;
-        final walked = _walkedOnlyPolylines(_polylines);
-        _polylines = {
-          if (planned != null) planned,
-          ...walked,
-        };
-      });
+      if (!mounted) return;
+      if (_dropoffKey != dropKey) return;
+      newDropoff = pts == null || pts.isEmpty
+          ? null
+          : RouteHistoryPolylineBuilder.plannedDropoffLeg(
+              orderId: o.id,
+              points: pts,
+            );
     }
+
+    final driverLat = _driverLat;
+    final driverLng = _driverLng;
+    Polyline? newPickup = _plannedPickup;
+
+    if (driverLat != null && driverLng != null) {
+      final needPickup = _plannedPickup == null ||
+          _lastPickupFetchAt == null ||
+          _lastPickupDriverLat == null ||
+          _lastPickupDriverLng == null ||
+          DateTime.now().difference(_lastPickupFetchAt!) >
+              const Duration(seconds: 40) ||
+          Geolocator.distanceBetween(
+                _lastPickupDriverLat!,
+                _lastPickupDriverLng!,
+                driverLat,
+                driverLng,
+              ) >
+              120;
+
+      if (needPickup) {
+        final pts = await GoogleDirectionsService.getDrivingPolyline(
+          originLat: driverLat,
+          originLng: driverLng,
+          destinationLat: rLat,
+          destinationLng: rLng,
+        );
+        if (!mounted) return;
+        if (pts == null || pts.isEmpty) {
+          newPickup = null;
+        } else {
+          newPickup = RouteHistoryPolylineBuilder.plannedPickupLeg(
+            orderId: o.id,
+            points: pts,
+          );
+        }
+        _lastPickupFetchAt = DateTime.now();
+        _lastPickupDriverLat = driverLat;
+        _lastPickupDriverLng = driverLng;
+      }
+    } else {
+      newPickup = null;
+      _lastPickupFetchAt = null;
+      _lastPickupDriverLat = null;
+      _lastPickupDriverLng = null;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _plannedDropoff = newDropoff;
+      _plannedPickup = newPickup;
+      final walked = _walkedOnlyPolylines(_polylines);
+      _polylines = {
+        if (_plannedPickup != null) _plannedPickup!,
+        if (_plannedDropoff != null) _plannedDropoff!,
+        ...walked,
+      };
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _fitCamera());
+  }
+
+  Future<void> _recenterOnMyLocation() async {
+    Position? p = await LocationPermissionHelper.trySilentPosition();
+    if (p == null) {
+      var granted = await LocationPermissionHelper.isLocationPermissionGranted();
+      if (!granted) {
+        granted = await LocationPermissionHelper.requestLocationPermission();
+      }
+      if (!granted) return;
+      p = await LocationPermissionHelper.getCurrentPositionWithRetries();
+    }
+    if (!mounted || p == null) return;
+    final pos = p;
+    setState(() {
+      _driverLat = pos.latitude;
+      _driverLng = pos.longitude;
+    });
+    _schedulePlannedRoutes();
+    final c = _controller;
+    if (c != null) {
+      try {
+        await c.animateCamera(
+          CameraUpdate.newLatLngZoom(LatLng(pos.latitude, pos.longitude), 15),
+        );
+      } catch (_) {}
+    }
   }
 
   Future<void> _fitCamera({List<LatLng> extraPoints = const []}) async {
@@ -140,6 +288,8 @@ class _DeliveryOrderDetailsRouteMapState
 
     final candidates = <LatLng>[
       ...extraPoints,
+      if (_driverLat != null && _driverLng != null)
+        LatLng(_driverLat!, _driverLng!),
       if (rLat != null && rLng != null) LatLng(rLat, rLng),
       if (dLat != null && dLng != null) LatLng(dLat, dLng),
     ];
@@ -172,9 +322,7 @@ class _DeliveryOrderDetailsRouteMapState
           56,
         ),
       );
-    } catch (_) {
-      // Identical / invalid bounds.
-    }
+    } catch (_) {}
   }
 
   void _openFullscreenRouteMap(
@@ -182,13 +330,19 @@ class _DeliveryOrderDetailsRouteMapState
     Set<Marker> markers,
     Set<Polyline> polylines,
   ) {
+    final markersForFullscreen = markers
+        .where((m) => m.markerId.value != 'driver')
+        .toSet();
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
         builder: (context) => FullscreenMapView(
           initialCenter: _initialCenter,
-          markers: markers,
+          markers: markersForFullscreen,
+          currentLat: _driverLat,
+          currentLng: _driverLng,
           polylines: polylines,
+          driverMarkerIcon: _driverIcon,
         ),
       ),
     );
@@ -220,7 +374,9 @@ class _DeliveryOrderDetailsRouteMapState
 
   @override
   void dispose() {
+    _plannedDebounce?.cancel();
     _routeHistorySub?.cancel();
+    _positionSub?.cancel();
     super.dispose();
   }
 
@@ -236,7 +392,8 @@ class _DeliveryOrderDetailsRouteMapState
         Marker(
           markerId: const MarkerId('restaurant'),
           position: LatLng(o.restaurantLatitude!, o.restaurantLongitude!),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          icon: _pickupIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(
             title: restaurantName,
             snippet: o.owner?.address ?? o.pickupAddress,
@@ -249,14 +406,25 @@ class _DeliveryOrderDetailsRouteMapState
         Marker(
           markerId: const MarkerId('dropoff'),
           position: LatLng(o.dropoffLatitude!, o.dropoffLongitude!),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueOrange,
-          ),
+          icon: _dropoffIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
           infoWindow: InfoWindow(
             title: o.displayCustomerName ?? AppTranslation.customer,
-            snippet:
-                o.displayCustomerAddressLine ?? o.deliveryAddress ?? o.customer?.address,
+            snippet: o.displayCustomerAddressLine ??
+                o.deliveryAddress ??
+                o.customer?.address,
           ),
+        ),
+      );
+    }
+    if (_driverLat != null && _driverLng != null) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('driver'),
+          position: LatLng(_driverLat!, _driverLng!),
+          icon: _driverIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          infoWindow: InfoWindow(title: AppTranslation.myLocation),
         ),
       );
     }
@@ -283,7 +451,7 @@ class _DeliveryOrderDetailsRouteMapState
             borderRadius: BorderRadius.circular(AppSize.s16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -294,6 +462,9 @@ class _DeliveryOrderDetailsRouteMapState
             child: Stack(
               children: [
                 GoogleMap(
+                  mapType: MapType.normal,
+                  trafficEnabled: true,
+                  compassEnabled: true,
                   initialCameraPosition: CameraPosition(
                     target: _initialCenter,
                     zoom: 12,
@@ -312,6 +483,14 @@ class _DeliveryOrderDetailsRouteMapState
                   },
                 ),
                 Positioned(
+                  left: AppPadding.p10,
+                  right: 52,
+                  top: AppPadding.p10,
+                  child: DeliveryMapSearchBar(
+                    onTap: _showRouteMapSearch,
+                  ),
+                ),
+                Positioned(
                   top: AppPadding.p12,
                   right: AppPadding.p12,
                   child: Column(
@@ -326,9 +505,12 @@ class _DeliveryOrderDetailsRouteMapState
                         ),
                       ),
                       SizedBox(height: AppHeight.s8),
-                      DeliveryMapChromeButton(
-                        icon: Icons.search,
-                        onPressed: _showRouteMapSearch,
+                      Tooltip(
+                        message: AppTranslation.useMyLocation,
+                        child: DeliveryMapChromeButton(
+                          icon: Icons.my_location,
+                          onPressed: () => unawaited(_recenterOnMyLocation()),
+                        ),
                       ),
                     ],
                   ),

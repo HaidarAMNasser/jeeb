@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Widget buildAvatarIcon(IconData icon, Color color) {
   return Container(
@@ -38,5 +41,60 @@ Widget buildPriceTag(int price) {
       textStyle: getBoldStyle(fontSize: AppFontSize.s14, color: Colors.white),
     ),
   );
+}
+
+/// Phone row: tap to call, copy icon, [SelectableText] for selection/copy.
+class CopyablePhoneRow extends StatelessWidget {
+  const CopyablePhoneRow({super.key, required this.phone});
+
+  final String phone;
+
+  Future<void> _copy(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: phone));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppTranslation.phoneCopied)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          Icons.phone_in_talk_outlined,
+          size: AppSize.s16,
+          color: ColorManager.primary,
+        ),
+        SizedBox(width: AppWidth.s8),
+        Expanded(
+          child: SelectableText(
+            phone,
+            style: getSemiBoldStyle(
+              fontSize: AppFontSize.s13,
+              color: ColorManager.primary,
+            ),
+          ),
+        ),
+        IconButton(
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+          icon: Icon(Icons.call_rounded, size: AppSize.s20, color: ColorManager.primary),
+          tooltip: AppTranslation.call,
+          onPressed: () => launchUrl(Uri.parse('tel:$phone')),
+        ),
+        IconButton(
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+          icon: Icon(Icons.copy_rounded, size: AppSize.s18, color: ColorManager.primary),
+          tooltip: AppTranslation.copyPhone,
+          onPressed: () => _copy(context),
+        ),
+      ],
+    );
+  }
 }
 

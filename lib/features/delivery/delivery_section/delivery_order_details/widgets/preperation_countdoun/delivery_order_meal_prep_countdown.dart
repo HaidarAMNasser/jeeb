@@ -7,17 +7,20 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/preperation_countdoun/delivery_order_hms_slide_countdown.dart';
 
-/// Counts down to [placedAt] + [preparationMinutes] using [SlideCountdown] (**H:MM:SS**).
-/// Fires [onElapsed] once when the countdown reaches zero.
+/// Counts down to [placedAt] + [preparationMinutes] using [SlideCountdownSeparated] (H:MM:SS).
+/// Stable [orderId] key keeps the slide timer from restarting on parent rebuilds.
 class DeliveryOrderMealPrepCountdown extends StatefulWidget {
+  final String orderId;
   final DateTime? placedAt;
   final int? preparationMinutes;
   final VoidCallback? onElapsed;
-  /// Horizontal layout (e.g. home card): label and timer on one row.
+
+  /// Horizontal layout: label and timer on one row.
   final bool compact;
 
   const DeliveryOrderMealPrepCountdown({
     super.key,
+    required this.orderId,
     this.placedAt,
     this.preparationMinutes,
     this.onElapsed,
@@ -62,28 +65,22 @@ class _DeliveryOrderMealPrepCountdownState
     final mins = widget.preparationMinutes;
     if (mins == null || mins <= 0) return const SizedBox.shrink();
 
-    final timer = DeliveryOrderHmsSlideCountdown(
-      key: ValueKey(
-        '${widget.placedAt?.toIso8601String()}_${widget.preparationMinutes}_${_remaining.inSeconds}',
+    final doneLabel = CustomText(
+      text: '00:00:00',
+      textStyle: getSemiBoldStyle(
+        fontSize: AppFontSize.s14,
+        color: ColorManager.primary,
       ),
+    );
+
+    final timer = DeliveryOrderHmsSlideCountdown(
+      key: ValueKey('meal_slide_${widget.orderId}'),
       remaining: _remaining,
       variant: DeliveryOrderCountdownVariant.mealPrep,
       dense: widget.compact,
       onDone: widget.onElapsed,
-      replacementIfAlreadyElapsed: CustomText(
-        text: '00:00:00',
-        textStyle: getSemiBoldStyle(
-          fontSize: AppFontSize.s14,
-          color: ColorManager.primary,
-        ),
-      ),
-      replacementWhenDone: CustomText(
-        text: '00:00:00',
-        textStyle: getSemiBoldStyle(
-          fontSize: AppFontSize.s14,
-          color: ColorManager.primary,
-        ),
-      ),
+      replacementIfAlreadyElapsed: doneLabel,
+      replacementWhenDone: doneLabel,
     );
 
     if (widget.compact) {
