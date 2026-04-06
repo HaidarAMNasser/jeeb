@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
-import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_home_app_bar.dart';
@@ -17,13 +15,15 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widget
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/manage_order_success_message.dart';
-import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
+import 'delivery_home_map_markers.dart';
+import 'delivery_home_page_actions.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/core/presentation/maps/delivery_map_marker_bitmaps.dart';
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_tracking_position_binding.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_demo_bar.dart';
@@ -41,8 +41,8 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
   late final DeliveryRouteManager _routeManager;
   late final DeliveryOrderStatusWatcher _orderStatusWatcher;
 
-  DateTime? _lastAutoRefreshAt;
-  static const Duration _autoRefreshCooldown = Duration(seconds: 8);
+  final DeliveryHomeAutoRefreshGate _autoRefreshGate =
+      DeliveryHomeAutoRefreshGate();
 
   Timer? _routeSyncTimer;
   Timer? _resumeRefreshTimer;
@@ -57,7 +57,10 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
     _locationController = DeliveryLocationController();
     _routeManager = DeliveryRouteManager();
     _orderStatusWatcher = DeliveryOrderStatusWatcher(
-      onStatusChanged: _safeAutoRefreshHome,
+      onStatusChanged: () {
+        if (!mounted) return;
+        _autoRefreshGate.safeRefresh(context);
+      },
     );
     _locationController.start();
     _locationController.addListener(_onLocationChangedForRoutes);
@@ -110,11 +113,11 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
     if (!mounted) return;
 
     final profileAfter = context.read<ProfileBloc>().state;
-    if (profileAfter is ProfileLoaded) {
-      await di.sl<OrderStatusRtdbService>().ensureFirebaseAuthForDriver(
-        profileAfter.user.id,
-      );
-    }
+    if (profileAfter is! ProfileLoaded) return;
+
+    await di.sl<OrderStatusRtdbService>().ensureFirebaseAuthForDriver(
+      profileAfter.user.id,
+    );
 
     if (!mounted) return;
     final homeBloc = context.read<DeliveryHomeBloc>();
@@ -165,140 +168,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
     super.dispose();
   }
 
-  bool _canPullToRefreshDeliveryHome(DeliveryHomeState state) {
-    return state is DeliveryHomeLoaded || state is DeliveryHomeError;
-  }
-
-  Future<void> _pullToRefreshDeliveryHome() async {
-    final bloc = context.read<DeliveryHomeBloc>();
-    final next = bloc.stream.firstWhere(
-      (s) => s is DeliveryHomeLoaded || s is DeliveryHomeError,
-    );
-    bloc.add(const RefreshDeliveryHomeEvent());
-    try {
-      await next.timeout(const Duration(seconds: 45));
-    } on TimeoutException {
-      // Allow RefreshIndicator to hide if no new state is emitted.
-    }
-  }
-
-  void _safeAutoRefreshHome() {
-    if (!mounted) return;
-    final now = DateTime.now();
-    final last = _lastAutoRefreshAt;
-    if (last != null && now.difference(last) < _autoRefreshCooldown) return;
-    if (context.read<DeliveryHomeBloc>().state is DeliveryHomeLoading) return;
-    _lastAutoRefreshAt = now;
-    context.read<DeliveryHomeBloc>().add(const RefreshDeliveryHomeEvent());
-  }
-
-  Future<void> _confirmAcceptOrder(OrderEntity order) async {
-    final minutes = await AcceptDeliveryEstimatedTimeDialog.show(context);
-    if (!mounted || minutes == null) return;
-    context.read<ManageOrderBloc>().add(
-      AcceptDeliveryEvent(id: order.id, deliveryTime: minutes),
-    );
-  }
-
-  void _onOrderTap(OrderEntity order) {
-    Navigator.pushNamed(
-      context,
-      Routes.deliveryOrderDetails,
-      arguments: {'orderId': order.id},
-    );
-  }
-
-  Set<Marker> _buildMarkers(DeliveryHomeState state) {
-    if (state is DeliveryHomeLoaded) {
-      final Set<Marker> markers = {};
-
-      if (state.assignedOrder != null) {
-        final o = state.assignedOrder!;
-        final restaurantName =
-            o.owner?.restaurantName?.trim().isNotEmpty == true
-            ? o.owner!.restaurantName!
-            : AppTranslation.restaurantName;
-        final rLat = o.restaurantLatitude;
-        final rLng = o.restaurantLongitude;
-        final dLat = o.dropoffLatitude;
-        final dLng = o.dropoffLongitude;
-
-        if (rLat != null && rLng != null) {
-          markers.add(
-            Marker(
-              markerId: MarkerId('pickup_${o.id}'),
-              position: LatLng(rLat, rLng),
-              icon:
-                  _pickupMarkerIcon ??
-                  BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueGreen,
-                  ),
-              infoWindow: InfoWindow(
-                title: restaurantName,
-                snippet: o.owner?.address ?? o.pickupAddress,
-              ),
-            ),
-          );
-        }
-        if (dLat != null && dLng != null) {
-          markers.add(
-            Marker(
-              markerId: MarkerId('dropoff_${o.id}'),
-              position: LatLng(dLat, dLng),
-              icon:
-                  _dropoffMarkerIcon ??
-                  BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueOrange,
-                  ),
-              infoWindow: InfoWindow(
-                title: o.displayCustomerName ?? AppTranslation.customer,
-                snippet:
-                    o.displayCustomerAddressLine ??
-                    o.deliveryAddress ??
-                    o.customer?.address,
-              ),
-            ),
-          );
-        }
-        if ((rLat == null || rLng == null || dLat == null || dLng == null) &&
-            o.latitude != null &&
-            o.longitude != null) {
-          markers.add(
-            Marker(
-              markerId: MarkerId('order_${o.id}'),
-              position: LatLng(o.latitude!, o.longitude!),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueOrange,
-              ),
-              infoWindow: InfoWindow(
-                title: o.displayCustomerName ?? AppTranslation.customer,
-              ),
-            ),
-          );
-        }
-      }
-
-      for (final o in state.availableOrders) {
-        if (o.latitude != null && o.longitude != null) {
-          markers.add(
-            Marker(
-              markerId: MarkerId(o.id),
-              position: LatLng(o.latitude!, o.longitude!),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueAzure,
-              ),
-              infoWindow: InfoWindow(
-                title: o.displayCustomerName ?? AppTranslation.customer,
-              ),
-            ),
-          );
-        }
-      }
-      return markers;
-    }
-    return {};
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -335,62 +204,91 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
               ]);
             }
           },
-          child: BlocBuilder<DeliveryHomeBloc, DeliveryHomeState>(
-            builder: (context, state) {
-              return RefreshIndicator(
-                notificationPredicate: (ScrollNotification notification) {
-                  if (!_canPullToRefreshDeliveryHome(state)) return false;
-                  return notification.depth == 0;
+            child: BlocBuilder<ProfileBloc, ProfileState>(
+            buildWhen: (prev, cur) =>
+                prev.runtimeType != cur.runtimeType ||
+                (prev is ProfileLoaded &&
+                    cur is ProfileLoaded &&
+                    prev.user != cur.user),
+            builder: (context, profileState) {
+              if (profileState is ProfileInitial ||
+                  profileState is ProfileLoading) {
+                return const Center(child: CustomCircleIndicator());
+              }
+              if (profileState is ProfileError) {
+                return ErrorStateWidget(
+                  message: profileState.message,
+                  onRetry: () => _loadProfileThenHome(),
+                );
+              }
+              return BlocBuilder<DeliveryHomeBloc, DeliveryHomeState>(
+                builder: (context, state) {
+                  return RefreshIndicator(
+                    notificationPredicate: (ScrollNotification notification) {
+                      if (!deliveryHomeCanPullToRefresh(state)) return false;
+                      return notification.depth == 0;
+                    },
+                    onRefresh: () => deliveryHomePullToRefresh(context),
+                    color: ColorManager.primary,
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: FakeDeliveryTrackingDemoBar(
+                            order: state is DeliveryHomeLoaded
+                                ? state.assignedOrder
+                                : null,
+                          ),
+                        ),
+                        if (state is DeliveryHomeLoaded &&
+                            state.assignedOrder != null)
+                          const DeliveryRouteLegende(),
+                        SliverToBoxAdapter(
+                          child: ListenableBuilder(
+                            listenable: Listenable.merge([
+                              _locationController,
+                              _routeManager,
+                            ]),
+                            builder: (context, _) {
+                              return DeliveryHomeMapSection(
+                                currentLatitude:
+                                    _locationController.currentLat,
+                                currentLongitude:
+                                    _locationController.currentLng,
+                                simulatedPosition: di
+                                    .sl<FakeDeliveryTrackingController>()
+                                    .simulatedMapPosition,
+                                markers: buildDeliveryHomeMapMarkers(
+                                  state,
+                                  pickupMarkerIcon: _pickupMarkerIcon,
+                                  dropoffMarkerIcon: _dropoffMarkerIcon,
+                                ),
+                                routePolylines:
+                                    _routeManager.combinedRoutePolylines,
+                                onMyLocationPressed: _locationController
+                                    .recenterOnCurrentLocation,
+                                driverMarkerIcon: _driverMarkerIcon,
+                              );
+                            },
+                          ),
+                        ),
+                        DeliveryHomeOrdersSection(
+                          state: state,
+                          onRetry: () => context.read<DeliveryHomeBloc>().add(
+                                const LoadDeliveryHomeEvent(),
+                              ),
+                          onAcceptOrder: (order) =>
+                              deliveryHomeConfirmAcceptOrder(context, order),
+                          onOrderTap: (order) =>
+                              deliveryHomeOpenOrderDetails(context, order),
+                        ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(height: AppHeight.s24),
+                        ),
+                      ],
+                    ),
+                  );
                 },
-                onRefresh: () => _pullToRefreshDeliveryHome(),
-                color: ColorManager.primary,
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: FakeDeliveryTrackingDemoBar(
-                        order: state is DeliveryHomeLoaded
-                            ? state.assignedOrder
-                            : null,
-                      ),
-                    ),
-                    if (state is DeliveryHomeLoaded &&
-                        state.assignedOrder != null)
-                      const DeliveryRouteLegende(),
-                    SliverToBoxAdapter(
-                      child: ListenableBuilder(
-                        listenable: Listenable.merge([
-                          _locationController,
-                          _routeManager,
-                        ]),
-                        builder: (context, _) {
-                          return DeliveryHomeMapSection(
-                            currentLatitude: _locationController.currentLat,
-                            currentLongitude: _locationController.currentLng,
-                            simulatedPosition: di
-                                .sl<FakeDeliveryTrackingController>()
-                                .simulatedMapPosition,
-                            markers: _buildMarkers(state),
-                            routePolylines:
-                                _routeManager.combinedRoutePolylines,
-                            onMyLocationPressed:
-                                _locationController.recenterOnCurrentLocation,
-                            driverMarkerIcon: _driverMarkerIcon,
-                          );
-                        },
-                      ),
-                    ),
-                    DeliveryHomeOrdersSection(
-                      state: state,
-                      onRetry: () => context.read<DeliveryHomeBloc>().add(
-                        const LoadDeliveryHomeEvent(),
-                      ),
-                      onAcceptOrder: _confirmAcceptOrder,
-                      onOrderTap: _onOrderTap,
-                    ),
-                    SliverToBoxAdapter(child: SizedBox(height: AppHeight.s24)),
-                  ],
-                ),
               );
             },
           ),
