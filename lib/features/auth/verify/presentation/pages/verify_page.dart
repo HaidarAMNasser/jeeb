@@ -58,6 +58,21 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<VerifyBloc, VerifyState>(
+      listenWhen: (previous, current) {
+        if (current is VerifyDeliveryPending) {
+          return previous is! VerifyDeliveryPending;
+        }
+        if (current is VerifySuccess) {
+          return previous is! VerifySuccess;
+        }
+        if (current is VerifyOtpResent) {
+          return previous is! VerifyOtpResent;
+        }
+        if (current is VerifyError) {
+          return previous is! VerifyError;
+        }
+        return true;
+      },
       listener: (context, state) {
         if (state is VerifySuccess) {
           if (state.goToMain) {

@@ -9,6 +9,29 @@ import '../../data/repositories/verify_repository.dart';
 part 'verify_event.dart';
 part 'verify_state.dart';
 
+/// Role on [auth/verify] `data.user` (backend may use several spellings).
+bool _isDeliveryFromVerifyPayload(Map<String, dynamic>? data) {
+  if (data == null) return false;
+  final u = data['user'];
+  if (u is! Map) return false;
+  final raw = u['role']?.toString().trim().toUpperCase() ?? '';
+  if (raw.isEmpty) return false;
+  return raw == 'DELIVERY' ||
+      raw == 'DELIVERY_MAN' ||
+      raw == 'DRIVER' ||
+      raw == 'COURIER';
+}
+
+Future<void> _emitDeliveryPending(
+  Emitter<VerifyState> emit,
+  StorageService storage,
+) async {
+  await storage.setLoggedIn(false);
+  await storage.setVerified(false);
+  await storage.setPendingVerifyEmail(null);
+  if (!emit.isDone) emit(const VerifyDeliveryPending());
+}
+
 class VerifyBloc extends Bloc<VerifyEvent, VerifyState> {
   final VerifyRepository _verifyRepository;
   final StorageService _storageService;
@@ -31,14 +54,18 @@ class VerifyBloc extends Bloc<VerifyEvent, VerifyState> {
           (failure) async => emit(VerifyError(message: failure.message)),
           (data) async {
             String? tokenToUse;
-            final responseToken = data?['access_token'];
+            final responseToken =
+                data?['access_token'] ?? data?['accessToken'] ?? data?['token'];
             final responseUser = data?['user'];
 
             if (responseToken != null &&
                 responseToken.toString().isNotEmpty &&
                 responseUser is Map<String, dynamic>) {
               try {
-                final tokenModel = TokenModel.fromJson(data!);
+                final normalized = Map<String, dynamic>.from(data!);
+                normalized['access_token'] ??=
+                    normalized['accessToken'] ?? normalized['token'];
+                final tokenModel = TokenModel.fromJson(normalized);
                 await _storageService.setUserToken(tokenModel.accessToken);
                 await _storageService.setUserId(tokenModel.user.id);
                 await _storageService.setUserRole(tokenModel.user.role);
@@ -54,20 +81,24 @@ class VerifyBloc extends Bloc<VerifyEvent, VerifyState> {
               if (!emit.isDone) emit(const VerifySuccess(goToMain: false));
               return;
             }
-            // Token present: fetch profile to get authoritative isVerified/verifiedAt, then set storage and go to main
+
+            final deliveryFromVerify = _isDeliveryFromVerifyPayload(data);
+
+            // Prefer GET profile when possible; if it fails, still honor delivery from verify payload.
             final profileResult = await _profileRepository.getProfile();
             await profileResult.fold(
               (failure) async {
-                if (!emit.isDone) emit(const VerifySuccess(goToMain: false));
+                if (deliveryFromVerify) {
+                  await _emitDeliveryPending(emit, _storageService);
+                } else if (!emit.isDone) {
+                  emit(const VerifySuccess(goToMain: false));
+                }
               },
               (user) async {
-                if (user.role == UserRole.delivery) {
-                  await _storageService.setLoggedIn(false);
-                  await _storageService.setVerified(false);
-                  await _storageService.setPendingVerifyEmail(null);
-                  if (!emit.isDone) {
-                    emit(const VerifyDeliveryPending());
-                  }
+                final isDelivery = user.role == UserRole.delivery ||
+                    deliveryFromVerify;
+                if (isDelivery) {
+                  await _emitDeliveryPending(emit, _storageService);
                   return;
                 }
                 final verified = user.isVerified || (user.verifiedAt != null);
