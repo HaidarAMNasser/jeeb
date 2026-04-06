@@ -17,7 +17,14 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 class VerifyPage extends StatefulWidget {
   final String email;
 
-  const VerifyPage({super.key, required this.email});
+  /// Set when navigating from driver registration so OTP success goes to delivery waiting without profile.
+  final bool expectDeliveryWaiting;
+
+  const VerifyPage({
+    super.key,
+    required this.email,
+    this.expectDeliveryWaiting = false,
+  });
 
   @override
   State<VerifyPage> createState() => _VerifyPageState();
@@ -42,7 +49,11 @@ class _VerifyPageState extends State<VerifyPage> {
       }
 
       context.read<VerifyBloc>().add(
-        VerifySubmitted(email: widget.email, otp: otp),
+        VerifySubmitted(
+          email: widget.email,
+          otp: otp,
+          expectDeliveryWaiting: widget.expectDeliveryWaiting,
+        ),
       );
     }
   }

@@ -12,13 +12,11 @@ import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/o
 class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
   final OrderEntity order;
   final String restaurantName;
-  final VoidCallback? onMealPrepElapsed;
 
   const DeliveryOrderDetailsRestaurantSection({
     super.key,
     required this.order,
     required this.restaurantName,
-    this.onMealPrepElapsed,
   });
 
   @override
@@ -73,9 +71,7 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
               DeliveryOrderMealPrepCountdown(
                 key: ValueKey('meal_prep_${order.id}_$mealMins'),
                 orderId: order.id,
-                placedAt: order.createdAt,
                 preparationMinutes: mealMins,
-                onElapsed: onMealPrepElapsed,
               ),
             ],
           ),

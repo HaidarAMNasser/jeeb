@@ -389,6 +389,7 @@
   "order_offers_total": "Offers total",
   "order_subtotal": "Products Total",
   "preparation_time": "Preparation Time",
+  "preparation_minutes_label": "{} min",
   "order_meal_prep_remaining": "Prep time left",
   "delivery_accept_time_left": "Time left to accept",
   "order_details_offers": "Offers",

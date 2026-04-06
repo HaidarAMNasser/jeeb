@@ -36,6 +36,8 @@ import '../../../features/delivery/order/order_details/domain/entities/order_sta
 import '../../../features/delivery/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/delivery/delivery_section/delivery_order_details/screens/delivery_order_details_page.dart';
+import '../../../features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
+import '../../../features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
 import '../../../features/client_home/presentation/pages/client_home_page.dart';
 import '../../../features/merchant/list_merchant/presentation/pages/list_merchant_page.dart';
@@ -112,8 +114,12 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>?;
         final email = args?['email'] as String? ?? '';
         final registerBloc = args?['registerBloc'] as RegisterBloc?;
+        final expectDeliveryWaiting = args?['expectDeliveryWaiting'] == true;
         return _buildRouteWithBlocs(
-          VerifyPage(email: email),
+          VerifyPage(
+            email: email,
+            expectDeliveryWaiting: expectDeliveryWaiting,
+          ),
           settings,
           providers: [
             BlocProvider<VerifyBloc>(create: (_) => di.sl<VerifyBloc>()),
@@ -317,9 +323,17 @@ class AppRouter {
             settings,
           );
         }
-        return _buildRoute(
+        return _buildRouteWithBlocs(
           DeliveryOrderDetailsPage(orderId: orderId),
           settings,
+          providers: [
+            BlocProvider<ManageOrderBloc>.value(
+              value: di.sl<ManageOrderBloc>(),
+            ),
+            BlocProvider<DeliveryHomeBloc>.value(
+              value: di.sl<DeliveryHomeBloc>(),
+            ),
+          ],
         );
 
       case Routes.offers:

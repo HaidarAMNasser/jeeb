@@ -6,14 +6,21 @@ import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_tracking_position_binding.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/driver_idle_presence_gate.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/driver_idle_presence_reporter.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 
-/// Hosts [DeliveryOrderLocationReporter] above the delivery tab body so GPS → API + RTDB
-/// `/drivers/{id}` keeps running when switching Home / My orders / Profile.
+/// Hosts live tracking above the delivery tab:
+/// - **[DeliveryOrderLocationReporter]**: order route API **only** when there is an assigned
+///   order and its status is [OrderStatus.onTheWay].
+/// - **[DriverIdlePresenceReporter]**: RTDB `/drivers/{id}` **only** while the driver has
+///   **no** assigned order (available / pool). No `/drivers` writes during an active job
+///   until `ON_THE_WAY` (then order API handles tracking).
 class DeliveryPersistentTrackingScope extends StatefulWidget {
   const DeliveryPersistentTrackingScope({super.key, required this.child});
 
@@ -26,15 +33,19 @@ class DeliveryPersistentTrackingScope extends StatefulWidget {
 
 class _DeliveryPersistentTrackingScopeState
     extends State<DeliveryPersistentTrackingScope> {
-  DeliveryOrderLocationReporter? _reporter;
+  DeliveryOrderLocationReporter? _orderReporter;
+  DriverIdlePresenceReporter? _idleReporter;
   late final FakeDeliveryTrackingController _fakeTracking;
-  bool _reporterUsedFakeStream = false;
+  late final DriverIdlePresenceGate _idleGate;
+  bool _orderReporterUsedFakeStream = false;
 
   @override
   void initState() {
     super.initState();
     _fakeTracking = di.sl<FakeDeliveryTrackingController>();
+    _idleGate = di.sl<DriverIdlePresenceGate>();
     _fakeTracking.addListener(_onFakeTrackingChanged);
+    _idleGate.addListener(_onIdleGateChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _syncReporter(context.read<DeliveryHomeBloc>().state);
@@ -46,29 +57,22 @@ class _DeliveryPersistentTrackingScopeState
     _syncReporter(context.read<DeliveryHomeBloc>().state);
   }
 
+  void _onIdleGateChanged() {
+    if (!mounted) return;
+    _syncReporter(context.read<DeliveryHomeBloc>().state);
+  }
+
   @override
   void dispose() {
+    _idleGate.removeListener(_onIdleGateChanged);
     _fakeTracking.removeListener(_onFakeTrackingChanged);
-    _reporter?.dispose();
+    _orderReporter?.dispose();
+    _idleReporter?.dispose();
     super.dispose();
   }
 
   int? _profileUserId(ProfileState state) {
     if (state is ProfileLoaded) return state.user.id;
-    return null;
-  }
-
-  String? _assignedOrderIdFromState(DeliveryHomeState state) {
-    if (state is DeliveryHomeLoaded && state.assignedOrder != null) {
-      return state.assignedOrder!.id;
-    }
-    return null;
-  }
-
-  String? _assignedOrderStatusFromState(DeliveryHomeState state) {
-    if (state is DeliveryHomeLoaded && state.assignedOrder != null) {
-      return state.assignedOrder!.status;
-    }
     return null;
   }
 
@@ -83,47 +87,80 @@ class _DeliveryPersistentTrackingScopeState
       );
     }
     if (driverId == null || driverId <= 0) {
-      _reporter?.dispose();
-      _reporter = null;
-      _reporterUsedFakeStream = false;
+      _orderReporter?.dispose();
+      _orderReporter = null;
+      _idleReporter?.dispose();
+      _idleReporter = null;
+      _orderReporterUsedFakeStream = false;
       return;
     }
 
     final fake = di.sl<FakeDeliveryTrackingController>();
     final useFake = fake.simulating;
 
-    // Resolve assigned order info (may be null).
-    final order = (homeState is DeliveryHomeLoaded)
-        ? homeState.assignedOrder
-        : null;
-    final orderId = order != null ? (int.tryParse(order.id) ?? 0) : 0;
+    final order =
+        (homeState is DeliveryHomeLoaded) ? homeState.assignedOrder : null;
+    final hasAssignedOrder = order != null;
+    final parsed = OrderStatus.fromString(order?.status);
+    final isOnTheWay = order != null && parsed == OrderStatus.onTheWay;
+    final orderIdInt = order != null ? (int.tryParse(order.id) ?? 0) : 0;
+    final useOrderTracking = isOnTheWay && orderIdInt > 0;
 
-    // Already have a matching reporter → keep it running.
-    if (_reporter != null &&
-        _reporter!.orderId == orderId &&
-        _reporterUsedFakeStream == useFake) {
-      _reporter!.ensureStarted();
+    if (useOrderTracking) {
+      _idleReporter?.dispose();
+      _idleReporter = null;
+
+      if (_orderReporter != null &&
+          _orderReporter!.orderId == orderIdInt &&
+          _orderReporterUsedFakeStream == useFake) {
+        _orderReporter!.ensureStarted();
+        return;
+      }
+
+      _orderReporter?.dispose();
+      _orderReporter = DeliveryOrderLocationReporter(
+        orderId: orderIdInt,
+        repository: di.sl<DeliveryTrackingRepository>(),
+        positionStream: useFake ? fake.movementStreamFor(order) : null,
+      );
+      _orderReporterUsedFakeStream = useFake;
+      _orderReporter!.ensureStarted();
       return;
     }
 
-    // (Re)create the reporter — always active for driver presence,
-    // uses real GPS by default; fake stream only when simulating an order.
-    _reporter?.dispose();
-    _reporter = DeliveryOrderLocationReporter(
-      orderId: orderId,
+    _orderReporter?.dispose();
+    _orderReporter = null;
+    _orderReporterUsedFakeStream = false;
+
+    // Assigned (accepted) job but not yet ON_THE_WAY: do not send /drivers or order API.
+    if (hasAssignedOrder) {
+      _idleReporter?.dispose();
+      _idleReporter = null;
+      return;
+    }
+
+    if (di.sl<DriverIdlePresenceGate>().suppressIdleAfterDelivery) {
+      _idleReporter?.dispose();
+      _idleReporter = null;
+      return;
+    }
+
+    if (_idleReporter != null && _idleReporter!.driverId == driverId) {
+      _idleReporter!.ensureStarted();
+      return;
+    }
+
+    _idleReporter?.dispose();
+    _idleReporter = DriverIdlePresenceReporter(
       driverId: driverId,
-      repository: di.sl<DeliveryTrackingRepository>(),
       rtdb: di.sl<OrderStatusRtdbService>(),
-      positionStream: useFake && order != null
-          ? fake.movementStreamFor(order)
-          : null,
     );
-    _reporterUsedFakeStream = useFake;
-    _reporter!.ensureStarted();
+    _idleReporter!.ensureStarted();
   }
 
   void _forwardPositionToReporter(Position p) {
-    _reporter?.reportPosition(p);
+    _orderReporter?.reportPosition(p);
+    _idleReporter?.reportPosition(p);
   }
 
   @override
@@ -133,8 +170,6 @@ class _DeliveryPersistentTrackingScopeState
       child: MultiBlocListener(
         listeners: [
           BlocListener<ProfileBloc, ProfileState>(
-            // GetProfile() emits ProfileLoading with no user id — ignore so we don't
-            // tear down the reporter (and avoid fighting home/profile init).
             listenWhen: (prev, cur) {
               if (cur is ProfileLoading) return false;
               return _profileUserId(prev) != _profileUserId(cur);
@@ -144,11 +179,8 @@ class _DeliveryPersistentTrackingScopeState
             },
           ),
           BlocListener<DeliveryHomeBloc, DeliveryHomeState>(
-            listenWhen: (prev, cur) =>
-                _assignedOrderIdFromState(prev) !=
-                    _assignedOrderIdFromState(cur) ||
-                _assignedOrderStatusFromState(prev) !=
-                    _assignedOrderStatusFromState(cur),
+            // Any home state change (incl. full reload after deliver) must re-evaluate tracking.
+            listenWhen: (prev, cur) => prev != cur,
             listener: (context, state) => _syncReporter(state),
           ),
         ],

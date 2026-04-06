@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/common/utils/error_handler.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
@@ -10,14 +11,20 @@ class ManageOrderRepository {
 
   const ManageOrderRepository(this._remoteDataSource, this._networkInfo);
 
+  Either<Failure, bool> _eitherFromResponse(Response response) {
+    final envelopeFailure = ErrorHandler.failureFromEnvelopeIfAny(response.data);
+    if (envelopeFailure != null) return Left(envelopeFailure);
+    return const Right(true);
+  }
+
   Future<Either<Failure, bool>> acceptDelivery(
     String id,
     int deliveryTime,
   ) async {
     if (await _networkInfo.isConnected) {
       try {
-        await _remoteDataSource.acceptDelivery(id, deliveryTime);
-        return const Right(true);
+        final response = await _remoteDataSource.acceptDelivery(id, deliveryTime);
+        return _eitherFromResponse(response);
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }
@@ -29,8 +36,8 @@ class ManageOrderRepository {
   Future<Either<Failure, bool>> confirmPickup(String id, String reason) async {
     if (await _networkInfo.isConnected) {
       try {
-        await _remoteDataSource.confirmPickup(id, reason);
-        return const Right(true);
+        final response = await _remoteDataSource.confirmPickup(id, reason);
+        return _eitherFromResponse(response);
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }
@@ -42,8 +49,8 @@ class ManageOrderRepository {
   Future<Either<Failure, bool>> markOnTheWay(String id, String reason) async {
     if (await _networkInfo.isConnected) {
       try {
-        await _remoteDataSource.markOnTheWay(id, reason);
-        return const Right(true);
+        final response = await _remoteDataSource.markOnTheWay(id, reason);
+        return _eitherFromResponse(response);
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }
@@ -60,8 +67,9 @@ class ManageOrderRepository {
   }) async {
     if (await _networkInfo.isConnected) {
       try {
-        await _remoteDataSource.markAsDelivered(id, reason, lat, lng);
-        return const Right(true);
+        final response =
+            await _remoteDataSource.markAsDelivered(id, reason, lat, lng);
+        return _eitherFromResponse(response);
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }
@@ -73,8 +81,8 @@ class ManageOrderRepository {
   Future<Either<Failure, bool>> rejectDelivery(String id, String reason) async {
     if (await _networkInfo.isConnected) {
       try {
-        await _remoteDataSource.rejectDelivery(id, reason);
-        return const Right(true);
+        final response = await _remoteDataSource.rejectDelivery(id, reason);
+        return _eitherFromResponse(response);
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }

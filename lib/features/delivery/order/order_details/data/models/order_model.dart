@@ -678,10 +678,14 @@ class OrderModel {
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),
-      mealPreparationMinutes: _toInt(json['mealPreparationTime']),
+      mealPreparationMinutes: _toInt(
+        json['mealPreparationTime'] ?? json['meal_preparation_time'],
+      ),
       deliveryTimeMinutes: _toInt(json['deliveryTime']),
       preparationTime: () {
-        final mp = _toInt(json['mealPreparationTime']);
+        final mp = _toInt(
+          json['mealPreparationTime'] ?? json['meal_preparation_time'],
+        );
         if (mp != null) return mp;
         final dt = _toInt(json['deliveryTime']);
         if (dt != null) return dt;

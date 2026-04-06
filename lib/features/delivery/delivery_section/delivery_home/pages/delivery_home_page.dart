@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -180,6 +181,13 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
               ).showSnackBar(SnackBar(content: Text(state.kind.localized)));
               context.read<DeliveryHomeBloc>().add(
                 const LoadDeliveryHomeEvent(),
+              );
+            } else if (state is ManageOrderError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message.tr()),
+                  backgroundColor: Colors.red,
+                ),
               );
             }
           },

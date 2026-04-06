@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../errors/failure.dart';
 import '../errors/exceptions.dart';
+import 'api_internal_status.dart';
 
 class ErrorHandler {
   static Failure handle(dynamic error) {
@@ -62,6 +63,56 @@ class ErrorHandler {
           code: statusCode,
         );
     }
+  }
+
+  /// When the HTTP status is 200 but the JSON body indicates failure (e.g. NestJS
+  /// `{ statusCode: 400, message }` or `{ success: false, message }`).
+  static Failure? failureFromEnvelopeIfAny(dynamic data) {
+    if (data is! Map) return null;
+    final map = Map<String, dynamic>.from(data);
+
+    if (map['success'] is bool && map['success'] == false) {
+      return ServerFailure(
+        message: _extractMessage(data) ?? 'Request failed.',
+      );
+    }
+    if (map['ok'] is bool && map['ok'] == false) {
+      return ServerFailure(
+        message: _extractMessage(data) ?? 'Request failed.',
+      );
+    }
+
+    final dataInner = map['data'];
+    if (dataInner is Map &&
+        dataInner['success'] is bool &&
+        dataInner['success'] == false) {
+      return ServerFailure(
+        message: _extractMessage(dataInner) ?? _extractMessage(data) ?? 'Request failed.',
+      );
+    }
+
+    final statusField = map['status'];
+    if (statusField is int && statusField == ApiInternalStatus.failure) {
+      return ServerFailure(
+        message: _extractMessage(data) ?? 'Request failed.',
+      );
+    }
+
+    final codeRaw = map['statusCode'] ?? map['status_code'];
+    int? code;
+    if (codeRaw is int) {
+      code = codeRaw;
+    } else if (codeRaw is num) {
+      code = codeRaw.toInt();
+    }
+    if (code != null && (code < 200 || code >= 300)) {
+      return ServerFailure(
+        message: _extractMessage(data) ?? 'Request failed.',
+        code: code,
+      );
+    }
+
+    return null;
   }
 
   static String? _extractMessage(dynamic data) {

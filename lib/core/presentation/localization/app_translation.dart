@@ -395,6 +395,9 @@ class AppTranslation {
   static String get orderOffersTotal => 'order_offers_total'.tr();
   static String get orderSubtotal => 'order_subtotal'.tr();
   static String get preparationTime => 'preparation_time'.tr();
+  /// Backend minutes only (e.g. "46 min") — not a live countdown.
+  static String preparationMinutesLabel(int minutes) =>
+      'preparation_minutes_label'.tr(args: [minutes.toString()]);
   static String get orderMealPrepRemaining => 'order_meal_prep_remaining'.tr();
   static String get deliveryAcceptTimeLeft => 'delivery_accept_time_left'.tr();
   static String get orderDetailsOffers => 'order_details_offers'.tr();

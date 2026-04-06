@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -60,7 +61,6 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
               di.sl<OrderDetailsBloc>()
                 ..add(GetOrderDetailsEvent(widget.orderId)),
         ),
-        BlocProvider(create: (context) => di.sl<ManageOrderBloc>()),
       ],
       child: Scaffold(
         backgroundColor: ColorManager.background,
@@ -72,6 +72,10 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
                 SnackBar(content: Text(state.kind.localized)),
               );
               _safeRefreshDetails(context);
+              final homeBloc = di.sl<DeliveryHomeBloc>();
+              if (!homeBloc.isClosed) {
+                homeBloc.add(const LoadDeliveryHomeEvent());
+              }
             } else if (state is ManageOrderError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -194,7 +198,6 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
                   child: DeliveryOrderDetailsRestaurantSection(
                     order: order,
                     restaurantName: restaurantName,
-                    onMealPrepElapsed: refreshDetails,
                   ),
                 ),
                 SizedBox(height: AppHeight.s16),

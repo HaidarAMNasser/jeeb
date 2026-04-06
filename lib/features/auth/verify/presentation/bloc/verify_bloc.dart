@@ -78,7 +78,17 @@ class VerifyBloc extends Bloc<VerifyEvent, VerifyState> {
               tokenToUse = await _storageService.getUserToken();
             }
             if (tokenToUse.isEmpty) {
-              if (!emit.isDone) emit(const VerifySuccess(goToMain: false));
+              if (event.expectDeliveryWaiting) {
+                await _emitDeliveryPending(emit, _storageService);
+              } else if (!emit.isDone) {
+                emit(const VerifySuccess(goToMain: false));
+              }
+              return;
+            }
+
+            // Driver self-registration: show waiting screen after OTP; do not depend on profile API.
+            if (event.expectDeliveryWaiting) {
+              await _emitDeliveryPending(emit, _storageService);
               return;
             }
 

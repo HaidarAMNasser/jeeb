@@ -2,41 +2,34 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_service.dart';
-import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:jeeb_app/features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
 
-/// Throttled GPS → [DeliveryTrackingRepository] (order route API only).
+/// Throttled GPS → RTDB `/drivers/{driverId}` only.
 ///
-/// Only started when there is an assigned order in [OrderStatus.onTheWay].
-/// Does **not** write `/drivers/{id}` — that is [DriverIdlePresenceReporter].
-class DeliveryOrderLocationReporter {
-  DeliveryOrderLocationReporter({
-    required this.orderId,
-    required DeliveryTrackingRepository repository,
+/// Used while the driver does **not** have an active order in [OrderStatus.onTheWay]
+/// (searching, assigned, picked up, etc.). Stops when the order reporter takes over.
+class DriverIdlePresenceReporter {
+  DriverIdlePresenceReporter({
+    required this.driverId,
+    required OrderStatusRtdbService rtdb,
     this.positionStream,
-  }) : _repository = repository;
+  }) : _rtdb = rtdb;
 
-  /// When set, used instead of real GPS (demo / QA).
+  final int driverId;
+  final OrderStatusRtdbService _rtdb;
   final Stream<Position>? positionStream;
-
-  final int orderId;
-  final DeliveryTrackingRepository _repository;
 
   StreamSubscription<Position>? _sub;
   Timer? _fixedIntervalTimer;
   DateTime? _lastSentAt;
   Position? _lastSentPosition;
+  bool _publishedOnline = false;
   bool _publishInFlight = false;
   bool _started = false;
 
   static const Duration _minInterval = Duration(seconds: 8);
   static const double _minDistanceMeters = 12;
-
-  /// Live order tracking only after the order is [OrderStatus.onTheWay].
-  static bool shouldTrack(OrderStatus status) {
-    return status == OrderStatus.onTheWay;
-  }
 
   bool get _usesRealGpsStream => positionStream == null;
 
@@ -81,13 +74,13 @@ class DeliveryOrderLocationReporter {
       await _handlePosition(p, requireMovement: false);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('DeliveryOrderLocationReporter: getCurrentPosition failed: $e');
+        debugPrint('DriverIdlePresenceReporter: getCurrentPosition failed: $e');
       }
     }
   }
 
   Future<void> _handlePosition(Position p, {required bool requireMovement}) async {
-    if (orderId <= 0 || _publishInFlight) return;
+    if (driverId <= 0 || _publishInFlight) return;
     final now = DateTime.now();
     if (_lastSentAt != null && now.difference(_lastSentAt!) < _minInterval) {
       return;
@@ -108,23 +101,25 @@ class DeliveryOrderLocationReporter {
       _lastSentAt = now;
       _lastSentPosition = p;
 
-      final speedKmh = (p.speed.isFinite ? p.speed : 0) * 3.6;
-      final clampedSpeed = speedKmh.clamp(0.0, 200.0);
-
-      await _repository.pushLocationUpdate(
-        orderId: orderId,
-        lat: p.latitude,
-        lng: p.longitude,
-        timestampMs: DateTime.now().millisecondsSinceEpoch,
-        speedKmh: clampedSpeed,
-      );
-
-      if (kDebugMode) {
-        debugPrint(
-          '[DeliveryOrderLocationReporter] order API location → orderId=$orderId '
-          'lat=${p.latitude.toStringAsFixed(6)} '
-          'lng=${p.longitude.toStringAsFixed(6)} speedKmh=${clampedSpeed.toStringAsFixed(1)}',
+      try {
+        await _rtdb.updateDriverPresence(
+          driverId,
+          lat: p.latitude,
+          lng: p.longitude,
+          isOnline: true,
         );
+        _publishedOnline = true;
+        if (kDebugMode) {
+          debugPrint(
+            '[DriverIdlePresenceReporter] RTDB /drivers/$driverId '
+            'lat=${p.latitude.toStringAsFixed(6)} '
+            'lng=${p.longitude.toStringAsFixed(6)} isOnline=true',
+          );
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('DriverIdlePresenceReporter: RTDB failed: $e');
+        }
       }
     } finally {
       _publishInFlight = false;
@@ -139,5 +134,11 @@ class DeliveryOrderLocationReporter {
     _sub = null;
     _lastSentAt = null;
     _lastSentPosition = null;
+    if (_publishedOnline && driverId > 0) {
+      unawaited(
+        _rtdb.updateDriverOnlineStatus(driverId, false).catchError((_) {}),
+      );
+    }
+    _publishedOnline = false;
   }
 }

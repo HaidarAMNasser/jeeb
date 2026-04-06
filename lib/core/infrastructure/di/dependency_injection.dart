@@ -67,6 +67,7 @@ import '../../../features/delivery/order/manage_order/presentation/bloc/manage_o
 import '../../../features/delivery/tracking/data/datasources/delivery_tracking_remote_data_source.dart';
 import '../../../features/delivery/tracking/data/repositories/delivery_tracking_repository_impl.dart';
 import '../../../features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
+import '../../../features/delivery/tracking/presentation/driver_idle_presence_gate.dart';
 import '../../../features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 
 import '../../../features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
@@ -274,15 +275,17 @@ Future<void> init() async {
     () => DeliveryTrackingRepositoryImpl(sl(), sl()),
   );
   sl.registerLazySingleton(FakeDeliveryTrackingController.new);
+  sl.registerLazySingleton(DriverIdlePresenceGate.new);
 
   //! Manage Order Dependencies
   sl.registerFactory<ManageOrderRemoteDataSource>(
     () => ManageOrderRemoteDataSourceImpl(sl()),
   );
   sl.registerFactory(() => ManageOrderRepository(sl(), sl()));
-  sl.registerFactory(() => ManageOrderBloc(sl()));
+  // Shared across delivery shell + order-details route so manage-order success can refresh home + tracking.
+  sl.registerLazySingleton(() => ManageOrderBloc(sl()));
 
-  sl.registerFactory(() => DeliveryHomeBloc(sl()));
+  sl.registerLazySingleton(() => DeliveryHomeBloc(sl()));
 
   sl.registerFactory<ListOfferRemoteDataSource>(
     () => ListOfferRemoteDataSourceImpl(sl()),

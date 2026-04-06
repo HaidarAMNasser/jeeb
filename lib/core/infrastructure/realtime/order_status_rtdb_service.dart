@@ -20,24 +20,11 @@ class OrderStatusRtdbService {
 
   final FirebaseDatabase _db;
 
-  /// Uses [driverId] as the Firebase custom-token string so `auth.uid` matches the driver (per backend agreement).
+  /// RTDB reads/writes use Firebase **anonymous** auth.
+  /// A numeric [driverId] is not a valid JWT — do not pass it to [signInWithCustomToken].
+  /// When the backend provides a real custom token for order-scoped rules, wire it here.
   Future<void> ensureFirebaseAuthForDriver(int driverId) async {
-    if (driverId <= 0) {
-      await _signInAnonymousIfNeeded();
-      return;
-    }
-    final token = driverId.toString();
-    final cur = FirebaseAuth.instance.currentUser;
-    if (cur?.uid == token) return;
-    try {
-      if (cur != null) await FirebaseAuth.instance.signOut();
-      await FirebaseAuth.instance.signInWithCustomToken(token);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('OrderStatusRtdbService.ensureFirebaseAuthForDriver: $e');
-      }
-      await _signInAnonymousIfNeeded();
-    }
+    await _signInAnonymousIfNeeded();
   }
 
   Future<void> _signInAnonymousIfNeeded() async {

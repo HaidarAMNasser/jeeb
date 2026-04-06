@@ -48,7 +48,7 @@ class DeliveryOrderCard extends StatelessWidget {
 
     final preparationMinutes =
         order.mealPreparationMinutes ?? order.preparationTime;
-    final showPreparationTimer =
+    final showPreparationTime =
         status == OrderStatus.assigned &&
         preparationMinutes != null &&
         preparationMinutes > 0;
@@ -109,10 +109,8 @@ class DeliveryOrderCard extends StatelessWidget {
                           restaurantName: restaurantName,
                           pickupAddressLine:
                               order.displayRestaurantPickupAddressLine,
-                          preparationDuration: Duration(
-                            minutes: preparationMinutes ?? 0,
-                          ),
-                          showPreparationTimer: showPreparationTimer,
+                          preparationMinutes: preparationMinutes,
+                          showPreparationTime: showPreparationTime,
                         ),
                         SizedBox(height: AppHeight.s20),
                         DeliveryOrderItemsList(

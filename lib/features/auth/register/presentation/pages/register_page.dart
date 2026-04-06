@@ -135,7 +135,13 @@ class RegisterPage extends StatelessWidget {
     return BlocConsumer<RegisterBloc, RegisterState>(
       listener: (context, state) {
         if (state is RegisterSuccess) {
-          context.pushNamed(Routes.verify, arguments: {'email': state.email});
+          context.pushNamed(
+            Routes.verify,
+            arguments: {
+              'email': state.email,
+              'expectDeliveryWaiting': bloc.selectedRole == 'DELIVERY',
+            },
+          );
         } else if (state is RegisterError) {
           customToast(msg: state.message);
         }

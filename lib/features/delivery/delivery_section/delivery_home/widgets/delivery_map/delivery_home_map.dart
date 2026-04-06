@@ -73,9 +73,30 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         ? LatLng(widget.latitude!, widget.longitude!)
         : const LatLng(30.0444, 31.2357); // Default Cairo
 
+    final bool simulating = widget.simulatedLatitude != null &&
+        widget.simulatedLongitude != null;
+    final bool customDriverIcon = widget.driverMarkerIcon != null;
+
     final Set<Marker> combinedMarkers = {
       ...widget.markers,
-      if (widget.latitude != null && widget.longitude != null)
+      // Fake GPS: single blue driver marker follows simulated path (not a second pin).
+      if (simulating)
+        Marker(
+          markerId: const MarkerId('driver'),
+          position: LatLng(
+            widget.simulatedLatitude!,
+            widget.simulatedLongitude!,
+          ),
+          icon: widget.driverMarkerIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure,
+              ),
+          anchor: customDriverIcon
+              ? const Offset(0.5, 0.5)
+              : const Offset(0.5, 1.0),
+          infoWindow: InfoWindow(title: AppTranslation.myLocation),
+        )
+      else if (widget.latitude != null && widget.longitude != null)
         Marker(
           markerId: const MarkerId('current_location'),
           position: LatLng(widget.latitude!, widget.longitude!),
@@ -83,21 +104,10 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
               BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueAzure,
               ),
+          anchor: customDriverIcon
+              ? const Offset(0.5, 0.5)
+              : const Offset(0.5, 1.0),
           infoWindow: InfoWindow(title: AppTranslation.myLocation),
-        ),
-      if (widget.simulatedLatitude != null && widget.simulatedLongitude != null)
-        Marker(
-          markerId: const MarkerId('simulated_driver'),
-          position: LatLng(
-            widget.simulatedLatitude!,
-            widget.simulatedLongitude!,
-          ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueViolet,
-          ),
-          infoWindow: InfoWindow(
-            title: AppTranslation.deliveryFakeGpsMapMarker,
-          ),
         ),
     };
 

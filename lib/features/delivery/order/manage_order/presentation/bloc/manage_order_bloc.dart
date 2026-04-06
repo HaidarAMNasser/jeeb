@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
 import 'package:jeeb_app/features/delivery/order/manage_order/data/repositories/manage_order_repository.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/driver_idle_presence_gate.dart';
 
 part 'manage_order_event.dart';
 part 'manage_order_state.dart';
@@ -74,9 +76,13 @@ class ManageOrderBloc extends Bloc<ManageOrderEvent, ManageOrderState> {
     );
     result.fold(
       (failure) => emit(ManageOrderError(message: failure.message)),
-      (_) => emit(
-        const ManageOrderSuccess(kind: ManageOrderSuccessKind.markDelivered),
-      ),
+      (_) {
+        // Before home reload clears assigned order, suppress idle `/drivers` pings briefly.
+        di.sl<DriverIdlePresenceGate>().armAfterMarkDelivered();
+        emit(
+          const ManageOrderSuccess(kind: ManageOrderSuccessKind.markDelivered),
+        );
+      },
     );
   }
 

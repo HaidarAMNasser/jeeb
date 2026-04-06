@@ -11,13 +11,17 @@ class VerifySubmitted extends VerifyEvent {
   final String email;
   final String otp;
 
+  /// When true (driver registration → OTP), go to delivery waiting without relying on the profile API.
+  final bool expectDeliveryWaiting;
+
   const VerifySubmitted({
     required this.email,
     required this.otp,
+    this.expectDeliveryWaiting = false,
   });
 
   @override
-  List<Object> get props => [email, otp];
+  List<Object> get props => [email, otp, expectDeliveryWaiting];
 }
 
 class ResendOtpSubmitted extends VerifyEvent {

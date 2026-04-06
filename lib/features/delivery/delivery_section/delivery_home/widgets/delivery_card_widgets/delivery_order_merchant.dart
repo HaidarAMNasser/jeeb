@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_common.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/preperation_countdoun/delivery_order_hms_slide_countdown.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
@@ -11,15 +10,15 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 class DeliveryOrderMerchant extends StatelessWidget {
   final String restaurantName;
   final String pickupAddressLine;
-  final Duration preparationDuration;
-  final bool showPreparationTimer;
+  final int? preparationMinutes;
+  final bool showPreparationTime;
 
   const DeliveryOrderMerchant({
     super.key,
     required this.restaurantName,
     this.pickupAddressLine = '',
-    required this.preparationDuration,
-    this.showPreparationTimer = true,
+    this.preparationMinutes,
+    this.showPreparationTime = true,
   });
 
   @override
@@ -53,12 +52,15 @@ class DeliveryOrderMerchant extends StatelessWidget {
             ],
           ),
         ),
-        if (showPreparationTimer) _buildPreparationTimer(),
+        if (showPreparationTime) _buildPreparationMinutes(),
       ],
     );
   }
 
-  Widget _buildPreparationTimer() {
+  Widget _buildPreparationMinutes() {
+    final mins = preparationMinutes;
+    if (mins == null || mins <= 0) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -71,10 +73,12 @@ class DeliveryOrderMerchant extends StatelessWidget {
           ),
         ),
         SizedBox(height: AppHeight.s4),
-        DeliveryOrderHmsSlideCountdown(
-          remaining: preparationDuration,
-          variant: DeliveryOrderCountdownVariant.mealPrep,
-          dense: true,
+        CustomText(
+          text: AppTranslation.preparationMinutesLabel(mins),
+          textStyle: getSemiBoldStyle(
+            fontSize: AppFontSize.s13,
+            color: ColorManager.primary,
+          ),
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
@@ -22,12 +23,14 @@ Set<Marker> buildDeliveryHomeMapMarkers(
     final dLng = o.dropoffLongitude;
 
     if (rLat != null && rLng != null) {
+      final customP = pickupMarkerIcon != null;
       markers.add(
         Marker(
           markerId: MarkerId('pickup_${o.id}'),
           position: LatLng(rLat, rLng),
           icon: pickupMarkerIcon ??
               BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          anchor: customP ? const Offset(0.5, 0.5) : const Offset(0.5, 1.0),
           infoWindow: InfoWindow(
             title: restaurantName,
             snippet: o.owner?.address ?? o.pickupAddress,
@@ -36,12 +39,14 @@ Set<Marker> buildDeliveryHomeMapMarkers(
       );
     }
     if (dLat != null && dLng != null) {
+      final customD = dropoffMarkerIcon != null;
       markers.add(
         Marker(
           markerId: MarkerId('dropoff_${o.id}'),
           position: LatLng(dLat, dLng),
           icon: dropoffMarkerIcon ??
               BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+          anchor: customD ? const Offset(0.5, 0.5) : const Offset(0.5, 1.0),
           infoWindow: InfoWindow(
             title: o.displayCustomerName ?? AppTranslation.customer,
             snippet: o.displayCustomerAddressLine ??

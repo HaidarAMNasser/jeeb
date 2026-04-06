@@ -37,6 +37,7 @@ class ListOrderBloc extends Bloc<ListOrderEvent, ListOrderState> {
       _rtdbSubs.add(
         _rtdb.watchOrderStatusWire(id).listen(
           (wire) {
+            if (isClosed) return;
             final w = wire?.trim();
             if (w == null || w.isEmpty) return;
             add(ListOrderRtdbStatusChanged(orderId: id, statusWire: w));

@@ -385,6 +385,7 @@
   "order_offers_total": "مجموع العروض",
   "order_subtotal": "مجموع المنتجات",
   "preparation_time": "وقت التحضير",
+  "preparation_minutes_label": "{} دقيقة",
   "order_meal_prep_remaining": "الوقت المتبقي للتحضير",
   "delivery_accept_time_left": "الوقت المتبقي للقبول",
   "order_details_offers": "العروض",

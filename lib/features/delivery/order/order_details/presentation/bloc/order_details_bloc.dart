@@ -44,6 +44,7 @@ class OrderDetailsBloc extends Bloc<OrderDetailsEvent, OrderDetailsState> {
     if (id.isEmpty) return;
     _statusSub = _rtdb.watchOrderStatusWire(id).listen(
       (wire) {
+        if (isClosed) return;
         final w = wire?.trim();
         if (w == null || w.isEmpty) return;
         add(OrderDetailsRtdbStatusChanged(w));
@@ -68,6 +69,7 @@ class OrderDetailsBloc extends Bloc<OrderDetailsEvent, OrderDetailsState> {
   @override
   Future<void> close() {
     _statusSub?.cancel();
+    _statusSub = null;
     return super.close();
   }
 }

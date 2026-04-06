@@ -26,10 +26,10 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ManageOrderBloc>(
-      create: (_) => di.sl<ManageOrderBloc>(),
-      child: BlocProvider<DeliveryHomeBloc>(
-        create: (_) => di.sl<DeliveryHomeBloc>(),
+    return BlocProvider<ManageOrderBloc>.value(
+      value: di.sl<ManageOrderBloc>(),
+      child: BlocProvider<DeliveryHomeBloc>.value(
+        value: di.sl<DeliveryHomeBloc>(),
         child: DeliveryPersistentTrackingScope(
           child: Scaffold(
             backgroundColor: ColorManager.background,

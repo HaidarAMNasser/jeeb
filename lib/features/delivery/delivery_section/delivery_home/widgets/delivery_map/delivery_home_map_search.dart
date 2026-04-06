@@ -73,9 +73,26 @@ class FullscreenMapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool simulating =
+        simulatedLat != null && simulatedLng != null;
+    final bool customDriver = driverMarkerIcon != null;
+
     final Set<Marker> combinedMarkers = {
       ...markers,
-      if (currentLat != null && currentLng != null)
+      if (simulating)
+        Marker(
+          markerId: const MarkerId('driver'),
+          position: LatLng(simulatedLat!, simulatedLng!),
+          icon: driverMarkerIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure,
+              ),
+          anchor: customDriver
+              ? const Offset(0.5, 0.5)
+              : const Offset(0.5, 1.0),
+          infoWindow: InfoWindow(title: AppTranslation.myLocation),
+        )
+      else if (currentLat != null && currentLng != null)
         Marker(
           markerId: const MarkerId('current_location'),
           position: LatLng(currentLat!, currentLng!),
@@ -83,16 +100,10 @@ class FullscreenMapView extends StatelessWidget {
               BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueAzure,
               ),
+          anchor: customDriver
+              ? const Offset(0.5, 0.5)
+              : const Offset(0.5, 1.0),
           infoWindow: InfoWindow(title: AppTranslation.myLocation),
-        ),
-      if (simulatedLat != null && simulatedLng != null)
-        Marker(
-          markerId: const MarkerId('simulated_driver'),
-          position: LatLng(simulatedLat!, simulatedLng!),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueViolet,
-          ),
-          infoWindow: InfoWindow(title: AppTranslation.deliveryFakeGpsMapMarker),
         ),
     };
 
