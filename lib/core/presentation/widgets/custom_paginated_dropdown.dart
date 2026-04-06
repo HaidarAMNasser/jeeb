@@ -32,6 +32,10 @@ class CustomPaginatedDropdown<T> extends StatefulWidget {
 
   final Widget Function(BuildContext, T, bool)? itemBuilder;
 
+  /// When set, shows a refresh control next to the title (e.g. retry after timeout).
+  final VoidCallback? onRefresh;
+  final String? refreshTooltip;
+
   const CustomPaginatedDropdown({
     super.key,
     required this.title,
@@ -50,6 +54,8 @@ class CustomPaginatedDropdown<T> extends StatefulWidget {
     this.maxHeight,
     this.isReadOnly = false,
     this.itemBuilder,
+    this.onRefresh,
+    this.refreshTooltip,
   });
 
   @override
@@ -92,20 +98,45 @@ class _CustomPaginatedDropdownState<T>
       children: [
         Row(
           children: [
-            CustomText(
-              text: widget.title,
-              textStyle: getMediumStyle(
-                fontSize: AppFontSize.s15,
-                color: ColorManager.defaultWhite,
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: CustomText(
+                      text: widget.title,
+                      textStyle: getMediumStyle(
+                        fontSize: AppFontSize.s15,
+                        color: ColorManager.defaultWhite,
+                      ),
+                    ),
+                  ),
+                  if (widget.isRequired)
+                    CustomText(
+                      text: ' *',
+                      textStyle: getSemiBoldStyle(
+                        fontSize: AppFontSize.s16,
+                        color: ColorManager.warning,
+                      ),
+                    ),
+                ],
               ),
             ),
-            if (widget.isRequired)
-              CustomText(
-                text: ' *',
-                textStyle: getSemiBoldStyle(
-                  fontSize: AppFontSize.s16,
-                  color: ColorManager.warning,
+            if (widget.onRefresh != null)
+              IconButton(
+                onPressed: widget.isLoading || widget.isReadOnly
+                    ? null
+                    : widget.onRefresh,
+                tooltip: widget.refreshTooltip,
+                icon: Icon(
+                  Icons.refresh_rounded,
+                  size: AppFontSize.s22,
+                  color: widget.isLoading || widget.isReadOnly
+                      ? ColorManager.descriptionColor
+                      : ColorManager.defaultWhite,
                 ),
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               ),
           ],
         ),

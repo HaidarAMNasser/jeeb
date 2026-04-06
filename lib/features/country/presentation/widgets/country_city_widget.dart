@@ -81,6 +81,21 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
     }
   }
 
+  void _refreshCountries() {
+    if (widget.isReadOnly) return;
+    context.read<CountryBloc>().add(const LoadCountries(withLoading: true));
+  }
+
+  void _refreshCities() {
+    if (widget.isReadOnly) return;
+    final country = widget.selectedCountry;
+    if (country == null) return;
+    context.read<CityBloc>().add(const ResetCities());
+    context.read<CityBloc>().add(
+      LoadCities(countryId: country.id, withLoading: true),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isRTL = context.locale.languageCode == 'ar';
@@ -128,6 +143,8 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
               errorMessage: errorMessage,
               isRequired: widget.isRequired,
               isReadOnly: widget.isReadOnly,
+              onRefresh: widget.isReadOnly ? null : _refreshCountries,
+              refreshTooltip: AppTranslation.retry,
             );
           },
         ),
@@ -194,6 +211,10 @@ class _CountryCityWidgetState extends State<CountryCityWidget> {
               errorMessage: errorMessage,
               isRequired: widget.isRequired,
               isReadOnly: widget.isReadOnly || widget.selectedCountry == null,
+              onRefresh: widget.isReadOnly || widget.selectedCountry == null
+                  ? null
+                  : _refreshCities,
+              refreshTooltip: AppTranslation.retry,
             );
           },
         ),
