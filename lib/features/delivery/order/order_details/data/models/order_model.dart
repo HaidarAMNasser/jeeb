@@ -30,6 +30,28 @@ int? _toInt(dynamic v) {
   return int.tryParse(v.toString());
 }
 
+int? _minutesFromDynamic(dynamic v) {
+  final direct = _toInt(v);
+  if (direct != null) return direct;
+  final s = v?.toString().trim();
+  if (s == null || s.isEmpty) return null;
+
+  // Accept HH:MM:SS or MM:SS from APIs that return clock strings.
+  final match = RegExp(r'^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$').firstMatch(s);
+  if (match == null) return null;
+  final a = int.tryParse(match.group(1) ?? '');
+  final b = int.tryParse(match.group(2) ?? '');
+  final c = int.tryParse(match.group(3) ?? '');
+  if (a == null || b == null) return null;
+
+  final hasHours = match.group(3) != null;
+  final hours = hasHours ? a : 0;
+  final minutes = hasHours ? b : a;
+  final seconds = hasHours ? (c ?? 0) : b;
+  final totalMinutes = hours * 60 + minutes + (seconds > 0 ? 1 : 0);
+  return totalMinutes;
+}
+
 /// Restaurant / merchant owner on order payloads (`owner` in API).
 class OrderOwnerLocationModel {
   final double? lat;
@@ -678,20 +700,20 @@ class OrderModel {
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),
-      mealPreparationMinutes: _toInt(
+      mealPreparationMinutes: _minutesFromDynamic(
         json['mealPreparationTime'] ?? json['meal_preparation_time'],
       ),
       deliveryTimeMinutes: _toInt(json['deliveryTime']),
       preparationTime: () {
-        final mp = _toInt(
+        final mp = _minutesFromDynamic(
           json['mealPreparationTime'] ?? json['meal_preparation_time'],
         );
         if (mp != null) return mp;
-        final dt = _toInt(json['deliveryTime']);
+        final dt = _minutesFromDynamic(json['deliveryTime']);
         if (dt != null) return dt;
         final legacy = json['preparation_time'];
         if (legacy != null) {
-          return legacy is int ? legacy : int.tryParse(legacy.toString());
+          return _minutesFromDynamic(legacy);
         }
         return null;
       }(),

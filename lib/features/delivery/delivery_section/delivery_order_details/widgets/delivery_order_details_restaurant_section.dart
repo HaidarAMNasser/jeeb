@@ -6,7 +6,6 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_order_common.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/preperation_countdoun/delivery_order_meal_prep_countdown.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
 class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
@@ -67,12 +66,24 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
                 SizedBox(height: AppHeight.s8),
                 CopyablePhoneRow(phone: restaurantPhone),
               ],
-              SizedBox(height: AppHeight.s10),
-              DeliveryOrderMealPrepCountdown(
-                key: ValueKey('meal_prep_${order.id}_$mealMins'),
-                orderId: order.id,
-                preparationMinutes: mealMins,
-              ),
+              if (mealMins != null && mealMins > 0) ...[
+                SizedBox(height: AppHeight.s10),
+                CustomText(
+                  text: AppTranslation.preparationTime,
+                  textStyle: getRegularStyle(
+                    fontSize: AppFontSize.s10,
+                    color: ColorManager.textSecondary,
+                  ),
+                ),
+                SizedBox(height: AppHeight.s4),
+                CustomText(
+                  text: AppTranslation.preparationMinutesLabel(mealMins),
+                  textStyle: getSemiBoldStyle(
+                    fontSize: AppFontSize.s14,
+                    color: ColorManager.primary,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
