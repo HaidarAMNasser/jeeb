@@ -12,7 +12,7 @@ abstract final class DeliveryMapMarkerBitmaps {
   static BitmapDescriptor? _driver;
 
   /// Bump when pin artwork changes so cached [BitmapDescriptor]s are regenerated.
-  static const int _cacheGeneration = 2;
+  static const int _cacheGeneration = 3;
   static int? _loadedGeneration;
 
   static void _bustCacheIfStale() {
@@ -28,8 +28,8 @@ abstract final class DeliveryMapMarkerBitmaps {
     _bustCacheIfStale();
     if (_pickup != null) return _pickup!;
     _pickup = await _pin(
-      fill: const Color(0xFF0F9D58),
-      label: 'P',
+      fill: const Color(0xFFFF7043),
+      label: 'R',
     );
     return _pickup!;
   }
@@ -38,8 +38,8 @@ abstract final class DeliveryMapMarkerBitmaps {
     _bustCacheIfStale();
     if (_dropoff != null) return _dropoff!;
     _dropoff = await _pin(
-      fill: const Color(0xFFEA4335),
-      label: 'D',
+      fill: const Color(0xFF34A853),
+      label: 'F',
     );
     return _dropoff!;
   }
@@ -90,25 +90,6 @@ abstract final class DeliveryMapMarkerBitmaps {
   }
 
   static Future<BitmapDescriptor> _driverDot() async {
-    const size = 56.0;
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-    const c = Offset(size / 2, size / 2);
-    final outer = Paint()..color = Colors.white;
-    canvas.drawCircle(c, 22, outer);
-    final ring = Paint()
-      ..color = const Color(0xFF4285F4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5;
-    canvas.drawCircle(c, 18, ring);
-    final inner = Paint()..color = const Color(0xFF4285F4);
-    canvas.drawCircle(c, 9, inner);
-    final picture = recorder.endRecording();
-    final image = await picture.toImage(size.toInt(), size.toInt());
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    if (byteData == null) {
-      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
-    }
-    return BitmapDescriptor.bytes(byteData.buffer.asUint8List());
+    return _pin(fill: const Color(0xFF1A73E8), label: 'M');
   }
 }

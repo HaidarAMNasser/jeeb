@@ -26,8 +26,6 @@ import 'package:jeeb_app/core/presentation/maps/delivery_map_marker_bitmaps.dart
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_tracking_position_binding.dart';
-import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
-import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_demo_bar.dart';
 
 class DeliveryHomePage extends StatefulWidget {
   const DeliveryHomePage({super.key});
@@ -45,7 +43,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
   final DeliveryHomeAutoRefreshGate _autoRefreshGate =
       DeliveryHomeAutoRefreshGate();
 
-  Timer? _routeSyncTimer;
   Timer? _resumeRefreshTimer;
   BitmapDescriptor? _pickupMarkerIcon;
   BitmapDescriptor? _dropoffMarkerIcon;
@@ -81,15 +78,7 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
   }
 
   void _onLocationChangedForRoutes() {
-    _routeSyncTimer?.cancel();
-    _routeSyncTimer = Timer(const Duration(milliseconds: 600), () {
-      if (!mounted) return;
-      _routeManager.syncPlannedDrivingRoute(
-        context.read<DeliveryHomeBloc>().state,
-        driverLat: _locationController.currentLat,
-        driverLng: _locationController.currentLng,
-      );
-    });
+    // Keep method to preserve listener hook; route drawing is RTDB-driven only.
   }
 
   /// Fetches profile first; once loaded (or already cached), fires the home orders load.
@@ -124,11 +113,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
     final homeBloc = context.read<DeliveryHomeBloc>();
     homeBloc.add(const LoadDeliveryHomeEvent());
     _routeManager.syncAssignedRouteHistorySubscription(homeBloc.state);
-    _routeManager.syncPlannedDrivingRoute(
-      homeBloc.state,
-      driverLat: _locationController.currentLat,
-      driverLng: _locationController.currentLng,
-    );
   }
 
   @override
@@ -161,7 +145,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _resumeRefreshTimer?.cancel();
-    _routeSyncTimer?.cancel();
     _locationController.removeListener(_onLocationChangedForRoutes);
     _locationController.dispose();
     _routeManager.dispose();
@@ -200,11 +183,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
           listenWhen: (prev, cur) => prev != cur,
           listener: (context, state) {
             _routeManager.syncAssignedRouteHistorySubscription(state);
-            _routeManager.syncPlannedDrivingRoute(
-              state,
-              driverLat: _locationController.currentLat,
-              driverLng: _locationController.currentLng,
-            );
             if (state is DeliveryHomeLoaded) {
               _orderStatusWatcher.syncOrders([
                 if (state.assignedOrder != null) state.assignedOrder!,
@@ -241,13 +219,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
                     child: CustomScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
-                        SliverToBoxAdapter(
-                          child: FakeDeliveryTrackingDemoBar(
-                            order: state is DeliveryHomeLoaded
-                                ? state.assignedOrder
-                                : null,
-                          ),
-                        ),
                         if (state is DeliveryHomeLoaded &&
                             state.assignedOrder != null)
                           const DeliveryRouteLegende(),
@@ -263,9 +234,6 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
                                     _locationController.currentLat,
                                 currentLongitude:
                                     _locationController.currentLng,
-                                simulatedPosition: di
-                                    .sl<FakeDeliveryTrackingController>()
-                                    .simulatedMapPosition,
                                 markers: buildDeliveryHomeMapMarkers(
                                   state,
                                   pickupMarkerIcon: _pickupMarkerIcon,

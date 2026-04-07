@@ -165,7 +165,6 @@ class _LiveTrackingMapCardState extends State<LiveTrackingMapCard> {
       );
     }
 
-    final polylines = _buildPolylines();
     return Container(
       padding: EdgeInsets.all(AppPadding.p12),
       decoration: BoxDecoration(
@@ -215,96 +214,31 @@ class _LiveTrackingMapCardState extends State<LiveTrackingMapCard> {
             height: widget.height,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.r12),
-              child: Stack(
-                children: [
-                  GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: _fallbackCamera,
-                      zoom: 15.2,
-                    ),
-                    markers: markers,
-                    polylines: polylines,
-                    zoomControlsEnabled: false,
-                    myLocationButtonEnabled: false,
-                    mapToolbarEnabled: false,
-                    compassEnabled: false,
-                    onTap: (_) => _openFullscreenMap(
-                      context,
-                      markers: markers,
-                      polylines: polylines,
-                    ),
-                    onMapCreated: (controller) {
-                      _controller = controller;
-                      WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        if (!mounted) return;
-                        await _moveCamera(initial: true);
-                        if (mounted) {
-                          setState(() => _didInitialCamera = true);
-                        }
-                      });
-                    },
-                  ),
-                  Positioned(
-                    top: AppPadding.p8,
-                    right: AppPadding.p8,
-                    child: Material(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(AppRadius.r10),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(AppRadius.r10),
-                        onTap: () => _openFullscreenMap(
-                          context,
-                          markers: markers,
-                          polylines: polylines,
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(AppPadding.p6),
-                          child: const Icon(
-                            Icons.fullscreen_rounded,
-                            color: ColorManager.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: _fallbackCamera,
+                  zoom: 15.2,
+                ),
+                markers: markers,
+                polylines: _buildPolylines(),
+                zoomControlsEnabled: false,
+                myLocationButtonEnabled: false,
+                mapToolbarEnabled: false,
+                compassEnabled: false,
+                onMapCreated: (controller) {
+                  _controller = controller;
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    if (!mounted) return;
+                    await _moveCamera(initial: true);
+                    if (mounted) {
+                      setState(() => _didInitialCamera = true);
+                    }
+                  });
+                },
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void _openFullscreenMap(
-    BuildContext context, {
-    required Set<Marker> markers,
-    required Set<Polyline> polylines,
-  }) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(
-            title: CustomText(
-              text: widget.title,
-              textStyle: getSemiBoldStyle(
-                fontSize: AppFontSize.s14,
-                color: ColorManager.defaultWhite,
-              ),
-            ),
-          ),
-          body: GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _fallbackCamera,
-              zoom: 15.2,
-            ),
-            markers: markers,
-            polylines: polylines,
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            compassEnabled: true,
-          ),
-        ),
       ),
     );
   }

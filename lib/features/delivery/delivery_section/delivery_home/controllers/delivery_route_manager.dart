@@ -9,6 +9,8 @@ import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/google_directions_service.dart';
 import 'package:jeeb_app/core/presentation/maps/route_history_polyline_builder.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
 
 /// RTDB walked path + Directions API: driver→pickup (dashed blue) + pickup→drop (dashed amber).
 class DeliveryRouteManager extends ChangeNotifier {
@@ -33,7 +35,12 @@ class DeliveryRouteManager extends ChangeNotifier {
 
   String? _assignedOrderIdFromState(DeliveryHomeState state) {
     if (state is DeliveryHomeLoaded && state.assignedOrder != null) {
-      return state.assignedOrder!.id;
+      final order = state.assignedOrder!;
+      final status = OrderStatus.fromString(order.status);
+      if (!DeliveryOrderLocationReporter.shouldTrack(status)) {
+        return null;
+      }
+      return order.id;
     }
     return null;
   }
