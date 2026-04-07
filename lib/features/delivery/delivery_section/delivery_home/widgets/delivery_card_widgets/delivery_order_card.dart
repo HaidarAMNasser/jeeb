@@ -49,9 +49,7 @@ class DeliveryOrderCard extends StatelessWidget {
     final preparationMinutes =
         order.mealPreparationMinutes ?? order.preparationTime;
     final showPreparationTime =
-        status == OrderStatus.assigned &&
-        preparationMinutes != null &&
-        preparationMinutes > 0;
+        preparationMinutes != null && preparationMinutes > 0;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
