@@ -56,7 +56,7 @@ class DeliveryOrderHeader extends StatelessWidget {
                   text: recipientAddress,
                   textStyle: getRegularStyle(
                     fontSize: AppFontSize.s12,
-                    color: ColorManager.textSecondary,
+                    color: ColorManager.defaultWhite,
                   ),
                 ),
               if (hasC || hasD) ...[

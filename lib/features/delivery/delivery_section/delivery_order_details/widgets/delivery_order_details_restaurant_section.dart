@@ -47,7 +47,7 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
                 text: AppTranslation.pickUpPoint,
                 textStyle: getRegularStyle(
                   fontSize: AppFontSize.s11,
-                  color: ColorManager.textSecondary,
+                  color: ColorManager.defaultWhite,
                 ),
               ),
               if (addr.isNotEmpty) ...[
@@ -56,7 +56,7 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
                   text: addr,
                   textStyle: getRegularStyle(
                     fontSize: AppFontSize.s12,
-                    color: ColorManager.textSecondary,
+                    color: ColorManager.defaultWhite,
                   ),
                   maxLines: 2,
                   textOverflow: TextOverflow.ellipsis,
@@ -72,7 +72,7 @@ class DeliveryOrderDetailsRestaurantSection extends StatelessWidget {
                   text: AppTranslation.preparationTime,
                   textStyle: getRegularStyle(
                     fontSize: AppFontSize.s10,
-                    color: ColorManager.textSecondary,
+                    color: ColorManager.defaultWhite,
                   ),
                 ),
                 SizedBox(height: AppHeight.s4),
