@@ -534,7 +534,7 @@ class _DeliveryOrderDetailsRouteMapState
             text: AppTranslation.deliveryRouteLegendWalked,
             textStyle: getRegularStyle(
               fontSize: AppFontSize.s11,
-              color: ColorManager.textSecondary,
+              color: ColorManager.defaultWhite,
             ),
           ),
         ),
