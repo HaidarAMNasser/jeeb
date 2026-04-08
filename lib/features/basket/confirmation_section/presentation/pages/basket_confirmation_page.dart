@@ -4,6 +4,7 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/checkout_location_pick.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_bloc.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_event.dart';
@@ -83,15 +84,30 @@ class _BasketConfirmationPageState extends State<BasketConfirmationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<BasketConfirmationBloc, BasketConfirmationState>(
-      listenWhen: (previous, current) =>
-          current.pendingFieldSync != BasketConfirmationFieldSync.none,
-      listener: (context, state) {
-        _applyPendingFieldSync(state);
-        context.read<BasketConfirmationBloc>().add(
-              const BasketConfirmationFieldSyncConsumed(),
-            );
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<BasketConfirmationBloc, BasketConfirmationState>(
+          listenWhen: (previous, current) =>
+              current.pendingFieldSync != BasketConfirmationFieldSync.none,
+          listener: (context, state) {
+            _applyPendingFieldSync(state);
+            context.read<BasketConfirmationBloc>().add(
+                  const BasketConfirmationFieldSyncConsumed(),
+                );
+          },
+        ),
+        BlocListener<BasketConfirmationBloc, BasketConfirmationState>(
+          listenWhen: (previous, current) =>
+              previous.createdOrderId != current.createdOrderId &&
+              current.createdOrderId != null,
+          listener: (context, state) {
+            context.read<ManageCartBloc>().add(const ClearCartEvent());
+            context.read<BasketConfirmationBloc>().add(
+                  const BasketConfirmationSuccessHandled(),
+                );
+          },
+        ),
+      ],
       child: BlocBuilder<BasketConfirmationBloc, BasketConfirmationState>(
         builder: (context, state) {
           return ModalProgressHUD(

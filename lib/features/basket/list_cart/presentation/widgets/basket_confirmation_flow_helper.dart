@@ -10,6 +10,7 @@ import 'package:jeeb_app/features/basket/list_cart/presentation/checkout_locatio
 import 'package:jeeb_app/features/auth/profile/data/repositories/profile_repository.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_bloc.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/pages/basket_confirmation_page.dart';
+import 'package:jeeb_app/features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/create_order/data/repositories/create_order_repository.dart';
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/domain/entities/order_before_confirm_preview.dart';
 
@@ -46,19 +47,24 @@ class BasketConfirmationFlowHelper {
 
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (_) => BasketConfirmationBloc(
-            items: confirmationItems,
-            merchantName: state.merchantName,
-            merchantOwnerId: state.merchantOwnerId,
-            latitude: lat,
-            longitude: lng,
-            initialPhone: state.customerPhone,
-            orderRepository: di.sl<CreateOrderRepository>(),
-            profileRepository: di.sl<ProfileRepository>(),
-            navigationService: di.sl<NavigationService>(),
-            deliveryPreview: deliveryPreview,
-          ),
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) => BasketConfirmationBloc(
+                items: confirmationItems,
+                merchantName: state.merchantName,
+                merchantOwnerId: state.merchantOwnerId,
+                latitude: lat,
+                longitude: lng,
+                initialPhone: state.customerPhone,
+                orderRepository: di.sl<CreateOrderRepository>(),
+                profileRepository: di.sl<ProfileRepository>(),
+                navigationService: di.sl<NavigationService>(),
+                deliveryPreview: deliveryPreview,
+              ),
+            ),
+            BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
+          ],
           child: const BasketConfirmationPage(),
         ),
       ),

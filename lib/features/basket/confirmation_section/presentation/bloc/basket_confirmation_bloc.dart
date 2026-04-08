@@ -53,6 +53,7 @@ class BasketConfirmationBloc
     on<BasketConfirmationLocationPicked>(_onLocationPicked);
     on<BasketConfirmationSubmitRequested>(_onSubmitRequested);
     on<BasketConfirmationFieldSyncConsumed>(_onFieldSyncConsumed);
+    on<BasketConfirmationSuccessHandled>(_onSuccessHandled);
 
     add(const BasketConfirmationStarted());
   }
@@ -126,6 +127,13 @@ class BasketConfirmationBloc
     Emitter<BasketConfirmationState> emit,
   ) {
     emit(state.copyWith(pendingFieldSync: BasketConfirmationFieldSync.none));
+  }
+
+  void _onSuccessHandled(
+    BasketConfirmationSuccessHandled event,
+    Emitter<BasketConfirmationState> emit,
+  ) {
+    emit(state.copyWith(clearCreatedOrderId: true));
   }
 
   Future<void> _resolveAddressAfterLocationChange(
@@ -279,7 +287,7 @@ class BasketConfirmationBloc
     result.fold((failure) => _emitSubmitError(failure.message, emit), (
       orderId,
     ) {
-      emit(state.copyWith(isSubmitting: false));
+      emit(state.copyWith(isSubmitting: false, createdOrderId: orderId));
       _navigateAfterOrderSuccess(orderId);
     });
   }
