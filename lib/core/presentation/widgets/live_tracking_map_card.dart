@@ -8,6 +8,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/presentation/widgets/live_tracking_fullscreen_map.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
 /// Live map: driver-centered camera, walked path from RTDB `routeHistory`, dashed
@@ -283,27 +284,16 @@ class _LiveTrackingMapCardState extends State<LiveTrackingMapCard> {
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(
-            title: CustomText(
-              text: widget.title,
-              textStyle: getSemiBoldStyle(
-                fontSize: AppFontSize.s14,
-                color: ColorManager.defaultWhite,
-              ),
-            ),
-          ),
-          body: GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _fallbackCamera,
-              zoom: 15.2,
-            ),
-            markers: markers,
-            polylines: polylines,
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            compassEnabled: true,
-          ),
+        builder: (_) => LiveTrackingFullscreenMap(
+          orderId: widget.orderId,
+          title: widget.title,
+          initialRouteHistory: widget.routeHistory,
+          initialDeliveryLatitude: widget.deliveryLatitude,
+          initialDeliveryLongitude: widget.deliveryLongitude,
+          initialDriverLatitude: widget.driverLatitude,
+          initialDriverLongitude: widget.driverLongitude,
+          initialStatusLabel: widget.statusLabel,
+          initialStatusOnline: widget.statusOnline,
         ),
       ),
     );

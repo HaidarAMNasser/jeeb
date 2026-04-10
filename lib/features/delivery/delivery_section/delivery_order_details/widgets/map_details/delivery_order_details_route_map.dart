@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,8 +18,8 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_home_map_search.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_map/delivery_map_chrome.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/map_details/delivery_order_details_fullscreen_map.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
 /// Driver-side order details map:
@@ -48,6 +49,9 @@ class _DeliveryOrderDetailsRouteMapState
   BitmapDescriptor? _driverIcon;
 
   LatLng? _driverPoint;
+  final ValueNotifier<LatLng?> _driverPointNotifier = ValueNotifier<LatLng?>(null);
+  final ValueNotifier<Set<Polyline>> _mapPolylinesNotifier =
+      ValueNotifier<Set<Polyline>>(const {});
   final List<LatLng> _localTrailPoints = [];
   List<LatLng> _remoteTrailPoints = const [];
 
@@ -213,6 +217,7 @@ class _DeliveryOrderDetailsRouteMapState
             startCap: Cap.roundCap,
             endCap: Cap.roundCap,
           );
+    _publishLiveMapState();
   }
 
   List<LatLng> _effectiveTrailPoints() {
@@ -296,6 +301,7 @@ class _DeliveryOrderDetailsRouteMapState
               endCap: Cap.roundCap,
             );
     });
+    _publishLiveMapState();
   }
 
   Future<void> _recenterOnMyLocation() async {
@@ -408,6 +414,12 @@ class _DeliveryOrderDetailsRouteMapState
     _remoteTrailPoints = const [];
     _lastGuideFetchAt = null;
     _lastGuideOrigin = null;
+    _publishLiveMapState();
+  }
+
+  void _publishLiveMapState() {
+    _driverPointNotifier.value = _driverPoint;
+    _mapPolylinesNotifier.value = _mapPolylines;
   }
 
   Future<void> _fitInitialCamera() async {
@@ -494,18 +506,17 @@ class _DeliveryOrderDetailsRouteMapState
   }
 
   void _openFullscreenMap(BuildContext context, Set<Marker> markers) {
-    final staticMarkers = markers
-        .where((m) => m.markerId.value != 'driver')
-        .toSet();
+    final staticMarkers =
+        markers.where((m) => m.markerId.value != 'driver').toSet();
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (_) => FullscreenMapView(
+        builder: (_) => DeliveryOrderDetailsFullscreenMap(
+          order: widget.order,
           initialCenter: _initialCenter,
-          markers: staticMarkers,
-          currentLat: _driverPoint?.latitude,
-          currentLng: _driverPoint?.longitude,
-          polylines: _mapPolylines,
+          staticMarkers: staticMarkers,
+          driverPointListenable: _driverPointNotifier,
+          polylinesListenable: _mapPolylinesNotifier,
           driverMarkerIcon: _driverIcon,
         ),
       ),
@@ -517,6 +528,8 @@ class _DeliveryOrderDetailsRouteMapState
     _guideRouteDebounce?.cancel();
     _routeHistorySub?.cancel();
     _positionSub?.cancel();
+    _driverPointNotifier.dispose();
+    _mapPolylinesNotifier.dispose();
     super.dispose();
   }
 
