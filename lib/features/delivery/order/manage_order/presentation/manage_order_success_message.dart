@@ -12,6 +12,8 @@ extension ManageOrderSuccessKindMessage on ManageOrderSuccessKind {
         return AppTranslation.manageOrderSuccessMarkOnTheWay;
       case ManageOrderSuccessKind.markDelivered:
         return AppTranslation.manageOrderSuccessMarkDelivered;
+      case ManageOrderSuccessKind.markOrdersPaid:
+        return AppTranslation.manageOrderSuccessMarkPaid;
       case ManageOrderSuccessKind.rejectDelivery:
         return AppTranslation.manageOrderSuccessRejectDelivery;
     }

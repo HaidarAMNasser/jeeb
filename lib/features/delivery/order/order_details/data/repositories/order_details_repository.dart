@@ -14,6 +14,24 @@ class OrderDetailsRepository {
 
   const OrderDetailsRepository(this._remoteDataSource, this._networkInfo);
 
+  Either<Failure, void> _voidFromResponse(Response response) {
+    final statusCode = response.statusCode ?? 0;
+    if (statusCode < 200 || statusCode >= 300) {
+      return Left(
+        ErrorHandler.handle(
+          DioException(
+            type: DioExceptionType.badResponse,
+            response: response,
+            requestOptions: response.requestOptions,
+          ),
+        ),
+      );
+    }
+    final envelopeFailure = ErrorHandler.failureFromEnvelopeIfAny(response.data);
+    if (envelopeFailure != null) return Left(envelopeFailure);
+    return const Right(null);
+  }
+
   Future<Either<Failure, OrderEntity>> getOrderDetails(String id) async {
     if (await _networkInfo.isConnected) {
       try {
@@ -56,6 +74,19 @@ class OrderDetailsRepository {
 
         final model = OrderModel.fromJson(orderJson);
         return Right(model.toDomain());
+      } catch (error) {
+        return Left(ErrorHandler.handle(error));
+      }
+    } else {
+      return const Left(NetworkFailure());
+    }
+  }
+
+  Future<Either<Failure, void>> cancelOrder(String id) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final response = await _remoteDataSource.cancelOrder(id);
+        return _voidFromResponse(response);
       } catch (error) {
         return Left(ErrorHandler.handle(error));
       }

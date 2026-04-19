@@ -302,6 +302,10 @@ abstract class AppApiServiceClient {
     @Field('lng') double lng,
   );
 
+  /// Delivery: mark order(s) paid with receipt images (`multipart/form-data`).
+  @PATCH("orders/paid")
+  Future<Response> markOrdersPaid(FormData formData);
+
   @POST("orders/{id}/reject-delivery")
   Future<Response> rejectDelivery(
     @Path('id') String id,

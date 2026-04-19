@@ -10,6 +10,7 @@ import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching cards/delivery_accept_timer_badge.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/accept_delivery_estimated_time_dialog.dart';
+import 'package:jeeb_app/features/delivery/order/manage_order/presentation/widgets/delivery_payment_receipt_picker.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
@@ -116,6 +117,35 @@ class DeliveryOrderActionButtons extends StatelessWidget {
                       lng: 0,
                     ),
                   ),
+                )
+              else if (status == OrderStatus.delivered)
+                _buildButton(
+                  text: AppTranslation.uploadPaymentReceipts,
+                  color: Colors.teal,
+                  icon: Icons.receipt_long,
+                  isLoading: isLoading,
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          Future<void> upload() async {
+                            final paths =
+                                await DeliveryPaymentReceiptPicker.show(
+                              context,
+                            );
+                            if (!context.mounted ||
+                                paths == null ||
+                                paths.isEmpty) {
+                              return;
+                            }
+                            context.read<ManageOrderBloc>().add(
+                                  MarkOrdersPaidEvent(
+                                    id: order.id,
+                                    imagePaths: paths,
+                                  ),
+                                );
+                          }
+                          upload();
+                        },
                 ),
             ],
           );
@@ -128,7 +158,7 @@ class DeliveryOrderActionButtons extends StatelessWidget {
     required String text,
     required Color color,
     required bool isLoading,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
     IconData? icon,
   }) {
     return SizedBox(

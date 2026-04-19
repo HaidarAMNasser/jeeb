@@ -75,3 +75,16 @@ class RejectDeliveryEvent extends ManageOrderEvent {
   @override
   List<Object?> get props => [id, reason];
 }
+
+class MarkOrdersPaidEvent extends ManageOrderEvent {
+  final String id;
+  final List<String> imagePaths;
+
+  const MarkOrdersPaidEvent({
+    required this.id,
+    required this.imagePaths,
+  });
+
+  @override
+  List<Object?> get props => [id, imagePaths];
+}

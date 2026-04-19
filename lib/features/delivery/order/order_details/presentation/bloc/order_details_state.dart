@@ -1,4 +1,5 @@
-part of 'order_details_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
 abstract class OrderDetailsState extends Equatable {
   const OrderDetailsState();
@@ -17,11 +18,30 @@ class OrderDetailsLoading extends OrderDetailsState {
 
 class OrderDetailsLoaded extends OrderDetailsState {
   final OrderEntity order;
+  final bool isCancelling;
+  final String? actionError;
 
-  const OrderDetailsLoaded({required this.order});
+  const OrderDetailsLoaded({
+    required this.order,
+    this.isCancelling = false,
+    this.actionError,
+  });
+
+  OrderDetailsLoaded copyWith({
+    OrderEntity? order,
+    bool? isCancelling,
+    String? actionError,
+    bool clearActionError = false,
+  }) {
+    return OrderDetailsLoaded(
+      order: order ?? this.order,
+      isCancelling: isCancelling ?? this.isCancelling,
+      actionError: clearActionError ? null : (actionError ?? this.actionError),
+    );
+  }
 
   @override
-  List<Object?> get props => [order];
+  List<Object?> get props => [order, isCancelling, actionError];
 }
 
 class OrderDetailsError extends OrderDetailsState {
@@ -32,4 +52,3 @@ class OrderDetailsError extends OrderDetailsState {
   @override
   List<Object?> get props => [message];
 }
-

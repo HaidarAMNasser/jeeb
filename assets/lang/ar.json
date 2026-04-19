@@ -297,6 +297,8 @@
   "order_status_label_picked_up": "تم الاستلام",
   "order_status_label_on_the_way": "في الطريق",
   "order_status_label_delivered": "تم التسليم",
+  "order_status_label_completed": "مكتمل",
+  "order_status_label_paid": "مدفوع",
   "order_status_label_cancelled": "ملغى",
   "order_status_label_rejected": "مرفوض",
   "order_status_label_unknown": "غير معروف",
@@ -320,6 +322,8 @@
   "order_track_hint_picked_up": "تم استلام طلبك وهو في الطريق إليك.",
   "order_track_hint_on_the_way": "التوصيل في الطريق لإحضار وجبتك.",
   "order_track_hint_delivered": "بالهناء والشفاء! يمكنك عرض التفاصيل الكاملة في أي وقت.",
+  "order_track_hint_paid": "تم استلام إيصال الدفع — شكراً لك.",
+  "order_track_hint_completed": "اكتمل هذا الطلب بالكامل.",
   "order_track_hint_cancelled": "تم إلغاء هذا الطلب.",
   "order_track_hint_rejected": "تم رفض هذا الطلب.",
   "order_track_hint_unknown": "جاري تحديث الحالة.",
@@ -432,5 +436,14 @@
   "manage_order_success_confirm_pickup": "تم تأكيد الاستلام بنجاح",
   "manage_order_success_mark_on_the_way": "تم تحديث الحالة: في الطريق",
   "manage_order_success_mark_delivered": "تم تسجيل التوصيل بنجاح",
-  "manage_order_success_reject_delivery": "تم إلغاء التعيين — الطلب متاح لسائقين آخرين"
+  "manage_order_success_mark_paid": "تم رفع إيصالات الدفع بنجاح",
+  "manage_order_success_reject_delivery": "تم إلغاء التعيين — الطلب متاح لسائقين آخرين",
+  "upload_payment_receipts": "رفع إيصالات الدفع",
+  "payment_receipts_select_hint": "من 1 إلى 5 صور (JPEG أو PNG أو WebP، بحد أقصى 5 ميجابايت لكل ملف)",
+  "payment_receipt_add_images": "إضافة صور",
+  "payment_receipt_submit": "إرسال الإيصالات",
+  "payment_receipt_invalid_type": "يُسمح فقط بصور JPEG أو PNG أو WebP.",
+  "payment_receipt_file_too_large": "يجب ألا يتجاوز حجم كل صورة 5 ميجابايت.",
+  "payment_receipt_too_many_images": "يمكنك رفع 5 صور كحد أقصى.",
+  "payment_receipt_need_one_image": "يرجى إضافة صورة إيصال واحدة على الأقل."
 }

@@ -301,6 +301,8 @@
   "order_status_label_picked_up": "Picked up",
   "order_status_label_on_the_way": "On the way",
   "order_status_label_delivered": "Delivered",
+  "order_status_label_completed": "Completed",
+  "order_status_label_paid": "Paid",
   "order_status_label_cancelled": "Cancelled",
   "order_status_label_rejected": "Rejected",
   "order_status_label_unknown": "Unknown",
@@ -324,6 +326,8 @@
   "order_track_hint_picked_up": "Your order has been picked up and is heading out.",
   "order_track_hint_on_the_way": "Your delivery is on the way to bring you your meal.",
   "order_track_hint_delivered": "Enjoy your meal! You can view full details anytime.",
+  "order_track_hint_paid": "Payment receipt received — thank you.",
+  "order_track_hint_completed": "This order is fully completed.",
   "order_track_hint_cancelled": "This order was cancelled.",
   "order_track_hint_rejected": "This order was rejected.",
   "order_track_hint_unknown": "Status update pending.",
@@ -433,5 +437,14 @@
   "manage_order_success_confirm_pickup": "Pickup confirmed successfully",
   "manage_order_success_mark_on_the_way": "Order marked as on the way",
   "manage_order_success_mark_delivered": "Order marked as delivered",
-  "manage_order_success_reject_delivery": "Order released — it is available for other drivers"
+  "manage_order_success_mark_paid": "Payment receipts uploaded successfully",
+  "manage_order_success_reject_delivery": "Order released — it is available for other drivers",
+  "upload_payment_receipts": "Upload payment receipts",
+  "payment_receipts_select_hint": "1–5 images (JPEG, PNG, or WebP, max 5 MB each)",
+  "payment_receipt_add_images": "Add images",
+  "payment_receipt_submit": "Submit receipts",
+  "payment_receipt_invalid_type": "Only JPEG, PNG, or WebP images are allowed.",
+  "payment_receipt_file_too_large": "Each image must be 5 MB or smaller.",
+  "payment_receipt_too_many_images": "You can upload at most 5 images.",
+  "payment_receipt_need_one_image": "Please add at least one receipt image."
 }

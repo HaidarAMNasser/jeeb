@@ -25,3 +25,11 @@ class OrderDetailsRtdbStatusChanged extends OrderDetailsEvent {
   List<Object> get props => [statusWire];
 }
 
+class CancelOrderEvent extends OrderDetailsEvent {
+  const CancelOrderEvent();
+}
+
+class ClearOrderDetailsTransientEvent extends OrderDetailsEvent {
+  const ClearOrderDetailsTransientEvent();
+}
+

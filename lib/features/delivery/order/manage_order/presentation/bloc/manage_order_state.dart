@@ -6,6 +6,7 @@ enum ManageOrderSuccessKind {
   confirmPickup,
   markOnTheWay,
   markDelivered,
+  markOrdersPaid,
   rejectDelivery,
 }
 
