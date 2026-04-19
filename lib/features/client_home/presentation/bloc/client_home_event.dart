@@ -36,16 +36,19 @@ class ApplyFiltersEvent extends ClientHomeEvent {
   final double? maxPrice;
   final int? minRating;
   final String? categoryId;
+  /// API `type`: `RESTAURANT`, `STORE`, or null for all.
+  final String? type;
 
   const ApplyFiltersEvent({
     this.minPrice,
     this.maxPrice,
     this.minRating,
     this.categoryId,
+    this.type,
   });
 
   @override
-  List<Object?> get props => [minPrice, maxPrice, minRating, categoryId];
+  List<Object?> get props => [minPrice, maxPrice, minRating, categoryId, type];
 }
 
 class LoadMoreProductsEvent extends ClientHomeEvent {

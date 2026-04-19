@@ -160,6 +160,7 @@ abstract class AppApiServiceClient {
     @Query('minPrice') double? minPrice,
     @Query('maxPrice') double? maxPrice,
     @Query('minRating') int? minRating,
+    @Query('type') String? type,
   );
 
   @GET("products/{id}")
@@ -207,6 +208,7 @@ abstract class AppApiServiceClient {
     @Query('countryId') int? countryId,
     @Query('cityId') int? cityId,
     @Query('isActive') bool? isActive,
+    @Query('type') String? type,
   });
 
   @GET("users/merchants/{id}")

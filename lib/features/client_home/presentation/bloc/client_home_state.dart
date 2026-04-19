@@ -6,6 +6,10 @@ import 'package:jeeb_app/features/product/list_product/domain/entities/product_e
 
 class ClientHomeState extends Equatable {
   static const Object _unset = Object();
+
+  /// API `type` query: `RESTAURANT`, `STORE`, or null for all.
+  static const String merchantTypeRestaurant = 'RESTAURANT';
+  static const String merchantTypeStore = 'STORE';
   final bool isLoading;
   final bool isCategoriesLoading;
   final bool isMerchantsLoading;
@@ -23,6 +27,8 @@ class ClientHomeState extends Equatable {
   final double? minPrice;
   final double? maxPrice;
   final int? minRating;
+  /// Passed to merchants/products APIs as `type` when non-null.
+  final String? merchantTypeFilter;
   final int page;
 
   const ClientHomeState({
@@ -43,6 +49,7 @@ class ClientHomeState extends Equatable {
     this.minPrice,
     this.maxPrice,
     this.minRating,
+    this.merchantTypeFilter,
     this.page = 1,
   });
 
@@ -64,6 +71,7 @@ class ClientHomeState extends Equatable {
     Object? minPrice = _unset,
     Object? maxPrice = _unset,
     Object? minRating = _unset,
+    Object? merchantTypeFilter = _unset,
     int? page,
   }) {
     return ClientHomeState(
@@ -88,6 +96,9 @@ class ClientHomeState extends Equatable {
       minPrice: minPrice == _unset ? this.minPrice : minPrice as double?,
       maxPrice: maxPrice == _unset ? this.maxPrice : maxPrice as double?,
       minRating: minRating == _unset ? this.minRating : minRating as int?,
+      merchantTypeFilter: merchantTypeFilter == _unset
+          ? this.merchantTypeFilter
+          : merchantTypeFilter as String?,
       page: page ?? this.page,
     );
   }
@@ -98,6 +109,7 @@ class ClientHomeState extends Equatable {
       maxPrice: null,
       minRating: null,
       selectedCategoryId: null,
+      merchantTypeFilter: null,
     );
   }
 
@@ -122,6 +134,7 @@ class ClientHomeState extends Equatable {
         minPrice,
         maxPrice,
         minRating,
+        merchantTypeFilter,
         page,
       ];
 }

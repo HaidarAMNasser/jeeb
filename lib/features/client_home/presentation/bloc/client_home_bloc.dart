@@ -75,7 +75,13 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
           ),
         );
       }),
-      _merchantRepository.getMerchants(page: 1, limit: _merchantsLimit).then((
+      _merchantRepository
+          .getMerchants(
+            page: 1,
+            limit: _merchantsLimit,
+            type: state.merchantTypeFilter,
+          )
+          .then((
         result,
       ) {
         if (isClosed) return;
@@ -116,6 +122,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
             minPrice: state.minPrice,
             maxPrice: state.maxPrice,
             minRating: state.minRating,
+            type: state.merchantTypeFilter,
           )
           .then((result) {
             if (isClosed) return;
@@ -190,6 +197,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
       minPrice: null,
       maxPrice: null,
       minRating: null,
+      type: state.merchantTypeFilter,
     );
 
     result.fold(
@@ -225,6 +233,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
       minPrice: state.minPrice,
       maxPrice: state.maxPrice,
       minRating: state.minRating,
+      type: state.merchantTypeFilter,
     );
 
     result.fold(
@@ -249,34 +258,82 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
         maxPrice: event.maxPrice,
         minRating: event.minRating,
         selectedCategoryId: event.categoryId,
+        merchantTypeFilter: event.type,
         isProductsLoading: true,
+        isMerchantsLoading: true,
         page: 1,
         hasReachedMax: false,
       ),
     );
 
-    final result = await _productRepository.getProducts(
-      page: 1,
-      limit: _productsLimit,
-      categoryId: event.categoryId,
-      search: state.searchQuery?.isEmpty ?? true ? null : state.searchQuery,
-      minPrice: event.minPrice,
-      maxPrice: event.maxPrice,
-      minRating: event.minRating,
-    );
-
-    result.fold(
-      (f) => emit(
-        state.copyWith(isProductsLoading: false, errorMessage: f.message),
-      ),
-      (paginatedProducts) => emit(
-        state.copyWith(
-          isProductsLoading: false,
-          products: paginatedProducts.products,
-          hasReachedMax: !(paginatedProducts.pagination?.hasNextPage ?? false),
-        ),
-      ),
-    );
+    await Future.wait([
+      _merchantRepository
+          .getMerchants(
+            page: 1,
+            limit: _merchantsLimit,
+            type: state.merchantTypeFilter,
+          )
+          .then((result) {
+            if (isClosed) return;
+            result.fold(
+              (f) => emit(
+                state.copyWith(
+                  isMerchantsLoading: false,
+                  errorMessage: state.errorMessage ?? f.message,
+                ),
+              ),
+              (merchants) {
+                var orderedMerchants = List<MerchantEntity>.from(merchants);
+                if (orderedMerchants.isNotEmpty) {
+                  orderedMerchants.sort((a, b) {
+                    final aHasImage = a.image != null && a.image!.isNotEmpty;
+                    final bHasImage = b.image != null && b.image!.isNotEmpty;
+                    if (aHasImage == bHasImage) return 0;
+                    return aHasImage ? -1 : 1;
+                  });
+                }
+                emit(
+                  state.copyWith(
+                    isMerchantsLoading: false,
+                    merchants: orderedMerchants,
+                  ),
+                );
+              },
+            );
+          }),
+      _productRepository
+          .getProducts(
+            page: 1,
+            limit: _productsLimit,
+            categoryId: event.categoryId,
+            search: state.searchQuery?.isEmpty ?? true
+                ? null
+                : state.searchQuery,
+            minPrice: event.minPrice,
+            maxPrice: event.maxPrice,
+            minRating: event.minRating,
+            type: state.merchantTypeFilter,
+          )
+          .then((result) {
+            if (isClosed) return;
+            result.fold(
+              (f) => emit(
+                state.copyWith(
+                  isProductsLoading: false,
+                  errorMessage: state.errorMessage ?? f.message,
+                ),
+              ),
+              (paginatedProducts) => emit(
+                state.copyWith(
+                  isProductsLoading: false,
+                  products: paginatedProducts.products,
+                  hasReachedMax:
+                      !(paginatedProducts.pagination?.hasNextPage ?? false),
+                ),
+              ),
+            );
+          }),
+    ]);
   }
 
   Future<void> _onLoadMoreProducts(
@@ -296,6 +353,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
       minPrice: state.minPrice,
       maxPrice: state.maxPrice,
       minRating: state.minRating,
+      type: state.merchantTypeFilter,
     );
 
     result.fold(

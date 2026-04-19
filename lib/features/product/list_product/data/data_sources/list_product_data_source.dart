@@ -11,6 +11,7 @@ abstract class ListProductRemoteDataSource {
     double? minPrice,
     double? maxPrice,
     int? minRating,
+    String? type,
   });
 }
 
@@ -29,6 +30,7 @@ class ListProductRemoteDataSourceImpl implements ListProductRemoteDataSource {
     double? minPrice,
     double? maxPrice,
     int? minRating,
+    String? type,
   }) {
     return _appApiServiceClient.getProducts(
       page,
@@ -39,6 +41,7 @@ class ListProductRemoteDataSourceImpl implements ListProductRemoteDataSource {
       minPrice,
       maxPrice,
       minRating,
+      type,
     );
   }
 }

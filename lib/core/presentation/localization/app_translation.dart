@@ -216,6 +216,11 @@ class AppTranslation {
   static String get apply => 'apply'.tr();
   static String get reset => 'reset'.tr();
   static String get allCategories => 'all_categories'.tr();
+  static String get filterMerchantType => 'filter_merchant_type'.tr();
+  static String get filterMerchantTypeRestaurant =>
+      'filter_merchant_type_restaurant'.tr();
+  static String get filterMerchantTypeStore =>
+      'filter_merchant_type_store'.tr();
 
   static String get birthday => 'birthday'.tr();
   static String get birthdayHint => 'birthday_hint'.tr();

@@ -441,6 +441,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     double? minPrice,
     double? maxPrice,
     int? minRating,
+    String? type,
   ) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -454,6 +455,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     if (minPrice != null) queryParameters['minPrice'] = minPrice;
     if (maxPrice != null) queryParameters['maxPrice'] = maxPrice;
     if (minRating != null) queryParameters['minRating'] = minRating;
+    if (type != null && type.isNotEmpty) queryParameters['type'] = type;
     final headers = <String, dynamic>{};
 
     final result = await dio.fetch<Map<String, dynamic>>(
@@ -902,6 +904,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     int? countryId,
     int? cityId,
     bool? isActive,
+    String? type,
   }) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -911,6 +914,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     if (countryId != null) queryParameters['countryId'] = countryId;
     if (cityId != null) queryParameters['cityId'] = cityId;
     if (isActive != null) queryParameters['isActive'] = isActive;
+    if (type != null && type.isNotEmpty) queryParameters['type'] = type;
     final headers = <String, dynamic>{};
 
     final result = await dio.fetch<Map<String, dynamic>>(

@@ -27,6 +27,8 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
   late TextEditingController _maxPriceController;
   String? _selectedCategoryId;
   int? _minRating;
+  /// `null` = all; otherwise API values `RESTAURANT` / `STORE`.
+  String? _merchantTypeFilter;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
     );
     _selectedCategoryId = state.selectedCategoryId;
     _minRating = state.minRating;
+    _merchantTypeFilter = state.merchantTypeFilter;
   }
 
   @override
@@ -83,6 +86,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                           _maxPriceController.clear();
                           _selectedCategoryId = null;
                           _minRating = null;
+                          _merchantTypeFilter = null;
                         });
                         context.read<ClientHomeBloc>().add(
                           const ApplyFiltersEvent(
@@ -90,6 +94,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                             maxPrice: null,
                             minRating: null,
                             categoryId: null,
+                            type: null,
                           ),
                         );
                       },
@@ -104,6 +109,85 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                   ],
                 ),
                 SizedBox(height: AppHeight.s24),
+                CustomText(
+                  text: AppTranslation.filterMerchantType,
+                  textStyle: getSemiBoldStyle(
+                    fontSize: AppFontSize.s16,
+                    color: ColorManager.titlesColor,
+                  ),
+                ),
+                SizedBox(height: AppHeight.s8),
+                Wrap(
+                  spacing: AppPadding.p8,
+                  runSpacing: AppHeight.s8,
+                  children: [
+                    FilterChip(
+                      label: CustomText(
+                        text: AppTranslation.showAll,
+                        textStyle: getMediumStyle(
+                          fontSize: AppFontSize.s14,
+                          color: _merchantTypeFilter == null
+                              ? Colors.white
+                              : ColorManager.productNameColor,
+                        ),
+                      ),
+                      selected: _merchantTypeFilter == null,
+                      onSelected: (_) {
+                        setState(() => _merchantTypeFilter = null);
+                      },
+                      selectedColor: ColorManager.primary,
+                      checkmarkColor: Colors.white,
+                      backgroundColor: ColorManager.surface,
+                    ),
+                    FilterChip(
+                      label: CustomText(
+                        text: AppTranslation.filterMerchantTypeRestaurant,
+                        textStyle: getMediumStyle(
+                          fontSize: AppFontSize.s14,
+                          color: _merchantTypeFilter ==
+                                  ClientHomeState.merchantTypeRestaurant
+                              ? Colors.white
+                              : ColorManager.productNameColor,
+                        ),
+                      ),
+                      selected: _merchantTypeFilter ==
+                          ClientHomeState.merchantTypeRestaurant,
+                      onSelected: (_) {
+                        setState(
+                          () => _merchantTypeFilter =
+                              ClientHomeState.merchantTypeRestaurant,
+                        );
+                      },
+                      selectedColor: ColorManager.primary,
+                      checkmarkColor: Colors.white,
+                      backgroundColor: ColorManager.surface,
+                    ),
+                    FilterChip(
+                      label: CustomText(
+                        text: AppTranslation.filterMerchantTypeStore,
+                        textStyle: getMediumStyle(
+                          fontSize: AppFontSize.s14,
+                          color: _merchantTypeFilter ==
+                                  ClientHomeState.merchantTypeStore
+                              ? Colors.white
+                              : ColorManager.productNameColor,
+                        ),
+                      ),
+                      selected: _merchantTypeFilter ==
+                          ClientHomeState.merchantTypeStore,
+                      onSelected: (_) {
+                        setState(
+                          () => _merchantTypeFilter =
+                              ClientHomeState.merchantTypeStore,
+                        );
+                      },
+                      selectedColor: ColorManager.primary,
+                      checkmarkColor: Colors.white,
+                      backgroundColor: ColorManager.surface,
+                    ),
+                  ],
+                ),
+                SizedBox(height: AppHeight.s20),
                 CategoryPaginatedDropdown(
                   title: AppTranslation.selectCategory,
                   initialValue: _selectedCategoryId,
@@ -171,6 +255,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
                         maxPrice: maxPrice,
                         minRating: _minRating,
                         categoryId: _selectedCategoryId,
+                        type: _merchantTypeFilter,
                       ),
                     );
                     Navigator.pop(context);

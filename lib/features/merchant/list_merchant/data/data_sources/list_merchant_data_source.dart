@@ -9,6 +9,7 @@ abstract class ListMerchantRemoteDataSource {
     int? countryId,
     int? cityId,
     bool? isActive,
+    String? type,
   });
 }
 
@@ -25,6 +26,7 @@ class ListMerchantRemoteDataSourceImpl implements ListMerchantRemoteDataSource {
     int? countryId,
     int? cityId,
     bool? isActive,
+    String? type,
   }) {
     return _appApiServiceClient.getMerchants(
       page: page,
@@ -33,6 +35,7 @@ class ListMerchantRemoteDataSourceImpl implements ListMerchantRemoteDataSource {
       countryId: countryId,
       cityId: cityId,
       isActive: isActive,
+      type: type,
     );
   }
 }
