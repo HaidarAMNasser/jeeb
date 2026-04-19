@@ -334,6 +334,8 @@
   "order_track_hint_cancelled": "This order was cancelled.",
   "order_track_hint_rejected": "This order was rejected.",
   "order_track_hint_unknown": "Status update pending.",
+  "order_status_driver_card_title": "Your delivery partner",
+  "order_status_driver_call": "Call",
   "order_status_view_details": "View All Order details",
   "order_status_demo_start": "Start status demo",
   "order_status_demo_stop": "Stop status demo",

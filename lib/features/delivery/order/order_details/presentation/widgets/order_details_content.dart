@@ -7,6 +7,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
 import 'package:jeeb_app/core/presentation/widgets/confirmation_dialog.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
@@ -111,7 +112,7 @@ class OrderDetailsContent extends StatelessWidget {
             ),
             SizedBox(height: AppHeight.s16),
           ],
-          if (routeStatus == OrderStatus.onTheWay) ...[
+          if (orderStatusShowsDriverContact(routeStatus)) ...[
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -144,7 +145,12 @@ class OrderDetailsContent extends StatelessWidget {
                     },
                   );
                 },
-                icon: const Icon(Icons.my_location_outlined, size: 20),
+                icon: Icon(
+                  routeStatus == OrderStatus.onTheWay
+                      ? Icons.my_location_outlined
+                      : Icons.local_shipping_outlined,
+                  size: 20,
+                ),
                 label: Text(AppTranslation.orderTrackOrderCta),
               ),
             ),

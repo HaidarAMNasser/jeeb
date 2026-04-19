@@ -330,6 +330,8 @@
   "order_track_hint_cancelled": "تم إلغاء هذا الطلب.",
   "order_track_hint_rejected": "تم رفض هذا الطلب.",
   "order_track_hint_unknown": "جاري تحديث الحالة.",
+  "order_status_driver_card_title": "شريك التوصيل",
+  "order_status_driver_call": "اتصال",
   "order_status_view_details": "عرض كامل تفاصيل الطلب",
   "order_status_demo_start": "تشغيل عرض الحالة (تجربة)",
   "order_status_demo_stop": "إيقاف العرض التجريبي",

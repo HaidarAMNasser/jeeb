@@ -345,6 +345,9 @@ class AppTranslation {
   static String get orderTrackHintUnknown => 'order_track_hint_unknown'.tr();
 
   static String get orderStatusViewDetails => 'order_status_view_details'.tr();
+  static String get orderStatusDriverCardTitle =>
+      'order_status_driver_card_title'.tr();
+  static String get orderStatusDriverCall => 'order_status_driver_call'.tr();
   static String get orderStatusDemoStart => 'order_status_demo_start'.tr();
   static String get orderStatusDemoStop => 'order_status_demo_stop'.tr();
   static String get orderNumberLabel => 'order_number_label'.tr();
