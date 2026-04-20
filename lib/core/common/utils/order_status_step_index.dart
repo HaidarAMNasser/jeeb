@@ -8,6 +8,7 @@ const int kOrderTimelineStepMax = 8;
 bool orderStatusIsTerminal(OrderStatus status) {
   switch (status) {
     case OrderStatus.delivered:
+    case OrderStatus.paid:
     case OrderStatus.completed:
     case OrderStatus.cancelled:
     case OrderStatus.rejected:
@@ -39,6 +40,7 @@ int orderStatusToTimelineIndex(OrderStatus status) {
     case OrderStatus.onTheWay:
       return 7;
     case OrderStatus.delivered:
+    case OrderStatus.paid:
     case OrderStatus.completed:
       return 8;
     case OrderStatus.cancelled:

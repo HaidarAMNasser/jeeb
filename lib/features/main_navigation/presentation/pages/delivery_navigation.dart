@@ -10,6 +10,7 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/d
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/pages/delivery_home_page.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_persistent_tracking_scope.dart';
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_navigation_tabs.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders/screens/delivery_orders_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
@@ -23,6 +24,26 @@ class DeliveryNavigation extends StatefulWidget {
 
 class _DeliveryNavigationState extends State<DeliveryNavigation> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    DeliveryNavigationTabs.selectedIndex.value = _currentIndex;
+    DeliveryNavigationTabs.selectedIndex.addListener(_onExternalTabJump);
+  }
+
+  void _onExternalTabJump() {
+    final v = DeliveryNavigationTabs.selectedIndex.value;
+    if (v >= 0 && v <= 2 && v != _currentIndex && mounted) {
+      setState(() => _currentIndex = v);
+    }
+  }
+
+  @override
+  void dispose() {
+    DeliveryNavigationTabs.selectedIndex.removeListener(_onExternalTabJump);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +78,10 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
               ),
               child: BottomNavigationBar(
                 currentIndex: _currentIndex,
-                onTap: (index) => setState(() => _currentIndex = index),
+                onTap: (index) {
+                  setState(() => _currentIndex = index);
+                  DeliveryNavigationTabs.selectedIndex.value = index;
+                },
                 backgroundColor: ColorManager.primaryDark,
                 selectedItemColor: ColorManager.primary,
                 unselectedItemColor: ColorManager.textSecondary,

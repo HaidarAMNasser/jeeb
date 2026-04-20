@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jeeb_app/core/common/classes/user_roles.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
+import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
@@ -14,6 +16,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_pay_selection_controller.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_header.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_price_section.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/map_details/delivery_order_details_route_map.dart';
@@ -26,6 +29,8 @@ import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/manage_order_success_message.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
+import 'package:jeeb_app/features/delivery/pay_admin/presentation/widgets/delivery_pay_admin_sheet.dart';
 
 class DeliveryOrderDetailsPage extends StatefulWidget {
   final String orderId;
@@ -40,6 +45,7 @@ class DeliveryOrderDetailsPage extends StatefulWidget {
 class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
   DateTime? _lastAutoRefreshAt;
   static const Duration _autoRefreshCooldown = Duration(seconds: 8);
+  Future<bool>? _isDeliveryDriver;
 
   void _safeRefreshDetails(BuildContext context) {
     final now = DateTime.now();
@@ -48,6 +54,19 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
     if (context.read<OrderDetailsBloc>().state is OrderDetailsLoading) return;
     _lastAutoRefreshAt = now;
     context.read<OrderDetailsBloc>().add(GetOrderDetailsEvent(widget.orderId));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _isDeliveryDriver = _loadDeliveryRole(di.sl<StorageService>());
+  }
+
+  Future<bool> _loadDeliveryRole(StorageService storage) async {
+    final r = await storage.getUserRole();
+    if (r == null || r.isEmpty) return false;
+    final u = r.toUpperCase();
+    return u == 'DELIVERY' || r == UserRoles.deliveryMan.name;
   }
 
   @override
@@ -60,9 +79,41 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
                 ..add(GetOrderDetailsEvent(widget.orderId)),
         ),
       ],
-      child: Scaffold(
+        child: Scaffold(
         backgroundColor: ColorManager.background,
-        appBar: CustomAppBar(title: AppTranslation.orderDetails),
+        appBar: CustomAppBar(
+          title: AppTranslation.orderDetails,
+          actions: [
+            BlocBuilder<OrderDetailsBloc, OrderDetailsState>(
+              builder: (context, state) {
+                if (state is! OrderDetailsLoaded) {
+                  return const SizedBox.shrink();
+                }
+                final order = state.order;
+                final st = OrderStatus.fromString(order.status);
+                if (st != OrderStatus.delivered) {
+                  return const SizedBox.shrink();
+                }
+                return FutureBuilder<bool>(
+                  future: _isDeliveryDriver,
+                  builder: (context, snap) {
+                    if (snap.data != true) return const SizedBox.shrink();
+                    return DeliveryPayAdminMenuButton(
+                      order: order,
+                      pageOrders: [order],
+                      entryKind: DeliveryPayAdminEntryKind.orderDetails,
+                      payAdminBloc: context.read<PayAdminBloc>(),
+                      onAfterPaySuccess: () {
+                        _safeRefreshDetails(context);
+                        di.sl<DeliveryPaySelectionController>().completedTabReloadTick.value++;
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
         body: BlocListener<ManageOrderBloc, ManageOrderState>(
           listener: (context, state) {
             if (state is ManageOrderSuccess) {

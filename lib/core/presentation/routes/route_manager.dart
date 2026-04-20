@@ -36,6 +36,7 @@ import '../../../features/delivery/order/order_details/domain/entities/order_sta
 import '../../../features/delivery/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
 import '../../../features/delivery/delivery_section/delivery_order_details/screens/delivery_order_details_page.dart';
+import '../../../features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
 import '../../../features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
 import '../../../features/delivery/order/manage_order/presentation/bloc/manage_order_bloc.dart';
 import '../../../features/main_navigation/presentation/pages/main_navigation_page.dart';
@@ -332,6 +333,9 @@ class AppRouter {
             ),
             BlocProvider<DeliveryHomeBloc>.value(
               value: di.sl<DeliveryHomeBloc>(),
+            ),
+            BlocProvider<PayAdminBloc>(
+              create: (_) => di.sl<PayAdminBloc>(),
             ),
           ],
         );

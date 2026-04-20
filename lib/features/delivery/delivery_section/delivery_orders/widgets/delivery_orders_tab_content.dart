@@ -8,6 +8,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart'
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_pay_selection_controller.dart';
 import 'delivery_orders_list.dart';
 import 'delivery_orders_empty_state.dart';
 
@@ -54,7 +55,11 @@ class _DeliveryOrdersTabContentBodyState
           OrderStatus.onTheWay.apiWireValue,
         ].join(',');
       case DeliveryOrderTabType.completed:
-        return OrderStatus.delivered.apiWireValue;
+        return [
+          OrderStatus.delivered.apiWireValue,
+          OrderStatus.paid.apiWireValue,
+          OrderStatus.completed.apiWireValue,
+        ].join(',');
       case DeliveryOrderTabType.cancelled:
         return OrderStatus.cancelled.apiWireValue;
     }
@@ -63,6 +68,25 @@ class _DeliveryOrdersTabContentBodyState
   @override
   void initState() {
     super.initState();
+    if (widget.type == DeliveryOrderTabType.completed) {
+      di.sl<DeliveryPaySelectionController>().completedTabReloadTick.addListener(
+            _onCompletedReloadTick,
+          );
+    }
+    _loadOrders();
+  }
+
+  @override
+  void dispose() {
+    if (widget.type == DeliveryOrderTabType.completed) {
+      di.sl<DeliveryPaySelectionController>().completedTabReloadTick.removeListener(
+            _onCompletedReloadTick,
+          );
+    }
+    super.dispose();
+  }
+
+  void _onCompletedReloadTick() {
     _loadOrders();
   }
 
@@ -90,9 +114,15 @@ class _DeliveryOrdersTabContentBodyState
           getRetryCallback: (_) => _loadOrders,
           successBuilder: (context, s) {
             final loadedState = s as ListOrderLoaded;
+            if (widget.type == DeliveryOrderTabType.completed) {
+              di.sl<DeliveryPaySelectionController>().onCompletedOrdersLoaded(
+                loadedState.orders,
+              );
+            }
             return DeliveryOrdersList(
               orders: loadedState.orders,
               status: _status,
+              tabType: widget.type,
             );
           },
         );

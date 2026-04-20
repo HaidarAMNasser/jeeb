@@ -72,3 +72,15 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     }
   }
 }
+
+class SpecialRoutes {
+  String hnadleRoutes(String remeeredMe, String isGuest) {
+    if (isGuest == "true") {
+      return Routes.login;
+    }
+    if (remeeredMe == "true") {
+      return Routes.home;
+    }
+    return Routes.login;
+  }
+}

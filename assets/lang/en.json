@@ -433,5 +433,20 @@
   "manage_order_success_confirm_pickup": "Pickup confirmed successfully",
   "manage_order_success_mark_on_the_way": "Order marked as on the way",
   "manage_order_success_mark_delivered": "Order marked as delivered",
-  "manage_order_success_reject_delivery": "Order released — it is available for other drivers"
+  "manage_order_success_reject_delivery": "Order released — it is available for other drivers",
+  "order_status_label_paid": "Payment pending verification",
+  "order_status_label_completed": "Completed",
+  "delivery_pay_status_delivered_not_paid": "Delivered — not paid",
+  "delivery_pay_status_paid_pending": "Awaiting payment confirmation",
+  "delivery_pay_status_completed_paid": "Finished — paid",
+  "pay_admin_menu_title": "Admin payment",
+  "pay_admin_option_pay_now": "Pay to admin now",
+  "pay_admin_option_add_to_list": "Add to payment list",
+  "pay_admin_dialog_instructions": "After paying the admin in your own way, attach the receipt screenshot here, then tap Pay.",
+  "pay_admin_total_label": "Admin fee total",
+  "pay_admin_submit": "Pay",
+  "pay_admin_success": "Payment proof submitted",
+  "pay_admin_failure": "Could not submit payment proof",
+  "pay_admin_pick_receipt": "Attach receipt",
+  "pay_app_bar_pay": "Pay"
 }

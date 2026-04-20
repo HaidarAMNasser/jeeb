@@ -6,6 +6,7 @@ import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/shared/order_status_delivery_pay_label.dart';
 import 'package:jeeb_app/features/delivery/shared/widgets/delivery_order_status_badge.dart';
 
 /// Status + whisper-quiet order reference (non-searching cards).
@@ -42,12 +43,16 @@ class DeliveryOrderCardTopBar extends StatelessWidget {
                     return DeliveryOrderStatusBadge(
                       status: status,
                       compact: true,
+                      labelOverride: deliveryPayStatusBadgeLabel(status),
                     );
                   },
                 )
               : DeliveryOrderStatusBadge(
                   status: OrderStatus.fromString(initialStatusWire),
                   compact: true,
+                  labelOverride: deliveryPayStatusBadgeLabel(
+                    OrderStatus.fromString(initialStatusWire),
+                  ),
                 ),
         ),
         SizedBox(width: AppWidth.s10),

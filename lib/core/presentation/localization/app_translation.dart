@@ -297,12 +297,35 @@ class AppTranslation {
       'order_status_label_on_the_way'.tr();
   static String get orderStatusLabelDelivered =>
       'order_status_label_delivered'.tr();
+  static String get orderStatusLabelPaid => 'order_status_label_paid'.tr();
+  static String get orderStatusLabelCompleted =>
+      'order_status_label_completed'.tr();
   static String get orderStatusLabelCancelled =>
       'order_status_label_cancelled'.tr();
   static String get orderStatusLabelRejected =>
       'order_status_label_rejected'.tr();
   static String get orderStatusLabelUnknown =>
       'order_status_label_unknown'.tr();
+
+  /// Delivery app — badge copy for mediator payment lifecycle (listing + details only).
+  static String get deliveryPayStatusDeliveredNotPaid =>
+      'delivery_pay_status_delivered_not_paid'.tr();
+  static String get deliveryPayStatusPaidPending =>
+      'delivery_pay_status_paid_pending'.tr();
+  static String get deliveryPayStatusCompletedPaid =>
+      'delivery_pay_status_completed_paid'.tr();
+
+  static String get payAdminMenuTitle => 'pay_admin_menu_title'.tr();
+  static String get payAdminOptionPayNow => 'pay_admin_option_pay_now'.tr();
+  static String get payAdminOptionAddToList => 'pay_admin_option_add_to_list'.tr();
+  static String get payAdminDialogInstructions => 'pay_admin_dialog_instructions'.tr();
+  static String get payAdminTotalLabel => 'pay_admin_total_label'.tr();
+  static String get payAdminSubmit => 'pay_admin_submit'.tr();
+  static String get payAdminSuccess => 'pay_admin_success'.tr();
+  static String get payAdminFailure => 'pay_admin_failure'.tr();
+  static String get payAdminPickReceipt => 'pay_admin_pick_receipt'.tr();
+  static String get payAppBarPay => 'pay_app_bar_pay'.tr();
+
   static String get orderStepPlaced => 'order_step_placed'.tr();
   static String get orderStepConfirmed => 'order_step_confirmed'.tr();
   static String get orderStepSearching => 'order_step_searching'.tr();
