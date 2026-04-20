@@ -9,7 +9,7 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String? title;
   final String hintText;
   final TextEditingController? controller;
@@ -20,10 +20,13 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final Color? filledColor;
   final bool? obscureText;
+  /// When true with [obscureText] true, shows an eye toggle to show/hide the value.
+  final bool showObscureTextToggle;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
   final Color? textColor;
   final Color? hintColor;
+
   const CustomTextField({
     super.key,
     this.title,
@@ -35,6 +38,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.filledColor,
     this.obscureText = false,
+    this.showObscureTextToggle = false,
     this.keyboardType,
     this.inputFormatters,
     this.maxLength,
@@ -43,16 +47,64 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  late bool _obscure;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscure = widget.obscureText ?? false;
+  }
+
+  @override
+  void didUpdateWidget(CustomTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.showObscureTextToggle &&
+        oldWidget.showObscureTextToggle != widget.showObscureTextToggle) {
+      _obscure = widget.obscureText ?? false;
+    }
+  }
+
+  bool get _useToggle =>
+      widget.showObscureTextToggle && (widget.obscureText ?? false);
+
+  bool get _effectiveObscure => _useToggle ? _obscure : (widget.obscureText ?? false);
+
+  @override
   Widget build(BuildContext context) {
     final isRTL = context.locale.languageCode == 'ar';
     final textDirection = isRTL ? TextDirection.rtl : TextDirection.ltr;
 
+    final visibilitySuffix = _useToggle
+        ? IconButton(
+            icon: Icon(
+              _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+              color: ColorManager.descriptionColor,
+            ),
+            onPressed: () {
+              setState(() {
+                _obscure = !_obscure;
+              });
+            },
+          )
+        : null;
+
+    final Widget? combinedSuffix = visibilitySuffix != null && widget.suffixIcon != null
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [widget.suffixIcon!, visibilitySuffix],
+          )
+        : visibilitySuffix ?? widget.suffixIcon;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (title != null)
+        if (widget.title != null)
           CustomText(
-            text: title!,
+            text: widget.title!,
             textStyle: getMediumStyle(
               fontSize: AppFontSize.s15,
               color: ColorManager.defaultWhite,
@@ -60,26 +112,26 @@ class CustomTextField extends StatelessWidget {
           ),
         SizedBox(height: AppHeight.s8),
         TextField(
-          keyboardType: keyboardType,
-          obscureText: obscureText ?? false,
+          keyboardType: widget.keyboardType,
+          obscureText: _effectiveObscure,
           textDirection: textDirection,
           textAlign: isRTL ? TextAlign.right : TextAlign.left,
-          controller: controller,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          inputFormatters: inputFormatters,
-          maxLength: maxLength,
+          controller: widget.controller,
+          onChanged: widget.onChanged,
+          onSubmitted: widget.onSubmitted,
+          inputFormatters: widget.inputFormatters,
+          maxLength: widget.maxLength,
           cursorColor: ColorManager.primary,
           decoration: InputDecoration(
-            hintText: hintText,
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+            hintText: widget.hintText,
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: combinedSuffix,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppRadius.r18),
               borderSide: BorderSide(color: ColorManager.primary),
             ),
             hintStyle: getRegularStyle(
-              color: hintColor ?? ColorManager.descriptionColor,
+              color: widget.hintColor ?? ColorManager.descriptionColor,
               fontSize: AppFontSize.s13,
             ),
             hintTextDirection: textDirection,
@@ -96,12 +148,11 @@ class CustomTextField extends StatelessWidget {
               borderSide: BorderSide(color: ColorManager.primary),
             ),
             filled: true,
-            fillColor: filledColor ?? ColorManager.defaultWhite,
+            fillColor: widget.filledColor ?? ColorManager.defaultWhite,
           ),
-          // Dark text on light fill — defaultWhite fill + defaultWhite text was invisible.
           style: getRegularStyle(
             fontSize: AppFontSize.s14,
-            color: textColor ?? ColorManager.productNameColor,
+            color: widget.textColor ?? ColorManager.productNameColor,
           ),
         ),
       ],

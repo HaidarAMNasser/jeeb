@@ -17,6 +17,9 @@ abstract class ProfileRemoteDataSource {
     double? longitude,
     bool? isActive,
     File? imageFile,
+    String? password,
+    String? newPassword,
+    String? confirmedPassword,
   });
 }
 
@@ -42,6 +45,9 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     double? longitude,
     bool? isActive,
     File? imageFile,
+    String? password,
+    String? newPassword,
+    String? confirmedPassword,
   }) async {
     MultipartFile? image;
     if (imageFile != null) {
@@ -60,6 +66,9 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       longitude: longitude,
       isActive: isActive,
       image: image,
+      password: password,
+      newPassword: newPassword,
+      confirmedPassword: confirmedPassword,
     );
   }
 }

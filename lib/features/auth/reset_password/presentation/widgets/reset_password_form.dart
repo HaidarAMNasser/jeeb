@@ -10,7 +10,6 @@ class ResetPasswordForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController otpController;
   final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
   final VoidCallback onReset;
   final bool isLoading;
 
@@ -19,7 +18,6 @@ class ResetPasswordForm extends StatelessWidget {
     required this.formKey,
     required this.otpController,
     required this.passwordController,
-    required this.confirmPasswordController,
     required this.onReset,
     required this.isLoading,
   });
@@ -42,12 +40,6 @@ class ResetPasswordForm extends StatelessWidget {
             title: AppTranslation.newPassword,
             hintText: AppTranslation.enterPassword,
             controller: passwordController,
-          ),
-          SizedBox(height: AppHeight.s24),
-          CustomPasswordField(
-            title: AppTranslation.confirmPassword,
-            hintText: AppTranslation.enterPassword,
-            controller: confirmPasswordController,
           ),
           SizedBox(height: AppHeight.s32),
           CustomButton(

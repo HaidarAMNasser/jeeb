@@ -26,13 +26,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _otpController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _otpController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -40,7 +38,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     if (_formKey.currentState!.validate()) {
       final otp = _otpController.text.trim();
       final password = _passwordController.text.trim();
-      final confirmPassword = _confirmPasswordController.text.trim();
 
       if (otp.isEmpty) {
         customToast(msg: AppTranslation.pleaseEnterOtp);
@@ -48,10 +45,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       }
       if (password.isEmpty) {
         customToast(msg: AppTranslation.pleaseEnterPassword);
-        return;
-      }
-      if (password != confirmPassword) {
-        customToast(msg: AppTranslation.passwordsDoNotMatch);
         return;
       }
 
@@ -94,7 +87,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   formKey: _formKey,
                   otpController: _otpController,
                   passwordController: _passwordController,
-                  confirmPasswordController: _confirmPasswordController,
                   onReset: _handleResetPassword,
                   isLoading: state is ResetPasswordLoading,
                 ),

@@ -21,6 +21,8 @@ class ProfileLoaded extends ProfileState {
   final bool updateSuccess;
   final bool isUpdating;
   final Locale? localeToApply;
+  /// Set when [UpdateProfile] fails while already loaded; cleared on next update or [ClearProfileUpdateFailure].
+  final String? updateFailureMessage;
 
   const ProfileLoaded({
     required this.user,
@@ -28,6 +30,7 @@ class ProfileLoaded extends ProfileState {
     this.updateSuccess = false,
     this.isUpdating = false,
     this.localeToApply,
+    this.updateFailureMessage,
   });
 
   bool get isMerchant => user.role == UserRole.merchant;
@@ -38,6 +41,8 @@ class ProfileLoaded extends ProfileState {
     bool? updateSuccess,
     bool? isUpdating,
     Locale? localeToApply,
+    String? updateFailureMessage,
+    bool clearUpdateFailureMessage = false,
   }) {
     return ProfileLoaded(
       user: user ?? this.user,
@@ -45,11 +50,21 @@ class ProfileLoaded extends ProfileState {
       updateSuccess: updateSuccess ?? this.updateSuccess,
       isUpdating: isUpdating ?? this.isUpdating,
       localeToApply: localeToApply ?? this.localeToApply,
+      updateFailureMessage: clearUpdateFailureMessage
+          ? null
+          : (updateFailureMessage ?? this.updateFailureMessage),
     );
   }
 
   @override
-  List<Object?> get props => [user, formValuesInitialized, updateSuccess, isUpdating, localeToApply];
+  List<Object?> get props => [
+        user,
+        formValuesInitialized,
+        updateSuccess,
+        isUpdating,
+        localeToApply,
+        updateFailureMessage,
+      ];
 }
 
 class ProfileError extends ProfileState {

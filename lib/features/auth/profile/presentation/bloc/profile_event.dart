@@ -22,6 +22,9 @@ class UpdateProfile extends ProfileEvent {
   final double? longitude;
   final bool? isActive;
   final dynamic imageFile;
+  final String? password;
+  final String? newPassword;
+  final String? confirmedPassword;
 
   const UpdateProfile({
     this.firstName,
@@ -34,6 +37,9 @@ class UpdateProfile extends ProfileEvent {
     this.longitude,
     this.isActive,
     this.imageFile,
+    this.password,
+    this.newPassword,
+    this.confirmedPassword,
   });
 
   @override
@@ -48,6 +54,9 @@ class UpdateProfile extends ProfileEvent {
         longitude,
         isActive,
         imageFile,
+        password,
+        newPassword,
+        confirmedPassword,
       ];
 }
 
@@ -57,6 +66,10 @@ class FormValuesInitialized extends ProfileEvent {
 
 class ClearUpdateSuccess extends ProfileEvent {
   const ClearUpdateSuccess();
+}
+
+class ClearProfileUpdateFailure extends ProfileEvent {
+  const ClearProfileUpdateFailure();
 }
 
 class SaveProfile extends ProfileEvent {

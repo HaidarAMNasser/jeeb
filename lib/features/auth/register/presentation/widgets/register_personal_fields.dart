@@ -38,6 +38,7 @@ class RegisterPersonalFields extends StatelessWidget {
         ),
         CustomTextField(
           obscureText: true,
+          showObscureTextToggle: true,
           title: AppTranslation.password,
           hintText: AppTranslation.enterPassword,
           controller: bloc.passwordController,
