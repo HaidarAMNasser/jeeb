@@ -239,7 +239,6 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
                         '',
                     totalPrice: totalMinor,
                     customerPhone: order.resolvedCustomerPhone,
-                    driverPhone: order.deliveryMan?.phone,
                   ),
                 ),
                 SizedBox(height: AppHeight.s16),

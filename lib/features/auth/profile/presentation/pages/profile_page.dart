@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
+import 'package:jeeb_app/features/get_settings/data/repositories/get_settings_repository.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -32,6 +33,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
+  String? _supportPhone;
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _phoneController;
@@ -40,6 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    _loadSupportPhone();
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _phoneController = TextEditingController();
@@ -47,6 +50,20 @@ class _ProfilePageState extends State<ProfilePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<ProfileBloc>().add(const GetProfile());
     });
+  }
+
+  Future<void> _loadSupportPhone() async {
+    final repository = di.sl<GetSettingsRepository>();
+    final result = await repository.getSettings();
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (settings) {
+        final phone = settings.supportPhone.trim();
+        if (phone.isEmpty) return;
+        setState(() => _supportPhone = phone);
+      },
+    );
   }
 
   @override
@@ -141,6 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       phoneController: _phoneController,
                       addressController: _addressController,
                       isMerchant: loadedState.isMerchant,
+                      supportPhone: _supportPhone,
                       onUpdate: () {
                         if (_formKey.currentState!.validate()) {
                           context.read<ProfileBloc>().add(
