@@ -14,11 +14,11 @@ enum OrderStatus {
   pickedUp,
   onTheWay,
   delivered,
+  paid,
   cancelled,
   rejected,
   completed,
   /// Payment receipts submitted; backend may then move to [completed].
-  paid,
   unknown;
 
   /// Backend / route map value (inverse of [fromString]).
@@ -42,14 +42,14 @@ enum OrderStatus {
         return 'ON_THE_WAY';
       case OrderStatus.delivered:
         return 'DELIVERED';
+      case OrderStatus.paid:
+        return 'PAID';
       case OrderStatus.cancelled:
         return 'CANCELLED';
       case OrderStatus.rejected:
         return 'REJECTED';
       case OrderStatus.completed:
         return 'COMPLETED';
-      case OrderStatus.paid:
-        return 'PAID';
       case OrderStatus.unknown:
         return 'PENDING';
     }
@@ -76,6 +76,8 @@ enum OrderStatus {
         return OrderStatus.onTheWay;
       case 'DELIVERED':
         return OrderStatus.delivered;
+      case 'PAID':
+        return OrderStatus.paid;
       case 'CANCELLED':
         return OrderStatus.cancelled;
       case 'REJECTED':
@@ -83,8 +85,6 @@ enum OrderStatus {
       case 'COMPLETED':
       case 'COMPLETE':
         return OrderStatus.completed;
-      case 'PAID':
-        return OrderStatus.paid;
       default:
         return OrderStatus.unknown;
     }
@@ -110,10 +110,11 @@ enum OrderStatus {
         return AppTranslation.orderStatusLabelOnTheWay;
       case OrderStatus.delivered:
         return AppTranslation.orderStatusLabelDelivered;
-      case OrderStatus.completed:
-        return AppTranslation.orderStatusLabelCompleted;
+      
       case OrderStatus.paid:
         return AppTranslation.orderStatusLabelPaid;
+      case OrderStatus.completed:
+        return AppTranslation.orderStatusLabelCompleted;
       case OrderStatus.cancelled:
         return AppTranslation.orderStatusLabelCancelled;
       case OrderStatus.rejected:
@@ -144,10 +145,10 @@ enum OrderStatus {
         return const Color(0xFF9575CD);
       case OrderStatus.delivered:
         return const Color(0xFF81C784);
+      case OrderStatus.paid:
+        return const Color(0xFFFFB300);
       case OrderStatus.completed:
         return const Color(0xFF66BB6A);
-      case OrderStatus.paid:
-        return const Color(0xFF26A69A);
       case OrderStatus.cancelled:
         return const Color(0xFFE57373);
       case OrderStatus.rejected:
@@ -256,7 +257,7 @@ extension OrderStatusPresentation on OrderStatus {
       case OrderStatus.cancelled:
         return Icons.cancel_outlined;
       case OrderStatus.rejected:
-        return Icons.block_rounded;
+        return Icons.block_outlined;
       case OrderStatus.unknown:
         return Icons.help_outline_rounded;
     }

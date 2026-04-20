@@ -28,6 +28,7 @@ class BasketConfirmationState extends Equatable {
   final int locationVersion;
   final bool isSubmitting;
   final String? submitError;
+  final String? createdOrderId;
   final BasketConfirmationFieldSync pendingFieldSync;
   final OrderBeforeConfirmPreview? deliveryPreview;
 
@@ -48,6 +49,7 @@ class BasketConfirmationState extends Equatable {
     required this.locationVersion,
     required this.isSubmitting,
     this.submitError,
+    this.createdOrderId,
     this.pendingFieldSync = BasketConfirmationFieldSync.none,
     this.deliveryPreview,
   });
@@ -95,9 +97,11 @@ class BasketConfirmationState extends Equatable {
     int? locationVersion,
     bool? isSubmitting,
     String? submitError,
+    String? createdOrderId,
     BasketConfirmationFieldSync? pendingFieldSync,
     OrderBeforeConfirmPreview? deliveryPreview,
     bool clearSubmitError = false,
+    bool clearCreatedOrderId = false,
   }) {
     return BasketConfirmationState(
       items: items ?? this.items,
@@ -116,6 +120,9 @@ class BasketConfirmationState extends Equatable {
       locationVersion: locationVersion ?? this.locationVersion,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       submitError: clearSubmitError ? null : (submitError ?? this.submitError),
+      createdOrderId: clearCreatedOrderId
+          ? null
+          : (createdOrderId ?? this.createdOrderId),
       pendingFieldSync: pendingFieldSync ?? this.pendingFieldSync,
       deliveryPreview: deliveryPreview ?? this.deliveryPreview,
     );
@@ -151,6 +158,7 @@ class BasketConfirmationState extends Equatable {
         locationVersion,
         isSubmitting,
         submitError,
+        createdOrderId,
         pendingFieldSync,
         deliveryPreview,
       ];

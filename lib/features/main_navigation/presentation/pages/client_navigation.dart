@@ -17,6 +17,24 @@ import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_b
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 
+abstract final class ClientNavigationTabs {
+  ClientNavigationTabs._();
+
+  static const int home = 0;
+  static const int favorites = 1;
+  static const int orders = 2;
+  static const int basket = 3;
+
+  static final ValueNotifier<int> selectedIndex = ValueNotifier<int>(home);
+
+  static void switchTo(int index) {
+    if (selectedIndex.value == index) return;
+    selectedIndex.value = index;
+  }
+
+  static void switchToOrders() => switchTo(orders);
+}
+
 class ClientNavigation extends StatefulWidget {
   const ClientNavigation({super.key});
 
@@ -25,7 +43,26 @@ class ClientNavigation extends StatefulWidget {
 }
 
 class _ClientNavigationState extends State<ClientNavigation> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = ClientNavigationTabs.selectedIndex.value;
+    ClientNavigationTabs.selectedIndex.addListener(_syncSelectedIndex);
+  }
+
+  @override
+  void dispose() {
+    ClientNavigationTabs.selectedIndex.removeListener(_syncSelectedIndex);
+    super.dispose();
+  }
+
+  void _syncSelectedIndex() {
+    final next = ClientNavigationTabs.selectedIndex.value;
+    if (!mounted || next == _currentIndex) return;
+    setState(() => _currentIndex = next);
+  }
 
   Widget _buildScreen(int index) {
     switch (index) {
@@ -87,7 +124,9 @@ class _ClientNavigationState extends State<ClientNavigation> {
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
+          onTap: (index) {
+            ClientNavigationTabs.switchTo(index);
+          },
           backgroundColor: ColorManager.primaryDark,
           selectedItemColor: ColorManager.primary,
           unselectedItemColor: ColorManager.textSecondary,

@@ -101,33 +101,32 @@ class ProfileForm extends StatelessWidget {
               ),
             ),
           ),
-          if (isMerchant) ...[
-            InkWell(
-              onTap: onUpdateLocation,
-              borderRadius: BorderRadius.circular(4),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: AppPadding.p8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 20,
+          InkWell(
+            onTap: onUpdateLocation,
+            borderRadius: BorderRadius.circular(4),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: AppPadding.p8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 20,
+                    color: ColorManager.primary,
+                  ),
+                  SizedBox(width: AppWidth.s8),
+                  CustomText(
+                    text: AppTranslation.updateLocation,
+                    textStyle: getMediumStyle(
                       color: ColorManager.primary,
+                      fontSize: AppFontSize.s15,
                     ),
-                    SizedBox(width: AppWidth.s8),
-                    CustomText(
-                      text: AppTranslation.updateLocation,
-                      textStyle: getMediumStyle(
-                        color: ColorManager.primary,
-                        fontSize: AppFontSize.s15,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
+
           CustomButton(
             text: AppTranslation.save,
             onPressed: isLoading ? null : onUpdate,

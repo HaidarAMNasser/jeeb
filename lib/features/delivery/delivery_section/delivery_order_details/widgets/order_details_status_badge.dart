@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeeb_app/features/delivery/shared/widgets/delivery_order_status_badge.dart';
 
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/shared/order_status_delivery_pay_label.dart';
 
 class OrderDetailsStatusBadge extends StatelessWidget {
   final OrderStatus status;
@@ -10,6 +11,9 @@ class OrderDetailsStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DeliveryOrderStatusBadge(status: status);
+    return DeliveryOrderStatusBadge(
+      status: status,
+      labelOverride: deliveryPayStatusBadgeLabel(status),
+    );
   }
 }

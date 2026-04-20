@@ -221,6 +221,12 @@ class OrderEntity extends Equatable {
   final List<OrderLineProductEntity> itemLines;
   final List<OrderOfferBundleEntity> offerBundles;
 
+  /// Admin mediator commission rate from API (e.g. `4` = 4%).
+  final double? mediatorCommissionRate;
+
+  /// Delivery cost including commission (base for admin fee calculation).
+  final double? deliveryCostWithCommission;
+
   const OrderEntity({
     required this.id,
     required this.products,
@@ -255,6 +261,8 @@ class OrderEntity extends Equatable {
     this.finalLocation,
     this.itemLines = const [],
     this.offerBundles = const [],
+    this.mediatorCommissionRate,
+    this.deliveryCostWithCommission,
   });
 
   /// Order-level `customerName` if set; otherwise nested `customer` full name.
@@ -342,6 +350,8 @@ class OrderEntity extends Equatable {
     OrderOwnerLocationEntity? finalLocation,
     List<OrderLineProductEntity>? itemLines,
     List<OrderOfferBundleEntity>? offerBundles,
+    double? mediatorCommissionRate,
+    double? deliveryCostWithCommission,
   }) {
     return OrderEntity(
       id: id ?? this.id,
@@ -378,6 +388,10 @@ class OrderEntity extends Equatable {
       finalLocation: finalLocation ?? this.finalLocation,
       itemLines: itemLines ?? this.itemLines,
       offerBundles: offerBundles ?? this.offerBundles,
+      mediatorCommissionRate:
+          mediatorCommissionRate ?? this.mediatorCommissionRate,
+      deliveryCostWithCommission:
+          deliveryCostWithCommission ?? this.deliveryCostWithCommission,
     );
   }
 
@@ -447,6 +461,8 @@ class OrderEntity extends Equatable {
     finalLocation,
     itemLines,
     offerBundles,
+    mediatorCommissionRate,
+    deliveryCostWithCommission,
   ];
 }
 

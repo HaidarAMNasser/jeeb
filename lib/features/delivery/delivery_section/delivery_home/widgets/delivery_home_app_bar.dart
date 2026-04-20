@@ -11,7 +11,8 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_cached_network_image.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
-
+import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:shimmer/shimmer.dart';
 class DeliveryHomeAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   const DeliveryHomeAppBar({super.key});
@@ -74,7 +75,7 @@ class DeliveryHomeAppBar extends StatelessWidget
                         : isLoading
                         ? const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CustomCircleIndicator(),
                           )
                         : Icon(
                             Icons.person,
@@ -103,12 +104,17 @@ class DeliveryHomeAppBar extends StatelessWidget
                       ),
                       SizedBox(height: AppHeight.s4),
                       isLoading
-                          ? Container(
-                              width: 100.w,
-                              height: 18.h,
-                              decoration: BoxDecoration(
-                                color: ColorManager.surface,
-                                borderRadius: BorderRadius.circular(4),
+                          ? Shimmer.fromColors(
+                              baseColor: ColorManager.surface.withOpacity(0.55),
+                              highlightColor: ColorManager.defaultWhite
+                                  .withOpacity(0.9),
+                              child: Container(
+                                width: 100.w,
+                                height: 18.h,
+                                decoration: BoxDecoration(
+                                  color: ColorManager.surface,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
                               ),
                             )
                           : RichText(

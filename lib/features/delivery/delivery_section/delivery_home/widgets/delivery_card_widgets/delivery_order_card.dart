@@ -5,6 +5,7 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/order_details_action_buttons.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/pay_admin/presentation/widgets/delivery_pay_admin_sheet.dart';
 import 'delivery_order_card_top_bar.dart';
 import 'delivery_order_header.dart';
 import 'delivery_order_merchant.dart';
@@ -14,8 +15,24 @@ import 'delivery_order_price_section.dart';
 class DeliveryOrderCard extends StatelessWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
+  final List<OrderEntity> pageOrders;
+  final bool isDeliveryDriver;
+  final bool batchPaySelection;
+  final bool selectedForAdminPay;
+  final VoidCallback? onAdminPaySelectionToggle;
+  final VoidCallback? onPayAdminSuccess;
 
-  const DeliveryOrderCard({super.key, required this.order, this.onTap});
+  const DeliveryOrderCard({
+    super.key,
+    required this.order,
+    this.onTap,
+    this.pageOrders = const [],
+    this.isDeliveryDriver = false,
+    this.batchPaySelection = false,
+    this.selectedForAdminPay = false,
+    this.onAdminPaySelectionToggle,
+    this.onPayAdminSuccess,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,91 +68,124 @@ class DeliveryOrderCard extends StatelessWidget {
     final showPreparationTime =
         preparationMinutes != null && preparationMinutes > 0;
 
+    final showPayAdminMenu =
+        isDeliveryDriver && status == OrderStatus.delivered;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
       child: Material(
         color: ColorManager.primaryDark,
         borderRadius: BorderRadius.circular(AppSize.s24),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppSize.s24),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppSize.s24),
-              border: Border.all(
-                color: ColorManager.primary.withOpacity(0.14),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSize.s24),
+            border: Border.all(
+              color: ColorManager.primary.withOpacity(0.14),
+              width: 1,
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppSize.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppSize.s24),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (batchPaySelection)
                   Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      AppPadding.p18,
-                      AppPadding.p16,
-                      AppPadding.p18,
-                      AppPadding.p12,
+                    padding: EdgeInsets.only(left: AppPadding.p8, top: AppPadding.p12),
+                    child: Checkbox(
+                      value: selectedForAdminPay,
+                      onChanged: (_) => onAdminPaySelectionToggle?.call(),
                     ),
+                  ),
+                Expanded(
+                  child: InkWell(
+                    onTap: onTap,
+                    borderRadius: BorderRadius.circular(AppSize.s24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        DeliveryOrderCardTopBar(
-                          orderId: order.id,
-                          initialStatusWire: order.status,
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            AppPadding.p18,
+                            AppPadding.p16,
+                            AppPadding.p18,
+                            AppPadding.p12,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: DeliveryOrderCardTopBar(
+                                      orderId: order.id,
+                                      initialStatusWire: order.status,
+                                    ),
+                                  ),
+                                  if (showPayAdminMenu)
+                                    DeliveryPayAdminMenuButton(
+                                      order: order,
+                                      pageOrders: pageOrders.isEmpty
+                                          ? [order]
+                                          : pageOrders,
+                                      onAfterPaySuccess: onPayAdminSuccess,
+                                    ),
+                                ],
+                              ),
+                              SizedBox(height: AppHeight.s14),
+                              DeliveryOrderHeader(
+                                recipientName: recipientName,
+                                recipientAddress: recipientAddress,
+                                totalPrice: totalMinor,
+                                showPriceTag: false,
+                              ),
+                              SizedBox(height: AppHeight.s20),
+                              DeliveryOrderMerchant(
+                                restaurantName: restaurantName,
+                                pickupAddressLine:
+                                    order.displayRestaurantPickupAddressLine,
+                                preparationMinutes: preparationMinutes,
+                                showPreparationTime: showPreparationTime,
+                              ),
+                              SizedBox(height: AppHeight.s20),
+                              DeliveryOrderItemsList(
+                                products: order.products,
+                                lineItems: order.displayLineProducts,
+                              ),
+                              SizedBox(height: AppHeight.s10),
+                              DeliveryOrderPriceSection(
+                                itemsTotal: itemsMinor,
+                                offersTotal: offersMinor,
+                                deliveryFee: deliveryFeeMinor,
+                                totalAmount: totalMinor,
+                                showGrandTotal: true,
+                                compactRows: true,
+                                capstoneGrandTotal: true,
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: AppHeight.s14),
-                        DeliveryOrderHeader(
-                          recipientName: recipientName,
-                          recipientAddress: recipientAddress,
-                          totalPrice: totalMinor,
-                          showPriceTag: false,
-                        ),
-                        SizedBox(height: AppHeight.s20),
-                        DeliveryOrderMerchant(
-                          restaurantName: restaurantName,
-                          pickupAddressLine:
-                              order.displayRestaurantPickupAddressLine,
-                          preparationMinutes: preparationMinutes,
-                          showPreparationTime: showPreparationTime,
-                        ),
-                        SizedBox(height: AppHeight.s20),
-                        DeliveryOrderItemsList(
-                          products: order.products,
-                          lineItems: order.displayLineProducts,
-                        ),
-                        SizedBox(height: AppHeight.s10),
-                        DeliveryOrderPriceSection(
-                          itemsTotal: itemsMinor,
-                          offersTotal: offersMinor,
-                          deliveryFee: deliveryFeeMinor,
-                          totalAmount: totalMinor,
-                          showGrandTotal: true,
-                          compactRows: true,
-                          capstoneGrandTotal: true,
+                        DeliveryOrderActionButtons(
+                          order: order,
+                          status: status,
+                          padding: EdgeInsets.zero,
+                          dense: true,
                         ),
                       ],
                     ),
                   ),
-                  DeliveryOrderActionButtons(
-                    order: order,
-                    status: status,
-                    padding: EdgeInsets.zero,
-                    dense: true,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

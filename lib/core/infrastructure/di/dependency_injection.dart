@@ -71,6 +71,10 @@ import '../../../features/delivery/tracking/presentation/driver_idle_presence_ga
 import '../../../features/delivery/tracking/presentation/fake_delivery_tracking_controller.dart';
 
 import '../../../features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
+import '../../../features/delivery/pay_admin/data/data_sources/pay_admin_remote_data_source.dart';
+import '../../../features/delivery/pay_admin/data/repositories/pay_admin_repository.dart';
+import '../../../features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
+import '../../../features/delivery/delivery_section/delivery_pay_selection_controller.dart';
 import '../../../features/offer/list_offer/data/data_sources/list_offer_data_source.dart';
 import '../../../features/offer/list_offer/data/repositories/list_offer_repository.dart';
 import '../../../features/offer/offer_details/data/data_sources/offer_details_data_source.dart';
@@ -244,6 +248,14 @@ Future<void> init() async {
   );
   sl.registerFactory(() => ListOrderRepository(sl(), sl()));
   sl.registerFactory(() => ListOrderBloc(sl(), sl<OrderStatusRtdbService>()));
+
+  //! Delivery — pay admin (mediator commission receipt upload; placeholder endpoint)
+  sl.registerFactory<PayAdminRemoteDataSource>(
+    () => PayAdminRemoteDataSourceImpl(sl<Dio>()),
+  );
+  sl.registerFactory(() => PayAdminRepository(sl(), sl()));
+  sl.registerFactory(() => PayAdminBloc(sl()));
+  sl.registerLazySingleton(DeliveryPaySelectionController.new);
 
   //! Create order (used by [BasketConfirmationBloc])
   sl.registerFactory<CreateOrderRemoteDataSource>(

@@ -69,3 +69,8 @@ class BasketConfirmationSubmitRequested extends BasketConfirmationEvent {
 class BasketConfirmationFieldSyncConsumed extends BasketConfirmationEvent {
   const BasketConfirmationFieldSyncConsumed();
 }
+
+/// UI handled post-create order success side effects (clear cart, etc).
+class BasketConfirmationSuccessHandled extends BasketConfirmationEvent {
+  const BasketConfirmationSuccessHandled();
+}

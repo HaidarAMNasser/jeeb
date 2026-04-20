@@ -149,14 +149,6 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
               },
             ),
             Positioned(
-              left: AppPadding.p10,
-              right: 52,
-              top: AppPadding.p10,
-              child: DeliveryMapSearchBar(
-                onTap: () => _showSearchDialog(context),
-              ),
-            ),
-            Positioned(
               top: AppPadding.p12,
               right: AppPadding.p12,
               child: Column(
@@ -203,16 +195,5 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
         ),
       ),
     );
-  }
-
-  void _showSearchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const MapSearchDialog(),
-    ).then((result) {
-      if (result is LatLng && _mapController != null) {
-        _mapController!.animateCamera(CameraUpdate.newLatLngZoom(result, 15));
-      }
-    });
   }
 }

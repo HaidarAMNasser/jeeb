@@ -5,12 +5,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart'
 import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 
-/// A generic widget that handles BlocBuilder states automatically
-/// Works with any bloc that follows the common state pattern:
-/// - Loading state (ends with "Loading" or has isLoading property)
-/// - Error state (ends with "Error" or has errorMessage/message property)
-/// - Success/Loaded state (ends with "Loaded" or "Success")
-/// - Empty state (optional)
+
 class BlocStateHandler<B extends StateStreamable<S>, S> extends StatelessWidget {
   /// The bloc to listen to
   final B bloc;

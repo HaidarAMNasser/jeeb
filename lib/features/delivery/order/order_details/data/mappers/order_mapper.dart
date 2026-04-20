@@ -122,6 +122,8 @@ extension OrderMapper on OrderModel {
       finalLocation: finalLocation?.toDomain(),
       itemLines: orderItemLines.map((e) => e.toDomain()).toList(),
       offerBundles: orderOfferBundles.map((e) => e.toDomain()).toList(),
+      mediatorCommissionRate: mediatorCommissionRate,
+      deliveryCostWithCommission: deliveryCostWithCommission,
     );
   }
 }

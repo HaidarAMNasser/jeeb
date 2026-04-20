@@ -524,6 +524,8 @@ class OrderModel {
   final List<OrderOfferBundleModel> orderOfferBundles;
   final int? mealPreparationMinutes;
   final int? deliveryTimeMinutes;
+  final double? mediatorCommissionRate;
+  final double? deliveryCostWithCommission;
 
   OrderModel({
     required this.id,
@@ -559,6 +561,8 @@ class OrderModel {
     this.orderOfferBundles = const [],
     this.mealPreparationMinutes,
     this.deliveryTimeMinutes,
+    this.mediatorCommissionRate,
+    this.deliveryCostWithCommission,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -731,6 +735,12 @@ class OrderModel {
       finalLocation: finalLocationModel,
       orderItemLines: parsedItemLines,
       orderOfferBundles: parsedOfferBundles,
+      mediatorCommissionRate: _toDouble(json['mediatorCommissionRate']),
+      deliveryCostWithCommission: () {
+        final v = json['deliveryCostWithCommission'];
+        if (v is num) return v.toDouble();
+        return double.tryParse(v?.toString() ?? '');
+      }(),
     );
   }
 
@@ -767,6 +777,8 @@ class OrderModel {
       'deliveryTimeMinutes': deliveryTimeMinutes,
       'orderItemLines': orderItemLines.map((e) => e.toJson()).toList(),
       'orderOfferBundles': orderOfferBundles.map((e) => e.toJson()).toList(),
+      'mediatorCommissionRate': mediatorCommissionRate,
+      'deliveryCostWithCommission': deliveryCostWithCommission,
     };
   }
 }

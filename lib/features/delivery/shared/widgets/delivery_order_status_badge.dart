@@ -10,10 +10,14 @@ class DeliveryOrderStatusBadge extends StatelessWidget {
   final OrderStatus status;
   final bool compact;
 
+  /// When set (e.g. delivery mediator payment copy), overrides [OrderStatus.displayLabel].
+  final String? labelOverride;
+
   const DeliveryOrderStatusBadge({
     super.key,
     required this.status,
     this.compact = false,
+    this.labelOverride,
   });
 
   @override
@@ -43,7 +47,7 @@ class DeliveryOrderStatusBadge extends StatelessWidget {
           Icon(status.iconData, size: compact ? 14 : 16, color: c),
           SizedBox(width: AppWidth.s4),
           CustomText(
-            text: status.displayLabel,
+            text: labelOverride ?? status.displayLabel,
             textStyle: getBoldStyle(fontSize: fontSize, color: c),
           ),
         ],

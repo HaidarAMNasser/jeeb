@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/pages/delivery_home_page.dart';
 import '../../presentation/routes/navigation_service.dart';
 
 @pragma('vm:entry-point')
@@ -71,11 +73,12 @@ class NotificationService {
   }
 
   Future<void> _configureForegroundMessages() async {
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: false,
-      badge: true,
-      sound: true,
-    );
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+          alert: false,
+          badge: true,
+          sound: true,
+        );
 
     FirebaseMessaging.onMessage.listen((message) async {
       await _showForegroundNotification(message);
@@ -147,21 +150,25 @@ class NotificationService {
   }
 
   void _navigateFromData(Map<String, dynamic> data) {
-    final route = data['route']?.toString();
-    if (route == null || route.isEmpty) return;
+    final type = data['type'];
+    String? id = data['id'];
 
-    final argsRaw = data['args'];
-    dynamic arguments;
-    if (argsRaw is String && argsRaw.isNotEmpty) {
-      try {
-        arguments = jsonDecode(argsRaw);
-      } catch (_) {
-        arguments = argsRaw;
-      }
-    } else {
-      arguments = argsRaw;
+    if (type == null) return;
+
+    switch (type) {
+      case 'order':
+        _navigationService.pushNamed(
+          Routes.orderDetails,
+          arguments: {"orderId": id ?? ""},
+        );
+        break;
+
+      case 'delivery':
+        _navigationService.push(DeliveryHomePage());
+        break;
+
+      default:
+        print("Unknown notification type: $type");
     }
-
-    _navigationService.pushNamed(route, arguments: arguments);
   }
 }
