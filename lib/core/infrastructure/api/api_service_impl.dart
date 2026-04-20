@@ -298,6 +298,9 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     double? longitude,
     bool? isActive,
     MultipartFile? image,
+    String? password,
+    String? newPassword,
+    String? confirmedPassword,
   }) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -320,6 +323,15 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
       formData.fields.add(MapEntry('isActive', isActive.toString()));
     if (image != null) {
       formData.files.add(MapEntry('image', image));
+    }
+    if (password != null) {
+      formData.fields.add(MapEntry('password', password));
+    }
+    if (newPassword != null) {
+      formData.fields.add(MapEntry('new_password', newPassword));
+    }
+    if (confirmedPassword != null) {
+      formData.fields.add(MapEntry('confirmed_password', confirmedPassword));
     }
 
     final result = await dio.fetch<Map<String, dynamic>>(

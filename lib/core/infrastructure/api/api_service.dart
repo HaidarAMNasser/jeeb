@@ -128,6 +128,9 @@ abstract class AppApiServiceClient {
     double? longitude,
     bool? isActive,
     MultipartFile? image,
+    String? password,
+    String? newPassword,
+    String? confirmedPassword,
   });
 
   @POST("auth/logout")

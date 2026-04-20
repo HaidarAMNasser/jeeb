@@ -43,6 +43,7 @@ class LoginForm extends StatelessWidget {
           SizedBox(height: AppHeight.s24),
           CustomTextField(
             obscureText: true,
+            showObscureTextToggle: true,
             title: AppTranslation.password,
             hintText: AppTranslation.enterPassword,
             controller: passwordController,

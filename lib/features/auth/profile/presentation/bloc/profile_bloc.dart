@@ -24,9 +24,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       } else if (event is UpdateProfile) {
         final current = state;
-        final hadUser = current is ProfileLoaded;
+        final ProfileLoaded? previous =
+            current is ProfileLoaded ? current : null;
+        final hadUser = previous != null;
         if (hadUser) {
-          if (!emit.isDone) emit((current).copyWith(isUpdating: true));
+          if (!emit.isDone) {
+            emit(
+              previous.copyWith(
+                isUpdating: true,
+                clearUpdateFailureMessage: true,
+              ),
+            );
+          }
         } else {
           emit(const ProfileLoading());
         }
@@ -41,24 +50,36 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           longitude: event.longitude,
           isActive: event.isActive,
           imageFile: event.imageFile,
+          password: event.password,
+          newPassword: event.newPassword,
+          confirmedPassword: event.confirmedPassword,
         );
 
         await result.fold(
           (failure) async {
-            if (hadUser && !emit.isDone) {
-              emit((current).copyWith(isUpdating: false));
+            if (!emit.isDone) {
+              if (hadUser) {
+                emit(
+                  previous.copyWith(
+                    isUpdating: false,
+                    updateFailureMessage: failure.message,
+                  ),
+                );
+              } else {
+                emit(ProfileError(message: failure.message));
+              }
             }
-            if (!emit.isDone) emit(ProfileError(message: failure.message));
           },
           (user) async {
             if (!emit.isDone) {
               emit(ProfileLoaded(
                 user: user,
                 formValuesInitialized: hadUser
-                    ? (current).formValuesInitialized
+                    ? previous.formValuesInitialized
                     : false,
                 updateSuccess: true,
                 isUpdating: false,
+                localeToApply: hadUser ? previous.localeToApply : null,
               ));
             }
           },
@@ -72,6 +93,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final current = state;
         if (current is ProfileLoaded && current.updateSuccess) {
           if (!emit.isDone) emit(current.copyWith(updateSuccess: false));
+        }
+      } else if (event is ClearProfileUpdateFailure) {
+        final current = state;
+        if (current is ProfileLoaded && current.updateFailureMessage != null) {
+          if (!emit.isDone) {
+            emit(current.copyWith(clearUpdateFailureMessage: true));
+          }
         }
       } else if (event is SaveProfile) {
         final firstName = event.firstName.trim();
@@ -100,6 +128,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             formValuesInitialized: current.formValuesInitialized,
             updateSuccess: current.updateSuccess,
             isUpdating: current.isUpdating,
+            updateFailureMessage: current.updateFailureMessage,
           ));
         }
       } else if (event is UpdateLocation) {

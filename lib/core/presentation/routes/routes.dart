@@ -11,6 +11,7 @@ class Routes {
   static const String deliveryWaiting = '/delivery-waiting';
   static const String forgotPassword = '/forgot-password';
   static const String resetPassword = '/reset-password';
+  static const String changePassword = '/change-password';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String products = '/products';

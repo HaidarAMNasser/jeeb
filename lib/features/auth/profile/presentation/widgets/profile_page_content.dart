@@ -24,6 +24,7 @@ class ProfilePageContent extends StatelessWidget {
   final VoidCallback onChangeLanguage;
   final VoidCallback onUpdateLocation;
   final ValueChanged<bool> onAccountStatusChanged;
+  final VoidCallback onChangePassword;
   final bool isUpdateLoading;
   final VoidCallback? onPickImage;
 
@@ -41,6 +42,7 @@ class ProfilePageContent extends StatelessWidget {
     required this.onChangeLanguage,
     required this.onUpdateLocation,
     required this.onAccountStatusChanged,
+    required this.onChangePassword,
     required this.isUpdateLoading,
     this.onPickImage,
   });
@@ -66,6 +68,7 @@ class ProfilePageContent extends StatelessWidget {
             isMerchant: isMerchant,
             onUpdateLocation: onUpdateLocation,
             onAccountStatusChanged: onAccountStatusChanged,
+            onChangePassword: onChangePassword,
             onChangeLanguage: onChangeLanguage,
             formKey: formKey,
             user: user,

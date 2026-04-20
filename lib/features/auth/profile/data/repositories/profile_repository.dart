@@ -62,6 +62,9 @@ class ProfileRepository {
     double? longitude,
     bool? isActive,
     dynamic imageFile,
+    String? password,
+    String? newPassword,
+    String? confirmedPassword,
   }) async {
     if (!await _networkInfo.isConnected) {
       return const Left(NetworkFailure());
@@ -87,6 +90,9 @@ class ProfileRepository {
         longitude: longitude,
         isActive: isActive,
         imageFile: file,
+        password: password,
+        newPassword: newPassword,
+        confirmedPassword: confirmedPassword,
       );
 
       final apiResponse = ApiResponseModel<UserModel>.fromJson(

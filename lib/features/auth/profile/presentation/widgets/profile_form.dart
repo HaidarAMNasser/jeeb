@@ -24,6 +24,7 @@ class ProfileForm extends StatelessWidget {
   final bool isMerchant;
   final VoidCallback onUpdateLocation;
   final ValueChanged<bool> onAccountStatusChanged;
+  final VoidCallback onChangePassword;
 
   const ProfileForm({
     super.key,
@@ -39,6 +40,7 @@ class ProfileForm extends StatelessWidget {
     required this.isMerchant,
     required this.onUpdateLocation,
     required this.onAccountStatusChanged,
+    required this.onChangePassword,
   });
 
   @override
@@ -117,6 +119,27 @@ class ProfileForm extends StatelessWidget {
                   SizedBox(width: AppWidth.s8),
                   CustomText(
                     text: AppTranslation.updateLocation,
+                    textStyle: getMediumStyle(
+                      color: ColorManager.primary,
+                      fontSize: AppFontSize.s15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: onChangePassword,
+            borderRadius: BorderRadius.circular(4),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: AppPadding.p8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.lock_outline, size: 20, color: ColorManager.primary),
+                  SizedBox(width: AppWidth.s8),
+                  CustomText(
+                    text: AppTranslation.changePasswordTitle,
                     textStyle: getMediumStyle(
                       color: ColorManager.primary,
                       fontSize: AppFontSize.s15,

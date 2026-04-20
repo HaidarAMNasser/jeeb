@@ -7,6 +7,7 @@ import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/features/get_settings/data/repositories/get_settings_repository.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_extensions.dart';
 import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
@@ -92,6 +93,13 @@ class _ProfilePageState extends State<ProfilePage> {
         return BlocConsumer<ProfileBloc, ProfileState>(
           listener: (context, state) {
             if (state is ProfileLoaded) {
+              if (state.updateFailureMessage != null) {
+                final route = ModalRoute.of(context);
+                if (route?.isCurrent ?? true) {
+                  customToast(msg: state.updateFailureMessage!);
+                  context.read<ProfileBloc>().add(const ClearProfileUpdateFailure());
+                }
+              }
               if (!state.formValuesInitialized) {
                 _firstNameController.text = state.user.firstName;
                 _lastNameController.text = state.user.lastName;
@@ -99,8 +107,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 _addressController.text = state.user.address ?? '';
                 context.read<ProfileBloc>().add(const FormValuesInitialized());
               } else if (state.updateSuccess) {
-                customToast(msg: AppTranslation.profileUpdatedSuccess);
-                context.read<ProfileBloc>().add(const ClearUpdateSuccess());
+                final route = ModalRoute.of(context);
+                if (route?.isCurrent ?? true) {
+                  customToast(msg: AppTranslation.profileUpdatedSuccess);
+                  context.read<ProfileBloc>().add(const ClearUpdateSuccess());
+                }
               }
               if (state.localeToApply != null) {
                 context.setLocale(state.localeToApply!);
@@ -179,6 +190,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       onAccountStatusChanged: (v) => context
                           .read<ProfileBloc>()
                           .add(UpdateAccountActive(v)),
+                      onChangePassword: () =>
+                          context.pushNamed(Routes.changePassword),
                       isUpdateLoading: isUpdateLoading,
                       onPickImage: () => _pickAndUpdateImage(context),
                     );

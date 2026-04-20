@@ -25,6 +25,8 @@ import '../../../features/auth/forgot_password/presentation/bloc/forgot_password
 import '../../../features/auth/reset_password/presentation/pages/reset_password_page.dart';
 import '../../../features/auth/reset_password/presentation/bloc/reset_password_bloc.dart';
 import '../../../features/auth/profile/presentation/pages/profile_page.dart';
+import '../../../features/auth/profile/presentation/pages/change_password_page.dart';
+import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
@@ -149,6 +151,15 @@ class AppRouter {
           bloc: () => di.sl<ResetPasswordBloc>(),
         );
 
+      case Routes.changePassword:
+        return _buildRouteWithBlocs(
+          const ChangePasswordPage(),
+          settings,
+          providers: [
+            BlocProvider.value(value: di.sl<ProfileBloc>()),
+          ],
+        );
+
       case Routes.profile:
         return _buildRouteWithBlocs(
           const ProfilePage(),
@@ -159,16 +170,8 @@ class AppRouter {
         );
 
       case Routes.products:
-        // <<<<<<< HEAD
         final productArgs = settings.arguments as Map<String, dynamic>?;
         final productMerchantId = productArgs?['merchantId'] as String?;
-        //         return _buildRouteWithBloc(
-        //           const ListProductPage(),
-        //           settings,
-        //           bloc: () =>
-        //               ListProductBloc(di.sl<ListProductRepository>())
-        //                 ..add(GetProductsEvent(merchantId: productMerchantId)),
-        // =======
         return _buildRouteWithBlocs(
           ListProductPage(merchantId: productMerchantId),
           settings,
@@ -180,7 +183,6 @@ class AppRouter {
             ),
             BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
           ],
-          // >>>>>>> 01548bdab41b53e5162e3d8617375f258e8805f2
         );
 
       case Routes.productDetails:
