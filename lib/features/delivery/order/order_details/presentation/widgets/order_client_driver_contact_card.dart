@@ -7,24 +7,21 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Minimal driver card on the dark tracking screen: name + optional phone (tap to call).
-class OrderStatusDriverContactCard extends StatelessWidget {
-  const OrderStatusDriverContactCard({
+/// Client order details: minimal card with driver name and optional phone.
+class OrderClientDriverContactCard extends StatelessWidget {
+  const OrderClientDriverContactCard({
     super.key,
     required this.driverName,
     this.driverPhone,
   });
 
-  final String? driverName;
+  final String driverName;
   final String? driverPhone;
 
-  static String _initials(String? name) {
-    final s = name?.trim();
-    if (s == null || s.isEmpty) return '';
-    final parts = s
-        .split(RegExp(r'\s+'))
-        .where((e) => e.isNotEmpty)
-        .toList();
+  static String _initials(String name) {
+    final s = name.trim();
+    if (s.isEmpty) return '';
+    final parts = s.split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
     if (parts.length >= 2) {
       final a = parts[0].isNotEmpty ? parts[0][0] : '';
       final b = parts[1].isNotEmpty ? parts[1][0] : '';
@@ -50,7 +47,7 @@ class OrderStatusDriverContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = driverName?.trim() ?? '';
+    final name = driverName.trim();
     final displayName =
         name.isNotEmpty ? name : AppTranslation.deliveryMan;
     final initials = _initials(name.isNotEmpty ? name : displayName);
@@ -61,10 +58,10 @@ class OrderStatusDriverContactCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(AppPadding.p12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
+        color: const Color(0xFF343230),
         borderRadius: BorderRadius.circular(AppRadius.r12),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: ColorManager.textSecondary.withValues(alpha: 0.45),
         ),
       ),
       child: Row(
@@ -101,7 +98,7 @@ class OrderStatusDriverContactCard extends StatelessWidget {
                   text: AppTranslation.orderStatusDriverCardTitle,
                   textStyle: getMediumStyle(
                     fontSize: AppFontSize.s10,
-                    color: const Color(0xFF9E9893),
+                    color: ColorManager.textPrimary,
                   ),
                 ),
                 SizedBox(height: AppHeight.s3),
@@ -109,7 +106,7 @@ class OrderStatusDriverContactCard extends StatelessWidget {
                   text: displayName,
                   textStyle: getSemiBoldStyle(
                     fontSize: AppFontSize.s15,
-                    color: const Color(0xFFE8E4E0),
+                    color: ColorManager.titlesColor,
                   ),
                   maxLines: 2,
                   textOverflow: TextOverflow.ellipsis,

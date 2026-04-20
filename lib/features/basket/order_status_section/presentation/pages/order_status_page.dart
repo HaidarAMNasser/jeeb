@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/classes/order_status_step_labels.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
@@ -17,6 +17,7 @@ import 'package:jeeb_app/features/basket/order_status_section/presentation/widge
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_horizontal_timeline.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_problem_banner.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/presentation/widgets/order_client_support_phone_row.dart';
 import 'package:jeeb_app/features/get_settings/data/repositories/get_settings_repository.dart';
 import 'package:jeeb_app/features/main_navigation/presentation/pages/client_navigation.dart';
 
@@ -93,6 +94,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                   state.routeStatus == OrderStatus.onTheWay &&
                   ((dLat != null && dLng != null) ||
                       (drvLat != null && drvLng != null));
+              final inDriverContactPhase = !state.demoRunning &&
+                  orderStatusShowsDriverContact(state.routeStatus);
 
               return CustomScrollView(
                 slivers: [
@@ -102,8 +105,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                     ),
                   ),
                   SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Padding(
+                    hasScrollBody: true,
+                    child: SingleChildScrollView(
                       padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
                       child: Column(
                         spacing: AppHeight.s16,
@@ -119,19 +122,23 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                             deliveryManName: state.deliveryManName,
                             deliveryManPhone: state.deliveryManPhone,
                           ),
-                          if (!state.demoRunning &&
-                              orderStatusShowsDriverContact(
-                                state.routeStatus,
-                              ) &&
-                              ((state.deliveryManName?.trim().isNotEmpty ??
-                                      false) ||
-                                  (_supportPhone?.trim().isNotEmpty ?? false)))
+                          if (inDriverContactPhase && !showLiveMap)
                             OrderStatusDriverContactCard(
                               driverName: state.deliveryManName,
                               driverPhone: state.deliveryManPhone,
-                              supportPhone: _supportPhone,
                             ),
-                          if (showLiveMap)
+                          if (inDriverContactPhase &&
+                              (_supportPhone?.trim().isNotEmpty ?? false))
+                            OrderClientSupportPhoneRow(
+                              supportPhone: (_supportPhone ?? '').trim(),
+                              darkBackground: true,
+                            ),
+                          if (showLiveMap) ...[
+                            if (inDriverContactPhase)
+                              OrderStatusDriverContactCard(
+                                driverName: state.deliveryManName,
+                                driverPhone: state.deliveryManPhone,
+                              ),
                             LiveTrackingMapCard(
                               orderId: state.orderId,
                               title: AppTranslation.orderDeliveryMapBadge,
@@ -144,6 +151,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                                   AppTranslation.orderStatusLabelOnTheWay,
                               statusOnline: state.driverOnline,
                             ),
+                          ],
                           OrderBadgeWidget(
                             normalDesign: true,
                             enableSmallBadge: true,

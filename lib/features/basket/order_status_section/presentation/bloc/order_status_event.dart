@@ -61,3 +61,11 @@ class OrderStatusRouteHistorySnapshot extends OrderStatusEvent {
   @override
   List<Object?> get props => [points];
 }
+
+/// Load driver name/phone from REST when missing from route args (same source as order details).
+class OrderStatusHydrateDriverFromOrder extends OrderStatusEvent {
+  const OrderStatusHydrateDriverFromOrder();
+
+  @override
+  List<Object?> get props => [];
+}

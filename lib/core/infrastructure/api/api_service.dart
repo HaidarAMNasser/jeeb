@@ -317,7 +317,7 @@ abstract class AppApiServiceClient {
   @POST("orders/{id}/complete")
   Future<Response> completeOrder(@Path('id') String id);
 
-  @POST("orders/{id}/cancel")
+  @PATCH("orders/{id}/cancel")
   Future<Response> cancelOrder(@Path('id') String id);
 
   // Offer endpoints (merchant & admin)

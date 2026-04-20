@@ -56,16 +56,6 @@ class OrderDeliveryManCard extends StatelessWidget {
                           color: ColorManager.descriptionColor,
                         ),
                       ),
-                      if (deliveryMan.phone.isNotEmpty) ...[
-                        SizedBox(height: AppHeight.s4),
-                        CustomText(
-                          text: deliveryMan.phone,
-                          textStyle: getRegularStyle(
-                            fontSize: AppFontSize.s12,
-                            color: ColorManager.descriptionColor,
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),

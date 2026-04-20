@@ -162,7 +162,7 @@ enum OrderStatus {
   bool get canCompleteOrCancel =>
       this == OrderStatus.pending || this == OrderStatus.readyForPickup;
 
-  /// Client may call `POST /orders/{id}/cancel` only **before** [readyForPickup]
+  /// Client may call `PATCH /orders/{id}/cancel` only **before** [readyForPickup]
   /// (and not when already terminal).
   bool get canClientCancelOrder {
     switch (this) {
