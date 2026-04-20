@@ -13,10 +13,12 @@ class OrderStatusDriverContactCard extends StatelessWidget {
     super.key,
     required this.driverName,
     required this.driverPhone,
+    this.supportPhone,
   });
 
   final String? driverName;
   final String? driverPhone;
+  final String? supportPhone;
 
   static String _initials(String? name) {
     final s = name?.trim();
@@ -38,8 +40,8 @@ class OrderStatusDriverContactCard extends StatelessWidget {
     return raw.replaceAll(RegExp(r'[\s\-.()]'), '');
   }
 
-  Future<void> _launchCall(BuildContext context) async {
-    final phone = driverPhone?.trim() ?? '';
+  Future<void> _launchSupportCall(BuildContext context) async {
+    final phone = supportPhone?.trim() ?? '';
     if (phone.isEmpty) return;
     final path = _telPath(phone);
     if (path.isEmpty) return;
@@ -55,11 +57,11 @@ class OrderStatusDriverContactCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = driverName?.trim() ?? '';
-    final phone = driverPhone?.trim() ?? '';
     final displayName =
         name.isNotEmpty ? name : AppTranslation.deliveryMan;
     final initials = _initials(name.isNotEmpty ? name : displayName);
-    final canCall = phone.isNotEmpty;
+    final support = supportPhone?.trim() ?? '';
+    final canCallSupport = support.isNotEmpty;
 
     return Container(
       width: double.infinity,
@@ -91,101 +93,142 @@ class OrderStatusDriverContactCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  ColorManager.primary,
-                  ColorManager.primary.withValues(alpha: 0.75),
-                ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      ColorManager.primary,
+                      ColorManager.primary.withValues(alpha: 0.75),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ColorManager.primary.withValues(alpha: 0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                alignment: Alignment.center,
+                child: initials.isEmpty
+                    ? Icon(
+                        Icons.delivery_dining_rounded,
+                        color: const Color(0xFFFFF5EC),
+                        size: AppSize.s28,
+                      )
+                    : Text(
+                        initials,
+                        style: getBoldStyle(
+                          fontSize: AppFontSize.s18,
+                          color: const Color(0xFFFFF5EC),
+                        ),
+                      ),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: ColorManager.primary.withValues(alpha: 0.35),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: initials.isEmpty
-                ? Icon(
-                    Icons.delivery_dining_rounded,
-                    color: const Color(0xFFFFF5EC),
-                    size: AppSize.s28,
-                  )
-                : Text(
-                    initials,
-                    style: getBoldStyle(
-                      fontSize: AppFontSize.s18,
-                      color: const Color(0xFFFFF5EC),
+              SizedBox(width: AppPadding.p14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: AppTranslation.orderStatusDriverCardTitle,
+                      textStyle: getMediumStyle(
+                        fontSize: AppFontSize.s11,
+                        color: const Color(0xFFC9C2BC),
+                      ),
                     ),
-                  ),
+                    SizedBox(height: AppHeight.s4),
+                    CustomText(
+                      text: displayName,
+                      textStyle: getBoldStyle(
+                        fontSize: AppFontSize.s16,
+                        color: const Color(0xFFFFF5EC),
+                      ),
+                      maxLines: 2,
+                      textOverflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: AppPadding.p14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomText(
-                  text: AppTranslation.orderStatusDriverCardTitle,
-                  textStyle: getMediumStyle(
-                    fontSize: AppFontSize.s11,
-                    color: const Color(0xFFC9C2BC),
-                  ),
+          if (canCallSupport) ...[
+            SizedBox(height: AppHeight.s12),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppPadding.p12,
+                vertical: AppPadding.p10,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.22),
+                borderRadius: BorderRadius.circular(AppRadius.r12),
+                border: Border.all(
+                  color: const Color(0xFFFFC481).withValues(alpha: 0.55),
                 ),
-                SizedBox(height: AppHeight.s4),
-                CustomText(
-                  text: displayName,
-                  textStyle: getBoldStyle(
-                    fontSize: AppFontSize.s16,
-                    color: const Color(0xFFFFF5EC),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.support_agent_rounded,
+                    color: const Color(0xFFFFC481),
+                    size: AppSize.s20,
                   ),
-                  maxLines: 2,
-                  textOverflow: TextOverflow.ellipsis,
-                ),
-                if (phone.isNotEmpty) ...[
-                  SizedBox(height: AppHeight.s4),
-                  CustomText(
-                    text: phone,
-                    textStyle: getRegularStyle(
-                      fontSize: AppFontSize.s13,
-                      color: const Color(0xFFE8E2DC),
+                  SizedBox(width: AppPadding.p10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: AppTranslation.orderStatusSupportNumberLabel,
+                          textStyle: getSemiBoldStyle(
+                            fontSize: AppFontSize.s12,
+                            color: const Color(0xFFFFD8A9),
+                          ),
+                        ),
+                        SizedBox(height: AppHeight.s4),
+                        CustomText(
+                          text: support,
+                          textStyle: getRegularStyle(
+                            fontSize: AppFontSize.s13,
+                            color: const Color(0xFFFFF5EC),
+                          ),
+                          maxLines: 1,
+                          textOverflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    maxLines: 1,
-                    textOverflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(width: AppPadding.p8),
+                  Tooltip(
+                    message: AppTranslation.orderStatusSupportCall,
+                    child: Material(
+                      color: const Color(0xFFFFF5EC).withValues(alpha: 0.1),
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => _launchSupportCall(context),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Icon(
+                            Icons.phone_forwarded_rounded,
+                            color: const Color(0xFFFFC481),
+                            size: AppSize.s22,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
-              ],
-            ),
-          ),
-          if (canCall) ...[
-            SizedBox(width: AppPadding.p8),
-            Tooltip(
-              message: AppTranslation.orderStatusDriverCall,
-              child: Material(
-                color: const Color(0xFFFFF5EC).withValues(alpha: 0.12),
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: () => _launchCall(context),
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Icon(
-                      Icons.phone_rounded,
-                      color: ColorManager.primary,
-                      size: AppSize.s24,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -15,12 +16,40 @@ import 'package:jeeb_app/features/basket/order_status_section/presentation/widge
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_horizontal_timeline.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_problem_banner.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
+import 'package:jeeb_app/features/get_settings/data/repositories/get_settings_repository.dart';
 
 /// Order tracking screen; state lives in [OrderStatusBloc] (see route).
-class OrderStatusPage extends StatelessWidget {
+class OrderStatusPage extends StatefulWidget {
   const OrderStatusPage({super.key});
 
+  @override
+  State<OrderStatusPage> createState() => _OrderStatusPageState();
+}
+
+class _OrderStatusPageState extends State<OrderStatusPage> {
+  String? _supportPhone;
+
   static const Color _bg = Color(0xFF3A3836);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSupportPhone();
+  }
+
+  Future<void> _loadSupportPhone() async {
+    final repository = di.sl<GetSettingsRepository>();
+    final result = await repository.getSettings();
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (settings) {
+        final phone = settings.supportPhone.trim();
+        if (phone.isEmpty) return;
+        setState(() => _supportPhone = phone);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +110,12 @@ class OrderStatusPage extends StatelessWidget {
                             ((state.deliveryManName?.trim().isNotEmpty ??
                                     false) ||
                                 (state.deliveryManPhone?.trim().isNotEmpty ??
-                                    false)))
+                                    false) ||
+                                (_supportPhone?.trim().isNotEmpty ?? false)))
                           OrderStatusDriverContactCard(
                             driverName: state.deliveryManName,
                             driverPhone: state.deliveryManPhone,
+                            supportPhone: _supportPhone,
                           ),
                         if (showLiveMap)
                           LiveTrackingMapCard(
