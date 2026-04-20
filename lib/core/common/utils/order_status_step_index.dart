@@ -18,6 +18,21 @@ bool orderStatusIsTerminal(OrderStatus status) {
   }
 }
 
+/// Courier is locked in and client may see driver name/phone on the tracking screen
+/// ([assigned] → [onTheWay], excluding terminal states).
+bool orderStatusShowsDriverContact(OrderStatus status) {
+  switch (status) {
+    case OrderStatus.assigned:
+    case OrderStatus.preparing:
+    case OrderStatus.readyForPickup:
+    case OrderStatus.pickedUp:
+    case OrderStatus.onTheWay:
+      return true;
+    default:
+      return false;
+  }
+}
+
 /// Maps backend [OrderStatus] to a linear step index for the tracking timeline (0–8).
 /// Order: pending → confirmed → searching → assigned → preparing → readyForPickup
 /// → pickedUp → onTheWay → delivered.

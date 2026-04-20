@@ -25,6 +25,7 @@ class ListProductRepository {
     double? minPrice,
     double? maxPrice,
     int? minRating,
+    String? type,
   }) async {
     if (!await _networkInfo.isConnected) {
       return const Left(NetworkFailure());
@@ -39,6 +40,7 @@ class ListProductRepository {
         minPrice: minPrice,
         maxPrice: maxPrice,
         minRating: minRating,
+        type: type,
       );
 
       BaseResponseModel<List<ProductModel>>

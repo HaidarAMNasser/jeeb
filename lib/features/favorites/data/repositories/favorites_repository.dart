@@ -2,9 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:jeeb_app/core/common/errors/failure.dart';
 import 'package:jeeb_app/core/infrastructure/network/network_info.dart';
 import 'package:jeeb_app/features/favorites/data/data_sources/favorites_remote_data_source.dart';
-import 'package:jeeb_app/features/favorites/data/mappers/favorite_product_mapper.dart';
-import 'package:jeeb_app/features/favorites/data/models/favorite_product_model.dart';
 import 'package:jeeb_app/features/favorites/domain/entities/favorites_toggle_result.dart';
+import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
+import 'package:jeeb_app/features/product/list_product/data/models/product_model.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 class FavoritesRepository {
@@ -49,7 +49,7 @@ class FavoritesRepository {
         }
       }
       final entities = productMaps
-          .map((m) => FavoriteProductModel.fromJson(m).toProductEntity())
+          .map((m) => ProductModel.fromJson(m).toDomain())
           .toList();
       return Right(entities);
     } catch (e) {

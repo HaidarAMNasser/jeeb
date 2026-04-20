@@ -12,6 +12,7 @@ abstract class ManageOrderRemoteDataSource {
     double lng,
   );
   Future<Response> rejectDelivery(String id, String reason);
+  Future<Response> markOrdersPaid(FormData formData);
 }
 
 class ManageOrderRemoteDataSourceImpl implements ManageOrderRemoteDataSource {
@@ -47,5 +48,10 @@ class ManageOrderRemoteDataSourceImpl implements ManageOrderRemoteDataSource {
   @override
   Future<Response> rejectDelivery(String id, String reason) {
     return _appApiServiceClient.rejectDelivery(id, reason);
+  }
+
+  @override
+  Future<Response> markOrdersPaid(FormData formData) {
+    return _appApiServiceClient.markOrdersPaid(formData);
   }
 }

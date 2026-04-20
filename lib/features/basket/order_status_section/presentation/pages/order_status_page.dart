@@ -12,6 +12,7 @@ import 'package:jeeb_app/features/basket/order_status_section/presentation/bloc/
 import 'package:jeeb_app/core/common/classes/order_status_step_labels.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_badge_helper.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_hero_image.dart';
+import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_driver_contact_card.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_horizontal_timeline.dart';
 import 'package:jeeb_app/features/basket/order_status_section/presentation/widgets/order_status_problem_banner.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
@@ -89,6 +90,18 @@ class OrderStatusPage extends StatelessWidget {
                             deliveryManName: state.deliveryManName,
                             deliveryManPhone: state.deliveryManPhone,
                           ),
+                          if (!state.demoRunning &&
+                              orderStatusShowsDriverContact(
+                                state.routeStatus,
+                              ) &&
+                              ((state.deliveryManName?.trim().isNotEmpty ??
+                                      false) ||
+                                  (state.deliveryManPhone?.trim().isNotEmpty ??
+                                      false)))
+                            OrderStatusDriverContactCard(
+                              driverName: state.deliveryManName,
+                              driverPhone: state.deliveryManPhone,
+                            ),
                           if (showLiveMap)
                             LiveTrackingMapCard(
                               orderId: state.orderId,

@@ -20,6 +20,10 @@ int _activeDeliveryPriority(OrderStatus s) {
       return 3;
     case OrderStatus.preparing:
       return 4;
+    case OrderStatus.delivered:
+      return 5;
+    case OrderStatus.paid:
+      return 6;
     default:
       return 99;
   }
@@ -80,6 +84,8 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
         OrderStatus.readyForPickup,
         OrderStatus.pickedUp,
         OrderStatus.onTheWay,
+        OrderStatus.delivered,
+        OrderStatus.paid,
       ].map((s) => s.apiWireValue).join(','),
     );
 

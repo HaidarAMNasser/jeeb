@@ -56,10 +56,10 @@ class _DeliveryOrdersTabContentBodyState
         ].join(',');
       case DeliveryOrderTabType.completed:
         return [
-          OrderStatus.delivered.apiWireValue,
-          OrderStatus.paid.apiWireValue,
-          OrderStatus.completed.apiWireValue,
-        ].join(',');
+          OrderStatus.delivered,
+          OrderStatus.paid,
+          OrderStatus.completed,
+        ].map((s) => s.apiWireValue).join(',');
       case DeliveryOrderTabType.cancelled:
         return OrderStatus.cancelled.apiWireValue;
     }

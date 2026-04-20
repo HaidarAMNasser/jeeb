@@ -216,6 +216,11 @@ class AppTranslation {
   static String get apply => 'apply'.tr();
   static String get reset => 'reset'.tr();
   static String get allCategories => 'all_categories'.tr();
+  static String get filterMerchantType => 'filter_merchant_type'.tr();
+  static String get filterMerchantTypeRestaurant =>
+      'filter_merchant_type_restaurant'.tr();
+  static String get filterMerchantTypeStore =>
+      'filter_merchant_type_store'.tr();
 
   static String get birthday => 'birthday'.tr();
   static String get birthdayHint => 'birthday_hint'.tr();
@@ -352,11 +357,17 @@ class AppTranslation {
   static String get orderTrackHintPickedUp => 'order_track_hint_picked_up'.tr();
   static String get orderTrackHintOnTheWay => 'order_track_hint_on_the_way'.tr();
   static String get orderTrackHintDelivered => 'order_track_hint_delivered'.tr();
+  static String get orderTrackHintPaid => 'order_track_hint_paid'.tr();
+  static String get orderTrackHintCompleted =>
+      'order_track_hint_completed'.tr();
   static String get orderTrackHintCancelled => 'order_track_hint_cancelled'.tr();
   static String get orderTrackHintRejected => 'order_track_hint_rejected'.tr();
   static String get orderTrackHintUnknown => 'order_track_hint_unknown'.tr();
 
   static String get orderStatusViewDetails => 'order_status_view_details'.tr();
+  static String get orderStatusDriverCardTitle =>
+      'order_status_driver_card_title'.tr();
+  static String get orderStatusDriverCall => 'order_status_driver_call'.tr();
   static String get orderStatusDemoStart => 'order_status_demo_start'.tr();
   static String get orderStatusDemoStop => 'order_status_demo_stop'.tr();
   static String get orderNumberLabel => 'order_number_label'.tr();
@@ -583,6 +594,20 @@ class AppTranslation {
       'accept_delivery_estimated_time_invalid'
           .tr(args: [min.toString(), max.toString()]);
 
+  static String get uploadPaymentReceipts => 'upload_payment_receipts'.tr();
+  static String get paymentReceiptsSelectHint =>
+      'payment_receipts_select_hint'.tr();
+  static String get paymentReceiptAddImages => 'payment_receipt_add_images'.tr();
+  static String get paymentReceiptSubmit => 'payment_receipt_submit'.tr();
+  static String get paymentReceiptInvalidType =>
+      'payment_receipt_invalid_type'.tr();
+  static String get paymentReceiptFileTooLarge =>
+      'payment_receipt_file_too_large'.tr();
+  static String get paymentReceiptTooManyImages =>
+      'payment_receipt_too_many_images'.tr();
+  static String get paymentReceiptNeedOneImage =>
+      'payment_receipt_need_one_image'.tr();
+
   /// [ManageOrderBloc] success snackbars (after accept / pickup / delivered / reject).
   static String get manageOrderSuccessAcceptDelivery =>
       'manage_order_success_accept_delivery'.tr();
@@ -592,6 +617,8 @@ class AppTranslation {
       'manage_order_success_mark_on_the_way'.tr();
   static String get manageOrderSuccessMarkDelivered =>
       'manage_order_success_mark_delivered'.tr();
+  static String get manageOrderSuccessMarkPaid =>
+      'manage_order_success_mark_paid'.tr();
   static String get manageOrderSuccessRejectDelivery =>
       'manage_order_success_reject_delivery'.tr();
 }

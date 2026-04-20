@@ -18,6 +18,7 @@ enum OrderStatus {
   cancelled,
   rejected,
   completed,
+  /// Payment receipts submitted; backend may then move to [completed].
   unknown;
 
   /// Backend / route map value (inverse of [fromString]).
@@ -82,6 +83,7 @@ enum OrderStatus {
       case 'REJECTED':
         return OrderStatus.rejected;
       case 'COMPLETED':
+      case 'COMPLETE':
         return OrderStatus.completed;
       default:
         return OrderStatus.unknown;
@@ -108,6 +110,7 @@ enum OrderStatus {
         return AppTranslation.orderStatusLabelOnTheWay;
       case OrderStatus.delivered:
         return AppTranslation.orderStatusLabelDelivered;
+      
       case OrderStatus.paid:
         return AppTranslation.orderStatusLabelPaid;
       case OrderStatus.completed:
@@ -158,6 +161,29 @@ enum OrderStatus {
   /// True if complete/cancel actions are allowed (e.g. only for pending).
   bool get canCompleteOrCancel =>
       this == OrderStatus.pending || this == OrderStatus.readyForPickup;
+
+  /// Client may call `POST /orders/{id}/cancel` only **before** [readyForPickup]
+  /// (and not when already terminal).
+  bool get canClientCancelOrder {
+    switch (this) {
+      case OrderStatus.pending:
+      case OrderStatus.confirmed:
+      case OrderStatus.searching:
+      case OrderStatus.assigned:
+      case OrderStatus.preparing:
+        return true;
+      case OrderStatus.readyForPickup:
+      case OrderStatus.pickedUp:
+      case OrderStatus.onTheWay:
+      case OrderStatus.delivered:
+      case OrderStatus.cancelled:
+      case OrderStatus.rejected:
+      case OrderStatus.completed:
+      case OrderStatus.paid:
+      case OrderStatus.unknown:
+        return false;
+    }
+  }
 }
 
 /// Short explanation under the status badge on the tracking screen.
@@ -187,9 +213,11 @@ extension OrderStatusTrackingCopy on OrderStatus {
       case OrderStatus.onTheWay:
         return AppTranslation.orderTrackHintOnTheWay;
       case OrderStatus.delivered:
-      case OrderStatus.paid:
-      case OrderStatus.completed:
         return AppTranslation.orderTrackHintDelivered;
+      case OrderStatus.paid:
+        return AppTranslation.orderTrackHintPaid;
+      case OrderStatus.completed:
+        return AppTranslation.orderTrackHintCompleted;
       case OrderStatus.cancelled:
         return AppTranslation.orderTrackHintCancelled;
       case OrderStatus.rejected:
@@ -221,14 +249,15 @@ extension OrderStatusPresentation on OrderStatus {
       case OrderStatus.onTheWay:
         return Icons.delivery_dining_rounded;
       case OrderStatus.delivered:
-      case OrderStatus.completed:
         return Icons.home_outlined;
       case OrderStatus.paid:
-        return Icons.payments_outlined;
+        return Icons.receipt_long_rounded;
+      case OrderStatus.completed:
+        return Icons.task_alt_rounded;
       case OrderStatus.cancelled:
         return Icons.cancel_outlined;
       case OrderStatus.rejected:
-        return Icons.block_rounded;
+        return Icons.block_outlined;
       case OrderStatus.unknown:
         return Icons.help_outline_rounded;
     }
