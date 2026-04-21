@@ -1,5 +1,6 @@
-// import 'package:chucker_flutter/chucker_flutter.dart';
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
@@ -31,9 +32,11 @@ void main() async {
   await di.init();
   await Firebase.initializeApp();
 
-  // // Chucker
-  // ChuckerFlutter.showOnRelease = true;
-  // ChuckerFlutter.showNotification = false;
+  if (kDebugMode) {
+    ChuckerFlutter.showOnRelease = false;
+    // Button only (no notifications/snack bars).
+    ChuckerFlutter.showNotification = false;
+  }
 
   // Get stored language from SharedPreferences
   final storageService = di.sl<StorageService>();
@@ -63,8 +66,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // Chucker
-  // Offset _chuckerButtonOffset = const Offset(300, 500);
+  Offset _chuckerButtonOffset = const Offset(300, 500);
   late final UpdateTokenBloc _updateTokenBloc;
   late final ProfileBloc _profileBloc;
 
@@ -76,10 +78,11 @@ class _MyAppState extends State<MyApp> {
     _profileBloc = di.sl<ProfileBloc>()..add(const GetProfile());
     _initNotifications();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // final size = MediaQuery.of(context).size;
-      // setState(() {
-      //   _chuckerButtonOffset = Offset(size.width - 72, size.height - 160);
-      // });
+      if (!mounted || !kDebugMode) return;
+      final size = MediaQuery.of(context).size;
+      setState(() {
+        _chuckerButtonOffset = Offset(size.width - 72, size.height - 160);
+      });
     });
   }
 
@@ -106,27 +109,28 @@ class _MyAppState extends State<MyApp> {
             title: 'Jeeb App',
             debugShowCheckedModeBanner: false,
             navigatorObservers: [
-              // ChuckerFlutter.navigatorObserver
+              if (kDebugMode) ChuckerFlutter.navigatorObserver,
             ],
             builder: (context, child) {
+              if (!kDebugMode) return child ?? const SizedBox.shrink();
               return Stack(
                 children: [
                   child ?? const SizedBox.shrink(),
-                  // Positioned(
-                  //   left: _chuckerButtonOffset.dx,
-                  //   top: _chuckerButtonOffset.dy,
-                  //   child: GestureDetector(
-                  //     onPanUpdate: (details) {
-                  //       setState(() {
-                  //         _chuckerButtonOffset += details.delta;
-                  //       });
-                  //     },
-                  //     child: Transform.scale(
-                  //       scale: 0.7,
-                  //       child: ChuckerFlutter.chuckerButton,
-                  //     ),
-                  //   ),
-                  // ),
+                  Positioned(
+                    left: _chuckerButtonOffset.dx,
+                    top: _chuckerButtonOffset.dy,
+                    child: GestureDetector(
+                      onPanUpdate: (details) {
+                        setState(() {
+                          _chuckerButtonOffset += details.delta;
+                        });
+                      },
+                      child: Transform.scale(
+                        scale: 0.7,
+                        child: ChuckerFlutter.chuckerButton,
+                      ),
+                    ),
+                  ),
                 ],
               );
             },

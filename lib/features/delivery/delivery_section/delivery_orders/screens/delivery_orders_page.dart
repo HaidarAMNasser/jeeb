@@ -4,9 +4,7 @@ import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
-import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders/widgets/delivery_orders_tab_content.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders_inner_tab.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_pay_selection_controller.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
@@ -20,38 +18,79 @@ class DeliveryOrdersPage extends StatefulWidget {
   State<DeliveryOrdersPage> createState() => _DeliveryOrdersPageState();
 }
 
-class _DeliveryOrdersPageState extends State<DeliveryOrdersPage>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+class _DeliveryOrdersPageState extends State<DeliveryOrdersPage> {
+  static const String _allFilterValue = 'ALL';
+  String _selectedFilterValue = _allFilterValue;
+
+  static const List<OrderStatus> _myOrdersStatuses = [
+    OrderStatus.searching,
+    OrderStatus.assigned,
+    OrderStatus.preparing,
+    OrderStatus.readyForPickup,
+    OrderStatus.pickedUp,
+    OrderStatus.onTheWay,
+    OrderStatus.delivered,
+    OrderStatus.paid,
+    OrderStatus.cancelled,
+    OrderStatus.rejected,
+    OrderStatus.completed,
+  ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    DeliveryOrdersInnerTab.tabIndex.addListener(_onJumpToInnerTab);
-    _tabController.addListener(_syncInnerTabNotifier);
-  }
-
-  void _syncInnerTabNotifier() {
-    if (!_tabController.indexIsChanging) {
-      DeliveryOrdersInnerTab.tabIndex.value = _tabController.index;
-    }
-  }
-
-  void _onJumpToInnerTab() {
-    final v = DeliveryOrdersInnerTab.tabIndex.value;
-    if (v >= 0 && v < _tabController.length && v != _tabController.index) {
-      _tabController.animateTo(v);
-    }
-    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    DeliveryOrdersInnerTab.tabIndex.removeListener(_onJumpToInnerTab);
-    _tabController.removeListener(_syncInnerTabNotifier);
-    _tabController.dispose();
     super.dispose();
+  }
+
+  String? get _statusParam {
+    if (_selectedFilterValue == _allFilterValue) {
+      // Show all => same endpoint without `status` query param.
+      return null;
+    }
+    return _selectedFilterValue;
+  }
+
+  String get _emptyMessage {
+    if (_selectedFilterValue == _allFilterValue) {
+      return AppTranslation.noOrdersFound;
+    }
+    final s = OrderStatus.fromString(_selectedFilterValue);
+    if (s == OrderStatus.cancelled || s == OrderStatus.rejected) {
+      return AppTranslation.noCancelledOrders;
+    }
+    if (s == OrderStatus.delivered || s == OrderStatus.paid || s == OrderStatus.completed) {
+      return AppTranslation.noCompletedOrders;
+    }
+    return AppTranslation.noAssignedOrders;
+  }
+
+  Color _filterTextColor(OrderStatus? status) {
+    if (status == null) return const Color(0xFFEAD9CE);
+    switch (status) {
+      case OrderStatus.searching:
+        return const Color(0xFFFFC857);
+      case OrderStatus.assigned:
+      case OrderStatus.preparing:
+      case OrderStatus.readyForPickup:
+      case OrderStatus.pickedUp:
+      case OrderStatus.onTheWay:
+        return const Color(0xFFFF9E5E);
+      case OrderStatus.delivered:
+      case OrderStatus.paid:
+      case OrderStatus.completed:
+        return const Color(0xFF6ED99F);
+      case OrderStatus.cancelled:
+      case OrderStatus.rejected:
+        return const Color(0xFFFF7B7B);
+      case OrderStatus.pending:
+      case OrderStatus.confirmed:
+      case OrderStatus.unknown:
+        return ColorManager.textPrimary;
+    }
   }
 
   @override
@@ -74,7 +113,9 @@ class _DeliveryOrdersPageState extends State<DeliveryOrdersPage>
             valueListenable:
                 di.sl<DeliveryPaySelectionController>().batchMode,
             builder: (context, batch, _) {
-              if (_tabController.index != 1 || !batch) {
+              final showBatchPay =
+                  batch && _selectedFilterValue == OrderStatus.delivered.apiWireValue;
+              if (!showBatchPay) {
                 return const SizedBox.shrink();
               }
               return ValueListenableBuilder<Set<String>>(
@@ -90,47 +131,41 @@ class _DeliveryOrdersPageState extends State<DeliveryOrdersPage>
               );
             },
           ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: AppPadding.p16),
-            decoration: BoxDecoration(
-              color: ColorManager.primaryDark,
-              borderRadius: BorderRadius.circular(AppSize.s12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              dividerColor: Colors.transparent,
-              indicatorColor: Colors.transparent,
-              labelColor: Colors.white,
-              unselectedLabelColor: ColorManager.textSecondary,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicator: BoxDecoration(
-                color: ColorManager.primary,
-                borderRadius: BorderRadius.circular(AppSize.s10),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.filter_list_rounded, color: ColorManager.defaultWhite),
+            color: ColorManager.primaryDark,
+            onSelected: (v) => setState(() => _selectedFilterValue = v),
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                value: _allFilterValue,
+                child: Text(
+                  AppTranslation.showAll,
+                  style: getSemiBoldStyle(
+                    fontSize: AppFontSize.s14,
+                    color: _filterTextColor(null),
+                  ),
+                ),
               ),
-              labelStyle: getSemiBoldStyle(fontSize: AppFontSize.s14),
-              unselectedLabelStyle: getRegularStyle(
-                fontSize: AppFontSize.s14,
+              ..._myOrdersStatuses.map(
+                (s) => PopupMenuItem<String>(
+                  value: s.apiWireValue,
+                  child: Text(
+                    s.displayLabel,
+                    style: getSemiBoldStyle(
+                      fontSize: AppFontSize.s14,
+                      color: _filterTextColor(s),
+                    ),
+                  ),
+                ),
               ),
-              onTap: (i) => DeliveryOrdersInnerTab.tabIndex.value = i,
-              tabs: [
-                Tab(text: AppTranslation.pending),
-                Tab(text: AppTranslation.completed),
-                Tab(text: AppTranslation.cancelled),
-              ],
-            ),
+            ],
           ),
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          DeliveryOrdersTabContent(type: DeliveryOrderTabType.pending),
-          DeliveryOrdersTabContent(type: DeliveryOrderTabType.completed),
-          DeliveryOrdersTabContent(type: DeliveryOrderTabType.cancelled),
         ],
+      ),
+      body: DeliveryOrdersTabContent(
+        status: _statusParam,
+        emptyMessage: _emptyMessage,
+        refreshOnManageOrderSuccess: true,
       ),
     );
   }
