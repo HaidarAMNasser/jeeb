@@ -30,27 +30,49 @@ class DeliveryOrderStatusBadge extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: padH, vertical: padV),
       decoration: BoxDecoration(
-        color: c.withOpacity(0.14),
+        color: c.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(AppSize.s10),
-        border: Border.all(color: c.withOpacity(0.45), width: 1),
+        border: Border.all(color: c.withValues(alpha: 0.45), width: 1),
         boxShadow: [
           BoxShadow(
-            color: c.withOpacity(0.12),
+            color: c.withValues(alpha: 0.12),
             blurRadius: compact ? 4 : 6,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(status.iconData, size: compact ? 14 : 16, color: c),
-          SizedBox(width: AppWidth.s4),
-          CustomText(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final iconSize = compact ? 14.0 : 16.0;
+          final gap = AppWidth.s4;
+          final label = CustomText(
             text: labelOverride ?? status.displayLabel,
             textStyle: getBoldStyle(fontSize: fontSize, color: c),
-          ),
-        ],
+            maxLines: 1,
+            softWrap: false,
+            textOverflow: TextOverflow.ellipsis,
+          );
+
+          if (!constraints.maxWidth.isFinite) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(status.iconData, size: iconSize, color: c),
+                SizedBox(width: gap),
+                label,
+              ],
+            );
+          }
+
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Icon(status.iconData, size: iconSize, color: c),
+              SizedBox(width: gap),
+              Expanded(child: label),
+            ],
+          );
+        },
       ),
     );
   }

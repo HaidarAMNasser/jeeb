@@ -5,7 +5,6 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/order_details_action_buttons.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:jeeb_app/features/delivery/pay_admin/presentation/widgets/delivery_pay_admin_sheet.dart';
 import 'delivery_order_card_top_bar.dart';
 import 'delivery_order_header.dart';
 import 'delivery_order_merchant.dart';
@@ -68,8 +67,8 @@ class DeliveryOrderCard extends StatelessWidget {
     final showPreparationTime =
         preparationMinutes != null && preparationMinutes > 0;
 
-    final showPayAdminMenu =
-        isDeliveryDriver && status == OrderStatus.delivered;
+    // final showPayAdminMenu =
+    //     isDeliveryDriver && status == OrderStatus.delivered;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
@@ -80,12 +79,14 @@ class DeliveryOrderCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSize.s24),
             border: Border.all(
-              color: ColorManager.primary.withOpacity(0.14),
-              width: 1,
+              color: batchPaySelection && selectedForAdminPay
+                  ? ColorManager.primary
+                  : ColorManager.primary.withValues(alpha: 0.14),
+              width: batchPaySelection && selectedForAdminPay ? 1.4 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 12),
               ),
@@ -101,6 +102,11 @@ class DeliveryOrderCard extends StatelessWidget {
                     padding: EdgeInsets.only(left: AppPadding.p8, top: AppPadding.p12),
                     child: Checkbox(
                       value: selectedForAdminPay,
+                      activeColor: ColorManager.primary,
+                      checkColor: ColorManager.background,
+                      side: BorderSide(
+                        color: ColorManager.defaultWhite.withValues(alpha: 0.55),
+                      ),
                       onChanged: (_) => onAdminPaySelectionToggle?.call(),
                     ),
                   ),
@@ -132,14 +138,14 @@ class DeliveryOrderCard extends StatelessWidget {
                                       initialStatusWire: order.status,
                                     ),
                                   ),
-                                  if (showPayAdminMenu)
-                                    DeliveryPayAdminMenuButton(
-                                      order: order,
-                                      pageOrders: pageOrders.isEmpty
-                                          ? [order]
-                                          : pageOrders,
-                                      onAfterPaySuccess: onPayAdminSuccess,
-                                    ),
+                                  // if (showPayAdminMenu)
+                                  //   DeliveryPayAdminMenuButton(
+                                  //     order: order,
+                                  //     pageOrders: pageOrders.isEmpty
+                                  //         ? [order]
+                                  //         : pageOrders,
+                                  //     onAfterPaySuccess: onPayAdminSuccess,
+                                  //   ),
                                 ],
                               ),
                               SizedBox(height: AppHeight.s14),

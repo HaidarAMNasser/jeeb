@@ -18,6 +18,11 @@ class DeliveryPaymentReceiptPicker {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      backgroundColor: ColorManager.primaryDark,
+      barrierColor: Colors.black.withValues(alpha: 0.55),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => const _DeliveryPaymentReceiptPickerBody(),
     );
   }
@@ -98,7 +103,7 @@ class _DeliveryPaymentReceiptPickerBodyState
             text: AppTranslation.uploadPaymentReceipts,
             textStyle: getBoldStyle(
               fontSize: AppFontSize.s18,
-              color: ColorManager.titlesColor,
+              color: ColorManager.defaultWhite,
             ),
           ),
           SizedBox(height: AppHeight.s8),
@@ -111,6 +116,14 @@ class _DeliveryPaymentReceiptPickerBodyState
           ),
           SizedBox(height: AppHeight.s16),
           OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: ColorManager.primary,
+              side: BorderSide(
+                color: ColorManager.primary.withValues(alpha: 0.8),
+              ),
+              backgroundColor: ColorManager.background,
+              surfaceTintColor: Colors.transparent,
+            ),
             onPressed: _paths.length >= DeliveryPaymentReceiptPicker.maxImages
                 ? null
                 : _addImages,
@@ -128,6 +141,10 @@ class _DeliveryPaymentReceiptPickerBodyState
                 itemBuilder: (context, i) {
                   final name = _paths[i].replaceAll(r'\', '/').split('/').last;
                   return ListTile(
+                    tileColor: ColorManager.background.withValues(alpha: 0.45),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.r10),
+                    ),
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     title: CustomText(
@@ -140,7 +157,11 @@ class _DeliveryPaymentReceiptPickerBodyState
                       textOverflow: TextOverflow.ellipsis,
                     ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.close, size: 20),
+                      icon: Icon(
+                        Icons.close,
+                        size: 20,
+                        color: ColorManager.textSecondary,
+                      ),
                       onPressed: () => _removeAt(i),
                     ),
                   );
@@ -150,6 +171,15 @@ class _DeliveryPaymentReceiptPickerBodyState
           ],
           SizedBox(height: AppHeight.s20),
           FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: ColorManager.primary,
+              foregroundColor: ColorManager.background,
+              disabledBackgroundColor:
+                  ColorManager.primary.withValues(alpha: 0.35),
+              disabledForegroundColor:
+                  ColorManager.background.withValues(alpha: 0.45),
+              surfaceTintColor: Colors.transparent,
+            ),
             onPressed: _paths.isEmpty
                 ? null
                 : () => Navigator.of(context).pop(List<String>.from(_paths)),
