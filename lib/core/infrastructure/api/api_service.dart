@@ -72,6 +72,9 @@ abstract class AppApiServiceClient {
     @Field('is_mobile_pass') bool directLogin,
   );
 
+  @POST("auth/guest")
+  Future<Response> guestLogin(Map<String, dynamic> body);
+
   @POST("auth/register")
   Future<Response> register(
     @Field('firstName') String firstName,

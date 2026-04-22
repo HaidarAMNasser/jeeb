@@ -87,6 +87,33 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   }
 
   @override
+  Future<Response> guestLogin(Map<String, dynamic> body) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        Options(
+          method: 'POST',
+          contentType: Headers.jsonContentType,
+          headers: headers,
+          extra: extra,
+        )
+            .compose(
+              dio.options,
+              'auth/guest',
+              queryParameters: queryParameters,
+              data: body,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
   Future<Response> register(
     String firstName,
     String lastName,

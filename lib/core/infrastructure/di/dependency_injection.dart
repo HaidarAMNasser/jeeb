@@ -21,6 +21,9 @@ import '../../../features/category/list_category/presentation/bloc/list_category
 import '../../../features/auth/login/data/data_sources/login_remote_data_source.dart';
 import '../../../features/auth/login/data/repositories/login_repository.dart';
 import '../../../features/auth/login/presentation/bloc/login_bloc.dart';
+import '../../../features/auth/guest/data/data_sources/guest_remote_data_source.dart';
+import '../../../features/auth/guest/data/repositories/guest_repository.dart';
+import '../../../features/auth/guest/presentation/bloc/guest_bloc.dart';
 import '../../../features/auth/register/data/data_sources/register_remote_data_source.dart';
 import '../../../features/auth/register/data/repositories/register_repository.dart';
 import '../../../features/auth/register/presentation/bloc/register_bloc.dart';
@@ -159,6 +162,13 @@ Future<void> init() async {
   );
   sl.registerFactory(() => LoginRepository(sl(), sl()));
   sl.registerFactory(() => LoginBloc(sl(), sl()));
+
+  //! Auth Dependencies - Guest
+  sl.registerFactory<GuestRemoteDataSource>(
+    () => GuestRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => GuestRepository(sl(), sl()));
+  sl.registerFactory(() => GuestBloc(sl(), sl()));
 
   //! Auth Dependencies - Register
   sl.registerFactory<RegisterRemoteDataSource>(

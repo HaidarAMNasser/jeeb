@@ -17,6 +17,7 @@ class LoginForm extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback onLogin;
+  final VoidCallback onGuestLogin;
   final bool isLoading;
 
   const LoginForm({
@@ -25,6 +26,7 @@ class LoginForm extends StatelessWidget {
     required this.emailController,
     required this.passwordController,
     required this.onLogin,
+    required this.onGuestLogin,
     required this.isLoading,
   });
 
@@ -97,7 +99,14 @@ class LoginForm extends StatelessWidget {
           SizedBox(height: AppHeight.s32),
           CustomButton(
             text: AppTranslation.login,
-            onPressed: onLogin,
+            onPressed: isLoading ? null : onLogin,
+            color: ColorManager.primary,
+          ),
+          SizedBox(height: AppHeight.s16),
+          CustomButton(
+            text: AppTranslation.enterAsGuest,
+            onPressed: isLoading ? null : onGuestLogin,
+            isOutlined: true,
             color: ColorManager.primary,
           ),
           SizedBox(height: AppHeight.s24),
