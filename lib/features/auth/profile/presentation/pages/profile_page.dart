@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
+    as di;
 import 'package:jeeb_app/core/infrastructure/services/storage_service.dart';
 import 'package:jeeb_app/features/get_settings/data/repositories/get_settings_repository.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -26,7 +27,8 @@ import '../bloc/profile_bloc.dart';
 import '../../../logout/presentation/bloc/logout_bloc.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final bool? removeBack;
+  const ProfilePage({super.key, this.removeBack});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -57,14 +59,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final repository = di.sl<GetSettingsRepository>();
     final result = await repository.getSettings();
     if (!mounted) return;
-    result.fold(
-      (_) {},
-      (settings) {
-        final phone = settings.supportPhone.trim();
-        if (phone.isEmpty) return;
-        setState(() => _supportPhone = phone);
-      },
-    );
+    result.fold((_) {}, (settings) {
+      final phone = settings.supportPhone.trim();
+      if (phone.isEmpty) return;
+      setState(() => _supportPhone = phone);
+    });
   }
 
   @override
@@ -97,7 +96,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 final route = ModalRoute.of(context);
                 if (route?.isCurrent ?? true) {
                   customToast(msg: state.updateFailureMessage!);
-                  context.read<ProfileBloc>().add(const ClearProfileUpdateFailure());
+                  context.read<ProfileBloc>().add(
+                    const ClearProfileUpdateFailure(),
+                  );
                 }
               }
               if (!state.formValuesInitialized) {
@@ -133,6 +134,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 backgroundColor: ColorManager.background,
                 appBar: CustomAppBar(
                   title: AppTranslation.profile,
+                  automaticallyImplyLeading:
+                      (widget.removeBack != null && widget.removeBack!)
+                      ? false
+                      : true,
                   actions: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: AppPadding.p10),

@@ -11,7 +11,8 @@ import 'package:jeeb_app/features/product/list_product/presentation/widgets/prod
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class FavoritesPage extends StatefulWidget {
-  const FavoritesPage({super.key});
+  final bool? removeBack;
+  const FavoritesPage({super.key, this.removeBack});
 
   @override
   State<FavoritesPage> createState() => _FavoritesPageState();
@@ -37,8 +38,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       listener: _listener,
       child: BlocBuilder<FavoritesBloc, FavoritesState>(
         builder: (context, state) {
-          final isToggling = state is FavoritesLoaded &&
-              state.togglingProductIds.isNotEmpty;
+          final isToggling =
+              state is FavoritesLoaded && state.togglingProductIds.isNotEmpty;
 
           return ModalProgressHUD(
             inAsyncCall: isToggling,
@@ -47,43 +48,47 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ),
             child: Scaffold(
               backgroundColor: ColorManager.background,
-              appBar: CustomAppBar(title: AppTranslation.favorites),
+              appBar: CustomAppBar(
+                title: AppTranslation.favorites,
+                automaticallyImplyLeading:
+                    (widget.removeBack != null && widget.removeBack!) ? false : true,
+              ),
               body: BlocStateHandler<FavoritesBloc, FavoritesState>(
-                  bloc: context.read<FavoritesBloc>(),
-                  isLoading: (s) => s is FavoritesLoading,
-                  isError: (s) => s is FavoritesError,
-                  getErrorMessage: (s) => (s as FavoritesError).message,
-                  isSuccess: (s) => s is FavoritesLoaded,
-                  isEmpty: (s) => s is FavoritesLoaded && s.products.isEmpty,
-                  emptyMessage: AppTranslation.noFavoritesFound,
-                  getRetryCallback: (_) =>
-                      () => context.read<FavoritesBloc>().add(
-                        const LoadFavoritesEvent(),
-                      ),
-                  successBuilder: (context, state) {
-                    final loaded = state as FavoritesLoaded;
-                    final List<ProductEntity> products = loaded.products;
-                    final favBloc = context.read<FavoritesBloc>();
-                    return ListView.separated(
-                      padding: EdgeInsets.all(AppPadding.p16),
-                      itemCount: products.length,
-                      separatorBuilder: (_, __) =>
-                          SizedBox(height: AppHeight.s12),
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        return ProductListItem(
-                          product: product,
-                          isFavorite: true,
-                          isTogglingFavorite: loaded.isToggling(product.id),
-                          onToggleFavorite: () =>
-                              favBloc.add(ToggleFavoriteEvent(product.id)),
-                        );
-                      },
-                    );
-                  },
-                ),
+                bloc: context.read<FavoritesBloc>(),
+                isLoading: (s) => s is FavoritesLoading,
+                isError: (s) => s is FavoritesError,
+                getErrorMessage: (s) => (s as FavoritesError).message,
+                isSuccess: (s) => s is FavoritesLoaded,
+                isEmpty: (s) => s is FavoritesLoaded && s.products.isEmpty,
+                emptyMessage: AppTranslation.noFavoritesFound,
+                getRetryCallback: (_) =>
+                    () => context.read<FavoritesBloc>().add(
+                      const LoadFavoritesEvent(),
+                    ),
+                successBuilder: (context, state) {
+                  final loaded = state as FavoritesLoaded;
+                  final List<ProductEntity> products = loaded.products;
+                  final favBloc = context.read<FavoritesBloc>();
+                  return ListView.separated(
+                    padding: EdgeInsets.all(AppPadding.p16),
+                    itemCount: products.length,
+                    separatorBuilder: (_, __) =>
+                        SizedBox(height: AppHeight.s12),
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return ProductListItem(
+                        product: product,
+                        isFavorite: true,
+                        isTogglingFavorite: loaded.isToggling(product.id),
+                        onToggleFavorite: () =>
+                            favBloc.add(ToggleFavoriteEvent(product.id)),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-            );
+          );
         },
       ),
     );

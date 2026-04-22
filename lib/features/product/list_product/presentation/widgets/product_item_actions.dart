@@ -33,9 +33,9 @@ class ProductItemActions extends StatelessWidget {
         commissionRate! > 0 &&
         displayPrice != null &&
         displayPrice != price) {
-      return '\$$base + $commissionRate% = \$$total';
+        return ' SYP $base + $commissionRate% = SYP $total';
     }
-    return '\$$total';
+    return ' SYP $total';
   }
 
   @override

@@ -58,10 +58,10 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
               index: _currentIndex,
               children: [
                 const DeliveryHomePage(),
-                const DeliveryOrdersPage(),
+                const DeliveryOrdersPage(removeBack: true),
                 BlocProvider<LogoutBloc>(
                   create: (_) => di.sl<LogoutBloc>(),
-                  child: const ProfilePage(),
+                  child: const ProfilePage(removeBack: true),
                 ),
               ],
             ),

@@ -15,7 +15,8 @@ import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/p
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class BasketPage extends StatelessWidget {
-  const BasketPage({super.key});
+  final bool? removeBack;
+  const BasketPage({super.key, this.removeBack});
 
   String _price(int value) => (value / 100).toStringAsFixed(2);
 
@@ -50,7 +51,10 @@ class BasketPage extends StatelessWidget {
       final id = int.tryParse(item.productId);
       if (id == null) continue;
       productRequests.add(
-        OrderBeforeConfirmProductRequest(productId: id, quantity: item.quantity),
+        OrderBeforeConfirmProductRequest(
+          productId: id,
+          quantity: item.quantity,
+        ),
       );
     }
 
@@ -68,7 +72,8 @@ class BasketPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<OrderBeforeConfirmBloc, OrderBeforeConfirmState>(
       listenWhen: (prev, curr) =>
-          curr is OrderBeforeConfirmSuccess || curr is OrderBeforeConfirmFailure,
+          curr is OrderBeforeConfirmSuccess ||
+          curr is OrderBeforeConfirmFailure,
       listener: (context, orderState) {
         if (orderState is OrderBeforeConfirmFailure) {
           customToast(msg: orderState.message);
@@ -115,14 +120,16 @@ class BasketPage extends StatelessWidget {
                   backgroundColor: ColorManager.background,
                   appBar: CustomAppBar(
                     title: AppTranslation.basket,
+                    automaticallyImplyLeading:
+                        (this.removeBack != null && removeBack!) ? false : true,
                     actions: [
                       IconButton(
                         onPressed: isSaving || orderLoading
                             ? null
                             : () {
                                 context.read<ListCartBloc>().add(
-                                      const ClearEntireCartEvent(),
-                                    );
+                                  const ClearEntireCartEvent(),
+                                );
                               },
                         tooltip: AppTranslation.delete,
                         icon: const Icon(
@@ -137,7 +144,8 @@ class BasketPage extends StatelessWidget {
                     isLoading: (state) =>
                         state is ListCartLoading || state is ListCartInitial,
                     isError: (state) => state is ListCartError,
-                    getErrorMessage: (state) => (state as ListCartError).message,
+                    getErrorMessage: (state) =>
+                        (state as ListCartError).message,
                     isSuccess: (state) => state is ListCartLoaded,
                     isEmpty: (state) =>
                         state is ListCartLoaded && state.isEmpty,
@@ -151,20 +159,20 @@ class BasketPage extends StatelessWidget {
                         state: loaded,
                         priceFormatter: _price,
                         onIncrease: (item) => context.read<ListCartBloc>().add(
-                              IncreaseCartItemEvent(
-                                item.productId,
-                                isOffer: item.isOffer,
-                              ),
-                            ),
+                          IncreaseCartItemEvent(
+                            item.productId,
+                            isOffer: item.isOffer,
+                          ),
+                        ),
                         onDecrease: (item) => context.read<ListCartBloc>().add(
-                              DecreaseCartItemEvent(
-                                item.productId,
-                                isOffer: item.isOffer,
-                              ),
-                            ),
+                          DecreaseCartItemEvent(
+                            item.productId,
+                            isOffer: item.isOffer,
+                          ),
+                        ),
                         onSaveChanges: () => context.read<ListCartBloc>().add(
-                              const SaveCartChangesEvent(),
-                            ),
+                          const SaveCartChangesEvent(),
+                        ),
                         onCreateOrder: () =>
                             _onCreateOrderPressed(context, loaded),
                       );

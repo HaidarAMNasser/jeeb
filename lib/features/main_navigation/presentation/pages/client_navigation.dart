@@ -82,12 +82,12 @@ class _ClientNavigationState extends State<ClientNavigation> {
       case 1:
         return BlocProvider<FavoritesBloc>.value(
           value: di.sl<FavoritesBloc>()..add(const LoadFavoritesEvent()),
-          child: const FavoritesPage(),
+          child: const FavoritesPage(removeBack: true),
         );
       case 2:
         return BlocProvider<ListOrderBloc>(
           create: (_) => di.sl<ListOrderBloc>()..add(const GetOrdersEvent()),
-          child: const ListOrderPage(),
+          child: const ListOrderPage(removeBack: true),
         );
       case 3:
         return MultiBlocProvider(
@@ -99,7 +99,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
               create: (_) => di.sl<OrderBeforeConfirmBloc>(),
             ),
           ],
-          child: const BasketPage(),
+          child: const BasketPage(removeBack: true),
         );
       default:
         return const SizedBox.shrink();

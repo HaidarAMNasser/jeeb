@@ -144,7 +144,6 @@ class LoginForm extends StatelessWidget {
                               gradient: LinearGradient(
                                 colors: [
                                   ColorManager.defaultYellow,
-
                                   ColorManager.primary,
                                   ColorManager.primary,
                                 ],
