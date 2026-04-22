@@ -9,6 +9,7 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_text_field.dart';
+import 'package:jeeb_app/core/presentation/widgets/gradient_text.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/delivery_register_dialog.dart';
 
@@ -103,11 +104,61 @@ class LoginForm extends StatelessWidget {
             color: ColorManager.primary,
           ),
           SizedBox(height: AppHeight.s16),
-          CustomButton(
-            text: AppTranslation.enterAsGuest,
-            onPressed: isLoading ? null : onGuestLogin,
-            isOutlined: true,
-            color: ColorManager.primary,
+          SizedBox(
+            height: AppHeight.s56,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: isLoading
+                    ? null
+                    : LinearGradient(
+                        colors: [
+                          ColorManager.defaultYellow,
+
+                          ColorManager.primary,
+                        ],
+                      ),
+                color: isLoading
+                    ? ColorManager.textSecondary.withOpacity(0.4)
+                    : null,
+                borderRadius: BorderRadius.circular(AppRadius.r16),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(2),
+                child: Material(
+                  color: ColorManager.background,
+                  borderRadius: BorderRadius.circular(AppRadius.r16 - 2),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppRadius.r16 - 2),
+                    onTap: isLoading ? null : onGuestLogin,
+                    child: Center(
+                      child: isLoading
+                          ? CustomText(
+                              text: AppTranslation.enterAsGuest,
+                              textStyle: getBlackStyle(
+                                fontSize: AppFontSize.s15,
+                                color: ColorManager.textSecondary,
+                              ),
+                            )
+                          : GradientText(
+                              text: AppTranslation.enterAsGuest,
+                              gradient: LinearGradient(
+                                colors: [
+                                  ColorManager.defaultYellow,
+
+                                  ColorManager.primary,
+                                  ColorManager.primary,
+                                ],
+                              ),
+                              textStyle: TextStyle(
+                                fontSize: AppFontSize.s15,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
           SizedBox(height: AppHeight.s24),
           Row(
