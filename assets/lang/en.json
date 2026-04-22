@@ -346,6 +346,8 @@
   "order_track_hint_unknown": "Status update pending.",
   "order_status_driver_card_title": "Your delivery partner",
   "order_status_driver_call": "Call",
+  "order_status_support_number_label": "Support",
+  "order_status_support_call": "Call support",
   "order_status_view_details": "View All Order details",
   "order_status_demo_start": "Start status demo",
   "order_status_demo_stop": "Stop status demo",

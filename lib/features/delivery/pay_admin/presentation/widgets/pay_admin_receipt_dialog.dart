@@ -63,6 +63,14 @@ class _PayAdminReceiptDialogState extends State<PayAdminReceiptDialog> {
           children: [
             AlertDialog(
               backgroundColor: ColorManager.primaryDark,
+              surfaceTintColor: Colors.transparent,
+              shadowColor: Colors.black.withValues(alpha: 0.45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.r16),
+                side: BorderSide(
+                  color: ColorManager.defaultWhite.withValues(alpha: 0.12),
+                ),
+              ),
               title: CustomText(
                 text: AppTranslation.payAdminMenuTitle,
                 textStyle: getSemiBoldStyle(
@@ -84,6 +92,14 @@ class _PayAdminReceiptDialogState extends State<PayAdminReceiptDialog> {
                     ),
                     SizedBox(height: AppHeight.s12),
                     OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColorManager.defaultWhite,
+                        side: BorderSide(
+                          color: ColorManager.primary.withValues(alpha: 0.75),
+                        ),
+                        backgroundColor: ColorManager.background,
+                        surfaceTintColor: Colors.transparent,
+                      ),
                       onPressed: busy
                           ? null
                           : () async {
@@ -131,10 +147,22 @@ class _PayAdminReceiptDialogState extends State<PayAdminReceiptDialog> {
               ),
               actions: [
                 TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: ColorManager.textSecondary,
+                  ),
                   onPressed: busy ? null : () => Navigator.of(context).pop(),
                   child: Text(AppTranslation.cancel),
                 ),
                 FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: ColorManager.primary,
+                    foregroundColor: ColorManager.defaultWhite,
+                    surfaceTintColor: Colors.transparent,
+                    disabledBackgroundColor:
+                        ColorManager.primary.withValues(alpha: 0.35),
+                    disabledForegroundColor:
+                        ColorManager.defaultWhite.withValues(alpha: 0.5),
+                  ),
                   onPressed: busy || _imagePath == null
                       ? null
                       : () {
@@ -156,7 +184,9 @@ class _PayAdminReceiptDialogState extends State<PayAdminReceiptDialog> {
                 child: ColoredBox(
                   color: Colors.black.withValues(alpha: 0.35),
                   child: const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      color: ColorManager.primary,
+                    ),
                   ),
                 ),
               ),

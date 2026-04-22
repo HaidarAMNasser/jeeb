@@ -372,6 +372,9 @@ class AppTranslation {
   static String get orderStatusDriverCardTitle =>
       'order_status_driver_card_title'.tr();
   static String get orderStatusDriverCall => 'order_status_driver_call'.tr();
+  static String get orderStatusSupportNumberLabel =>
+      'order_status_support_number_label'.tr();
+  static String get orderStatusSupportCall => 'order_status_support_call'.tr();
   static String get orderStatusDemoStart => 'order_status_demo_start'.tr();
   static String get orderStatusDemoStop => 'order_status_demo_stop'.tr();
   static String get orderNumberLabel => 'order_number_label'.tr();

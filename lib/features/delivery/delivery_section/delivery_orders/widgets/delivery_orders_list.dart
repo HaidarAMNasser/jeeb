@@ -6,8 +6,9 @@ import 'package:jeeb_app/core/common/classes/user_roles.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/pages/delivery_home_page_actions.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_card.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders/widgets/delivery_orders_tab_content.dart';
+import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/searching%20cards/delivery_searching_order_card.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_pay_selection_controller.dart';
 import 'package:jeeb_app/features/delivery/order/list_order/presentation/bloc/list_order_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
@@ -16,13 +17,11 @@ import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/o
 class DeliveryOrdersList extends StatelessWidget {
   final List<OrderEntity> orders;
   final String? status;
-  final DeliveryOrderTabType tabType;
 
   const DeliveryOrdersList({
     super.key,
     required this.orders,
     this.status,
-    this.tabType = DeliveryOrderTabType.pending,
   });
 
   @override
@@ -50,9 +49,33 @@ class DeliveryOrdersList extends StatelessWidget {
                       final o = orders[index];
                       final st = OrderStatus.fromString(o.status);
                       final canBatch =
-                          tabType == DeliveryOrderTabType.completed &&
-                              batch &&
-                              st == OrderStatus.delivered;
+                          batch && st == OrderStatus.delivered;
+
+                      Future<void> openDetails() async {
+                        await Navigator.pushNamed<void>(
+                          context,
+                          Routes.deliveryOrderDetails,
+                          arguments: {'orderId': o.id},
+                        );
+                        if (!context.mounted) return;
+                        context.read<ListOrderBloc>().add(
+                              GetOrdersEvent(status: status),
+                            );
+                      }
+
+                      if (isDriver && st == OrderStatus.searching) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: AppPadding.p16),
+                          child: DeliverySearchingOrderCard(
+                            order: o,
+                            onAccept: () =>
+                                deliveryHomeConfirmAcceptOrder(context, o),
+                            onTap: openDetails,
+                            onTimerExpired: null,
+                          ),
+                        );
+                      }
+
                       return Padding(
                         padding: EdgeInsets.only(bottom: AppPadding.p16),
                         child: DeliveryOrderCard(
@@ -71,17 +94,7 @@ class DeliveryOrdersList extends StatelessWidget {
                                   GetOrdersEvent(status: status),
                                 );
                           },
-                          onTap: () async {
-                            await Navigator.pushNamed<void>(
-                              context,
-                              Routes.deliveryOrderDetails,
-                              arguments: {'orderId': o.id},
-                            );
-                            if (!context.mounted) return;
-                            context.read<ListOrderBloc>().add(
-                                  GetOrdersEvent(status: status),
-                                );
-                          },
+                          onTap: openDetails,
                         ),
                       );
                     },

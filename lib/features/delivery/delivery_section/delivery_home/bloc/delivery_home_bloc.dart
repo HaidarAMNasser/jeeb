@@ -75,8 +75,7 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
     Emitter<DeliveryHomeState> emit, {
     required bool markRefresh,
   }) async {
-    // 1. Active delivery leg: assigned chain + PREPARING (restaurant cooking while driver is on the job).
-    //    PREPARING here drives map routes + "active" card; same query must be driver-scoped on the API.
+    // 1. Active delivery leg (driver run): assigned → onTheWay.
     final assignedResult = await _repository.getOrders(
       status: [
         OrderStatus.assigned,
@@ -84,8 +83,6 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
         OrderStatus.readyForPickup,
         OrderStatus.pickedUp,
         OrderStatus.onTheWay,
-        OrderStatus.delivered,
-        OrderStatus.paid,
       ].map((s) => s.apiWireValue).join(','),
     );
 
@@ -114,11 +111,10 @@ class DeliveryHomeBloc extends Bloc<DeliveryHomeEvent, DeliveryHomeState> {
       return;
     }
 
-    // 2. Fetch available orders (SEARCHING + PREPARING)
+    // 2. If no active run, show SEARCHING pool.
     final availableResult = await _repository.getOrders(
       status: [
         OrderStatus.searching,
-        OrderStatus.preparing,
       ].map((s) => s.apiWireValue).join(','),
     );
 

@@ -252,6 +252,8 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
     ApplyFiltersEvent event,
     Emitter<ClientHomeState> emit,
   ) async {
+    final selectedType = event.type;
+    final currentSearch = state.searchQuery;
     emit(
       state.copyWith(
         minPrice: event.minPrice,
@@ -271,7 +273,7 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
           .getMerchants(
             page: 1,
             limit: _merchantsLimit,
-            type: state.merchantTypeFilter,
+            type: selectedType,
           )
           .then((result) {
             if (isClosed) return;
@@ -306,13 +308,11 @@ class ClientHomeBloc extends Bloc<ClientHomeEvent, ClientHomeState> {
             page: 1,
             limit: _productsLimit,
             categoryId: event.categoryId,
-            search: state.searchQuery?.isEmpty ?? true
-                ? null
-                : state.searchQuery,
+            search: currentSearch?.isEmpty ?? true ? null : currentSearch,
             minPrice: event.minPrice,
             maxPrice: event.maxPrice,
             minRating: event.minRating,
-            type: state.merchantTypeFilter,
+            type: selectedType,
           )
           .then((result) {
             if (isClosed) return;

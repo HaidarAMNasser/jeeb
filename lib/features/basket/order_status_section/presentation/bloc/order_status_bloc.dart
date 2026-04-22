@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/data/repositories/order_details_repository.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 part 'order_status_event.dart';
@@ -15,11 +16,13 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
     required String orderId,
     required OrderStatus initialStatus,
     required OrderStatusRtdbService orderStatusRtdb,
+    required OrderDetailsRepository orderDetailsRepository,
     double? deliveryLatitude,
     double? deliveryLongitude,
     String? deliveryManName,
     String? deliveryManPhone,
   }) : _orderStatusRtdb = orderStatusRtdb,
+       _orderDetailsRepository = orderDetailsRepository,
        _lastStatusWire = initialStatus.apiWireValue,
        super(
          OrderStatusState.initial(
@@ -37,10 +40,13 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
     on<OrderStatusDriverLocationUpdated>(_onDriverLocationUpdated);
     on<OrderStatusDriverLocationCleared>(_onDriverLocationCleared);
     on<OrderStatusRouteHistorySnapshot>(_onRouteHistorySnapshot);
+    on<OrderStatusHydrateDriverFromOrder>(_onHydrateDriverFromOrder);
     _startRealtimeListener();
+    Future.microtask(() => add(const OrderStatusHydrateDriverFromOrder()));
   }
 
   final OrderStatusRtdbService _orderStatusRtdb;
+  final OrderDetailsRepository _orderDetailsRepository;
 
   String _lastStatusWire;
 
@@ -50,6 +56,7 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
   StreamSubscription<DriverLiveLocation?>? _driverLocationSub;
   StreamSubscription<List<RouteHistoryPoint>>? _routeHistorySub;
   int? _lastDeliveryId;
+  bool _driverHydrateInFlight = false;
 
   static bool _isTerminalStatus(OrderStatus s) {
     switch (s) {
@@ -173,6 +180,48 @@ class OrderStatusBloc extends Bloc<OrderStatusEvent, OrderStatusState> {
 
     if (_isTerminalStatus(next)) {
       _stopRealtimeListener();
+    } else if (orderStatusShowsDriverContact(next)) {
+      Future.microtask(() => add(const OrderStatusHydrateDriverFromOrder()));
+    }
+  }
+
+  Future<void> _onHydrateDriverFromOrder(
+    OrderStatusHydrateDriverFromOrder event,
+    Emitter<OrderStatusState> emit,
+  ) async {
+    if (_isTerminalStatus(state.routeStatus)) return;
+    if (!orderStatusShowsDriverContact(state.routeStatus)) return;
+    final needName = state.deliveryManName?.trim().isEmpty ?? true;
+    final needPhone = state.deliveryManPhone?.trim().isEmpty ?? true;
+    if (!needName && !needPhone) return;
+    if (_driverHydrateInFlight) return;
+    _driverHydrateInFlight = true;
+    try {
+      final result =
+          await _orderDetailsRepository.getOrderDetails(state.orderId);
+      if (isClosed) return;
+      result.fold((_) {}, (order) {
+        final dm = order.deliveryMan;
+        if (dm == null) return;
+        final n = dm.name.trim();
+        final p = dm.phone.trim();
+        var mergedName = state.deliveryManName;
+        var mergedPhone = state.deliveryManPhone;
+        if (needName && n.isNotEmpty) mergedName = n;
+        if (needPhone && p.isNotEmpty) mergedPhone = p;
+        if (mergedName == state.deliveryManName &&
+            mergedPhone == state.deliveryManPhone) {
+          return;
+        }
+        emit(
+          state.copyWith(
+            deliveryManName: mergedName,
+            deliveryManPhone: mergedPhone,
+          ),
+        );
+      });
+    } finally {
+      _driverHydrateInFlight = false;
     }
   }
 

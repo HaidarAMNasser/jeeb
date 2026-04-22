@@ -38,6 +38,7 @@ import '../../../features/basket/order_status_section/presentation/pages/order_s
 import '../../../features/delivery/order/order_details/domain/entities/order_status.dart';
 import '../../../features/delivery/order/order_details/presentation/pages/order_details_page.dart';
 import '../../../features/delivery/order/order_details/presentation/bloc/order_details_bloc.dart';
+import '../../../features/delivery/order/order_details/data/repositories/order_details_repository.dart';
 import '../../../features/delivery/delivery_section/delivery_order_details/screens/delivery_order_details_page.dart';
 import '../../../features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
 import '../../../features/delivery/delivery_section/delivery_home/bloc/delivery_home_bloc.dart';
@@ -296,6 +297,7 @@ class AppRouter {
                 deliveryManName: deliveryManName,
                 deliveryManPhone: deliveryManPhone,
                 orderStatusRtdb: di.sl<OrderStatusRtdbService>(),
+                orderDetailsRepository: di.sl<OrderDetailsRepository>(),
               ),
             ),
           ],

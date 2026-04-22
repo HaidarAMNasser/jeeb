@@ -35,6 +35,13 @@ class _CategoryPaginatedDropdownState extends State<CategoryPaginatedDropdown> {
   int _currentPage = 1;
   static const int _limit = 20;
   CategoryEntity? _selectedCategory;
+  bool _isDisposed = false;
+  int _loadVersion = 0;
+
+  void _safeSetState(VoidCallback fn) {
+    if (!mounted || _isDisposed) return;
+    setState(fn);
+  }
 
   @override
   void initState() {
@@ -46,7 +53,7 @@ class _CategoryPaginatedDropdownState extends State<CategoryPaginatedDropdown> {
   void didUpdateWidget(covariant CategoryPaginatedDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialValue != oldWidget.initialValue) {
-      setState(() {
+      _safeSetState(() {
         if (widget.initialValue == null) {
           _selectedCategory = null;
         } else {
@@ -60,11 +67,14 @@ class _CategoryPaginatedDropdownState extends State<CategoryPaginatedDropdown> {
   }
 
   Future<void> _loadInitialData() async {
+    final requestVersion = ++_loadVersion;
     final result = await _repository.getCategories(page: 1, limit: _limit);
+    if (!mounted || _isDisposed || requestVersion != _loadVersion) return;
     result.fold(
       (failure) => null, // Handle failure if needed
       (paginatedData) {
-        setState(() {
+        if (!mounted || _isDisposed || requestVersion != _loadVersion) return;
+        _safeSetState(() {
           _categories = paginatedData.categories;
           _hasMore = paginatedData.pagination?.hasNextPage ?? false;
           if (widget.initialValue != null) {
@@ -84,13 +94,16 @@ class _CategoryPaginatedDropdownState extends State<CategoryPaginatedDropdown> {
   Future<void> _onLoadMore() async {
     if (!_hasMore) return;
     final nextPage = _currentPage + 1;
+    final requestVersion = ++_loadVersion;
     final result = await _repository.getCategories(
       page: nextPage,
       limit: _limit,
     );
+    if (!mounted || _isDisposed || requestVersion != _loadVersion) return;
     result.fold((failure) => null, (paginatedData) {
-      setState(() {
-        _categories.addAll(paginatedData.categories);
+      if (!mounted || _isDisposed || requestVersion != _loadVersion) return;
+      _safeSetState(() {
+        _categories = [..._categories, ...paginatedData.categories];
         _hasMore = paginatedData.pagination?.hasNextPage ?? false;
         _currentPage = nextPage;
       });
@@ -107,7 +120,7 @@ class _CategoryPaginatedDropdownState extends State<CategoryPaginatedDropdown> {
       hasMoreData: _hasMore,
       onLoadMore: _onLoadMore,
       onChanged: (category) {
-        setState(() {
+        _safeSetState(() {
           _selectedCategory = category;
         });
         widget.onChanged(category?.id);
@@ -146,5 +159,12 @@ class _CategoryPaginatedDropdownState extends State<CategoryPaginatedDropdown> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _loadVersion++;
+    super.dispose();
   }
 }
