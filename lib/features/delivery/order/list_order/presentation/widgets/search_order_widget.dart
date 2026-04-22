@@ -109,7 +109,11 @@ class _SearchOrderWidgetState extends State<SearchOrderWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(AppPadding.p16),
+      padding: EdgeInsets.only(
+        bottom: AppPadding.p16,
+        left: AppPadding.p16,
+        right: AppPadding.p16,
+      ),
       child: CustomTextField(
         hintText: AppTranslation.searchOrdersHint,
         controller: _searchController,
