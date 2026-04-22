@@ -14,9 +14,16 @@ import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_l
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-class BasketPage extends StatelessWidget {
+class BasketPage extends StatefulWidget {
   final bool? removeBack;
   const BasketPage({super.key, this.removeBack});
+
+  @override
+  State<BasketPage> createState() => _BasketPageState();
+}
+
+class _BasketPageState extends State<BasketPage> {
+  bool _isPickingLocation = false;
 
   String _price(int value) => (value / 100).toStringAsFixed(2);
 
@@ -35,9 +42,16 @@ class BasketPage extends StatelessWidget {
     final orderBloc = context.read<OrderBeforeConfirmBloc>();
 
     if (!BasketOrderLocationSession.hasCoordinates) {
-      final picked = await pickCheckoutLocation(context);
-      if (picked == null) return;
-      BasketOrderLocationSession.save(picked.lat, picked.lng);
+      setState(() => _isPickingLocation = true);
+      try {
+        final picked = await pickCheckoutLocation(context);
+        if (picked == null) return;
+        BasketOrderLocationSession.save(picked.lat, picked.lng);
+      } finally {
+        if (mounted) {
+          setState(() => _isPickingLocation = false);
+        }
+      }
     }
 
     if (!BasketOrderLocationSession.hasCoordinates) return;
@@ -121,7 +135,9 @@ class BasketPage extends StatelessWidget {
                   appBar: CustomAppBar(
                     title: AppTranslation.basket,
                     automaticallyImplyLeading:
-                        (this.removeBack != null && removeBack!) ? false : true,
+                        (widget.removeBack != null && widget.removeBack!)
+                        ? false
+                        : true,
                     actions: [
                       IconButton(
                         onPressed: isSaving || orderLoading
@@ -157,6 +173,7 @@ class BasketPage extends StatelessWidget {
                       final loaded = loadedState as ListCartLoaded;
                       return BasketLoadedContent(
                         state: loaded,
+                        isCreatingOrder: _isPickingLocation,
                         priceFormatter: _price,
                         onIncrease: (item) => context.read<ListCartBloc>().add(
                           IncreaseCartItemEvent(
@@ -173,8 +190,10 @@ class BasketPage extends StatelessWidget {
                         onSaveChanges: () => context.read<ListCartBloc>().add(
                           const SaveCartChangesEvent(),
                         ),
-                        onCreateOrder: () =>
-                            _onCreateOrderPressed(context, loaded),
+                        onCreateOrder: () {
+                          if (_isPickingLocation) return;
+                          _onCreateOrderPressed(context, loaded);
+                        },
                       );
                     },
                   ),

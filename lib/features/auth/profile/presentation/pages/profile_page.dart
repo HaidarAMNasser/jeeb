@@ -90,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
       },
       builder: (context, logoutState) {
         return BlocConsumer<ProfileBloc, ProfileState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is ProfileLoaded) {
               if (state.updateFailureMessage != null) {
                 final route = ModalRoute.of(context);
@@ -115,9 +115,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
               }
               if (state.localeToApply != null) {
-                context.setLocale(state.localeToApply!);
+                await context.setLocale(state.localeToApply!);
                 customToast(msg: AppTranslation.languageChangedSuccessfully);
                 context.read<ProfileBloc>().add(const ClearLocaleToApply());
+                if (!mounted) return;
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(Routes.splash, (_) => false);
               }
             } else if (state is ProfileError) {
               customToast(msg: state.message);

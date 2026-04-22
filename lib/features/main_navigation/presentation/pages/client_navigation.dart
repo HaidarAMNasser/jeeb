@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -73,9 +74,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
             BlocProvider<ClientHomeBloc>(
               create: (_) => di.sl<ClientHomeBloc>(),
             ),
-            BlocProvider<ProfileBloc>.value(
-              value: di.sl<ProfileBloc>(),
-            ),
+            BlocProvider<ProfileBloc>.value(value: di.sl<ProfileBloc>()),
           ],
           child: const ClientHomePage(),
         );
@@ -108,6 +107,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale;
     return Scaffold(
       backgroundColor: ColorManager.background,
       body: _buildScreen(_currentIndex),
