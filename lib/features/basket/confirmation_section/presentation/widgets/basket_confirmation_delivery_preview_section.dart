@@ -31,18 +31,18 @@ class BasketConfirmationDeliveryPreviewSection extends StatelessWidget {
         children: [
           _row(
             AppTranslation.orderSubtotal,
-            '\$${preview.productsTotalMinorUnits}',
+            'SYP ${preview.productsTotalMinorUnits}',
           ),
           _row(
             AppTranslation.orderPreviewDeliveryCost,
-            '\$${preview.deliveryCostWithCommission}',
+            'SYP ${preview.deliveryCostWithCommission}',
           ),
           SizedBox(height: AppHeight.s12),
           Divider(color: ColorManager.textSecondary.withValues(alpha: 0.2)),
           SizedBox(height: AppHeight.s8),
           CustomText(
             text:
-                '${AppTranslation.orderPreviewGrandTotal}: \$${preview.grandTotalMinorUnits}',
+                '${AppTranslation.orderPreviewGrandTotal}: SYP ${preview.grandTotalMinorUnits}',
             textStyle: getBoldStyle(
               fontSize: AppFontSize.s18,
               color: ColorManager.primary,

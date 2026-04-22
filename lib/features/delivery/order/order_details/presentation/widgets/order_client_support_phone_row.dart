@@ -26,10 +26,27 @@ class OrderClientSupportPhoneRow extends StatelessWidget {
     if (path.isEmpty) return;
     final uri = Uri(scheme: 'tel', path: path);
     try {
-      if (await canLaunchUrl(uri) && context.mounted) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      var launched = await launchUrl(
+        uri,
+        mode: LaunchMode.platformDefault,
+      );
+      if (!launched) {
+        launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
       }
-    } catch (_) {}
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to open phone app')),
+        );
+      }
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open phone app')),
+      );
+    }
   }
 
   @override
