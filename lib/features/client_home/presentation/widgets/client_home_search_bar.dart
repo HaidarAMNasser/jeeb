@@ -72,19 +72,6 @@ class _ClientHomeSearchBarState extends State<ClientHomeSearchBar> {
     }
   }
 
-  // void _onSearchChanged(String query) {
-  //   setState(() {});
-  //   _debounce?.cancel();
-  //   _debounce = Timer(const Duration(milliseconds: 350), () {
-  //     if (!mounted) return;
-  //     if (query.length >= 3) {
-  //       context.read<ClientHomeBloc>().add(GlobalSearchEvent(query));
-  //     } else if (query.isEmpty) {
-  //       context.read<ClientHomeBloc>().add(const RefreshClientHomeEvent());
-  //     }
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     final hints = _hintPhrases();

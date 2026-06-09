@@ -47,6 +47,10 @@ class CreateOrderRemoteDataSourceImpl implements CreateOrderRemoteDataSource {
     if (cid != null && cid > 0) {
       body['cityId'] = cid;
     }
+    final aid = params.areaId;
+    if (aid != null && aid > 0) {
+      body['areaId'] = aid;
+    }
     final name = params.customerName;
     if (name != null && name.isNotEmpty) {
       body['customerName'] = name;

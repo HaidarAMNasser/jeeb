@@ -217,6 +217,9 @@
   "please_enter_phone": "Please enter phone",
   "password_must_be_at_least_6_characters": "Password must be at least 6 characters",
   "select_language": "Select Language",
+  "select_area": "Select Area",
+  "no_areas_available": "No areas available",
+  "search_areas_hint": "Search areas...",
   "change_language": "Change Language",
   "close": "Close",
 

@@ -213,6 +213,9 @@
   "please_enter_phone": "الرجاء إدخال رقم الهاتف",
   "password_must_be_at_least_6_characters": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
   "select_language": "اختر اللغة",
+  "select_area": "اختر المنطقة",
+  "no_areas_available": "لا توجد مناطق متاحة",
+  "search_areas_hint": "ابحث عن المناطق...",
   "change_language": "تغيير اللغة",
   "close": "إغلاق",
 

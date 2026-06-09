@@ -12,7 +12,7 @@ import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_s
 import 'package:jeeb_app/features/client_home/presentation/widgets/category/client_home_categories_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/merchants/client_home_merchants_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/offer/client_home_offers_slider.dart';
-import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_products_list.dart';
+// import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_products_list.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ClientHomePage extends StatefulWidget {
@@ -57,15 +57,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
             return ErrorStateWidget(
               message: state.errorMessage!,
               onRetry: () => context.read<ClientHomeBloc>().add(
-                    const LoadClientHomeEvent(),
-                  ),
+                const LoadClientHomeEvent(),
+              ),
             );
           }
           return RefreshIndicator(
             onRefresh: () async {
               context.read<ClientHomeBloc>().add(
-                    const RefreshClientHomeEvent(),
-                  );
+                const RefreshClientHomeEvent(),
+              );
             },
             color: ColorManager.primary,
             child: CustomScrollView(
@@ -77,20 +77,20 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       const ClientHomeSearchBar(),
-                      SizedBox(height: AppHeight.s24),
+                      SizedBox(height: AppHeight.s22),
                       const ClientHomeCategoriesSection(),
-                      SizedBox(height: AppHeight.s24),
-                      const ClientHomeMerchantsSection(),
-                      SizedBox(height: AppHeight.s24),
+                      SizedBox(height: AppHeight.s10),
+
                       const ClientHomeOffersSlider(),
-                      SizedBox(height: AppHeight.s24),
+                      SizedBox(height: AppHeight.s10),
                     ]),
                   ),
                 ),
                 SliverPadding(
                   padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
                   sliver: const SliverToBoxAdapter(
-                    child: ClientHomeProductsList(),
+                    child: ClientHomeMerchantsSection(),
+                    //  ClientHomeProductsList(),
                   ),
                 ),
                 if (state.isLoadingMore)

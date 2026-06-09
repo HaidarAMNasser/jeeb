@@ -264,6 +264,14 @@ abstract class AppApiServiceClient {
   @POST("users/deliveries/{id}/confirm")
   Future<Response> confirmDeliveryMan(@Path('id') String id);
 
+  // Area endpoints
+  @GET("areas")
+  Future<Response> getAreas(
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+    @Query('search') String? search,
+  );
+
   // Order endpoints
   @GET("orders")
   Future<Response> getOrders({

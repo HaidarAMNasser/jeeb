@@ -494,6 +494,9 @@ class AppTranslation {
   static String get passwordMustBeAtLeast6Characters =>
       'password_must_be_at_least_6_characters'.tr();
   static String get selectLanguage => 'select_language'.tr();
+  static String get selectArea => 'select_area'.tr();
+  static String get noAreasAvailable => 'no_areas_available'.tr();
+  static String get searchAreasHint => 'search_areas_hint'.tr();
   static String get changeLanguage => 'change_language'.tr();
   static String get close => 'close'.tr();
   static String get languageChangedSuccessfully =>

@@ -11,6 +11,7 @@ class CreateOrderParams extends Equatable {
   /// Tip in smallest currency unit (see API docs).
   final int tipAmount;
   final int? cityId;
+  final int? areaId;
   final String? customerName;
   final String? customerPhone;
 
@@ -23,6 +24,7 @@ class CreateOrderParams extends Equatable {
     this.paymentMethod = 'CASH',
     this.tipAmount = 0,
     this.cityId,
+    this.areaId,
     this.customerName,
     this.customerPhone,
   });
@@ -37,6 +39,7 @@ class CreateOrderParams extends Equatable {
         paymentMethod,
         tipAmount,
         cityId,
+        areaId,
         customerName,
         customerPhone,
       ];
