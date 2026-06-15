@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -73,21 +74,19 @@ class _ClientNavigationState extends State<ClientNavigation> {
             BlocProvider<ClientHomeBloc>(
               create: (_) => di.sl<ClientHomeBloc>(),
             ),
-            BlocProvider<ProfileBloc>.value(
-              value: di.sl<ProfileBloc>(),
-            ),
+            BlocProvider<ProfileBloc>.value(value: di.sl<ProfileBloc>()),
           ],
           child: const ClientHomePage(),
         );
       case 1:
         return BlocProvider<FavoritesBloc>.value(
           value: di.sl<FavoritesBloc>()..add(const LoadFavoritesEvent()),
-          child: const FavoritesPage(),
+          child: const FavoritesPage(removeBack: true),
         );
       case 2:
         return BlocProvider<ListOrderBloc>(
           create: (_) => di.sl<ListOrderBloc>()..add(const GetOrdersEvent()),
-          child: const ListOrderPage(),
+          child: const ListOrderPage(removeBack: true),
         );
       case 3:
         return MultiBlocProvider(
@@ -99,7 +98,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
               create: (_) => di.sl<OrderBeforeConfirmBloc>(),
             ),
           ],
-          child: const BasketPage(),
+          child: const BasketPage(removeBack: true),
         );
       default:
         return const SizedBox.shrink();
@@ -108,6 +107,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale;
     return Scaffold(
       backgroundColor: ColorManager.background,
       body: _buildScreen(_currentIndex),

@@ -8,7 +8,8 @@ import 'package:jeeb_app/features/delivery/order/list_order/presentation/bloc/li
 import 'package:jeeb_app/features/delivery/order/list_order/presentation/widgets/list_order_content.dart';
 
 class ListOrderPage extends StatefulWidget {
-  const ListOrderPage({super.key});
+  final bool? removeBack;
+  const ListOrderPage({super.key, this.removeBack});
 
   @override
   State<ListOrderPage> createState() => _ListOrderPageState();
@@ -54,7 +55,11 @@ class _ListOrderPageState extends State<ListOrderPage> {
 
     return Scaffold(
       backgroundColor: ColorManager.background,
-      appBar: CustomAppBar(title: AppTranslation.orders),
+      appBar: CustomAppBar(
+        title: AppTranslation.orders,
+        automaticallyImplyLeading:
+            (widget.removeBack != null && widget.removeBack!) ? false : true,
+      ),
       body: BlocStateHandler<ListOrderBloc, ListOrderState>(
         bloc: bloc,
         isLoading: (state) => state is ListOrderLoading,

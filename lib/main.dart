@@ -32,11 +32,9 @@ void main() async {
   await di.init();
   await Firebase.initializeApp();
 
-  if (kDebugMode) {
-    ChuckerFlutter.showOnRelease = false;
-    // Button only (no notifications/snack bars).
-    ChuckerFlutter.showNotification = false;
-  }
+  // // Chucker
+  ChuckerFlutter.showOnRelease = true;
+  ChuckerFlutter.showNotification = false;
 
   // Get stored language from SharedPreferences
   final storageService = di.sl<StorageService>();
@@ -66,6 +64,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // Chucker
   Offset _chuckerButtonOffset = const Offset(300, 500);
   late final UpdateTokenBloc _updateTokenBloc;
   late final ProfileBloc _profileBloc;
@@ -78,7 +77,6 @@ class _MyAppState extends State<MyApp> {
     _profileBloc = di.sl<ProfileBloc>()..add(const GetProfile());
     _initNotifications();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !kDebugMode) return;
       final size = MediaQuery.of(context).size;
       setState(() {
         _chuckerButtonOffset = Offset(size.width - 72, size.height - 160);
@@ -109,7 +107,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Jeeb App',
             debugShowCheckedModeBanner: false,
             navigatorObservers: [
-              if (kDebugMode) ChuckerFlutter.navigatorObserver,
+              ChuckerFlutter.navigatorObserver
             ],
             builder: (context, child) {
               if (!kDebugMode) return child ?? const SizedBox.shrink();

@@ -9,7 +9,7 @@ import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/o
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 String formatOrderMoneyMinor(int minor) =>
-    '\$${(minor / 100).toStringAsFixed(2)}';
+    'SYP ${(minor / 100).toStringAsFixed(2)}';
 
 class DeliveryOrderDetailsLinesSection extends StatelessWidget {
   final List<OrderLineProductEntity> itemLines;

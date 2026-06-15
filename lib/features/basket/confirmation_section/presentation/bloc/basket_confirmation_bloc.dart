@@ -277,6 +277,7 @@ class BasketConfirmationBloc
       ),
       tipAmount: 0,
       cityId: s.profileCityId,
+      areaId: event.areaId,
       customerName: s.name.trim(),
       customerPhone: phone,
     );

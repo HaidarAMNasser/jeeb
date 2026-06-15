@@ -26,8 +26,8 @@ class _SearchMerchantWidgetState extends State<SearchMerchantWidget> {
 
   void _onSearchSubmitted(String query) {
     context.read<ListMerchantBloc>().add(
-          GetMerchantsEvent(search: query.isEmpty ? null : query),
-        );
+      GetMerchantsEvent(search: query.isEmpty ? null : query),
+    );
   }
 
   void _onClearSearch() {
@@ -51,14 +51,11 @@ class _SearchMerchantWidgetState extends State<SearchMerchantWidget> {
         controller: _searchController,
         onSubmitted: _onSearchSubmitted,
         prefixIcon: Icon(Icons.search, color: ColorManager.primary),
-        textColor: ColorManager.productNameColor,
+        textColor: ColorManager.titlesColor,
         hintColor: ColorManager.textSecondary,
         suffixIcon: _searchController.text.isNotEmpty
             ? IconButton(
-                icon: Icon(
-                  Icons.clear,
-                  color: ColorManager.descriptionColor,
-                ),
+                icon: Icon(Icons.clear, color: ColorManager.descriptionColor),
                 onPressed: _onClearSearch,
               )
             : null,

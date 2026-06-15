@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
     as di;
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -47,6 +48,7 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale;
     return BlocProvider<ManageOrderBloc>.value(
       value: di.sl<ManageOrderBloc>(),
       child: BlocProvider<DeliveryHomeBloc>.value(
@@ -58,10 +60,10 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
               index: _currentIndex,
               children: [
                 const DeliveryHomePage(),
-                const DeliveryOrdersPage(),
+                const DeliveryOrdersPage(removeBack: true),
                 BlocProvider<LogoutBloc>(
                   create: (_) => di.sl<LogoutBloc>(),
-                  child: const ProfilePage(),
+                  child: const ProfilePage(removeBack: true),
                 ),
               ],
             ),

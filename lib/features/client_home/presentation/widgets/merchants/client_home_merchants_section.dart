@@ -86,16 +86,17 @@ class ClientHomeMerchantsSection extends StatelessWidget {
               ],
             ),
             SizedBox(height: AppHeight.s12),
-            SizedBox(
-              height: 170.0.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: merchants.length,
-                separatorBuilder: (_, __) => SizedBox(width: AppPadding.p12),
-                itemBuilder: (context, index) {
-                  return MerchantCard(merchant: merchants[index]);
-                },
-              ),
+            ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: merchants.length,
+              separatorBuilder: (_, __) => SizedBox(width: AppPadding.p12),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding:  EdgeInsets.only(bottom: AppSize.s20.h),
+                  child: MerchantCard(merchant: merchants[index]),
+                );
+              },
             ),
           ],
         );

@@ -14,8 +14,16 @@ import 'package:jeeb_app/features/basket/list_cart/presentation/widgets/basket_l
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-class BasketPage extends StatelessWidget {
-  const BasketPage({super.key});
+class BasketPage extends StatefulWidget {
+  final bool? removeBack;
+  const BasketPage({super.key, this.removeBack});
+
+  @override
+  State<BasketPage> createState() => _BasketPageState();
+}
+
+class _BasketPageState extends State<BasketPage> {
+  bool _isPickingLocation = false;
 
   String _price(int value) => (value / 100).toStringAsFixed(2);
 
@@ -34,9 +42,16 @@ class BasketPage extends StatelessWidget {
     final orderBloc = context.read<OrderBeforeConfirmBloc>();
 
     if (!BasketOrderLocationSession.hasCoordinates) {
-      final picked = await pickCheckoutLocation(context);
-      if (picked == null) return;
-      BasketOrderLocationSession.save(picked.lat, picked.lng);
+      setState(() => _isPickingLocation = true);
+      try {
+        final picked = await pickCheckoutLocation(context);
+        if (picked == null) return;
+        BasketOrderLocationSession.save(picked.lat, picked.lng);
+      } finally {
+        if (mounted) {
+          setState(() => _isPickingLocation = false);
+        }
+      }
     }
 
     if (!BasketOrderLocationSession.hasCoordinates) return;
@@ -50,7 +65,10 @@ class BasketPage extends StatelessWidget {
       final id = int.tryParse(item.productId);
       if (id == null) continue;
       productRequests.add(
-        OrderBeforeConfirmProductRequest(productId: id, quantity: item.quantity),
+        OrderBeforeConfirmProductRequest(
+          productId: id,
+          quantity: item.quantity,
+        ),
       );
     }
 
@@ -68,7 +86,8 @@ class BasketPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<OrderBeforeConfirmBloc, OrderBeforeConfirmState>(
       listenWhen: (prev, curr) =>
-          curr is OrderBeforeConfirmSuccess || curr is OrderBeforeConfirmFailure,
+          curr is OrderBeforeConfirmSuccess ||
+          curr is OrderBeforeConfirmFailure,
       listener: (context, orderState) {
         if (orderState is OrderBeforeConfirmFailure) {
           customToast(msg: orderState.message);
@@ -115,14 +134,18 @@ class BasketPage extends StatelessWidget {
                   backgroundColor: ColorManager.background,
                   appBar: CustomAppBar(
                     title: AppTranslation.basket,
+                    automaticallyImplyLeading:
+                        (widget.removeBack != null && widget.removeBack!)
+                        ? false
+                        : true,
                     actions: [
                       IconButton(
                         onPressed: isSaving || orderLoading
                             ? null
                             : () {
                                 context.read<ListCartBloc>().add(
-                                      const ClearEntireCartEvent(),
-                                    );
+                                  const ClearEntireCartEvent(),
+                                );
                               },
                         tooltip: AppTranslation.delete,
                         icon: const Icon(
@@ -137,7 +160,8 @@ class BasketPage extends StatelessWidget {
                     isLoading: (state) =>
                         state is ListCartLoading || state is ListCartInitial,
                     isError: (state) => state is ListCartError,
-                    getErrorMessage: (state) => (state as ListCartError).message,
+                    getErrorMessage: (state) =>
+                        (state as ListCartError).message,
                     isSuccess: (state) => state is ListCartLoaded,
                     isEmpty: (state) =>
                         state is ListCartLoaded && state.isEmpty,
@@ -149,24 +173,27 @@ class BasketPage extends StatelessWidget {
                       final loaded = loadedState as ListCartLoaded;
                       return BasketLoadedContent(
                         state: loaded,
+                        isCreatingOrder: _isPickingLocation,
                         priceFormatter: _price,
                         onIncrease: (item) => context.read<ListCartBloc>().add(
-                              IncreaseCartItemEvent(
-                                item.productId,
-                                isOffer: item.isOffer,
-                              ),
-                            ),
+                          IncreaseCartItemEvent(
+                            item.productId,
+                            isOffer: item.isOffer,
+                          ),
+                        ),
                         onDecrease: (item) => context.read<ListCartBloc>().add(
-                              DecreaseCartItemEvent(
-                                item.productId,
-                                isOffer: item.isOffer,
-                              ),
-                            ),
+                          DecreaseCartItemEvent(
+                            item.productId,
+                            isOffer: item.isOffer,
+                          ),
+                        ),
                         onSaveChanges: () => context.read<ListCartBloc>().add(
-                              const SaveCartChangesEvent(),
-                            ),
-                        onCreateOrder: () =>
-                            _onCreateOrderPressed(context, loaded),
+                          const SaveCartChangesEvent(),
+                        ),
+                        onCreateOrder: () {
+                          if (_isPickingLocation) return;
+                          _onCreateOrderPressed(context, loaded);
+                        },
                       );
                     },
                   ),

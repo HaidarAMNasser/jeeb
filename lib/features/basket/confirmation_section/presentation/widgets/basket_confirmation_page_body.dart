@@ -14,6 +14,8 @@ import 'package:jeeb_app/features/basket/confirmation_section/presentation/widge
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_map_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_products_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_user_fields_section.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/domain/entities/area_entity.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/presentation/widgets/area_selection_dialog.dart';
 
 /// Main column + scroll + submit bar for [BasketConfirmationPage] (presentation only).
 class BasketConfirmationPageBody extends StatelessWidget {
@@ -104,10 +106,20 @@ class BasketConfirmationPageBody extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: state.isSubmitting
                     ? null
-                    : () {
+                    : () async {
                         if (state.canSubmitOrder) {
+                          final selectedArea =
+                              await showDialog<AreaEntity>(
+                            context: context,
+                            builder: (ctx) => const AreaSelectionDialog(),
+                          );
+                          if (!context.mounted || selectedArea == null) return;
+
+                          final areaId = int.tryParse(selectedArea.id);
+                          if (areaId == null) return;
+
                           context.read<BasketConfirmationBloc>().add(
-                            const BasketConfirmationSubmitRequested(),
+                            BasketConfirmationSubmitRequested(areaId: areaId),
                           );
                         } else {
                           showBasketConfirmationSubmitHintToast(

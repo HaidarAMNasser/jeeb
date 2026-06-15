@@ -15,6 +15,7 @@ import '../../../features/product/product_details/presentation/bloc/product_deta
 import '../../../features/product/product_details/data/repositories/product_details_repository.dart';
 import '../../../features/auth/login/presentation/pages/login_page.dart';
 import '../../../features/auth/login/presentation/bloc/login_bloc.dart';
+import '../../../features/auth/guest/presentation/bloc/guest_bloc.dart';
 import '../../../features/auth/register/presentation/pages/register_page.dart';
 import '../../../features/auth/register/presentation/pages/delivery_waiting_page.dart';
 import '../../../features/auth/register/presentation/bloc/register_bloc.dart';
@@ -97,10 +98,13 @@ class AppRouter {
         );
 
       case Routes.login:
-        return _buildRouteWithBloc(
+        return _buildRouteWithBlocs(
           const LoginPage(),
           settings,
-          bloc: () => di.sl<LoginBloc>(),
+          providers: [
+            BlocProvider<LoginBloc>(create: (_) => di.sl<LoginBloc>()),
+            BlocProvider<GuestBloc>(create: (_) => di.sl<GuestBloc>()),
+          ],
         );
 
       case Routes.register:

@@ -92,7 +92,7 @@ class BasketItemCard extends StatelessWidget {
                 ],
                 SizedBox(height: AppHeight.s5),
                 CustomText(
-                  text: '\$${priceFormatter(item.totalPrice)}',
+                  text: 'SYP ${priceFormatter(item.totalPrice)}',
                   textStyle: getSemiBoldStyle(
                     fontSize: AppFontSize.s14,
                     color: ColorManager.primary,

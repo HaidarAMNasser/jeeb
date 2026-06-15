@@ -72,6 +72,9 @@ abstract class AppApiServiceClient {
     @Field('is_mobile_pass') bool directLogin,
   );
 
+  @POST("auth/guest")
+  Future<Response> guestLogin(Map<String, dynamic> body);
+
   @POST("auth/register")
   Future<Response> register(
     @Field('firstName') String firstName,
@@ -260,6 +263,14 @@ abstract class AppApiServiceClient {
 
   @POST("users/deliveries/{id}/confirm")
   Future<Response> confirmDeliveryMan(@Path('id') String id);
+
+  // Area endpoints
+  @GET("areas")
+  Future<Response> getAreas(
+    @Query('page') int? page,
+    @Query('limit') int? limit,
+    @Query('search') String? search,
+  );
 
   // Order endpoints
   @GET("orders")

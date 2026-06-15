@@ -21,9 +21,9 @@ class ProductItemInfo extends StatelessWidget {
         product.commissionRate! > 0 &&
         product.finalPrice != null &&
         product.finalPrice != product.price) {
-      return ' \$$display';
+      return ' SYP $display';
     }
-    return '\$$display';
+    return ' SYP $display';
   }
 
   @override

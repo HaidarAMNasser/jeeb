@@ -180,9 +180,9 @@ extension ListExtension<T> on List<T> {
 /// Num Extensions
 extension NumExtension on num {
   /// Converts number to currency format
-  String toCurrency({String symbol = '\$'}) {
-    return '$symbol${toStringAsFixed(2)}';
-  }
+  // String toCurrency({String symbol = '\$'}) {
+  //   return '$symbol${toStringAsFixed(2)}';
+  // }
 
   /// Converts bytes to human readable format
   String toFileSize() {

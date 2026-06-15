@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
+import 'package:jeeb_app/core/common/utils/asset_manager.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
@@ -75,10 +76,22 @@ class ProductListItem extends StatelessWidget {
     this.onToggleFavorite,
   });
 
+  bool get _isOfferItem => product.id.startsWith('offer_');
+
+  String get _offerId => product.id.replaceFirst('offer_', '');
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        if (_isOfferItem && _offerId.isNotEmpty) {
+          AppRouter.navigateTo(
+            context,
+            Routes.offerDetails,
+            arguments: {'offerId': _offerId},
+          );
+          return;
+        }
         AppRouter.navigateTo(
           context,
           Routes.productDetails,
@@ -96,6 +109,7 @@ class ProductListItem extends StatelessWidget {
                 key: ValueKey('${product.id}_${product.images.length}'),
                 images: product.images,
                 enableSmallDesign: enableSmallDesign,
+                placeholderAsset: ImageAsset.defaultMarchent,
               ),
               if (onToggleFavorite != null)
                 Positioned(

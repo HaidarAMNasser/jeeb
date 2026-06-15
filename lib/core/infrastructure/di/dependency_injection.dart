@@ -21,6 +21,9 @@ import '../../../features/category/list_category/presentation/bloc/list_category
 import '../../../features/auth/login/data/data_sources/login_remote_data_source.dart';
 import '../../../features/auth/login/data/repositories/login_repository.dart';
 import '../../../features/auth/login/presentation/bloc/login_bloc.dart';
+import '../../../features/auth/guest/data/data_sources/guest_remote_data_source.dart';
+import '../../../features/auth/guest/data/repositories/guest_repository.dart';
+import '../../../features/auth/guest/presentation/bloc/guest_bloc.dart';
 import '../../../features/auth/register/data/data_sources/register_remote_data_source.dart';
 import '../../../features/auth/register/data/repositories/register_repository.dart';
 import '../../../features/auth/register/presentation/bloc/register_bloc.dart';
@@ -56,6 +59,9 @@ import '../../../features/delivery/order/list_order/data/data_sources/list_order
 import '../../../features/delivery/order/list_order/data/repositories/list_order_repository.dart';
 import '../../../features/delivery/order/create_order/data/data_sources/create_order_remote_data_source.dart';
 import '../../../features/delivery/order/create_order/data/repositories/create_order_repository.dart';
+import '../../../features/delivery/order/create_order/areas/data/data_sources/list_areas_data_source.dart';
+import '../../../features/delivery/order/create_order/areas/data/repositories/list_areas_repository.dart';
+import '../../../features/delivery/order/create_order/areas/presentation/bloc/list_areas_bloc.dart';
 import '../../../features/delivery/order/get_order_data_before_confirm/data/data_sources/order_before_confirm_remote_data_source.dart';
 import '../../../features/delivery/order/get_order_data_before_confirm/data/repositories/order_before_confirm_repository.dart';
 import '../../../features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
@@ -160,6 +166,13 @@ Future<void> init() async {
   sl.registerFactory(() => LoginRepository(sl(), sl()));
   sl.registerFactory(() => LoginBloc(sl(), sl()));
 
+  //! Auth Dependencies - Guest
+  sl.registerFactory<GuestRemoteDataSource>(
+    () => GuestRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => GuestRepository(sl(), sl()));
+  sl.registerFactory(() => GuestBloc(sl(), sl()));
+
   //! Auth Dependencies - Register
   sl.registerFactory<RegisterRemoteDataSource>(
     () => RegisterRemoteDataSourceImpl(sl<AppApiServiceClient>()),
@@ -262,6 +275,13 @@ Future<void> init() async {
     () => CreateOrderRemoteDataSourceImpl(sl<AppApiServiceClient>()),
   );
   sl.registerFactory(() => CreateOrderRepository(sl(), sl()));
+
+  //! Areas list (used by [AreaSelectionDialog] before create order)
+  sl.registerFactory<ListAreasRemoteDataSource>(
+    () => ListAreasRemoteDataSourceImpl(sl<AppApiServiceClient>()),
+  );
+  sl.registerFactory(() => ListAreasRepository(sl(), sl()));
+  sl.registerFactory(() => ListAreasBloc(sl()));
 
   //! Pre-confirm delivery quote (`POST distance/calculate-delivery-cost`)
   sl.registerFactory<OrderBeforeConfirmRemoteDataSource>(

@@ -1,6 +1,6 @@
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
-String fmtMinor(int minor) => '\$${(minor / 100).toStringAsFixed(2)}';
+String fmtMinor(int minor) => 'SYP ${(minor / 100).toStringAsFixed(2)}';
 
 (int, int) subtotalAndFeeMinor(OrderEntity o) {
   final fee = (o.deliveryFee ?? 0).round();

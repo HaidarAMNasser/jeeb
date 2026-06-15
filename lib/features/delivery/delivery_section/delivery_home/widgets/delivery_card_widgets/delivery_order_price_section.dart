@@ -174,7 +174,7 @@ class DeliveryOrderPriceSection extends StatelessWidget {
           ),
           if (isBold)
             CustomText(
-              text: '\$${(value / 100).toStringAsFixed(2)}',
+              text: 'SYP ${(value / 100).toStringAsFixed(2)}',
               textStyle: getBoldStyle(
                 fontSize: valueSize,
                 color: color,

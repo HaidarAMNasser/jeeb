@@ -30,7 +30,7 @@ class ProductDetailsContent extends StatelessWidget {
                 _nameAndCategory(),
                 SizedBox(height: AppHeight.s12),
                 CustomText(
-                  text: ' \$${formatPrice(product.finalPrice!)}',
+                  text: ' SYP ${formatPrice(product.finalPrice!)}',
                   textStyle: getBoldStyle(
                     fontSize: AppFontSize.s22,
                     color: ColorManager.primary,

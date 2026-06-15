@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:chucker_flutter/chucker_flutter.dart';
+// import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -10,7 +10,6 @@ import '../../common/utils/toast_util.dart';
 import '../../presentation/localization/app_translation.dart';
 import 'dio_cache_interceptor.dart';
 import 'storage_service.dart';
-// import 'package:chucker_flutter/chucker_flutter.dart';
 
 const String accept = "Accept";
 const String acceptEncoding = "Accept-Encoding";
@@ -70,7 +69,7 @@ class DioFactory {
     );
 
     // Chucker
-    dio.interceptors.add(ChuckerDioInterceptor());
+    // dio.interceptors.add(ChuckerDioInterceptor());
     dio.interceptors.add(
       AppInterceptors(_storageService, _navigationService, cacheInterceptor),
     );
@@ -109,7 +108,10 @@ class AppInterceptors extends Interceptor {
     options.headers[isMobile] = true;
 
     final tokenForRequest = await _storageService.getUserToken();
-    if (tokenForRequest.isNotEmpty) {
+    final normalizedPath = options.path.toLowerCase();
+    final isGuestAuthRequest =
+        normalizedPath == 'auth/guest' || normalizedPath.endsWith('/auth/guest');
+    if (tokenForRequest.isNotEmpty && !isGuestAuthRequest) {
       options.headers[authorization] = "Bearer $tokenForRequest";
     }
     if (kDebugMode) {

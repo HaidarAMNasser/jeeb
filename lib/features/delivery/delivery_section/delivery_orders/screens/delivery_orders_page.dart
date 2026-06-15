@@ -12,7 +12,8 @@ import 'package:jeeb_app/features/delivery/pay_admin/presentation/widgets/delive
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DeliveryOrdersPage extends StatefulWidget {
-  const DeliveryOrdersPage({super.key});
+  final bool? removeBack;
+  const DeliveryOrdersPage({super.key,this.removeBack});
 
   @override
   State<DeliveryOrdersPage> createState() => _DeliveryOrdersPageState();
@@ -101,6 +102,7 @@ class _DeliveryOrdersPageState extends State<DeliveryOrdersPage> {
         backgroundColor: ColorManager.background,
         elevation: 0,
         scrolledUnderElevation: 0,
+        automaticallyImplyLeading: (widget.removeBack != null && widget.removeBack!) ? false : true,
         title: Text(
           AppTranslation.myOrders,
           style: getBoldStyle(

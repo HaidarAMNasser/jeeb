@@ -13,6 +13,7 @@ class BasketLoadedContent extends StatelessWidget {
   final void Function(CartDraftItem item) onDecrease;
   final VoidCallback onSaveChanges;
   final VoidCallback onCreateOrder;
+  final bool isCreatingOrder;
 
   const BasketLoadedContent({
     super.key,
@@ -22,6 +23,7 @@ class BasketLoadedContent extends StatelessWidget {
     required this.onDecrease,
     required this.onSaveChanges,
     required this.onCreateOrder,
+    this.isCreatingOrder = false,
   });
 
   @override
@@ -55,6 +57,7 @@ class BasketLoadedContent extends StatelessWidget {
         else
           BasketSaveBar(
             label: AppTranslation.createOrder,
+            isLoading: isCreatingOrder,
             onSave: onCreateOrder,
           ),
       ],

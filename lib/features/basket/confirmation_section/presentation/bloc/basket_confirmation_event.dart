@@ -62,7 +62,12 @@ class BasketConfirmationLocationPicked extends BasketConfirmationEvent {
 }
 
 class BasketConfirmationSubmitRequested extends BasketConfirmationEvent {
-  const BasketConfirmationSubmitRequested();
+  final int areaId;
+
+  const BasketConfirmationSubmitRequested({required this.areaId});
+
+  @override
+  List<Object?> get props => [areaId];
 }
 
 /// UI applied [BasketConfirmationState.pendingFieldSync] to controllers.

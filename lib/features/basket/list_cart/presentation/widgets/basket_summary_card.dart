@@ -33,7 +33,7 @@ class BasketSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
-            text: '${AppTranslation.total}: \$${priceFormatter(total)}',
+            text: '${AppTranslation.total}: SYP ${priceFormatter(total)}',
             textStyle: getBoldStyle(
               fontSize: AppFontSize.s20,
               color: ColorManager.primary,

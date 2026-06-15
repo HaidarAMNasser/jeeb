@@ -7,6 +7,7 @@ import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
+import 'package:jeeb_app/features/auth/guest/presentation/bloc/guest_bloc.dart';
 import 'package:jeeb_app/features/notification/update_token/presentation/bloc/update_token_bloc.dart';
 
 import '../bloc/login_bloc.dart';
@@ -53,11 +54,15 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _handleGuestLogin() {
+    context.read<GuestBloc>().add(const GuestLoginSubmitted());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginBloc, LoginState>(
-      listener: (context, state) {
-        if (state is LoginSuccess) {
+    return BlocConsumer<GuestBloc, GuestState>(
+      listener: (context, guestState) {
+        if (guestState is GuestSuccess) {
           context.read<UpdateTokenBloc>().add(
             const UpdateTokenLoginSucceeded(),
           );
@@ -66,41 +71,62 @@ class _LoginPageState extends State<LoginPage> {
             Routes.mainNavigation,
             predicate: (route) => false,
           );
-        } else if (state is LoginNeedsVerification) {
-          context.pushNamedAndRemoveUntil(
-            Routes.verify,
-            predicate: (route) => false,
-            arguments: {'email': state.email},
-          );
-        } else if (state is LoginError) {
-          customToast(msg: state.message);
+        } else if (guestState is GuestError) {
+          customToast(msg: guestState.message);
         }
       },
-      builder: (context, state) {
-        return ModalProgressHUD(
-          progressIndicator: const CustomCircleIndicator(),
-          inAsyncCall: state is LoginLoading,
-          child: Scaffold(
-            backgroundColor: ColorManager.background,
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(AppPadding.p24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const LoginHeader(),
-                    LoginForm(
-                      formKey: _formKey,
-                      emailController: _emailController,
-                      passwordController: _passwordController,
-                      onLogin: _handleLogin,
-                      isLoading: state is LoginLoading,
+      builder: (context, guestState) {
+        return BlocConsumer<LoginBloc, LoginState>(
+          listener: (context, state) {
+            if (state is LoginSuccess) {
+              context.read<UpdateTokenBloc>().add(
+                const UpdateTokenLoginSucceeded(),
+              );
+              customToast(msg: AppTranslation.loginSuccess);
+              context.pushNamedAndRemoveUntil(
+                Routes.mainNavigation,
+                predicate: (route) => false,
+              );
+            } else if (state is LoginNeedsVerification) {
+              context.pushNamedAndRemoveUntil(
+                Routes.verify,
+                predicate: (route) => false,
+                arguments: {'email': state.email},
+              );
+            } else if (state is LoginError) {
+              customToast(msg: state.message);
+            }
+          },
+          builder: (context, state) {
+            final isLoading =
+                state is LoginLoading || guestState is GuestLoading;
+            return ModalProgressHUD(
+              progressIndicator: const CustomCircleIndicator(),
+              inAsyncCall: isLoading,
+              child: Scaffold(
+                backgroundColor: ColorManager.background,
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(AppPadding.p24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const LoginHeader(),
+                        LoginForm(
+                          formKey: _formKey,
+                          emailController: _emailController,
+                          passwordController: _passwordController,
+                          onLogin: _handleLogin,
+                          onGuestLogin: _handleGuestLogin,
+                          isLoading: isLoading,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

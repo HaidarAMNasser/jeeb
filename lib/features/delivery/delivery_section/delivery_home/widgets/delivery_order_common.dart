@@ -37,7 +37,7 @@ Widget buildPriceTag(int price) {
       ],
     ),
     child: CustomText(
-      text: '\$${(price / 100).toStringAsFixed(2)}',
+      text: 'SYP ${(price / 100).toStringAsFixed(2)}',
       textStyle: getBoldStyle(fontSize: AppFontSize.s14, color: Colors.white),
     ),
   );

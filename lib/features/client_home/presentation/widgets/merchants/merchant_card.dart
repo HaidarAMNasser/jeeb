@@ -28,8 +28,7 @@ class MerchantCard extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(AppRadius.r16),
       child: Container(
-        width: 180.w,
-        height: 170.0.h,
+        height: 200.0.h,
         decoration: BoxDecoration(
           color: ColorManager.surface,
           borderRadius: BorderRadius.circular(AppRadius.r16),
@@ -87,7 +86,7 @@ class MerchantCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Material(
                 color: ColorManager.lightPrimary,
                 elevation: 2,
@@ -97,26 +96,30 @@ class MerchantCard extends StatelessWidget {
                   bottomRight: Radius.circular(AppRadius.r16),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppPadding.p8,
-                    vertical: AppPadding.p4,
+                  padding: EdgeInsetsDirectional.only(
+                    start: AppPadding.p8,
+                    end: AppPadding.p12,
+                    top: AppPadding.p12,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-
+              
                     children: [
-                      HorizontalScrollableText(
-                        text: merchant.restaurantName,
-                        textStyle: getSemiBoldStyle(
-                          fontSize: AppFontSize.s14,
-                          color: ColorManager.productNameColor,
+                      Expanded(
+                        child: HorizontalScrollableText(
+                          text: merchant.restaurantName,
+                          textStyle: getSemiBoldStyle(
+                            fontSize: AppFontSize.s16,
+                            color: ColorManager.productNameColor,
+                          ),
+                          height: AppHeight.s26,
                         ),
-                        height: AppHeight.s26,
                       ),
                       if (merchant.cityName != null &&
                           merchant.cityName!.isNotEmpty) ...[
+                        SizedBox(width: AppPadding.p8),
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: AppPadding.p6,
@@ -129,12 +132,11 @@ class MerchantCard extends StatelessWidget {
                           child: CustomText(
                             text: merchant.cityName!,
                             textStyle: getRegularStyle(
-                              fontSize: AppFontSize.s10,
+                              fontSize: AppFontSize.s14,
                               color: ColorManager.primary,
                             ),
                             maxLines: 1,
                             textOverflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],

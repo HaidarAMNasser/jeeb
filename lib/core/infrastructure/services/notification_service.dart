@@ -23,7 +23,7 @@ class NotificationService {
         'jeeb_high_importance',
         'High Importance Notifications',
         description: 'Used for important app notifications.',
-        importance: Importance.high,
+        importance: Importance.high, 
       );
 
   Future<void> initialize({
@@ -172,3 +172,5 @@ class NotificationService {
     }
   }
 }
+//  one fc mtoken for every account 
+// list of fcm token for every account

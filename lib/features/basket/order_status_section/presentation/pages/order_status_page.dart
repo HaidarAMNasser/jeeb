@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/classes/order_status_step_labels.dart';
 import 'package:jeeb_app/core/common/utils/order_status_step_index.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
+import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
+    as di;
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
 import 'package:jeeb_app/core/presentation/routes/routes.dart';
@@ -49,14 +50,11 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
     final repository = di.sl<GetSettingsRepository>();
     final result = await repository.getSettings();
     if (!mounted) return;
-    result.fold(
-      (_) {},
-      (settings) {
-        final phone = settings.supportPhone.trim();
-        if (phone.isEmpty) return;
-        setState(() => _supportPhone = phone);
-      },
-    );
+    result.fold((_) {}, (settings) {
+      final phone = settings.supportPhone.trim();
+      if (phone.isEmpty) return;
+      setState(() => _supportPhone = phone);
+    });
   }
 
   @override
@@ -94,7 +92,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                   state.routeStatus == OrderStatus.onTheWay &&
                   ((dLat != null && dLng != null) ||
                       (drvLat != null && drvLng != null));
-              final inDriverContactPhase = !state.demoRunning &&
+              final inDriverContactPhase =
+                  !state.demoRunning &&
                   orderStatusShowsDriverContact(state.routeStatus);
 
               return CustomScrollView(
@@ -104,9 +103,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                       timelineStepIndex: state.displayIndex,
                     ),
                   ),
-                  SliverFillRemaining(
-                    hasScrollBody: true,
-                    child: SingleChildScrollView(
+                  SliverToBoxAdapter(
+                    child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
                       child: Column(
                         spacing: AppHeight.s16,
@@ -165,6 +163,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                               );
                             },
                           ),
+                          SizedBox(height: AppHeight.s16),
                         ],
                       ),
                     ),

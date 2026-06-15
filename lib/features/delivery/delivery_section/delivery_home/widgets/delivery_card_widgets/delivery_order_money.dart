@@ -3,7 +3,7 @@ import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 
-/// Readable money display: separates dollars / cents for hierarchy (cards & line items).
+/// Readable money display: separates major / minor units for hierarchy (cards & line items).
 class OrderMoneyText extends StatelessWidget {
   final int minor;
   final OrderMoneyStyle style;
@@ -14,7 +14,7 @@ class OrderMoneyText extends StatelessWidget {
     this.style = OrderMoneyStyle.inline,
   });
 
-  int get _dollars => minor.abs() ~/ 100;
+  int get _majorUnits => minor.abs() ~/ 100;
   int get _cents => minor.abs() % 100;
 
   @override
@@ -39,14 +39,14 @@ class OrderMoneyText extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: '\$',
+                text: 'SYP ',
                 style: getMediumStyle(
                   fontSize: AppFontSize.s12,
                   color: ColorManager.textSecondary,
                 ),
               ),
               TextSpan(
-                text: '$_dollars',
+                text: '$_majorUnits',
                 style: getSemiBoldStyle(
                   fontSize: AppFontSize.s14,
                   color: ColorManager.titlesColor.withOpacity(0.92),
@@ -79,14 +79,14 @@ class OrderMoneyText extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: '\$',
+                text: 'SYP ',
                 style: getSemiBoldStyle(
                   fontSize: AppFontSize.s14,
                   color: ColorManager.primary.withOpacity(0.85),
                 ),
               ),
               TextSpan(
-                text: '$_dollars',
+                text: '$_majorUnits',
                 style: getBoldStyle(
                   fontSize: AppFontSize.s26,
                   color: ColorManager.titlesColor,
