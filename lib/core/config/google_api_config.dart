@@ -9,6 +9,6 @@ class GoogleApiConfig {
   /// Directions API (HTTP). Separate key from Maps SDK is supported.
   static const String directionsApiKey = String.fromEnvironment(
     'GOOGLE_DIRECTIONS_API_KEY',
-    defaultValue: 'AIzaSyAdqlE7f_SLca5cAAxAxDXIqRDjm0uNCes',
+    defaultValue: 'AIzaSyBjaiHVyaPf6UnOK9Vz787nkNcZK9pgci4',
   );
 }
