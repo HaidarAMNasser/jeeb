@@ -1,3 +1,4 @@
+import 'package:jeeb_app/features/delivery/order/create_order/areas/data/mappers/area_mapper.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/data/models/order_model.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/product/list_product/data/mappers/product_mapper.dart';
@@ -124,6 +125,11 @@ extension OrderMapper on OrderModel {
       offerBundles: orderOfferBundles.map((e) => e.toDomain()).toList(),
       mediatorCommissionRate: mediatorCommissionRate,
       deliveryCostWithCommission: deliveryCostWithCommission,
+      areaId: areaId,
+      area: area?.toDomain(),
+      subtotal: subtotal,
+      productDiscount: productDiscount,
+      offerDiscount: offerDiscount,
     );
   }
 }

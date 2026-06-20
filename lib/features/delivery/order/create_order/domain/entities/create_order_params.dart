@@ -6,12 +6,10 @@ class CreateOrderParams extends Equatable {
   final List<CreateOrderProductLine> products;
   final List<CreateOrderOfferLine> offers;
   final CreateOrderDeliveryCoordinates delivery;
-  final int deliveryFee;
   final String paymentMethod;
   /// Tip in smallest currency unit (see API docs).
   final int tipAmount;
-  final int? cityId;
-  final int? areaId;
+  final int areaId;
   final String? customerName;
   final String? customerPhone;
 
@@ -20,11 +18,9 @@ class CreateOrderParams extends Equatable {
     required this.products,
     required this.offers,
     required this.delivery,
-    this.deliveryFee = 0,
+    required this.areaId,
     this.paymentMethod = 'CASH',
     this.tipAmount = 0,
-    this.cityId,
-    this.areaId,
     this.customerName,
     this.customerPhone,
   });
@@ -35,10 +31,8 @@ class CreateOrderParams extends Equatable {
         products,
         offers,
         delivery,
-        deliveryFee,
         paymentMethod,
         tipAmount,
-        cityId,
         areaId,
         customerName,
         customerPhone,

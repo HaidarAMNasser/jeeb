@@ -37,19 +37,13 @@ class CreateOrderRemoteDataSourceImpl implements CreateOrderRemoteDataSource {
 
     final body = <String, dynamic>{
       'ownerId': params.ownerId,
+      'areaId': params.areaId,
       'deliveryCoordinates': delivery,
-      'deliveryFee': params.deliveryFee,
       'paymentMethod': params.paymentMethod,
-      'tipAmount': params.tipAmount,
     };
 
-    final cid = params.cityId;
-    if (cid != null && cid > 0) {
-      body['cityId'] = cid;
-    }
-    final aid = params.areaId;
-    if (aid != null && aid > 0) {
-      body['areaId'] = aid;
+    if (params.tipAmount > 0) {
+      body['tipAmount'] = params.tipAmount;
     }
     final name = params.customerName;
     if (name != null && name.isNotEmpty) {

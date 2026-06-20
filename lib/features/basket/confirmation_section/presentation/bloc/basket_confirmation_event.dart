@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/domain/entities/area_entity.dart';
 
 abstract class BasketConfirmationEvent extends Equatable {
   const BasketConfirmationEvent();
@@ -61,13 +62,17 @@ class BasketConfirmationLocationPicked extends BasketConfirmationEvent {
   List<Object?> get props => [latitude, longitude];
 }
 
-class BasketConfirmationSubmitRequested extends BasketConfirmationEvent {
-  final int areaId;
+class BasketConfirmationAreaChanged extends BasketConfirmationEvent {
+  final AreaEntity? area;
 
-  const BasketConfirmationSubmitRequested({required this.areaId});
+  const BasketConfirmationAreaChanged(this.area);
 
   @override
-  List<Object?> get props => [areaId];
+  List<Object?> get props => [area];
+}
+
+class BasketConfirmationSubmitRequested extends BasketConfirmationEvent {
+  const BasketConfirmationSubmitRequested();
 }
 
 /// UI applied [BasketConfirmationState.pendingFieldSync] to controllers.

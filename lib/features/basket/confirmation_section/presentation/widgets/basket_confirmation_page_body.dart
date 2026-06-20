@@ -13,9 +13,8 @@ import 'package:jeeb_app/features/basket/confirmation_section/data/helpers/baske
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_delivery_preview_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_map_section.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_products_section.dart';
+import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_area_dropdown.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/widgets/basket_confirmation_user_fields_section.dart';
-import 'package:jeeb_app/features/delivery/order/create_order/areas/domain/entities/area_entity.dart';
-import 'package:jeeb_app/features/delivery/order/create_order/areas/presentation/widgets/area_selection_dialog.dart';
 
 /// Main column + scroll + submit bar for [BasketConfirmationPage] (presentation only).
 class BasketConfirmationPageBody extends StatelessWidget {
@@ -88,6 +87,13 @@ class BasketConfirmationPageBody extends StatelessWidget {
                     .read<BasketConfirmationBloc>()
                     .add(BasketConfirmationPhoneChanged(v)),
               ),
+              SizedBox(height: AppHeight.s12),
+              BasketConfirmationAreaDropdown(
+                selectedArea: state.selectedArea,
+                onAreaChanged: (area) => context
+                    .read<BasketConfirmationBloc>()
+                    .add(BasketConfirmationAreaChanged(area)),
+              ),
               SizedBox(height: AppHeight.s48),
             ],
           ),
@@ -108,19 +114,9 @@ class BasketConfirmationPageBody extends StatelessWidget {
                     ? null
                     : () async {
                         if (state.canSubmitOrder) {
-                          final selectedArea =
-                              await showDialog<AreaEntity>(
-                            context: context,
-                            builder: (ctx) => const AreaSelectionDialog(),
-                          );
-                          if (!context.mounted || selectedArea == null) return;
-
-                          final areaId = int.tryParse(selectedArea.id);
-                          if (areaId == null) return;
-
                           context.read<BasketConfirmationBloc>().add(
-                            BasketConfirmationSubmitRequested(areaId: areaId),
-                          );
+                                const BasketConfirmationSubmitRequested(),
+                              );
                         } else {
                           showBasketConfirmationSubmitHintToast(
                             isResolvingAddress: state.isResolvingAddress,
@@ -128,6 +124,7 @@ class BasketConfirmationPageBody extends StatelessWidget {
                             street: state.street,
                             addressDetails: state.addressDetails,
                             phone: state.phone,
+                            hasSelectedArea: state.selectedArea != null,
                           );
                         }
                       },

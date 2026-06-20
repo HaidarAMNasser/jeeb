@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:jeeb_app/features/basket/list_cart/data/models/confirmation_item.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/domain/entities/area_entity.dart';
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/domain/entities/order_before_confirm_preview.dart';
 
 /// Tells the UI to copy [BasketConfirmationState] into text controllers once.
@@ -25,6 +26,7 @@ class BasketConfirmationState extends Equatable {
   final String addressDetails;
   final String phone;
   final int? profileCityId;
+  final AreaEntity? selectedArea;
   final int locationVersion;
   final bool isSubmitting;
   final String? submitError;
@@ -46,6 +48,7 @@ class BasketConfirmationState extends Equatable {
     required this.addressDetails,
     required this.phone,
     this.profileCityId,
+    this.selectedArea,
     required this.locationVersion,
     required this.isSubmitting,
     this.submitError,
@@ -94,6 +97,7 @@ class BasketConfirmationState extends Equatable {
     String? addressDetails,
     String? phone,
     int? profileCityId,
+    AreaEntity? selectedArea,
     int? locationVersion,
     bool? isSubmitting,
     String? submitError,
@@ -117,6 +121,7 @@ class BasketConfirmationState extends Equatable {
       addressDetails: addressDetails ?? this.addressDetails,
       phone: phone ?? this.phone,
       profileCityId: profileCityId ?? this.profileCityId,
+      selectedArea: selectedArea ?? this.selectedArea,
       locationVersion: locationVersion ?? this.locationVersion,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       submitError: clearSubmitError ? null : (submitError ?? this.submitError),
@@ -138,7 +143,10 @@ class BasketConfirmationState extends Equatable {
       phone.trim().isNotEmpty;
 
   bool get canSubmitOrder =>
-      isAddressDataReady && hasAllRequiredFormFields && !isSubmitting;
+      isAddressDataReady &&
+      hasAllRequiredFormFields &&
+      selectedArea != null &&
+      !isSubmitting;
 
   @override
   List<Object?> get props => [
@@ -155,6 +163,7 @@ class BasketConfirmationState extends Equatable {
         addressDetails,
         phone,
         profileCityId,
+        selectedArea,
         locationVersion,
         isSubmitting,
         submitError,

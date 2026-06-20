@@ -145,8 +145,9 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     };
     if (countryId != null) data['countryId'] = countryId;
     if (cityId != null) data['cityId'] = cityId;
-    if (latitude != null) data['latitude'] = latitude;
-    if (longitude != null) data['longitude'] = longitude;
+    if (latitude != null && longitude != null) {
+      data['location'] = {'lat': latitude, 'lng': longitude};
+    }
     if (address != null) data['address'] = address;
     if (birthday != null && birthday.isNotEmpty) {
       data['birthday'] = birthday;
@@ -159,8 +160,16 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     if (hasFiles) {
       // Multipart: single Map → FormData. Do NOT set Content-Type; Dio sets multipart + boundary.
       final formMap = <String, dynamic>{
-        ...data.map((k, v) => MapEntry(k, v is String ? v : v.toString())),
+        ...data.map((k, v) {
+          if (v is Map) return MapEntry(k, v);
+          return MapEntry(k, v is String ? v : v.toString());
+        }),
       };
+      if (latitude != null && longitude != null) {
+        formMap['location[lat]'] = latitude.toString();
+        formMap['location[lng]'] = longitude.toString();
+        formMap.remove('location');
+      }
       if (image != null) formMap['image'] = image;
       if (images != null && images.isNotEmpty) {
         for (var i = 0; i < images.length; i++) {

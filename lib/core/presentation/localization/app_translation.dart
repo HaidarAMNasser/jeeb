@@ -495,6 +495,7 @@ class AppTranslation {
       'password_must_be_at_least_6_characters'.tr();
   static String get selectLanguage => 'select_language'.tr();
   static String get selectArea => 'select_area'.tr();
+  static String get pleaseSelectArea => 'please_select_area'.tr();
   static String get noAreasAvailable => 'no_areas_available'.tr();
   static String get searchAreasHint => 'search_areas_hint'.tr();
   static String get changeLanguage => 'change_language'.tr();
@@ -519,6 +520,9 @@ class AppTranslation {
   static String get deliveryFakeGpsHint => 'delivery_fake_gps_hint'.tr();
   static String get deliveryFakeGpsMapMarker =>
       'delivery_fake_gps_map_marker'.tr();
+  static String get deliveryFakeGpsSent => 'delivery_fake_gps_sent'.tr();
+  static String get deliveryFakeGpsSendFailed =>
+      'delivery_fake_gps_send_failed'.tr();
 
   /// Opens [Routes.orderStatus] from order details while the order is still active.
   static String get orderTrackOrderCta => 'order_track_order_cta'.tr();

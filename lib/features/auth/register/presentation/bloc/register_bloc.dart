@@ -25,7 +25,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final birthdayController = TextEditingController();
 
   String? selectedRole = 'CUSTOMER';
-  String selectedNotificationChannel = 'EMAIL';
+  String selectedNotificationChannel = 'FIREBASE';
   CountryEntity? selectedCountry;
   CityEntity? selectedCity;
   bool isLocationLoading = false;

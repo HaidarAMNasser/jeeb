@@ -51,6 +51,7 @@ class BasketConfirmationBloc
     on<BasketConfirmationAddressDetailsChanged>(_onAddressDetailsChanged);
     on<BasketConfirmationPhoneChanged>(_onPhoneChanged);
     on<BasketConfirmationLocationPicked>(_onLocationPicked);
+    on<BasketConfirmationAreaChanged>(_onAreaChanged);
     on<BasketConfirmationSubmitRequested>(_onSubmitRequested);
     on<BasketConfirmationFieldSyncConsumed>(_onFieldSyncConsumed);
     on<BasketConfirmationSuccessHandled>(_onSuccessHandled);
@@ -187,6 +188,13 @@ class BasketConfirmationBloc
     emit(state.copyWith(phone: event.phone));
   }
 
+  void _onAreaChanged(
+    BasketConfirmationAreaChanged event,
+    Emitter<BasketConfirmationState> emit,
+  ) {
+    emit(state.copyWith(selectedArea: event.area));
+  }
+
   Future<void> _onLocationPicked(
     BasketConfirmationLocationPicked event,
     Emitter<BasketConfirmationState> emit,
@@ -264,6 +272,12 @@ class BasketConfirmationBloc
         ? landmark
         : null;
 
+    final areaId = int.tryParse(s.selectedArea?.id ?? '');
+    if (areaId == null || areaId < 1) {
+      _emitSubmitError(AppTranslation.pleaseSelectArea, emit);
+      return;
+    }
+
     final params = CreateOrderParams(
       ownerId: ownerId,
       products: products,
@@ -276,8 +290,7 @@ class BasketConfirmationBloc
         specialInstructions: extra.isNotEmpty ? extra : null,
       ),
       tipAmount: 0,
-      cityId: s.profileCityId,
-      areaId: event.areaId,
+      areaId: areaId,
       customerName: s.name.trim(),
       customerPhone: phone,
     );
