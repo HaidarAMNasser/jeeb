@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/route_history_point.dart';
@@ -339,7 +340,7 @@ class _DeliveryOrderDetailsRouteMapState
     return _customerPoint ??
         _restaurantPoint ??
         _driverPoint ??
-        const LatLng(30.0444, 31.2357);
+        MapDefaults.center;
   }
 
   Set<Polyline> get _mapPolylines => {

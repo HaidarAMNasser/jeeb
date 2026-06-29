@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_choice_dialog.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_map_picker_page.dart';
@@ -30,7 +31,12 @@ Future<({double lat, double lng})?> pickCheckoutLocation(
     }
   } else {
     final picked = await Navigator.of(context).push<LocationMapPickerResult>(
-      MaterialPageRoute(builder: (_) => const LocationMapPickerPage()),
+      MaterialPageRoute(
+        builder: (_) => const LocationMapPickerPage(
+          initialLatitude: MapDefaults.latitude,
+          initialLongitude: MapDefaults.longitude,
+        ),
+      ),
     );
     if (picked == null) return null;
     lat = picked.latitude;

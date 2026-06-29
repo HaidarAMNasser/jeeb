@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/widgets.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/features/main_navigation/presentation/pages/client_navigation.dart';
 import 'package:jeeb_app/features/product/product_details/presentation/bloc/product_details_bloc.dart';
 import 'package:jeeb_app/features/product/product_details/presentation/widgets/product_details_content.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
@@ -25,8 +26,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void initState() {
     super.initState();
     context.read<ProductDetailsBloc>().add(
-          GetProductDetailsEvent(id: widget.productId),
-        );
+      GetProductDetailsEvent(id: widget.productId),
+    );
   }
 
   List<Widget>? _buildAppBarActions(BuildContext context) {
@@ -37,10 +38,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           bloc: favBloc,
           buildWhen: (a, b) => a != b,
           builder: (context, state) {
-            final isFavorite = state is FavoritesLoaded &&
-                state.isFavorite(widget.productId);
-            final isToggling = state is FavoritesLoaded &&
-                state.isToggling(widget.productId);
+            final isFavorite =
+                state is FavoritesLoaded && state.isFavorite(widget.productId);
+            final isToggling =
+                state is FavoritesLoaded && state.isToggling(widget.productId);
             return IconButton(
               icon: isToggling
                   ? SizedBox(
@@ -72,7 +73,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return BlocConsumer<ManageCartBloc, ManageCartState>(
       listener: (context, state) {
         if (state is ManageCartSuccess) {
-          customToast(msg: AppTranslation.addedToCart);
+          ClientNavigationTabs.openBasketTab();
         } else if (state is ManageCartError) {
           customToast(msg: state.message);
         }
@@ -93,12 +94,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               bloc: context.read<ProductDetailsBloc>(),
               isLoading: (state) => state is ProductDetailsLoading,
               isError: (state) => state is ProductDetailsError,
-              getErrorMessage: (state) => (state as ProductDetailsError).message,
+              getErrorMessage: (state) =>
+                  (state as ProductDetailsError).message,
               isSuccess: (state) => state is ProductDetailsLoaded,
               getRetryCallback: (state) => () {
                 context.read<ProductDetailsBloc>().add(
-                      GetProductDetailsEvent(id: widget.productId),
-                    );
+                  GetProductDetailsEvent(id: widget.productId),
+                );
               },
               successBuilder: (context, productState) {
                 final product = (productState as ProductDetailsLoaded).product;
@@ -107,38 +109,39 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
             bottomNavigationBar:
                 BlocBuilder<ProductDetailsBloc, ProductDetailsState>(
-              builder: (context, state) {
-                if (state is! ProductDetailsLoaded) return const SizedBox.shrink();
-                final product = state.product;
-                return SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      AppPadding.p16,
-                      0,
-                      AppPadding.p16,
-                      AppPadding.p16,
-                    ),
-                    child: SizedBox(
-                      height: AppHeight.s56,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorManager.primary,
-                          foregroundColor: Colors.white,
+                  builder: (context, state) {
+                    if (state is! ProductDetailsLoaded)
+                      return const SizedBox.shrink();
+                    final product = state.product;
+                    return SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          AppPadding.p16,
+                          0,
+                          AppPadding.p16,
+                          AppPadding.p16,
                         ),
-                        onPressed: () {
-                          context.read<ManageCartBloc>().add(
+                        child: SizedBox(
+                          height: AppHeight.s56,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorManager.primary,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: () {
+                              context.read<ManageCartBloc>().add(
                                 AddProductToCartEvent(product.id),
                               );
-                        },
-                        icon: const Icon(Icons.shopping_basket_outlined),
-                        label: Text(AppTranslation.addToCart),
+                            },
+                            icon: const Icon(Icons.shopping_basket_outlined),
+                            label: Text(AppTranslation.addToCart),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
           ),
         );
       },

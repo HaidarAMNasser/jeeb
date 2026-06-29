@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart' show customToast;
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_permission_helper.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
@@ -11,8 +12,8 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_button.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 
-/// Default center when no device location (Cairo).
-const LatLng _defaultCenter = LatLng(30.0444, 31.2357);
+/// Default center when no device location (Ar-Raqqah, Syria).
+const LatLng _defaultCenter = MapDefaults.center;
 
 /// Result returned when user confirms location.
 class LocationMapPickerResult {
@@ -97,7 +98,7 @@ class _LocationMapPickerPageState extends State<LocationMapPickerPage> {
   }
 
   Future<void> _goToMyLocation() async {
-    setState(() => _isLoadingLocation = true);
+    setState(() => _isLoadingLocation = true);  
     final result = await LocationPermissionHelper.requestAndGetPosition();
     if (!mounted) return;
     setState(() => _isLoadingLocation = false);

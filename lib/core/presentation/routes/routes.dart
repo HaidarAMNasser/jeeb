@@ -6,6 +6,7 @@ class Routes {
   static const String onboarding = '/onboarding';
   static const String home = '/home';
   static const String login = '/login';
+  static const String basket = '/basket';
   static const String register = '/register';
   static const String verify = '/verify';
   static const String deliveryWaiting = '/delivery-waiting';

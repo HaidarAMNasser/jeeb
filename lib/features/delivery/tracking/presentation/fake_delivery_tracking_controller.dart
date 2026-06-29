@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 
 /// Dev/demo: simulates driver movement starting at **real GPS**, then toward pickup,
@@ -92,8 +93,8 @@ class FakeDeliveryTrackingController extends ChangeNotifier {
         (rLat - dLat).abs() + (rLng - dLng).abs() > 1e-6) {
       return (rLat, rLng, dLat, dLng);
     }
-    const cLat = 30.0444;
-    const cLng = 31.2357;
+    const cLat = MapDefaults.latitude;
+    const cLng = MapDefaults.longitude;
     return (cLat - 0.015, cLng - 0.015, cLat + 0.015, cLng + 0.015);
   }
 

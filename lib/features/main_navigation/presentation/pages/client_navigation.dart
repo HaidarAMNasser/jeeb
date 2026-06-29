@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart'
@@ -16,6 +17,7 @@ import 'package:jeeb_app/features/delivery/order/list_order/presentation/bloc/li
 import 'package:jeeb_app/features/basket/list_cart/presentation/pages/basket_page.dart';
 import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
+import 'package:jeeb_app/core/presentation/routes/navigation_service.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/bloc/profile_bloc.dart';
 
 abstract final class ClientNavigationTabs {
@@ -34,6 +36,16 @@ abstract final class ClientNavigationTabs {
   }
 
   static void switchToOrders() => switchTo(orders);
+
+  static void switchToBasket() => switchTo(basket);
+
+  /// Pops overlay routes back to the root shell and selects the basket tab.
+  static void openBasketTab() {
+    switchToBasket();
+    NavigationService().navigationKey.currentState?.popUntil(
+          (route) => route.isFirst,
+        );
+  }
 }
 
 class ClientNavigation extends StatefulWidget {
@@ -108,59 +120,70 @@ class _ClientNavigationState extends State<ClientNavigation> {
   @override
   Widget build(BuildContext context) {
     context.locale;
-    return Scaffold(
-      backgroundColor: ColorManager.background,
-      body: _buildScreen(_currentIndex),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: ColorManager.primaryDark,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            ClientNavigationTabs.switchTo(index);
-          },
-          backgroundColor: ColorManager.primaryDark,
-          selectedItemColor: ColorManager.primary,
-          unselectedItemColor: ColorManager.textSecondary,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: getSemiBoldStyle(
-            fontSize: AppFontSize.s12,
-            color: ColorManager.primary,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentIndex != ClientNavigationTabs.home) {
+          ClientNavigationTabs.switchTo(ClientNavigationTabs.home);
+        } else {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: ColorManager.background,
+        body: _buildScreen(_currentIndex),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: ColorManager.primaryDark,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
           ),
-          unselectedLabelStyle: getRegularStyle(
-            fontSize: AppFontSize.s12,
-            color: ColorManager.textSecondary,
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              ClientNavigationTabs.switchTo(index);
+            },
+            backgroundColor: ColorManager.primaryDark,
+            selectedItemColor: ColorManager.primary,
+            unselectedItemColor: ColorManager.textSecondary,
+            type: BottomNavigationBarType.fixed,
+            selectedLabelStyle: getSemiBoldStyle(
+              fontSize: AppFontSize.s12,
+              color: ColorManager.primary,
+            ),
+            unselectedLabelStyle: getRegularStyle(
+              fontSize: AppFontSize.s12,
+              color: ColorManager.textSecondary,
+            ),
+            items: [
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.home_outlined),
+                activeIcon: const Icon(Icons.home),
+                label: AppTranslation.home,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.favorite_outlined),
+                activeIcon: const Icon(Icons.favorite),
+                label: AppTranslation.favorites,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.assignment_outlined),
+                activeIcon: const Icon(Icons.assignment),
+                label: AppTranslation.orders,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.shopping_basket_outlined),
+                activeIcon: const Icon(Icons.shopping_basket),
+                label: AppTranslation.basket,
+              ),
+            ],
           ),
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home),
-              label: AppTranslation.home,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.favorite_outlined),
-              activeIcon: const Icon(Icons.favorite),
-              label: AppTranslation.favorites,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.assignment_outlined),
-              activeIcon: const Icon(Icons.assignment),
-              label: AppTranslation.orders,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.shopping_basket_outlined),
-              activeIcon: const Icon(Icons.shopping_basket),
-              label: AppTranslation.basket,
-            ),
-          ],
         ),
       ),
     );
