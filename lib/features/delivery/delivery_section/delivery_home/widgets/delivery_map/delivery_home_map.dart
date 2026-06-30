@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'delivery_home_map_search.dart';
@@ -71,7 +72,7 @@ class _DeliveryHomeMapState extends State<DeliveryHomeMap> {
   Widget build(BuildContext context) {
     final LatLng center = widget.latitude != null && widget.longitude != null
         ? LatLng(widget.latitude!, widget.longitude!)
-        : const LatLng(30.0444, 31.2357); // Default Cairo
+        : MapDefaults.center; // Default Ar-Raqqah, Syria
 
     final bool simulating = widget.simulatedLatitude != null &&
         widget.simulatedLongitude != null;

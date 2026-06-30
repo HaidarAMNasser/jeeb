@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/font_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
@@ -8,8 +9,8 @@ import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
-/// Default map center (Cairo) when order has no coordinates yet.
-const LatLng _kDefaultMapCenter = LatLng(30.0444, 31.2357);
+/// Default map center (Ar-Raqqah, Syria) when order has no coordinates yet.
+const LatLng _kDefaultMapCenter = MapDefaults.center;
 
 /// Read-only Google Map preview for the order address (live tracking later).
 class OrderDeliveryMapPreview extends StatelessWidget {

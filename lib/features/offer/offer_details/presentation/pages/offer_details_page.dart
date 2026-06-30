@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
 import 'package:jeeb_app/features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
+import 'package:jeeb_app/features/main_navigation/presentation/pages/client_navigation.dart';
 import 'package:jeeb_app/features/offer/offer_details/presentation/bloc/offer_details_bloc.dart';
 import 'package:jeeb_app/features/offer/offer_details/presentation/widgets/offer_details_content.dart';
 import 'package:jeeb_app/core/presentation/theme/colors_manager.dart';
@@ -33,7 +34,7 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
     return BlocConsumer<ManageCartBloc, ManageCartState>(
       listener: (context, state) {
         if (state is ManageCartSuccess) {
-          customToast(msg: AppTranslation.addedToCart);
+          ClientNavigationTabs.openBasketTab();
         } else if (state is ManageCartError) {
           customToast(msg: state.message);
         }

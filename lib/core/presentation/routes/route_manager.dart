@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/bloc/list_cart_bloc.dart';
+import 'package:jeeb_app/features/basket/list_cart/presentation/pages/basket_page.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/presentation/bloc/order_before_confirm_bloc.dart';
 import 'routes.dart';
 import 'navigation_service.dart';
 import '../../../features/splash/presentation/pages/splash_page.dart';
@@ -159,9 +162,7 @@ class AppRouter {
         return _buildRouteWithBlocs(
           const ChangePasswordPage(),
           settings,
-          providers: [
-            BlocProvider.value(value: di.sl<ProfileBloc>()),
-          ],
+          providers: [BlocProvider.value(value: di.sl<ProfileBloc>())],
         );
 
       case Routes.profile:
@@ -171,6 +172,21 @@ class AppRouter {
           providers: [
             BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
           ],
+        );
+      case Routes.basket:
+        return _buildRoute(
+          MultiBlocProvider(
+            providers: [
+              BlocProvider<ListCartBloc>.value(
+                value: di.sl<ListCartBloc>()..add(const LoadCartEvent()),
+              ),
+              BlocProvider<OrderBeforeConfirmBloc>(
+                create: (_) => di.sl<OrderBeforeConfirmBloc>(),
+              ),
+            ],
+            child: const BasketPage(),
+          ),
+          settings,
         );
 
       case Routes.products:
@@ -342,9 +358,7 @@ class AppRouter {
             BlocProvider<DeliveryHomeBloc>.value(
               value: di.sl<DeliveryHomeBloc>(),
             ),
-            BlocProvider<PayAdminBloc>(
-              create: (_) => di.sl<PayAdminBloc>(),
-            ),
+            BlocProvider<PayAdminBloc>(create: (_) => di.sl<PayAdminBloc>()),
           ],
         );
 

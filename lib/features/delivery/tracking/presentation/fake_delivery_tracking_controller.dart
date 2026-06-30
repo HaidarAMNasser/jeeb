@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:jeeb_app/core/infrastructure/di/dependency_injection.dart' as di;
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/tracking/domain/repositories/delivery_tracking_repository.dart';
 
@@ -36,12 +36,12 @@ class FakeDeliveryTrackingController extends ChangeNotifier {
 
     final (rLat, rLng, _, _) = _endpoints(order);
     final result = await di.sl<DeliveryTrackingRepository>().pushLocationUpdate(
-          orderId: orderId,
-          lat: rLat,
-          lng: rLng,
-          timestampMs: DateTime.now().millisecondsSinceEpoch,
-          speedKmh: 25,
-        );
+      orderId: orderId,
+      lat: rLat,
+      lng: rLng,
+      timestampMs: DateTime.now().millisecondsSinceEpoch,
+      speedKmh: 25,
+    );
 
     return result.fold((_) => false, (_) => true);
   }
@@ -86,14 +86,7 @@ class FakeDeliveryTrackingController extends ChangeNotifier {
     var tick = 0;
     while (true) {
       await Future<void>.delayed(const Duration(seconds: 8));
-      final pos = _tickToPosition(
-        tick++,
-        rLat,
-        rLng,
-        dLat,
-        dLng,
-        cycleTicks,
-      );
+      final pos = _tickToPosition(tick++, rLat, rLng, dLat, dLng, cycleTicks);
       simulatedMapPosition.value = LatLng(pos.latitude, pos.longitude);
       yield pos;
     }
@@ -111,8 +104,8 @@ class FakeDeliveryTrackingController extends ChangeNotifier {
         (rLat - dLat).abs() + (rLng - dLng).abs() > 1e-6) {
       return (rLat, rLng, dLat, dLng);
     }
-    const cLat = 30.0444;
-    const cLng = 31.2357;
+    const cLat = MapDefaults.latitude;
+    const cLng = MapDefaults.longitude;
     return (cLat - 0.015, cLng - 0.015, cLat + 0.015, cLng + 0.015);
   }
 
