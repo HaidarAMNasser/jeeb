@@ -6,6 +6,11 @@ abstract class LoginRemoteDataSource {
     required String email,
     required String password,
   });
+
+  Future<Response> loginWithPhone({
+    required String phone,
+    required String password,
+  });
 }
 
 class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
@@ -23,6 +28,14 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
       password,
       false, // is_mobile_pass
     );
+  }
+
+  @override
+  Future<Response> loginWithPhone({
+    required String phone,
+    required String password,
+  }) {
+    return _appApiServiceClient.loginWithPhone(phone, password);
   }
 }
 

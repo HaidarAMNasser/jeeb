@@ -10,6 +10,7 @@ void showBasketConfirmationSubmitHintToast({
   required String street,
   required String addressDetails,
   required String phone,
+  required bool hasSelectedArea,
 }) {
   if (isResolvingAddress) {
     customToast(msg: AppTranslation.basketConfirmWaitAddress);
@@ -30,5 +31,8 @@ void showBasketConfirmationSubmitHintToast({
   if (phone.trim().isEmpty) {
     customToast(msg: AppTranslation.pleaseEnterPhone);
     return;
+  }
+  if (!hasSelectedArea) {
+    customToast(msg: AppTranslation.pleaseSelectArea);
   }
 }

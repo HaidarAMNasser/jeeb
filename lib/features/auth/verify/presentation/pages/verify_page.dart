@@ -17,12 +17,18 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 class VerifyPage extends StatefulWidget {
   final String email;
 
+  /// Client (customer) sign-up uses phone OTP instead of email.
+  final String phone;
+  final bool isCustomerPhone;
+
   /// Set when navigating from driver registration so OTP success goes to delivery waiting without profile.
   final bool expectDeliveryWaiting;
 
   const VerifyPage({
     super.key,
     required this.email,
+    this.phone = '',
+    this.isCustomerPhone = false,
     this.expectDeliveryWaiting = false,
   });
 
@@ -48,13 +54,19 @@ class _VerifyPageState extends State<VerifyPage> {
         return;
       }
 
-      context.read<VerifyBloc>().add(
-        VerifySubmitted(
-          email: widget.email,
-          otp: otp,
-          expectDeliveryWaiting: widget.expectDeliveryWaiting,
-        ),
-      );
+      if (widget.isCustomerPhone) {
+        context.read<VerifyBloc>().add(
+          VerifyCustomerPhoneSubmitted(phone: widget.phone, otp: otp),
+        );
+      } else {
+        context.read<VerifyBloc>().add(
+          VerifySubmitted(
+            email: widget.email,
+            otp: otp,
+            expectDeliveryWaiting: widget.expectDeliveryWaiting,
+          ),
+        );
+      }
     }
   }
 
@@ -125,7 +137,11 @@ class _VerifyPageState extends State<VerifyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      VerifyHeader(email: widget.email),
+                      VerifyHeader(
+                        email: widget.isCustomerPhone
+                            ? widget.phone
+                            : widget.email,
+                      ),
                       VerifyForm(
                         formKey: _formKey,
                         otpController: _otpController,
@@ -133,6 +149,7 @@ class _VerifyPageState extends State<VerifyPage> {
                         onResendOtp: _handleResendOtp,
                         onBackToLogin: _handleBackToLogin,
                         isLoading: state is VerifyLoading,
+                        showResend: !widget.isCustomerPhone,
                       ),
                     ],
                   ),

@@ -64,9 +64,15 @@ class RegisterSuccess extends RegisterState {
   final int userId;
   final String email;
 
+  /// Set for client (customer) sign-up so the verify screen can use phone OTP.
+  final String phone;
+  final bool isCustomerPhone;
+
   const RegisterSuccess({
     required this.userId,
     required this.email,
+    this.phone = '',
+    this.isCustomerPhone = false,
     super.selectedCountry,
     super.selectedCity,
     super.isLocationLoading,
@@ -78,7 +84,7 @@ class RegisterSuccess extends RegisterState {
   });
 
   @override
-  List<Object?> get props => [...super.props, userId, email];
+  List<Object?> get props => [...super.props, userId, email, phone, isCustomerPhone];
 }
 
 class RegisterError extends RegisterState {

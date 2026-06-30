@@ -8,6 +8,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/bloc/list_product_bloc.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/widgets/product_list_item.dart';
 import 'package:jeeb_app/features/product/list_product/presentation/widgets/products_shimmer.dart';
+import 'package:jeeb_app/features/product/list_product/presentation/widgets/search_product_widget.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ListProductPage extends StatefulWidget {
@@ -44,7 +45,11 @@ class _ListProductPageState extends State<ListProductPage> {
         _scrollController.position.maxScrollExtent * 0.8) {
       if (state is ListProductLoaded && state.hasMore) {
         context.read<ListProductBloc>().add(
-          GetProductsEvent(loadMore: true, merchantId: state.merchantId),
+          GetProductsEvent(
+            loadMore: true,
+            merchantId: state.merchantId,
+            search: state.search,
+          ),
         );
       }
     }
@@ -55,9 +60,13 @@ class _ListProductPageState extends State<ListProductPage> {
     return Scaffold(
       backgroundColor: ColorManager.background,
       appBar: CustomAppBar(title: AppTranslation.products),
-      body: BlocBuilder<ListProductBloc, ListProductState>(
-        builder: (context, state) {
-          return BlocStateHandler<ListProductBloc, ListProductState>(
+      body: Column(
+        children: [
+          SearchProductWidget(merchantId: widget.merchantId),
+          Expanded(
+            child: BlocBuilder<ListProductBloc, ListProductState>(
+              builder: (context, state) {
+                return BlocStateHandler<ListProductBloc, ListProductState>(
             bloc: context.read<ListProductBloc>(),
             loadingWidget: const ProductListPageShimmer(),
             isLoading: (state) => state is ListProductLoading,
@@ -85,6 +94,12 @@ class _ListProductPageState extends State<ListProductPage> {
                   ? productState.products
                   : (productState as ListProductLoadingMore).products;
               final isLoadingMore = productState is ListProductLoadingMore;
+              final currentSearch = productState is ListProductLoaded
+                  ? productState.search
+                  : (productState as ListProductLoadingMore).search;
+              final currentMerchantId = productState is ListProductLoaded
+                  ? productState.merchantId
+                  : (productState as ListProductLoadingMore).merchantId;
 
               Widget listView;
               try {
@@ -102,7 +117,7 @@ class _ListProductPageState extends State<ListProductPage> {
                     final hasFavoritesState = favState is FavoritesLoaded;
                     return ListView.builder(
                       controller: _scrollController,
-                      padding: EdgeInsets.all(AppPadding.p16),
+                      padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
                       itemCount:
                           products.length + (isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
@@ -128,7 +143,7 @@ class _ListProductPageState extends State<ListProductPage> {
               } catch (_) {
                 listView = ListView.builder(
                   controller: _scrollController,
-                  padding: EdgeInsets.all(AppPadding.p16),
+                  padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
                   itemCount:
                       products.length + (isLoadingMore ? 1 : 0),
                   itemBuilder: (context, index) {
@@ -142,12 +157,11 @@ class _ListProductPageState extends State<ListProductPage> {
 
               return RefreshIndicator(
                 onRefresh: () async {
-                  final args =
-                      ModalRoute.of(context)?.settings.arguments
-                          as Map<String, dynamic>?;
-                  final merchantId = args?['merchantId'] as String?;
                   context.read<ListProductBloc>().add(
-                    GetProductsEvent(merchantId: merchantId),
+                    GetProductsEvent(
+                      merchantId: currentMerchantId ?? widget.merchantId,
+                      search: currentSearch,
+                    ),
                   );
                 },
                 child: listView,
@@ -155,6 +169,9 @@ class _ListProductPageState extends State<ListProductPage> {
             },
           );
         },
+            ),
+          ),
+        ],
       ),
     );
   }

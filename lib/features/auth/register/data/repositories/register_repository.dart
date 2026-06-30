@@ -21,7 +21,7 @@ class RegisterRepository {
   Future<Either<Failure, TokenEntity?>> register({
     required String firstName,
     required String lastName,
-    required String email,
+    String? email,
     required String password,
     required String phone,
     required String role,
@@ -115,6 +115,167 @@ class RegisterRepository {
           }
         }
         // Success but no token in response (e.g. only userId)
+        return const Right(null);
+      }
+
+      return Left(
+        ErrorHandler.handle(
+          DioException(
+            type: DioExceptionType.badResponse,
+            response: response,
+            requestOptions: response.requestOptions,
+          ),
+        ),
+      );
+    } catch (error) {
+      return Left(ErrorHandler.handle(error));
+    }
+  }
+
+  /// Client (customer) sign-up via `auth/register/customer/init`.
+  /// Sends only first/last name, phone and password.
+  Future<Either<Failure, TokenEntity?>> registerCustomerInit({
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String password,
+  }) async {
+    if (!await _networkInfo.isConnected) {
+      return const Left(NetworkFailure());
+    }
+    try {
+      final response = await _remoteDataSource.registerCustomerInit(
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        password: password,
+      );
+
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => json is Map<String, dynamic> ? json : {},
+      );
+
+      if (apiResponse.isSuccess) {
+        final data = apiResponse.data ?? {};
+        final accessToken = data['access_token'];
+        final user = data['user'];
+        if (accessToken != null &&
+            accessToken.toString().isNotEmpty &&
+            user is Map<String, dynamic>) {
+          try {
+            final tokenModel = TokenModel.fromJson(data);
+            return Right(tokenModel.toDomain());
+          } catch (_) {
+            return const Right(null);
+          }
+        }
+        return const Right(null);
+      }
+
+      return Left(
+        ErrorHandler.handle(
+          DioException(
+            type: DioExceptionType.badResponse,
+            response: response,
+            requestOptions: response.requestOptions,
+          ),
+        ),
+      );
+    } catch (error) {
+      return Left(ErrorHandler.handle(error));
+    }
+  }
+
+  /// Client sign-up step 2: verify phone OTP.
+  /// Returns the success payload (may contain a token) or null when none.
+  Future<Either<Failure, Map<String, dynamic>?>> verifyCustomerPhone({
+    required String phone,
+    required String otp,
+  }) async {
+    if (!await _networkInfo.isConnected) {
+      return const Left(NetworkFailure());
+    }
+    try {
+      final response = await _remoteDataSource.verifyCustomerPhone(
+        phone: phone,
+        otp: otp,
+      );
+
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => json is Map<String, dynamic> ? json : {},
+      );
+
+      if (apiResponse.isSuccess) {
+        return Right(apiResponse.data);
+      }
+
+      return Left(
+        ErrorHandler.handle(
+          DioException(
+            type: DioExceptionType.badResponse,
+            response: response,
+            requestOptions: response.requestOptions,
+          ),
+        ),
+      );
+    } catch (error) {
+      return Left(ErrorHandler.handle(error));
+    }
+  }
+
+  /// Client sign-up step 3: complete registration. All fields optional except phone.
+  Future<Either<Failure, TokenEntity?>> completeCustomerRegistration({
+    required String phone,
+    String? email,
+    int? countryId,
+    int? cityId,
+    dynamic imageFile,
+  }) async {
+    if (!await _networkInfo.isConnected) {
+      return const Left(NetworkFailure());
+    }
+    try {
+      File? file;
+      if (imageFile != null) {
+        if (imageFile is File) {
+          file = imageFile;
+        } else {
+          final path = (imageFile as dynamic).path as String?;
+          if (path != null && path.isNotEmpty) {
+            file = File(path);
+          }
+        }
+      }
+
+      final response = await _remoteDataSource.completeCustomerRegistration(
+        phone: phone,
+        email: email,
+        countryId: countryId,
+        cityId: cityId,
+        imageFile: file,
+      );
+
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => json is Map<String, dynamic> ? json : {},
+      );
+
+      if (apiResponse.isSuccess) {
+        final data = apiResponse.data ?? {};
+        final accessToken = data['access_token'];
+        final user = data['user'];
+        if (accessToken != null &&
+            accessToken.toString().isNotEmpty &&
+            user is Map<String, dynamic>) {
+          try {
+            final tokenModel = TokenModel.fromJson(data);
+            return Right(tokenModel.toDomain());
+          } catch (_) {
+            return const Right(null);
+          }
+        }
         return const Right(null);
       }
 

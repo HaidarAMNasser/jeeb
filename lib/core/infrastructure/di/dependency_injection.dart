@@ -186,7 +186,12 @@ Future<void> init() async {
   );
   sl.registerFactory(() => VerifyRepository(sl(), sl()));
   sl.registerFactory(
-    () => VerifyBloc(sl(), sl<StorageService>(), sl<ProfileRepository>()),
+    () => VerifyBloc(
+      sl(),
+      sl<StorageService>(),
+      sl<ProfileRepository>(),
+      sl<RegisterRepository>(),
+    ),
   );
 
   //! Auth Dependencies - Forgot Password

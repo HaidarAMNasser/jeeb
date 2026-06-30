@@ -18,19 +18,28 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginSubmitted>((event, emit) async {
       emit(const LoginLoading());
 
-      final result = await _loginRepository.login(
-        email: event.email,
-        password: event.password,
-      );
+      final result = event.usePhone
+          ? await _loginRepository.loginWithPhone(
+              phone: event.phone!.trim(),
+              password: event.password,
+            )
+          : await _loginRepository.login(
+              email: event.email!.trim(),
+              password: event.password,
+            );
 
       await result.fold(
         (failure) async {
           if (emit.isDone) return;
-          // The API returns 401 Unauthorized for both invalid credentials and unverified accounts.
-          // We check the failure type/code and message to differentiate.
           if (failure is UnauthorizedFailure &&
               failure.message.toLowerCase().contains('not verified')) {
-            emit(LoginNeedsVerification(email: event.email));
+            emit(
+              LoginNeedsVerification(
+                email: event.usePhone ? '' : event.email!.trim(),
+                phone: event.usePhone ? event.phone!.trim() : '',
+                isCustomerPhone: event.usePhone,
+              ),
+            );
             return;
           }
           emit(LoginError(message: failure.message));
@@ -47,9 +56,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             if (emit.isDone) return;
             emit(const LoginSuccess());
           } else {
-            await _storageService.setPendingVerifyEmail(tokenEntity.user.email);
-            if (emit.isDone) return;
-            emit(LoginNeedsVerification(email: tokenEntity.user.email));
+            if (event.usePhone) {
+              await _storageService.setPendingVerifyEmail(null);
+              if (emit.isDone) return;
+              emit(
+                LoginNeedsVerification(
+                  phone: event.phone!.trim(),
+                  isCustomerPhone: true,
+                ),
+              );
+            } else {
+              await _storageService.setPendingVerifyEmail(
+                tokenEntity.user.email,
+              );
+              if (emit.isDone) return;
+              emit(LoginNeedsVerification(email: tokenEntity.user.email));
+            }
           }
         },
       );

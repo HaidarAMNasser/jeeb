@@ -111,7 +111,11 @@ class AppInterceptors extends Interceptor {
     final normalizedPath = options.path.toLowerCase();
     final isGuestAuthRequest =
         normalizedPath == 'auth/guest' || normalizedPath.endsWith('/auth/guest');
-    if (tokenForRequest.isNotEmpty && !isGuestAuthRequest) {
+    final isPublicAreasRequest =
+        normalizedPath == 'areas' || normalizedPath.endsWith('/areas');
+    if (tokenForRequest.isNotEmpty &&
+        !isGuestAuthRequest &&
+        !isPublicAreasRequest) {
       options.headers[authorization] = "Bearer $tokenForRequest";
     }
     if (kDebugMode) {

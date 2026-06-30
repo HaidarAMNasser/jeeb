@@ -25,20 +25,43 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _usePhoneLogin = false;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
+      if (_usePhoneLogin) {
+        final phone = _phoneController.text.trim();
+        if (phone.isEmpty) {
+          customToast(msg: AppTranslation.pleaseEnterPhone);
+          return;
+        }
+        if (password.isEmpty) {
+          customToast(msg: AppTranslation.pleaseEnterPassword);
+          return;
+        }
+        context.read<LoginBloc>().add(
+          LoginSubmitted(
+            usePhone: true,
+            phone: phone,
+            password: password,
+          ),
+        );
+        return;
+      }
+
+      final email = _emailController.text.trim();
       if (email.isEmpty) {
         customToast(msg: AppTranslation.pleaseEnterEmail);
         return;
@@ -49,7 +72,11 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       context.read<LoginBloc>().add(
-        LoginSubmitted(email: email, password: password),
+        LoginSubmitted(
+          usePhone: false,
+          email: email,
+          password: password,
+        ),
       );
     }
   }
@@ -91,7 +118,11 @@ class _LoginPageState extends State<LoginPage> {
               context.pushNamedAndRemoveUntil(
                 Routes.verify,
                 predicate: (route) => false,
-                arguments: {'email': state.email},
+                arguments: {
+                  'email': state.email,
+                  'phone': state.phone,
+                  'isCustomerPhone': state.isCustomerPhone,
+                },
               );
             } else if (state is LoginError) {
               customToast(msg: state.message);
@@ -115,7 +146,12 @@ class _LoginPageState extends State<LoginPage> {
                         LoginForm(
                           formKey: _formKey,
                           emailController: _emailController,
+                          phoneController: _phoneController,
                           passwordController: _passwordController,
+                          usePhoneLogin: _usePhoneLogin,
+                          onLoginMethodChanged: (usePhone) {
+                            setState(() => _usePhoneLogin = usePhone);
+                          },
                           onLogin: _handleLogin,
                           onGuestLogin: _handleGuestLogin,
                           isLoading: isLoading,

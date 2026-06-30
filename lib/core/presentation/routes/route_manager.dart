@@ -124,11 +124,15 @@ class AppRouter {
       case Routes.verify:
         final args = settings.arguments as Map<String, dynamic>?;
         final email = args?['email'] as String? ?? '';
+        final phone = args?['phone'] as String? ?? '';
+        final isCustomerPhone = args?['isCustomerPhone'] == true;
         final registerBloc = args?['registerBloc'] as RegisterBloc?;
         final expectDeliveryWaiting = args?['expectDeliveryWaiting'] == true;
         return _buildRouteWithBlocs(
           VerifyPage(
             email: email,
+            phone: phone,
+            isCustomerPhone: isCustomerPhone,
             expectDeliveryWaiting: expectDeliveryWaiting,
           ),
           settings,
@@ -217,6 +221,7 @@ class AppRouter {
                   ProductDetailsBloc(di.sl<ProductDetailsRepository>()),
             ),
             BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
+            BlocProvider<FavoritesBloc>.value(value: di.sl<FavoritesBloc>()),
           ],
         );
 

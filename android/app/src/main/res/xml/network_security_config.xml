@@ -10,6 +10,7 @@
     <!-- Allow cleartext only for your API host if it ever redirects to HTTP -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">api.jeeb2.com</domain>
+        <domain includeSubdomains="true">dev-api.jeeb2.com</domain>
         <domain includeSubdomains="true">jeeb2.com</domain>
     </domain-config>
 </network-security-config>

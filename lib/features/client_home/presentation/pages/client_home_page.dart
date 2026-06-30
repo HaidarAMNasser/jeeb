@@ -12,7 +12,7 @@ import 'package:jeeb_app/features/client_home/presentation/widgets/client_home_s
 import 'package:jeeb_app/features/client_home/presentation/widgets/category/client_home_categories_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/merchants/client_home_merchants_section.dart';
 import 'package:jeeb_app/features/client_home/presentation/widgets/offer/client_home_offers_slider.dart';
-// import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_products_list.dart';
+import 'package:jeeb_app/features/client_home/presentation/widgets/client/client_home_products_list.dart';
 import 'package:jeeb_app/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 class ClientHomePage extends StatefulWidget {
@@ -90,7 +90,17 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   padding: EdgeInsets.symmetric(horizontal: AppPadding.p16),
                   sliver: const SliverToBoxAdapter(
                     child: ClientHomeMerchantsSection(),
-                    //  ClientHomeProductsList(),
+                  ),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    AppPadding.p16,
+                    AppHeight.s16,
+                    AppPadding.p16,
+                    0,
+                  ),
+                  sliver: const SliverToBoxAdapter(
+                    child: ClientHomeProductsList(),
                   ),
                 ),
                 if (state.isLoadingMore)

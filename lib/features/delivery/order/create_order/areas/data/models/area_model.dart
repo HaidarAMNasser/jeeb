@@ -25,7 +25,11 @@ class AreaModel {
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       description: _stringFromJson(json['description']),
-      price: json['price'] is num ? (json['price'] as num).toInt() : 0,
+      price: () {
+        final v = json['price'];
+        if (v is num) return v.round();
+        return double.tryParse(v?.toString() ?? '')?.round() ?? 0;
+      }(),
     );
   }
 

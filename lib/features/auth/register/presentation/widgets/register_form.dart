@@ -28,6 +28,7 @@ class RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<RegisterBloc>();
+    final isCustomer = (bloc.selectedRole ?? 'CUSTOMER') == 'CUSTOMER';
 
     return BlocBuilder<RegisterBloc, RegisterState>(
       builder: (context, state) {
@@ -42,36 +43,39 @@ class RegisterForm extends StatelessWidget {
             spacing: AppHeight.s24,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if ((bloc.selectedRole ?? 'CUSTOMER') != 'DELIVERY')
+              if (!isCustomer &&
+                  (bloc.selectedRole ?? 'CUSTOMER') != 'DELIVERY')
                 AvatarImagePicker(
                   key: ValueKey(bloc.imageVersion),
                   imagePath: imagePath,
                   fallbackInitial: initial,
                   onTap: onPickImage,
                 ),
-              RegisterPersonalFields(bloc: bloc),
-              LocationSourceSelector(
-                title: AppTranslation.location,
-                useMyLocationHint: AppTranslation.pleaseSelectLocation,
-                locationSetFallbackHint: AppTranslation.locationSetFormat,
-                latitude: state.useLocationLat,
-                longitude: state.useLocationLng,
-                displayCountry: state.locationDisplayCountry,
-                displayCity: state.locationDisplayCity,
-                displayStreet: state.locationDisplayStreet,
-                isRequired: true,
-                onPickLocation: () => onPickLocation(),
-                onClearLocation: _clearLocationIfAny(state, bloc),
-                isLoading: state.isLocationLoading,
-              ),
-              CountryCityWidget(
-                selectedCountry: state.selectedCountry,
-                selectedCity: state.selectedCity,
-                onSelectCountry: (c) => bloc.add(RegisterCountryChanged(c)),
-                onSelectCity: (c) => bloc.add(RegisterCityChanged(c)),
-                isRequired: true,
-                isReadOnly: false,
-              ),
+              RegisterPersonalFields(bloc: bloc, isCustomer: isCustomer),
+              if (!isCustomer)
+                LocationSourceSelector(
+                  title: AppTranslation.location,
+                  useMyLocationHint: AppTranslation.pleaseSelectLocation,
+                  locationSetFallbackHint: AppTranslation.locationSetFormat,
+                  latitude: state.useLocationLat,
+                  longitude: state.useLocationLng,
+                  displayCountry: state.locationDisplayCountry,
+                  displayCity: state.locationDisplayCity,
+                  displayStreet: state.locationDisplayStreet,
+                  isRequired: true,
+                  onPickLocation: () => onPickLocation(),
+                  onClearLocation: _clearLocationIfAny(state, bloc),
+                  isLoading: state.isLocationLoading,
+                ),
+              if (!isCustomer)
+                CountryCityWidget(
+                  selectedCountry: state.selectedCountry,
+                  selectedCity: state.selectedCity,
+                  onSelectCountry: (c) => bloc.add(RegisterCountryChanged(c)),
+                  onSelectCity: (c) => bloc.add(RegisterCityChanged(c)),
+                  isRequired: true,
+                  isReadOnly: false,
+                ),
               RegisterFormFooter(onRegister: onRegister),
             ],
           ),

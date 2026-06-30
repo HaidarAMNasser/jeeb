@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/domain/entities/area_entity.dart';
 import 'package:jeeb_app/features/product/list_product/domain/entities/product_entity.dart';
 
 /// Geo point for restaurant/owner location on order `owner.location`.
@@ -227,6 +228,12 @@ class OrderEntity extends Equatable {
   /// Delivery cost including commission (base for admin fee calculation).
   final double? deliveryCostWithCommission;
 
+  final int? areaId;
+  final AreaEntity? area;
+  final double? subtotal;
+  final double? productDiscount;
+  final double? offerDiscount;
+
   const OrderEntity({
     required this.id,
     required this.products,
@@ -263,6 +270,11 @@ class OrderEntity extends Equatable {
     this.offerBundles = const [],
     this.mediatorCommissionRate,
     this.deliveryCostWithCommission,
+    this.areaId,
+    this.area,
+    this.subtotal,
+    this.productDiscount,
+    this.offerDiscount,
   });
 
   /// Order-level `customerName` if set; otherwise nested `customer` full name.
@@ -352,6 +364,11 @@ class OrderEntity extends Equatable {
     List<OrderOfferBundleEntity>? offerBundles,
     double? mediatorCommissionRate,
     double? deliveryCostWithCommission,
+    int? areaId,
+    AreaEntity? area,
+    double? subtotal,
+    double? productDiscount,
+    double? offerDiscount,
   }) {
     return OrderEntity(
       id: id ?? this.id,
@@ -392,6 +409,11 @@ class OrderEntity extends Equatable {
           mediatorCommissionRate ?? this.mediatorCommissionRate,
       deliveryCostWithCommission:
           deliveryCostWithCommission ?? this.deliveryCostWithCommission,
+      areaId: areaId ?? this.areaId,
+      area: area ?? this.area,
+      subtotal: subtotal ?? this.subtotal,
+      productDiscount: productDiscount ?? this.productDiscount,
+      offerDiscount: offerDiscount ?? this.offerDiscount,
     );
   }
 
@@ -463,6 +485,11 @@ class OrderEntity extends Equatable {
     offerBundles,
     mediatorCommissionRate,
     deliveryCostWithCommission,
+    areaId,
+    area,
+    subtotal,
+    productDiscount,
+    offerDiscount,
   ];
 }
 

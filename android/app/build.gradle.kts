@@ -12,7 +12,9 @@ val localProperties = Properties().apply {
     val f = rootProject.file("local.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
-val googleMapsApiKey: String = localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: ""
+val googleMapsApiKey: String =
+    localProperties.getProperty("GOOGLE_MAPS_API_KEY")
+        ?: "AIzaSyBjaiHVyaPf6UnOK9Vz787nkNcZK9pgci4"
 
 android {
     namespace = "com.example.jeeb_app"

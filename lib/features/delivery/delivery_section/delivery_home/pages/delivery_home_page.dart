@@ -25,7 +25,10 @@ import 'package:jeeb_app/core/infrastructure/realtime/order_status_rtdb_service.
 import 'package:jeeb_app/core/presentation/maps/delivery_map_marker_bitmaps.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_tracking_position_binding.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_demo_bar.dart';
+import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 
 class DeliveryHomePage extends StatefulWidget {
   const DeliveryHomePage({super.key});
@@ -222,6 +225,18 @@ class _DeliveryHomePageState extends State<DeliveryHomePage>
                         if (state is DeliveryHomeLoaded &&
                             state.assignedOrder != null)
                           const DeliveryRouteLegende(),
+                        if (state is DeliveryHomeLoaded &&
+                            state.assignedOrder != null &&
+                            DeliveryOrderLocationReporter.shouldTrack(
+                              OrderStatus.fromString(
+                                state.assignedOrder!.status,
+                              ),
+                            ))
+                          SliverToBoxAdapter(
+                            child: FakeDeliveryTrackingDemoBar(
+                              order: state.assignedOrder,
+                            ),
+                          ),
                         SliverToBoxAdapter(
                           child: ListenableBuilder(
                             listenable: Listenable.merge([

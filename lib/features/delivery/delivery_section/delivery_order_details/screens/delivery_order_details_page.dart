@@ -31,6 +31,8 @@ import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/o
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
 import 'package:jeeb_app/features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
 import 'package:jeeb_app/features/delivery/pay_admin/presentation/widgets/delivery_pay_admin_sheet.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
+import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_demo_bar.dart';
 
 class DeliveryOrderDetailsPage extends StatefulWidget {
   final String orderId;
@@ -210,8 +212,8 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
             ),
           ),
 
-          // if (DeliveryOrderLocationReporter.shouldTrack(status))
-          //   FakeDeliveryTrackingDemoBar(order: order),
+          if (DeliveryOrderLocationReporter.shouldTrack(status))
+            FakeDeliveryTrackingDemoBar(order: order),
 
           // Map: restaurant vs customer drop-off + route
           DeliveryOrderDetailsRouteMap(

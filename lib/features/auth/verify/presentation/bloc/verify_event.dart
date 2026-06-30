@@ -33,3 +33,14 @@ class ResendOtpSubmitted extends VerifyEvent {
   List<Object> get props => [email];
 }
 
+/// Client (customer) sign-up phone OTP verification.
+class VerifyCustomerPhoneSubmitted extends VerifyEvent {
+  final String phone;
+  final String otp;
+
+  const VerifyCustomerPhoneSubmitted({required this.phone, required this.otp});
+
+  @override
+  List<Object> get props => [phone, otp];
+}
+

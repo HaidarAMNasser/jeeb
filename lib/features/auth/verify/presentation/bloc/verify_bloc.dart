@@ -4,6 +4,7 @@ import '../../../../../core/infrastructure/services/storage_service.dart';
 import '../../../login/domain/entities/user_entity.dart';
 import '../../../login/data/models/token_model.dart';
 import '../../../profile/data/repositories/profile_repository.dart';
+import '../../../register/data/repositories/register_repository.dart';
 import '../../data/repositories/verify_repository.dart';
 
 part 'verify_event.dart';
@@ -36,11 +37,13 @@ class VerifyBloc extends Bloc<VerifyEvent, VerifyState> {
   final VerifyRepository _verifyRepository;
   final StorageService _storageService;
   final ProfileRepository _profileRepository;
+  final RegisterRepository _registerRepository;
 
   VerifyBloc(
     this._verifyRepository,
     this._storageService,
     this._profileRepository,
+    this._registerRepository,
   ) : super(const VerifyInitial()) {
     on<VerifyEvent>((event, emit) async {
       if (event is VerifySubmitted) {
@@ -129,6 +132,38 @@ class VerifyBloc extends Bloc<VerifyEvent, VerifyState> {
         result.fold(
           (failure) => emit(VerifyError(message: failure.message)),
           (_) => emit(const VerifyOtpResent()),
+        );
+      } else if (event is VerifyCustomerPhoneSubmitted) {
+        emit(const VerifyLoading());
+        final result = await _registerRepository.verifyCustomerPhone(
+          phone: event.phone,
+          otp: event.otp,
+        );
+
+        await result.fold(
+          (failure) async => emit(VerifyError(message: failure.message)),
+          (data) async {
+            final responseToken =
+                data?['access_token'] ?? data?['accessToken'] ?? data?['token'];
+            final responseUser = data?['user'];
+            if (responseToken != null &&
+                responseToken.toString().isNotEmpty &&
+                responseUser is Map<String, dynamic>) {
+              try {
+                final normalized = Map<String, dynamic>.from(data!);
+                normalized['access_token'] ??=
+                    normalized['accessToken'] ?? normalized['token'];
+                final tokenModel = TokenModel.fromJson(normalized);
+                await _storageService.setUserToken(tokenModel.accessToken);
+                await _storageService.setUserId(tokenModel.user.id);
+                await _storageService.setUserRole(tokenModel.user.role);
+              } catch (_) {}
+            }
+            await _storageService.setLoggedIn(true);
+            await _storageService.setVerified(true);
+            await _storageService.setPendingVerifyEmail(null);
+            if (!emit.isDone) emit(const VerifySuccess(goToMain: true));
+          },
         );
       }
     });

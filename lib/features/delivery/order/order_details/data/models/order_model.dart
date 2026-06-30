@@ -1,5 +1,6 @@
 import 'package:jeeb_app/features/city/data/models/city_model.dart';
 import 'package:jeeb_app/features/country/data/models/country_model.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/data/models/area_model.dart';
 import 'package:jeeb_app/features/product/list_product/data/models/product_model.dart';
 
 String _localized(dynamic v) {
@@ -436,7 +437,7 @@ OrderLineProductModel _orderLineProductFromItemMap(Map<String, dynamic> m) {
   final unit = _toInt(m['unitPrice']) ?? 0;
   final orig = _toInt(m['originalUnitPrice']);
   final total = _toInt(m['totalPrice']) ?? 0;
-  final disc = _toInt(m['productDiscountValue']);
+  final disc = _toInt(m['productDiscountValue']) ?? _toInt(m['discount']);
   return OrderLineProductModel(
     lineId: m['id']?.toString() ?? '',
     productId: m['productId']?.toString() ?? pj?['id']?.toString(),
@@ -526,6 +527,11 @@ class OrderModel {
   final int? deliveryTimeMinutes;
   final double? mediatorCommissionRate;
   final double? deliveryCostWithCommission;
+  final int? areaId;
+  final AreaModel? area;
+  final double? subtotal;
+  final double? productDiscount;
+  final double? offerDiscount;
 
   OrderModel({
     required this.id,
@@ -563,6 +569,11 @@ class OrderModel {
     this.deliveryTimeMinutes,
     this.mediatorCommissionRate,
     this.deliveryCostWithCommission,
+    this.areaId,
+    this.area,
+    this.subtotal,
+    this.productDiscount,
+    this.offerDiscount,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -615,11 +626,24 @@ class OrderModel {
         deliveryMan = DeliveryManModel.fromJson(
           Map<String, dynamic>.from(da['delivery'] as Map),
         );
-      } else if (json['delivery'] is Map) {
-        deliveryMan = DeliveryManModel.fromJson(
-          Map<String, dynamic>.from(json['delivery'] as Map),
-        );
+      } else {
+        final deliveryId = _toInt(json['deliveryId']);
+        if (deliveryId != null && deliveryId > 0) {
+          deliveryMan = DeliveryManModel(
+            id: deliveryId.toString(),
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+          );
+        }
       }
+    }
+
+    AreaModel? areaModel;
+    final areaJson = json['area'];
+    if (areaJson is Map) {
+      areaModel = AreaModel.fromJson(Map<String, dynamic>.from(areaJson));
     }
 
     final createdAt = json['createdAt']?.toString();
@@ -738,6 +762,23 @@ class OrderModel {
       mediatorCommissionRate: _toDouble(json['mediatorCommissionRate']),
       deliveryCostWithCommission: () {
         final v = json['deliveryCostWithCommission'];
+        if (v is num) return v.toDouble();
+        return double.tryParse(v?.toString() ?? '');
+      }(),
+      areaId: _toInt(json['areaId']),
+      area: areaModel,
+      subtotal: () {
+        final v = json['subtotal'];
+        if (v is num) return v.toDouble();
+        return double.tryParse(v?.toString() ?? '');
+      }(),
+      productDiscount: () {
+        final v = json['productDiscount'];
+        if (v is num) return v.toDouble();
+        return double.tryParse(v?.toString() ?? '');
+      }(),
+      offerDiscount: () {
+        final v = json['offerDiscount'];
         if (v is num) return v.toDouble();
         return double.tryParse(v?.toString() ?? '');
       }(),

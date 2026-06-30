@@ -16,7 +16,10 @@ import 'package:jeeb_app/core/presentation/widgets/delivery_register_dialog.dart
 class LoginForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
+  final TextEditingController phoneController;
   final TextEditingController passwordController;
+  final bool usePhoneLogin;
+  final ValueChanged<bool> onLoginMethodChanged;
   final VoidCallback onLogin;
   final VoidCallback onGuestLogin;
   final bool isLoading;
@@ -25,7 +28,10 @@ class LoginForm extends StatelessWidget {
     super.key,
     required this.formKey,
     required this.emailController,
+    required this.phoneController,
     required this.passwordController,
+    required this.usePhoneLogin,
+    required this.onLoginMethodChanged,
     required this.onLogin,
     required this.onGuestLogin,
     required this.isLoading,
@@ -38,10 +44,11 @@ class LoginForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomTextField(
-            title: AppTranslation.email,
-            hintText: AppTranslation.enterEmail,
-            controller: emailController,
+          _LoginIdentifierField(
+            usePhoneLogin: usePhoneLogin,
+            onLoginMethodChanged: onLoginMethodChanged,
+            emailController: emailController,
+            phoneController: phoneController,
           ),
           SizedBox(height: AppHeight.s24),
           CustomTextField(
@@ -80,21 +87,22 @@ class LoginForm extends StatelessWidget {
                   ),
                 ),
               ),
-              Flexible(
-                child: TextButton(
-                  onPressed: () {
-                    context.pushNamed(Routes.forgotPassword);
-                  },
-                  child: CustomText(
-                    text: AppTranslation.forgotPassword,
-                    textStyle: getMediumStyle(
-                      fontSize: AppFontSize.s14,
-                      color: ColorManager.primary,
+              if (!usePhoneLogin)
+                Flexible(
+                  child: TextButton(
+                    onPressed: () {
+                      context.pushNamed(Routes.forgotPassword);
+                    },
+                    child: CustomText(
+                      text: AppTranslation.forgotPassword,
+                      textStyle: getMediumStyle(
+                        fontSize: AppFontSize.s14,
+                        color: ColorManager.primary,
+                      ),
+                      textAlign: TextAlign.right,
                     ),
-                    textAlign: TextAlign.right,
                   ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: AppHeight.s32),
@@ -113,7 +121,6 @@ class LoginForm extends StatelessWidget {
                     : LinearGradient(
                         colors: [
                           ColorManager.defaultYellow,
-
                           ColorManager.primary,
                         ],
                       ),
@@ -186,6 +193,112 @@ class LoginForm extends StatelessWidget {
           ),
           SizedBox(height: AppHeight.s16),
         ],
+      ),
+    );
+  }
+}
+
+class _LoginIdentifierField extends StatelessWidget {
+  final bool usePhoneLogin;
+  final ValueChanged<bool> onLoginMethodChanged;
+  final TextEditingController emailController;
+  final TextEditingController phoneController;
+
+  const _LoginIdentifierField({
+    required this.usePhoneLogin,
+    required this.onLoginMethodChanged,
+    required this.emailController,
+    required this.phoneController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (usePhoneLogin)
+          CustomTextField(
+            keyboardType: TextInputType.phone,
+            title: AppTranslation.phone,
+            hintText: AppTranslation.enterPhone,
+            controller: phoneController,
+          )
+        else
+          CustomTextField(
+            title: AppTranslation.email,
+            hintText: AppTranslation.enterEmail,
+            controller: emailController,
+          ),
+        SizedBox(height: AppHeight.s8),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: _LoginMethodSelector(
+            usePhoneLogin: usePhoneLogin,
+            onChanged: onLoginMethodChanged,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoginMethodSelector extends StatelessWidget {
+  final bool usePhoneLogin;
+  final ValueChanged<bool> onChanged;
+
+  const _LoginMethodSelector({
+    required this.usePhoneLogin,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _option(
+          label: AppTranslation.email,
+          selected: !usePhoneLogin,
+          onTap: () => onChanged(false),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppWidth.s8),
+          child: CustomText(
+            text: '·',
+            textStyle: getRegularStyle(
+              fontSize: AppFontSize.s12,
+              color: ColorManager.textSecondary.withOpacity(0.5),
+            ),
+          ),
+        ),
+        _option(
+          label: AppTranslation.phone,
+          selected: usePhoneLogin,
+          onTap: () => onChanged(true),
+        ),
+      ],
+    );
+  }
+
+  Widget _option({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: CustomText(
+        text: label,
+        textStyle: selected
+            ? getMediumStyle(
+                fontSize: AppFontSize.s12,
+                color: ColorManager.primary,
+              )
+            : getRegularStyle(
+                fontSize: AppFontSize.s12,
+                color: ColorManager.textSecondary,
+              ),
       ),
     );
   }

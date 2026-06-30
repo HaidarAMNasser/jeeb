@@ -11,6 +11,7 @@ import 'package:jeeb_app/features/auth/profile/data/repositories/profile_reposit
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/bloc/basket_confirmation_bloc.dart';
 import 'package:jeeb_app/features/basket/confirmation_section/presentation/pages/basket_confirmation_page.dart';
 import 'package:jeeb_app/features/basket/manage_cart/presentation/bloc/manage_cart_bloc.dart';
+import 'package:jeeb_app/features/delivery/order/create_order/areas/presentation/bloc/list_areas_bloc.dart';
 import 'package:jeeb_app/features/delivery/order/create_order/data/repositories/create_order_repository.dart';
 import 'package:jeeb_app/features/delivery/order/get_order_data_before_confirm/domain/entities/order_before_confirm_preview.dart';
 
@@ -62,6 +63,9 @@ class BasketConfirmationFlowHelper {
                 navigationService: di.sl<NavigationService>(),
                 deliveryPreview: deliveryPreview,
               ),
+            ),
+            BlocProvider(
+              create: (_) => di.sl<ListAreasBloc>(),
             ),
             BlocProvider<ManageCartBloc>.value(value: di.sl<ManageCartBloc>()),
           ],

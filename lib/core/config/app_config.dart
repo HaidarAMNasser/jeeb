@@ -16,7 +16,7 @@ class AppConfig {
 
   // API Configuration
   static String get baseUrl {
-    return 'https://api.jeeb2.com/api/v1/';
+    return 'https://dev-api.jeeb2.com/api/v1/';
   }
 
   /// Base URL for user/media assets (profile images etc.). Backend may return relative paths.

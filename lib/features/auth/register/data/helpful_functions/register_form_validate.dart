@@ -7,6 +7,7 @@ void registerValidationToast({
   String? email,
   String? phone,
   String? password,
+  bool requireEmail = true,
 }) {
   if (firstName == null || firstName.trim().isEmpty) {
     customToast(msg: AppTranslation.pleaseEnterFirstName);
@@ -18,7 +19,7 @@ void registerValidationToast({
     return;
   }
 
-  if (email == null || email.trim().isEmpty) {
+  if (requireEmail && (email == null || email.trim().isEmpty)) {
     customToast(msg: AppTranslation.pleaseEnterEmail);
     return;
   }
@@ -43,13 +44,14 @@ void registerValidationToast({
 bool isRegisterFormValid({
   required String firstName,
   required String lastName,
-  required String email,
+  String? email,
   required String phone,
   required String password,
+  bool requireEmail = true,
 }) {
   if (firstName.trim().isEmpty) return false;
   if (lastName.trim().isEmpty) return false;
-  if (email.trim().isEmpty) return false;
+  if (requireEmail && (email == null || email.trim().isEmpty)) return false;
   if (phone.trim().isEmpty) return false;
   if (password.trim().isEmpty || password.trim().length < 6) return false;
 
