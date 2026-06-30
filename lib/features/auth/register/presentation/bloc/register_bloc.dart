@@ -112,26 +112,36 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     on<RegisterSubmitted>((event, emit) async {
       emit(_buildLoadingState());
 
-      final result = await _registerRepository.register(
-        firstName: firstNameController.text.trim(),
-        lastName: lastNameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        phone: phoneController.text.trim(),
-        role: selectedRole ?? 'CUSTOMER',
-        countryId: selectedCountry?.id,
-        cityId: selectedCity?.id,
-        latitude: useLocationLat,
-        longitude: useLocationLng,
-        notificationChannel: selectedNotificationChannel,
-        address: addressController.text.trim(),
-        birthday: birthdayController.text.trim().isEmpty
-            ? null
-            : birthdayController.text.trim(),
-        imageFile: (selectedRole == 'DELIVERY') ? null : selectedImageFile,
-        idFrontFile: idFrontImageFile,
-        idBackFile: idBackImageFile,
-      );
+      final isCustomer = (selectedRole ?? 'CUSTOMER') == 'CUSTOMER';
+
+      final result = isCustomer
+          ? await _registerRepository.registerCustomerInit(
+              firstName: firstNameController.text.trim(),
+              lastName: lastNameController.text.trim(),
+              phone: phoneController.text.trim(),
+              password: passwordController.text.trim(),
+            )
+          : await _registerRepository.register(
+              firstName: firstNameController.text.trim(),
+              lastName: lastNameController.text.trim(),
+              email: emailController.text.trim(),
+              password: passwordController.text.trim(),
+              phone: phoneController.text.trim(),
+              role: selectedRole ?? 'CUSTOMER',
+              countryId: selectedCountry?.id,
+              cityId: selectedCity?.id,
+              latitude: useLocationLat,
+              longitude: useLocationLng,
+              notificationChannel: selectedNotificationChannel,
+              address: addressController.text.trim(),
+              birthday: birthdayController.text.trim().isEmpty
+                  ? null
+                  : birthdayController.text.trim(),
+              imageFile:
+                  (selectedRole == 'DELIVERY') ? null : selectedImageFile,
+              idFrontFile: idFrontImageFile,
+              idBackFile: idBackImageFile,
+            );
 
       await result.fold(
         (failure) async => emit(
@@ -148,19 +158,23 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           ),
         ),
         (tokenEntity) async {
-          if (tokenEntity != null) {
+          final submittedEmail =
+              isCustomer ? '' : emailController.text.trim();
+          final submittedPhone = phoneController.text.trim();
+          // Client flow: token arrives after phone OTP verify, not here.
+          if (!isCustomer && tokenEntity != null) {
             await _storageService.setUserToken(tokenEntity.accessToken);
             await _storageService.setUserId(tokenEntity.user.id);
             await _storageService.setUserRole(tokenEntity.user.role.name);
-            await _storageService.setPendingVerifyEmail(
-              emailController.text.trim(),
-            );
+            await _storageService.setPendingVerifyEmail(submittedEmail);
           }
           if (!emit.isDone) {
             emit(
               RegisterSuccess(
                 userId: tokenEntity?.user.id ?? 0,
-                email: emailController.text.trim(),
+                email: submittedEmail,
+                phone: submittedPhone,
+                isCustomerPhone: isCustomer,
                 selectedCountry: selectedCountry,
                 selectedCity: selectedCity,
                 isLocationLoading: isLocationLoading,

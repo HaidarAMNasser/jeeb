@@ -26,8 +26,6 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   Future<Response> loginWithPhone(
     String phone,
     String password,
-    bool directLogin,
-    int phoneCodeId,
   ) async {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -35,13 +33,16 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
     final data = {
       'phone': phone,
       'password': password,
-      // 'is_mobile_pass': directLogin,
-      'phone_code_id': phoneCodeId,
     };
 
     final result = await dio.fetch<Map<String, dynamic>>(
       _setStreamType(
-        Options(method: 'POST', headers: headers, extra: extra)
+        Options(
+          method: 'POST',
+          contentType: Headers.jsonContentType,
+          headers: headers,
+          extra: extra,
+        )
             .compose(
               dio.options,
               'auth/login',
@@ -117,7 +118,7 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
   Future<Response> register(
     String firstName,
     String lastName,
-    String email,
+    String? email,
     String password,
     String phone,
     String role,
@@ -195,6 +196,112 @@ class _AppApiServiceClientImpl implements AppApiServiceClient {
             .compose(
               dio.options,
               'auth/register',
+              queryParameters: queryParameters,
+              data: requestData,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
+  Future<Response> registerCustomerInit(
+    String firstName,
+    String lastName,
+    String phone,
+    String password,
+  ) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final data = <String, dynamic>{
+      'firstName': firstName,
+      'lastName': lastName,
+      'phone': phone,
+      'password': password,
+    };
+
+    final options = Options(
+      method: 'POST',
+      contentType: Headers.jsonContentType,
+      headers: headers,
+      extra: extra,
+    );
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        options
+            .compose(
+              dio.options,
+              'auth/register/customer/init',
+              queryParameters: queryParameters,
+              data: data,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
+  Future<Response> verifyCustomerPhone(String phone, String otp) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final data = <String, dynamic>{'phone': phone, 'otp': otp};
+
+    final options = Options(
+      method: 'POST',
+      contentType: Headers.jsonContentType,
+      headers: headers,
+      extra: extra,
+    );
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        options
+            .compose(
+              dio.options,
+              'auth/register/customer/verify-phone',
+              queryParameters: queryParameters,
+              data: data,
+            )
+            .copyWith(baseUrl: baseUrlApi),
+      ),
+    );
+
+    return result;
+  }
+
+  @override
+  Future<Response> completeCustomerRegistration(
+    String phone,
+    String? email,
+    int? countryId,
+    int? cityId,
+    MultipartFile? image,
+  ) async {
+    const extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final headers = <String, dynamic>{};
+    final formMap = <String, dynamic>{'phone': phone};
+    if (email != null && email.isNotEmpty) formMap['email'] = email;
+    if (countryId != null) formMap['countryId'] = countryId.toString();
+    if (cityId != null) formMap['cityId'] = cityId.toString();
+    if (image != null) formMap['image'] = image;
+
+    final requestData = FormData.fromMap(formMap);
+    final options = Options(method: 'POST', headers: headers, extra: extra);
+
+    final result = await dio.fetch<Map<String, dynamic>>(
+      _setStreamType(
+        options
+            .compose(
+              dio.options,
+              'auth/register/customer',
               queryParameters: queryParameters,
               data: requestData,
             )

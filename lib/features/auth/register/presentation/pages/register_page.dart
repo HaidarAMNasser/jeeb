@@ -25,21 +25,24 @@ class RegisterPage extends StatelessWidget {
   /// On Register tap: validate form, call register API, then navigate to verify on success.
   Future<void> _onRegisterTapped(BuildContext context) async {
     final bloc = context.read<RegisterBloc>();
+    final isCustomer = (bloc.selectedRole ?? 'CUSTOMER') == 'CUSTOMER';
 
     registerValidationToast(
       firstName: bloc.firstNameController.text.trim(),
       lastName: bloc.lastNameController.text.trim(),
-      email: bloc.emailController.text.trim(),
+      email: isCustomer ? null : bloc.emailController.text.trim(),
       phone: bloc.phoneController.text.trim(),
       password: bloc.passwordController.text.trim(),
+      requireEmail: !isCustomer,
     );
 
     if (!isRegisterFormValid(
       firstName: bloc.firstNameController.text.trim(),
       lastName: bloc.lastNameController.text.trim(),
-      email: bloc.emailController.text.trim(),
+      email: isCustomer ? null : bloc.emailController.text.trim(),
       phone: bloc.phoneController.text.trim(),
       password: bloc.passwordController.text.trim(),
+      requireEmail: !isCustomer,
     )) {
       return;
     }
@@ -139,6 +142,8 @@ class RegisterPage extends StatelessWidget {
             Routes.verify,
             arguments: {
               'email': state.email,
+              'phone': state.phone,
+              'isCustomerPhone': state.isCustomerPhone,
               'expectDeliveryWaiting': bloc.selectedRole == 'DELIVERY',
             },
           );

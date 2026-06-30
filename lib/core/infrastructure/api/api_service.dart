@@ -61,8 +61,6 @@ abstract class AppApiServiceClient {
   Future<Response> loginWithPhone(
     @Field('phone') String phone,
     @Field('password') String password,
-    @Field('is_mobile_pass') bool directLogin,
-    @Field('phone_code_id') int phoneCodeId,
   );
 
   @POST("auth/login")
@@ -79,7 +77,7 @@ abstract class AppApiServiceClient {
   Future<Response> register(
     @Field('firstName') String firstName,
     @Field('lastName') String lastName,
-    @Field('email') String email,
+    @Field('email') String? email,
     @Field('password') String password,
     @Field('phone') String phone,
     @Field('role') String role,
@@ -92,6 +90,33 @@ abstract class AppApiServiceClient {
     @Field('birthday') String? birthday,
     MultipartFile? image,
     List<MultipartFile>? images,
+  );
+
+  /// Client (customer) sign-up step 1. Sends only the minimal fields as JSON.
+  @POST("auth/register/customer/init")
+  Future<Response> registerCustomerInit(
+    @Field('firstName') String firstName,
+    @Field('lastName') String lastName,
+    @Field('phone') String phone,
+    @Field('password') String password,
+  );
+
+  /// Client sign-up step 2: verify the OTP sent to the phone.
+  @POST("auth/register/customer/verify-phone")
+  Future<Response> verifyCustomerPhone(
+    @Field('phone') String phone,
+    @Field('otp') String otp,
+  );
+
+  /// Client sign-up step 3: complete registration (multipart).
+  /// All fields except [phone] are optional.
+  @POST("auth/register/customer")
+  Future<Response> completeCustomerRegistration(
+    @Field('phone') String phone,
+    @Field('email') String? email,
+    @Field('countryId') int? countryId,
+    @Field('cityId') int? cityId,
+    MultipartFile? image,
   );
 
   @POST("auth/verify")

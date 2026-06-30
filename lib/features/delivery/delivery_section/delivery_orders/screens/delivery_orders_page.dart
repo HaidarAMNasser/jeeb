@@ -31,7 +31,6 @@ class _DeliveryOrdersPageState extends State<DeliveryOrdersPage> {
     OrderStatus.pickedUp,
     OrderStatus.onTheWay,
     OrderStatus.delivered,
-    OrderStatus.paid,
     OrderStatus.cancelled,
     OrderStatus.rejected,
     OrderStatus.completed,

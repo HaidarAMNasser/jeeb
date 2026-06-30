@@ -29,46 +29,71 @@ class LoginRepository {
         password == _adminPassword) {
       return Right(_adminTokenEntity(email.trim()));
     }
-      if (await _networkInfo.isConnected) {
-        try {
-          final response = await _remoteDataSource.login(
-            email: email,
-            password: password,
-          );
-
-          final apiResponse = ApiResponseModel<TokenModel>.fromJson(
-            response.data as Map<String, dynamic>,
-            (json) => TokenModel.fromJson(json as Map<String, dynamic>),
-          );
-          if (response.statusCode == 401) {
-            if (kDebugMode) {
-              print('LoginRepository: 401 Unauthorized for login attempt (email=$email)');
-            }
-          }
-
-          if (apiResponse.isSuccess && apiResponse.data != null) {
-          try {
-            return Right(apiResponse.data!.toDomain());
-          } catch (domainError) {
-            return Left(ErrorHandler.handle(domainError));
-          }
-        } else {
-          return Left(
-            ErrorHandler.handle(
-              DioException(
-                type: DioExceptionType.badResponse,
-                response: response,
-                requestOptions: response.requestOptions,
-              ),
-            ),
-          );
-        }
-      } catch (error) {
-        return Left(ErrorHandler.handle(error));
-      }
-    } else {
+    if (!await _networkInfo.isConnected) {
       return const Left(NetworkFailure());
     }
+    try {
+      final response = await _remoteDataSource.login(
+        email: email,
+        password: password,
+      );
+      return _tokenFromLoginResponse(response, identifier: email);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error));
+    }
+  }
+
+  Future<Either<Failure, TokenEntity>> loginWithPhone({
+    required String phone,
+    required String password,
+  }) async {
+    if (!await _networkInfo.isConnected) {
+      return const Left(NetworkFailure());
+    }
+    try {
+      final response = await _remoteDataSource.loginWithPhone(
+        phone: phone,
+        password: password,
+      );
+      return _tokenFromLoginResponse(response, identifier: phone);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error));
+    }
+  }
+
+  Either<Failure, TokenEntity> _tokenFromLoginResponse(
+    Response response, {
+    required String identifier,
+  }) {
+    final apiResponse = ApiResponseModel<TokenModel>.fromJson(
+      response.data as Map<String, dynamic>,
+      (json) => TokenModel.fromJson(json as Map<String, dynamic>),
+    );
+    if (response.statusCode == 401) {
+      if (kDebugMode) {
+        print(
+          'LoginRepository: 401 Unauthorized for login attempt ($identifier)',
+        );
+      }
+    }
+
+    if (apiResponse.isSuccess && apiResponse.data != null) {
+      try {
+        return Right(apiResponse.data!.toDomain());
+      } catch (domainError) {
+        return Left(ErrorHandler.handle(domainError));
+      }
+    }
+
+    return Left(
+      ErrorHandler.handle(
+        DioException(
+          type: DioExceptionType.badResponse,
+          response: response,
+          requestOptions: response.requestOptions,
+        ),
+      ),
+    );
   }
 
   static TokenEntity _adminTokenEntity(String email) {

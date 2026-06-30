@@ -121,12 +121,10 @@ class _SearchOrderWidgetState extends State<SearchOrderWidget> {
         prefixIcon: Icon(Icons.search, color: ColorManager.primary),
         textColor: ColorManager.productNameColor,
         hintColor: ColorManager.textSecondary,
-        suffixIcon: _searchController.text.isNotEmpty
-            ? IconButton(
-                icon: Icon(Icons.clear, color: ColorManager.descriptionColor),
-                onPressed: _onClearSearch,
-              )
-            : null,
+        suffixIcon: IconButton(
+          icon: Icon(Icons.clear, color: ColorManager.descriptionColor),
+          onPressed: _onClearSearch,
+        ),
       ),
     );
   }

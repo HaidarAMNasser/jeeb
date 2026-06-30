@@ -5,6 +5,8 @@ import 'package:jeeb_app/core/presentation/theme/styles_manager.dart';
 import 'package:jeeb_app/core/presentation/theme/values_manager.dart';
 import 'package:jeeb_app/core/presentation/widgets/empty_state_widget.dart';
 import 'package:jeeb_app/core/presentation/localization/app_translation.dart';
+import 'package:jeeb_app/core/presentation/routes/route_manager.dart';
+import 'package:jeeb_app/core/presentation/routes/routes.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_bloc.dart';
 import 'package:jeeb_app/features/client_home/presentation/bloc/client_home_state.dart';
@@ -88,12 +90,29 @@ class ClientHomeProductsList extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText(
-                  text: AppTranslation.products,
-                  textStyle: getBoldStyle(
-                    fontSize: AppFontSize.s18,
-                    color: ColorManager.titlesColor,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(
+                      text: AppTranslation.products,
+                      textStyle: getBoldStyle(
+                        fontSize: AppFontSize.s18,
+                        color: ColorManager.titlesColor,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        AppRouter.navigateTo(context, Routes.products);
+                      },
+                      child: CustomText(
+                        text: AppTranslation.showAll,
+                        textStyle: getSemiBoldStyle(
+                          fontSize: AppFontSize.s14,
+                          color: ColorManager.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: AppHeight.s12),
                 for (int i = 0; i < products.length; i++) ...[

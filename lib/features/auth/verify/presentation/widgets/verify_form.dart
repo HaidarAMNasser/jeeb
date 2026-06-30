@@ -15,6 +15,7 @@ class VerifyForm extends StatelessWidget {
   final VoidCallback onResendOtp;
   final VoidCallback onBackToLogin;
   final bool isLoading;
+  final bool showResend;
 
   const VerifyForm({
     super.key,
@@ -24,6 +25,7 @@ class VerifyForm extends StatelessWidget {
     required this.onResendOtp,
     required this.onBackToLogin,
     required this.isLoading,
+    this.showResend = true,
   });
 
   @override
@@ -48,16 +50,17 @@ class VerifyForm extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextButton(
-                onPressed: onResendOtp,
-                child: CustomText(
-                  text: AppTranslation.resendOtp,
-                  textStyle: getMediumStyle(
-                    fontSize: AppFontSize.s14,
-                    color: ColorManager.primary,
+              if (showResend)
+                TextButton(
+                  onPressed: onResendOtp,
+                  child: CustomText(
+                    text: AppTranslation.resendOtp,
+                    textStyle: getMediumStyle(
+                      fontSize: AppFontSize.s14,
+                      color: ColorManager.primary,
+                    ),
                   ),
                 ),
-              ),
 
               TextButton(
                 onPressed: onBackToLogin,

@@ -14,13 +14,16 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
     on<ListProductEvent>((event, emit) async {
       if (event is GetProductsEvent) {
         if (event.loadMore) {
-          // Load more products
           final currentState = state;
           if (currentState is ListProductLoaded) {
+            final searchQuery = event.search ?? currentState.search;
+            final merchantId = event.merchantId ?? currentState.merchantId;
             emit(
               ListProductLoadingMore(
                 products: currentState.products,
                 currentPage: currentState.currentPage,
+                merchantId: merchantId,
+                search: searchQuery,
               ),
             );
 
@@ -29,7 +32,8 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
             final result = await _repository.getProducts(
               page: nextPage,
               limit: _pageSize,
-              restaurantId: currentState.merchantId,
+              search: searchQuery,
+              restaurantId: merchantId,
             );
 
             result.fold(
@@ -44,20 +48,29 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
                     products: updatedProducts,
                     hasMore: paginatedProducts.pagination?.hasNextPage ?? false,
                     currentPage: nextPage,
-                    merchantId: currentState.merchantId,
+                    merchantId: merchantId,
+                    search: searchQuery,
                   ),
                 );
               },
             );
           }
         } else {
-          // Initial load or refresh
+          final previousState = state;
+          final searchQuery = event.search ??
+              (previousState is ListProductLoaded ? previousState.search : null);
+          final merchantId = event.merchantId ??
+              (previousState is ListProductLoaded
+                  ? previousState.merchantId
+                  : null);
+
           emit(const ListProductLoading());
 
           final result = await _repository.getProducts(
             page: 1,
             limit: _pageSize,
-            restaurantId: event.merchantId,
+            search: searchQuery,
+            restaurantId: merchantId,
           );
 
           result.fold(
@@ -67,7 +80,8 @@ class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {
                 products: paginatedProducts.products,
                 hasMore: paginatedProducts.pagination?.hasNextPage ?? false,
                 currentPage: 1,
-                merchantId: event.merchantId,
+                merchantId: merchantId,
+                search: searchQuery,
               ),
             ),
           );

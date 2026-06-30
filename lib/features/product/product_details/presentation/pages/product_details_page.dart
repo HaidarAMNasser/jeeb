@@ -28,41 +28,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     context.read<ProductDetailsBloc>().add(
       GetProductDetailsEvent(id: widget.productId),
     );
+    // Favorites toggle ignores taps unless the list is loaded; prime it once.
+    try {
+      final favBloc = context.read<FavoritesBloc>();
+      if (favBloc.state is! FavoritesLoaded) {
+        favBloc.add(const LoadFavoritesEvent());
+      }
+    } catch (_) {}
   }
 
   List<Widget>? _buildAppBarActions(BuildContext context) {
     try {
-      final favBloc = context.read<FavoritesBloc>();
-      return [
-        BlocBuilder<FavoritesBloc, FavoritesState>(
-          bloc: favBloc,
-          buildWhen: (a, b) => a != b,
-          builder: (context, state) {
-            final isFavorite =
-                state is FavoritesLoaded && state.isFavorite(widget.productId);
-            final isToggling =
-                state is FavoritesLoaded && state.isToggling(widget.productId);
-            return IconButton(
-              icon: isToggling
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.red,
-                      ),
-                    )
-                  : Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: Colors.red,
-                    ),
-              onPressed: isToggling
-                  ? null
-                  : () => favBloc.add(ToggleFavoriteEvent(widget.productId)),
-            );
-          },
-        ),
-      ];
+      // Throws if FavoritesBloc isn't provided on this route; then no heart.
+      context.read<FavoritesBloc>();
+      return [_ProductFavoriteButton(productId: widget.productId)];
     } catch (_) {
       return null;
     }
@@ -145,6 +124,43 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Favorite heart for the product details app bar.
+/// Flips instantly on tap (local optimistic state) and re-syncs with
+/// [FavoritesBloc] once the toggle settles, mirroring the product card heart.
+class _ProductFavoriteButton extends StatefulWidget {
+  final String productId;
+
+  const _ProductFavoriteButton({required this.productId});
+
+  @override
+  State<_ProductFavoriteButton> createState() => _ProductFavoriteButtonState();
+}
+
+class _ProductFavoriteButtonState extends State<_ProductFavoriteButton> {
+  late bool _isFavorite = _initialFavorite();
+
+  bool _initialFavorite() {
+    final state = context.read<FavoritesBloc>().state;
+    return state is FavoritesLoaded && state.isFavorite(widget.productId);
+  }
+
+  void _onTap() {
+    setState(() => _isFavorite = !_isFavorite);
+    context.read<FavoritesBloc>().add(ToggleFavoriteEvent(widget.productId));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        _isFavorite ? Icons.favorite : Icons.favorite_border,
+        color: Colors.red,
+      ),
+      onPressed: _onTap,
     );
   }
 }
