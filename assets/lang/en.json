@@ -461,7 +461,7 @@
   "manage_order_success_mark_on_the_way": "Order marked as on the way",
   "manage_order_success_mark_delivered": "Order marked as delivered",
   "manage_order_success_reject_delivery": "Order released — it is available for other drivers",
-  "delivery_pay_status_delivered_not_paid": "Delivered — not paid",
+  "delivery_pay_status_delivered_not_paid": "Delivered",
   "delivery_pay_status_paid_pending": "Awaiting payment confirmation",
   "delivery_pay_status_completed_paid": "Finished — paid",
   "pay_admin_menu_title": "Admin payment",

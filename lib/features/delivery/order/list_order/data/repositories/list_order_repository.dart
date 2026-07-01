@@ -72,6 +72,8 @@ class ListOrderRepository {
 
         return Right(orders.map((m) => m.toDomain()).toList());
       } catch (error) {
+        print(" in the else section${error.toString()}");
+
         return Left(ErrorHandler.handle(error));
       }
     } else {

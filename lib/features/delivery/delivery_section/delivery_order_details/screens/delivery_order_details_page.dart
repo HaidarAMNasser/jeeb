@@ -16,7 +16,6 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/error_state_widget.dart';
 import 'package:jeeb_app/core/presentation/widgets/text_widget.dart';
-import 'package:jeeb_app/features/delivery/delivery_section/delivery_pay_selection_controller.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_header.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_home/widgets/delivery_card_widgets/delivery_order_price_section.dart';
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_order_details/widgets/map_details/delivery_order_details_route_map.dart';
@@ -29,8 +28,6 @@ import 'package:jeeb_app/features/delivery/order/manage_order/presentation/bloc/
 import 'package:jeeb_app/features/delivery/order/manage_order/presentation/manage_order_success_message.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_entity.dart';
 import 'package:jeeb_app/features/delivery/order/order_details/domain/entities/order_status.dart';
-import 'package:jeeb_app/features/delivery/pay_admin/presentation/bloc/pay_admin_bloc.dart';
-import 'package:jeeb_app/features/delivery/pay_admin/presentation/widgets/delivery_pay_admin_sheet.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/delivery_order_location_reporter.dart';
 import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_tracking_demo_bar.dart';
 
@@ -86,34 +83,34 @@ class _DeliveryOrderDetailsPageState extends State<DeliveryOrderDetailsPage> {
         appBar: CustomAppBar(
           title: AppTranslation.orderDetails,
           actions: [
-            BlocBuilder<OrderDetailsBloc, OrderDetailsState>(
-              builder: (context, state) {
-                if (state is! OrderDetailsLoaded) {
-                  return const SizedBox.shrink();
-                }
-                final order = state.order;
-                final st = OrderStatus.fromString(order.status);
-                if (st != OrderStatus.delivered) {
-                  return const SizedBox.shrink();
-                }
-                return FutureBuilder<bool>(
-                  future: _isDeliveryDriver,
-                  builder: (context, snap) {
-                    if (snap.data != true) return const SizedBox.shrink();
-                    return DeliveryPayAdminMenuButton(
-                      order: order,
-                      pageOrders: [order],
-                      entryKind: DeliveryPayAdminEntryKind.orderDetails,
-                      payAdminBloc: context.read<PayAdminBloc>(),
-                      onAfterPaySuccess: () {
-                        _safeRefreshDetails(context);
-                        di.sl<DeliveryPaySelectionController>().completedTabReloadTick.value++;
-                      },
-                    );
-                  },
-                );
-              },
-            ),
+            // BlocBuilder<OrderDetailsBloc, OrderDetailsState>(
+            //   builder: (context, state) {
+            //     if (state is! OrderDetailsLoaded) {
+            //       return const SizedBox.shrink();
+            //     }
+            //     final order = state.order;
+            //     final st = OrderStatus.fromString(order.status);
+            //     if (st != OrderStatus.delivered) {
+            //       return const SizedBox.shrink();
+            //     }
+            //     return FutureBuilder<bool>(
+            //       future: _isDeliveryDriver,
+            //       builder: (context, snap) {
+            //         if (snap.data != true) return const SizedBox.shrink();
+            //         return DeliveryPayAdminMenuButton(
+            //           order: order,
+            //           pageOrders: [order],
+            //           entryKind: DeliveryPayAdminEntryKind.orderDetails,
+            //           payAdminBloc: context.read<PayAdminBloc>(),
+            //           onAfterPaySuccess: () {
+            //             _safeRefreshDetails(context);
+            //             di.sl<DeliveryPaySelectionController>().completedTabReloadTick.value++;
+            //           },
+            //         );
+            //       },
+            //     );
+            //   },
+            // ),
           ],
         ),
         body: BlocListener<ManageOrderBloc, ManageOrderState>(

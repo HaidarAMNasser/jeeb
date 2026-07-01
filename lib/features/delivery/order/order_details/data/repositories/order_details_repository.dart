@@ -75,6 +75,7 @@ class OrderDetailsRepository {
         final model = OrderModel.fromJson(orderJson);
         return Right(model.toDomain());
       } catch (error) {
+        print(" in the catch section${error.toString()}");
         return Left(ErrorHandler.handle(error));
       }
     } else {
