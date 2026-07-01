@@ -86,7 +86,7 @@ class RegisterRepository {
         cityId: cityId,
         latitude: latitude,
         longitude: longitude,
-        notificationChannel: notificationChannel,
+        notificationChannel: notificationChannel, //WHATSAPP or EMAIL
         address: address,
         birthday: birthday,
         imageFile: file,

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:chucker_flutter/chucker_flutter.dart';
+// import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -68,9 +68,10 @@ class DioFactory {
       defaultCacheDuration: const Duration(minutes: 5),
     );
 
-    if (kDebugMode || !AppConfig.isProduction) {
-      dio.interceptors.add(ChuckerDioInterceptor());
-    }
+    // Chucker
+    // if (kDebugMode || !AppConfig.isProduction) {
+    //   dio.interceptors.add(ChuckerDioInterceptor());
+    // }
     dio.interceptors.add(
       AppInterceptors(_storageService, _navigationService, cacheInterceptor),
     );
