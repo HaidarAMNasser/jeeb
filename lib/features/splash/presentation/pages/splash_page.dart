@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/presentation/localization/app_translation.dart';
 import '../../../../core/presentation/theme/colors_manager.dart';
 import '../../../../core/presentation/theme/values_manager.dart';
 import '../../../../core/presentation/theme/styles_manager.dart';
@@ -92,13 +93,13 @@ class _SplashPageState extends State<SplashPage> {
                   ),
                   // Text animation - letters appear one after another
                   CurvedTextAnimation(
-                    text: 'Jeeb',
+                    text: AppTranslation.appName,
                     textStyle: getBoldStyle(
                       fontSize: AppFontSize.s50,
                       color: ColorManager.primary,
                     ).copyWith(letterSpacing: 2),
                     curveHeight: AppHeight.s25,
-                    letterDelay: const Duration(milliseconds: 300), // Increased delay to make it more visible
+                    letterDelay: const Duration(milliseconds: 300),
                     totalDuration: const Duration(milliseconds: 2000),
                   ),
                 ],

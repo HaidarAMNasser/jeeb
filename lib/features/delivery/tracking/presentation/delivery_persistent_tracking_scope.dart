@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,9 +20,9 @@ import 'package:jeeb_app/features/delivery/tracking/presentation/fake_delivery_t
 /// Hosts live tracking above the delivery tab:
 /// - **[DeliveryOrderLocationReporter]**: order route API **only** when there is an assigned
 ///   order and its status is [OrderStatus.onTheWay].
-/// - **[DriverIdlePresenceReporter]**: RTDB `/drivers/{id}` **only** while the driver has
-///   **no** assigned order (available / pool). No `/drivers` writes during an active job
-///   until `ON_THE_WAY` (then order API handles tracking).
+/// - **[DriverIdlePresenceReporter]**: RTDB `/drivers/{id}` with `isOnline: true` while the
+///   app is in the foreground and the driver has **no** assigned order (available / pool).
+///   Background / kill → reporter dispose + onDisconnect set `isOnline: false`.
 class DeliveryPersistentTrackingScope extends StatefulWidget {
   const DeliveryPersistentTrackingScope({super.key, required this.child});
 
@@ -32,16 +34,23 @@ class DeliveryPersistentTrackingScope extends StatefulWidget {
 }
 
 class _DeliveryPersistentTrackingScopeState
-    extends State<DeliveryPersistentTrackingScope> {
+    extends State<DeliveryPersistentTrackingScope>
+    with WidgetsBindingObserver {
   DeliveryOrderLocationReporter? _orderReporter;
   DriverIdlePresenceReporter? _idleReporter;
   late final FakeDeliveryTrackingController _fakeTracking;
   late final DriverIdlePresenceGate _idleGate;
   bool _orderReporterUsedFakeStream = false;
+  AppLifecycleState _lifecycleState = AppLifecycleState.resumed;
+
+  bool get _isAppInForeground =>
+      _lifecycleState == AppLifecycleState.resumed ||
+      _lifecycleState == AppLifecycleState.inactive;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _fakeTracking = di.sl<FakeDeliveryTrackingController>();
     _idleGate = di.sl<DriverIdlePresenceGate>();
     _fakeTracking.addListener(_onFakeTrackingChanged);
@@ -50,6 +59,13 @@ class _DeliveryPersistentTrackingScopeState
       if (!mounted) return;
       _syncReporter(context.read<DeliveryHomeBloc>().state);
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lifecycleState = state;
+    if (!mounted) return;
+    _syncReporter(context.read<DeliveryHomeBloc>().state);
   }
 
   void _onFakeTrackingChanged() {
@@ -64,6 +80,7 @@ class _DeliveryPersistentTrackingScopeState
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _idleGate.removeListener(_onIdleGateChanged);
     _fakeTracking.removeListener(_onFakeTrackingChanged);
     _orderReporter?.dispose();
@@ -83,7 +100,8 @@ class _DeliveryPersistentTrackingScopeState
     if (kDebugMode) {
       debugPrint(
         '[PersistentTrackingScope] _syncReporter: '
-        'profileState=${profileState.runtimeType} driverId=$driverId',
+        'profileState=${profileState.runtimeType} driverId=$driverId '
+        'foreground=$_isAppInForeground lifecycle=$_lifecycleState',
       );
     }
     if (driverId == null || driverId <= 0) {
@@ -139,6 +157,13 @@ class _DeliveryPersistentTrackingScopeState
       return;
     }
 
+    // App not in foreground — stop presence (dispose marks isOnline: false).
+    if (!_isAppInForeground) {
+      _idleReporter?.dispose();
+      _idleReporter = null;
+      return;
+    }
+
     if (di.sl<DriverIdlePresenceGate>().suppressIdleAfterDelivery) {
       _idleReporter?.dispose();
       _idleReporter = null;
@@ -151,6 +176,9 @@ class _DeliveryPersistentTrackingScopeState
     }
 
     _idleReporter?.dispose();
+    unawaited(
+      di.sl<OrderStatusRtdbService>().armDriverOfflineOnDisconnect(driverId),
+    );
     _idleReporter = DriverIdlePresenceReporter(
       driverId: driverId,
       rtdb: di.sl<OrderStatusRtdbService>(),

@@ -81,6 +81,8 @@ class OrderStatusRtdbService {
   }
 
   /// Writes driver presence under `/drivers/{driverId}`.
+  ///
+  /// Includes [lastSeen] (ms) so the backend can drop stale drivers (>45s).
   Future<void> updateDriverPresence(
     int driverId, {
     required double lat,
@@ -91,10 +93,13 @@ class OrderStatusRtdbService {
     await ensureFirebaseAuthForDriver(driverId);
 
     final path = 'drivers/$driverId';
+    // Security rules only allow: currentLat, currentLng, isOnline.
+    // Do NOT send id/createdAt — those are backend-only (permission-denied).
     final payload = {
       'currentLat': lat,
       'currentLng': lng,
       'isOnline': isOnline,
+      'lastSeen': DateTime.now().millisecondsSinceEpoch,
     };
 
     if (kDebugMode) {
@@ -126,12 +131,44 @@ class OrderStatusRtdbService {
     if (driverId <= 0) return;
     await ensureFirebaseAuthForDriver(driverId);
     try {
-      await _db.ref('drivers/$driverId').update({'isOnline': isOnline});
+      await _db.ref('drivers/$driverId').update({
+        'isOnline': isOnline,
+        'lastSeen': DateTime.now().millisecondsSinceEpoch,
+      });
     } catch (e) {
       if (kDebugMode) {
         debugPrint('OrderStatusRtdbService.updateDriverOnlineStatus: $e');
       }
       rethrow;
+    }
+  }
+
+  /// When the Firebase connection drops, mark the driver offline automatically.
+  Future<void> armDriverOfflineOnDisconnect(int driverId) async {
+    if (driverId <= 0) return;
+    await ensureFirebaseAuthForDriver(driverId);
+    try {
+      await _db.ref('drivers/$driverId').onDisconnect().update({
+        'isOnline': false,
+        'lastSeen': DateTime.now().millisecondsSinceEpoch,
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('OrderStatusRtdbService.armDriverOfflineOnDisconnect: $e');
+      }
+    }
+  }
+
+  Future<void> cancelDriverOfflineOnDisconnect(int driverId) async {
+    if (driverId <= 0) return;
+    try {
+      await _db.ref('drivers/$driverId').onDisconnect().cancel();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'OrderStatusRtdbService.cancelDriverOfflineOnDisconnect: $e',
+        );
+      }
     }
   }
 

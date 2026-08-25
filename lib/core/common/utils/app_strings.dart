@@ -3,7 +3,7 @@ class AppStrings {
   AppStrings._();
 
   // General
-  static const String appName = 'Jeeb App';
+  static const String appName = 'Zawada';
   static const String ok = 'OK';
   static const String cancel = 'Cancel';
   static const String yes = 'Yes';

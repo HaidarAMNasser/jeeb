@@ -113,7 +113,8 @@ class DriverIdlePresenceReporter {
           debugPrint(
             '[DriverIdlePresenceReporter] RTDB /drivers/$driverId '
             'lat=${p.latitude.toStringAsFixed(6)} '
-            'lng=${p.longitude.toStringAsFixed(6)} isOnline=true',
+            'lng=${p.longitude.toStringAsFixed(6)} '
+            'isOnline=true lastSeen=${DateTime.now().millisecondsSinceEpoch}',
           );
         }
       } catch (e) {

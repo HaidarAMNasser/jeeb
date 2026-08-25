@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
         splitScreenMode: true,
         builder: (context, child) {
           return MaterialApp(
-            title: 'Jeeb App',
+            title: 'Zawada',
             debugShowCheckedModeBanner: false,
             // navigatorObservers: [
             //   ChuckerFlutter.navigatorObserver,
