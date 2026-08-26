@@ -17,7 +17,7 @@ val googleMapsApiKey: String =
         ?: "AIzaSyBjaiHVyaPf6UnOK9Vz787nkNcZK9pgci4"
 
 android {
-    namespace = "com.example.jeeb_app"
+    namespace = "com.zawada.customer"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -34,7 +34,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.jeeb.app"
+        applicationId = "com.zawada.customer"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
