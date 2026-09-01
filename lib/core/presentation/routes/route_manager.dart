@@ -32,6 +32,7 @@ import '../../../features/auth/profile/presentation/pages/profile_page.dart';
 import '../../../features/auth/profile/presentation/pages/change_password_page.dart';
 import '../../../features/auth/profile/presentation/bloc/profile_bloc.dart';
 import '../../../features/auth/logout/presentation/bloc/logout_bloc.dart';
+import '../../../features/auth/delete_account/presentation/bloc/delete_account_bloc.dart';
 import '../../../features/country/presentation/bloc/country_bloc.dart';
 import '../../../features/city/presentation/bloc/city_bloc.dart';
 import '../../../features/delivery/order/list_order/presentation/pages/list_order_page.dart';
@@ -175,6 +176,9 @@ class AppRouter {
           settings,
           providers: [
             BlocProvider<LogoutBloc>(create: (_) => di.sl<LogoutBloc>()),
+            BlocProvider<DeleteAccountBloc>(
+              create: (_) => di.sl<DeleteAccountBloc>(),
+            ),
           ],
         );
       case Routes.basket:

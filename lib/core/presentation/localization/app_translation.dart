@@ -242,6 +242,11 @@ class AppTranslation {
   static String get logoutSuccess => 'logout_success'.tr();
   static String get logoutError => 'logout_error'.tr();
   static String get areYouSureLogout => 'are_you_sure_logout'.tr();
+  static String get deleteAccount => 'delete_account'.tr();
+  static String get deleteAccountSuccess => 'delete_account_success'.tr();
+  static String get deleteAccountError => 'delete_account_error'.tr();
+  static String get areYouSureDeleteAccount =>
+      'are_you_sure_delete_account'.tr();
   static String get forgotPasswordDescription =>
       'forgot_password_description'.tr();
   static String get pleaseSelectCountryFirst =>
