@@ -15,6 +15,7 @@ import 'package:jeeb_app/features/delivery/delivery_section/delivery_navigation_
 import 'package:jeeb_app/features/delivery/delivery_section/delivery_orders/screens/delivery_orders_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/pages/profile_page.dart';
 import 'package:jeeb_app/features/auth/logout/presentation/bloc/logout_bloc.dart';
+import 'package:jeeb_app/features/auth/delete_account/presentation/bloc/delete_account_bloc.dart';
 
 class DeliveryNavigation extends StatefulWidget {
   const DeliveryNavigation({super.key});
@@ -61,8 +62,15 @@ class _DeliveryNavigationState extends State<DeliveryNavigation> {
               children: [
                 const DeliveryHomePage(),
                 const DeliveryOrdersPage(removeBack: true),
-                BlocProvider<LogoutBloc>(
-                  create: (_) => di.sl<LogoutBloc>(),
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<LogoutBloc>(
+                      create: (_) => di.sl<LogoutBloc>(),
+                    ),
+                    BlocProvider<DeleteAccountBloc>(
+                      create: (_) => di.sl<DeleteAccountBloc>(),
+                    ),
+                  ],
                   child: const ProfilePage(removeBack: true),
                 ),
               ],

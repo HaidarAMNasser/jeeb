@@ -18,6 +18,7 @@ import 'package:jeeb_app/core/presentation/widgets/custom_app_bar.dart';
 import 'package:jeeb_app/core/presentation/widgets/custom_circle_indicator.dart';
 import 'package:jeeb_app/core/presentation/widgets/language_selection_dialog.dart';
 import 'package:jeeb_app/core/presentation/widgets/logout_dialog.dart';
+import 'package:jeeb_app/core/presentation/widgets/delete_account_dialog.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_map_picker_page.dart';
 import 'package:jeeb_app/features/auth/profile/presentation/widgets/profile_page_content.dart';
 
@@ -25,6 +26,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../bloc/profile_bloc.dart';
 import '../../../logout/presentation/bloc/logout_bloc.dart';
+import '../../../delete_account/presentation/bloc/delete_account_bloc.dart';
 
 class ProfilePage extends StatefulWidget {
   final bool? removeBack;
@@ -89,7 +91,19 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       },
       builder: (context, logoutState) {
-        return BlocConsumer<ProfileBloc, ProfileState>(
+        return BlocConsumer<DeleteAccountBloc, DeleteAccountState>(
+          listener: (context, deleteState) {
+            if (deleteState is DeleteAccountSuccess) {
+              customToast(msg: AppTranslation.deleteAccountSuccess);
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => NavigationService().pushNamedAndRemoveUntil(Routes.login),
+              );
+            } else if (deleteState is DeleteAccountError) {
+              customToast(msg: deleteState.message);
+            }
+          },
+          builder: (context, deleteState) {
+            return BlocConsumer<ProfileBloc, ProfileState>(
           listener: (context, state) async {
             if (state is ProfileLoaded) {
               if (state.updateFailureMessage != null) {
@@ -131,9 +145,10 @@ class _ProfilePageState extends State<ProfilePage> {
             final loaded = state is ProfileLoaded ? state : null;
             final isUpdateLoading = loaded?.isUpdating ?? false;
             final isLogoutLoading = logoutState is LogoutLoading;
+            final isDeleteLoading = deleteState is DeleteAccountLoading;
             return ModalProgressHUD(
               progressIndicator: const CustomCircleIndicator(),
-              inAsyncCall: isUpdateLoading || isLogoutLoading,
+              inAsyncCall: isUpdateLoading || isLogoutLoading || isDeleteLoading,
               child: Scaffold(
                 backgroundColor: ColorManager.background,
                 appBar: CustomAppBar(
@@ -201,6 +216,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           .add(UpdateAccountActive(v)),
                       onChangePassword: () =>
                           context.pushNamed(Routes.changePassword),
+                      onDeleteAccount: () async {
+                        final ok = await showDeleteAccountDialog(context);
+                        if (ok == true && mounted) {
+                          context.read<DeleteAccountBloc>().add(
+                            const DeleteAccountSubmitted(),
+                          );
+                        }
+                      },
                       isUpdateLoading: isUpdateLoading,
                       onPickImage: () => _pickAndUpdateImage(context),
                     );
@@ -208,6 +231,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             );
+            },
+          );
           },
         );
       },

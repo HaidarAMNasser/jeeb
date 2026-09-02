@@ -25,6 +25,7 @@ class ProfileForm extends StatelessWidget {
   final VoidCallback onUpdateLocation;
   final ValueChanged<bool> onAccountStatusChanged;
   final VoidCallback onChangePassword;
+  final VoidCallback onDeleteAccount;
 
   const ProfileForm({
     super.key,
@@ -41,6 +42,7 @@ class ProfileForm extends StatelessWidget {
     required this.onUpdateLocation,
     required this.onAccountStatusChanged,
     required this.onChangePassword,
+    required this.onDeleteAccount,
   });
 
   @override
@@ -155,6 +157,13 @@ class ProfileForm extends StatelessWidget {
             onPressed: isLoading ? null : onUpdate,
             color: ColorManager.primary,
           ),
+          if (!user.isGuest)
+            CustomButton(
+              text: AppTranslation.deleteAccount,
+              onPressed: isLoading ? null : onDeleteAccount,
+              isOutlined: true,
+              color: ColorManager.errorColor,
+            ),
         ],
       ),
     );
