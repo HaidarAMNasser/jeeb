@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jeeb_app/core/common/utils/map_defaults.dart';
 import 'package:jeeb_app/core/common/utils/toast_util.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/address_geocoding.dart';
 import 'package:jeeb_app/core/infrastructure/services/location_services/location_choice_dialog.dart';
@@ -97,7 +98,10 @@ class RegisterPage extends StatelessWidget {
     } else {
       final picked = await Navigator.of(context).push<LocationMapPickerResult>(
         MaterialPageRoute<LocationMapPickerResult>(
-          builder: (_) => const LocationMapPickerPage(),
+          builder: (_) => const LocationMapPickerPage(
+            initialLatitude: MapDefaults.latitude,
+            initialLongitude: MapDefaults.longitude,
+          ),
         ),
       );
       if (picked == null || !context.mounted) return;

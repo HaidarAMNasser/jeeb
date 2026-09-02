@@ -1,0 +1,755 @@
+{
+	"info": {
+		"_postman_id": "99b322a1-952c-40bf-8876-8ae809dd2207",
+		"name": "Delivery Jeeb - Customers Module",
+		"description": "Complete API collection for managing customers with admin operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46725728"
+	},
+	"item": [
+		{
+			"name": "Admin Operations",
+			"item": [
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"customer1@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+96391234567\",\n    \"countryId\": 1,\n    \"cityId\": 1,\n    \"notificationChannel\": \"EMAIL\",\n    \"address\": \"123 Customer Street\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"customers"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"customer1@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+96391234567\",\n    \"countryId\": 1,\n    \"cityId\": 1,\n    \"notificationChannel\": \"EMAIL\",\n    \"address\": \"123 Customer Street\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/customers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 14:00:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "500"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 15,\n        \"email\": \"customer1@example.com\",\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"phone\": \"+96391234567\",\n        \"role\": \"CUSTOMER\",\n        \"isOnline\": false,\n        \"verifiedAt\": null,\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"123 Customer Street\",\n        \"notificationChannel\": \"EMAIL\",\n        \"image\": null,\n        \"createdAt\": \"2026-03-10T14:00:00.000Z\",\n        \"updatedAt\": \"2026-03-10T14:00:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T14:00:00.000Z\",\n    \"path\": \"/api/v1/users/customers\"\n}"
+						},
+						{
+							"name": "Error - Email Already Exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"customer1@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+96391234568\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/customers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "133"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 409,\n    \"message\": \"Email already exists\",\n    \"data\": {},\n    \"timestamp\": \"2026-03-10T14:01:00.000Z\",\n    \"path\": \"/api/v1/users/customers\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Customers (Filtered)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/customers?page=1&limit=10&countryId=&cityId=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "countryId",
+									"value": "",
+									"description": "Filter by country"
+								},
+								{
+									"key": "cityId",
+									"value": "",
+									"description": "Filter by city"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/customers?page=1&limit=10&countryId=&cityId=",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "countryId",
+											"value": ""
+										},
+										{
+											"key": "cityId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 14:02:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1500"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 15,\n            \"email\": \"customer1@example.com\",\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\",\n            \"phone\": \"+96391234567\",\n            \"role\": \"CUSTOMER\",\n            \"isOnline\": false,\n            \"verifiedAt\": null,\n            \"countryId\": 1,\n            \"cityId\": 1,\n            \"address\": \"123 Customer Street\",\n            \"notificationChannel\": \"EMAIL\",\n            \"image\": null,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\"\n            },\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"createdAt\": \"2026-03-10T14:00:00.000Z\",\n            \"updatedAt\": \"2026-03-10T14:00:00.000Z\"\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T14:02:00.000Z\",\n    \"path\": \"/api/v1/users/customers?page=1&limit=10\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get One Customer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/customers/15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"customers",
+								"15"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/customers/15",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers",
+										"15"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 14:03:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "800"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 15,\n        \"email\": \"customer1@example.com\",\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"phone\": \"+96391234567\",\n        \"role\": \"CUSTOMER\",\n        \"isOnline\": false,\n        \"verifiedAt\": null,\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"123 Customer Street\",\n        \"notificationChannel\": \"EMAIL\",\n        \"image\": null,\n        \"country\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"سوريا\",\n                \"en\": \"Syria\"\n            },\n            \"code\": \"SY\"\n        },\n        \"city\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"دمشق\",\n                \"en\": \"Damascus\"\n            },\n            \"countryId\": 1\n        },\n        \"createdAt\": \"2026-03-10T14:00:00.000Z\",\n        \"updatedAt\": \"2026-03-10T14:00:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T14:03:00.000Z\",\n    \"path\": \"/api/v1/users/customers/15\"\n}"
+						},
+						{
+							"name": "Error - Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/customers/999",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers",
+										"999"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "145"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 404,\n    \"message\": \"User not found\",\n    \"data\": {},\n    \"timestamp\": \"2026-03-10T14:04:00.000Z\",\n    \"path\": \"/api/v1/users/customers/999\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John Updated\",\n    \"address\": \"456 Updated Street\",\n    \"notificationChannel\": \"SMS\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/customers/15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"customers",
+								"15"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"firstName\": \"John Updated\",\n    \"address\": \"456 Updated Street\",\n    \"notificationChannel\": \"SMS\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/customers/15",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers",
+										"15"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 14:05:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "400"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 15,\n        \"firstName\": \"John Updated\",\n        \"lastName\": \"Doe\",\n        \"address\": \"456 Updated Street\",\n        \"notificationChannel\": \"SMS\",\n        \"updatedAt\": \"2026-03-10T14:05:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T14:05:00.000Z\",\n    \"path\": \"/api/v1/users/customers/15\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Search Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/customers?search=John&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"customers",
+								"search"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "John",
+									"description": "Search query for customer name, email, or phone"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Maximum number of results to return"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/customers?search=John&limit=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "John"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 15:00:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "800"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 15,\n            \"email\": \"customer1@example.com\",\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\",\n            \"phone\": \"+96391234567\",\n            \"role\": \"CUSTOMER\",\n            \"isOnline\": false,\n            \"verifiedAt\": null,\n            \"countryId\": 1,\n            \"cityId\": 1,\n            \"address\": \"123 Customer Street\",\n            \"notificationChannel\": \"EMAIL\",\n            \"image\": null,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\"\n            },\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"createdAt\": \"2026-03-10T14:00:00.000Z\",\n            \"updatedAt\": \"2026-03-10T14:00:00.000Z\"\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T15:00:00.000Z\",\n    \"path\": \"/api/v1/users/customers?search=John&limit=10\"\n}"
+						},
+						{
+							"name": "Empty Results",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/search?q=NonExistent&limit=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"search"
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "NonExistent"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 15:01:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "200"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [],\n    \"pagination\": {\n        \"total\": 0,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 0,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T15:01:00.000Z\",\n    \"path\": \"/api/v1/users/customers?search=NonExistent&limit=10\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/customers/15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"customers",
+								"15"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/customers/15",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"customers",
+										"15"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 14:06:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "200"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {},\n    \"timestamp\": \"2026-03-10T14:06:00.000Z\",\n    \"path\": \"/api/v1/users/customers/15\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.jeeb2.com/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "your_admin_token_here",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,1056 @@
+{
+  "info": {
+    "_postman_id": "2c40fce7-e509-4435-b113-93c088f05301",
+    "name": "Jeeb_Products_Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46725728",
+    "_collection_link": "https://assemhabib.postman.co/workspace/My-Workspace~e8ecb1f6-b28c-414e-8872-ce787ba90138/collection/46725728-2c40fce7-e509-4435-b113-93c088f05301?action=share&source=collection_link&creator=46725728"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Merchant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.access_token) {",
+                  "    pm.environment.set(\"token\", jsonData.data.access_token);",
+                  "    pm.collectionVariables.set(\"token\", jsonData.data.access_token);",
+                  "    console.log(\"Token updated\");",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"assem_driver2@jeeb.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"khderhabib2016@gmail.com\",\n    \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1020"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"3fc-p5EogcXaWwSb+OAjYtGY8RUFWu4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 03:52:52 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoia2hkZXJoYWJpYjIwMTZAZ21haWwuY29tIiwicm9sZSI6Ik1FUkNIQU5UIiwiaWF0IjoxNzcxOTA1MTcyLCJleHAiOjE3NzI1MDk5NzJ9.SYlztdl8MRqstfOi0f8F1P6wEVSl0sMPDgHlmGFfumM\",\n    \"user\": {\n      \"id\": 2,\n      \"firstName\": \"Merchant\",\n      \"lastName\": \"One\",\n      \"email\": \"khderhabib2016@gmail.com\",\n      \"phone\": \"+963987654321\",\n      \"role\": \"MERCHANT\",\n      \"notificationChannel\": \"EMAIL\",\n      \"countryId\": 1,\n      \"country\": {\n        \"id\": 1,\n        \"name\": {\n          \"ar\": \"سوريا\",\n          \"en\": \"Syria\"\n        },\n        \"code\": \"SY\",\n        \"callingCode\": \"+963\",\n        \"currencyCode\": \"SYP\",\n        \"currencySymbol\": \"£\",\n        \"currencySmallestUnit\": \"Piastre\",\n        \"currencyFactor\": 100,\n        \"isActive\": true\n      },\n      \"cityId\": 1,\n      \"city\": {\n        \"id\": 1,\n        \"name\": {\n          \"ar\": \"دمشق\",\n          \"en\": \"Damascus\"\n        },\n        \"countryId\": 1\n      },\n      \"address\": \"Damascus, Street 2\",\n      \"isOnline\": false,\n      \"verifiedAt\": \"2026-02-23T17:41:25.403Z\",\n      \"currentLat\": null,\n      \"currentLng\": null,\n      \"createdAt\": \"2026-02-23T17:40:30.763Z\",\n      \"updatedAt\": \"2026-02-23T17:41:25.420Z\"\n    }\n  },\n  \"timestamp\": \"2026-02-24T03:52:52.053Z\",\n  \"path\": \"/api/v1/auth/login\"\n}"
+            },
+            {
+              "name": "Example with priceAfterDiscount",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"Delicious Burger\",\n    \"price\": 1499,\n    \"priceAfterDiscount\": 1484,\n    \"finalPrice\": 1484,\n    \"commissionAmount\": 0\n  },\n  \"timestamp\": \"2026-02-24T03:59:46.000Z\",\n  \"path\": \"/api/v1/products/2\"\n}"
+            },
+            {
+              "name": "Example with priceAfterDiscount",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 201,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 3,\n    \"name\": \"Delicious Burger\",\n    \"price\": 1299,\n    \"priceAfterDiscount\": 1170,\n    \"finalPrice\": 1170,\n    \"commissionAmount\": 0\n  },\n  \"timestamp\": \"2026-02-24T03:56:42.837Z\",\n  \"path\": \"/api/v1/products\"\n}"
+            },
+            {
+              "name": "Example with priceAfterDiscount",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 3,\n    \"name\": \"Delicious Burger\",\n    \"price\": 1299,\n    \"priceAfterDiscount\": 1170,\n    \"finalPrice\": 1170,\n    \"commissionAmount\": 0\n  },\n  \"timestamp\": \"2026-02-24T03:59:16.022Z\",\n  \"path\": \"/api/v1/products/3\"\n}"
+            },
+            {
+              "name": "Example with priceAfterDiscount",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": [\n    {\n      \"id\": 3,\n      \"name\": \"Delicious Burger\",\n      \"price\": 1299,\n      \"priceAfterDiscount\": 1170,\n      \"finalPrice\": 1170,\n      \"commissionAmount\": 0\n    }\n  ],\n  \"pagination\": {\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 2,\n    \"totalPages\": 1,\n    \"hasNextPage\": false,\n    \"hasPreviousPage\": false\n  },\n  \"timestamp\": \"2026-02-24T04:06:07.000Z\",\n  \"path\": \"/api/v1/products?page=1&limit=2\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set(\"admin_token\", jsonData.data.access_token);",
+                  "    console.log(\"Admin Token updated\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@jeeb.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"admin@jeeb.com\",\n    \"password\": \"admin123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"admin@jeeb.com\",\n      \"firstName\": \"Admin\",\n      \"lastName\": \"User\",\n      \"phone\": \"+963911111111\",\n      \"role\": \"ADMIN\",\n      \"isVerified\": true\n    }\n  },\n  \"timestamp\": \"2026-03-08T10:00:00.000Z\",\n  \"path\": \"/api/v1/auth/login\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "description": "Response includes priceAfterDiscount (integer) computed from price, discount, discountType",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Delicious Burger",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Juicy beef burger with cheese",
+                  "type": "text"
+                },
+                {
+                  "key": "shortDescription",
+                  "value": "Beef burger",
+                  "type": "text"
+                },
+                {
+                  "key": "personCount",
+                  "value": "4",
+                  "type": "text",
+                  "description": "Number of servings (e.g., 4 people)"
+                },
+                {
+                  "key": "price",
+                  "value": "1299",
+                  "type": "text"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "2",
+                  "type": "text"
+                },
+                {
+                  "key": "discount",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "discountType",
+                  "value": "PERCENTAGE",
+                  "type": "text"
+                },
+                {
+                  "key": "hasStock",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "stockQuantity",
+                  "value": "50",
+                  "type": "text"
+                },
+                {
+                  "key": "isAvailable",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "isExternal",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "externalProvider",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "externalId",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Delicious Burger",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Juicy beef burger with cheese",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shortDescription",
+                      "value": "Beef burger",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "1299",
+                      "type": "text"
+                    },
+                    {
+                      "key": "merchantId",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "categoryId",
+                      "value": "2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "discount",
+                      "value": "10",
+                      "type": "text"
+                    },
+                    {
+                      "key": "discountType",
+                      "value": "PERCENTAGE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "hasStock",
+                      "value": "true",
+                      "type": "text"
+                    },
+                    {
+                      "key": "stockQuantity",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "isAvailable",
+                      "value": "true",
+                      "type": "text"
+                    },
+                    {
+                      "key": "isExternal",
+                      "value": "false",
+                      "type": "text"
+                    },
+                    {
+                      "key": "externalProvider",
+                      "value": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "externalId",
+                      "value": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": []
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1178"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"49a-i/1WELPDs4xx9GzBluBkZP0wTqU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 03:56:42 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 201,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 3,\n    \"merchantId\": 2,\n    \"merchant\": {\n      \"id\": 2,\n      \"firstName\": \"Merchant\",\n      \"lastName\": \"One\",\n      \"email\": \"merchant1@jeeb.com\",\n      \"phone\": \"+963933333332\",\n      \"role\": \"MERCHANT\",\n      \"notificationChannel\": \"EMAIL\",\n      \"countryId\": 1,\n      \"cityId\": 1,\n      \"address\": \"Test Address\",\n      \"isOnline\": true,\n      \"verifiedAt\": \"2026-02-23T18:05:25.743Z\",\n      \"currentLat\": null,\n      \"currentLng\": null,\n      \"createdAt\": \"2026-02-23T18:05:25.802Z\",\n      \"updatedAt\": \"2026-02-23T18:05:25.802Z\"\n    },\n    \"categoryId\": 2,\n    \"category\": {\n      \"id\": 2,\n      \"name\": \"وجبات سريعة\",\n      \"description\": \"Burgers, fries, and more\",\n      \"isActive\": true,\n      \"displayOrder\": 1,\n      \"createdAt\": \"2026-02-23T17:57:48.269Z\",\n      \"updatedAt\": \"2026-02-23T17:57:48.269Z\"\n    },\n    \"name\": \"Delicious Burger\",\n    \"shortDescription\": \"Beef burger\",\n    \"description\": \"Juicy beef burger with cheese\",\n    \"price\": 1299,\n    \"discount\": 10,\n    \"discountType\": \"PERCENTAGE\",\n    \"isAvailable\": true,\n    \"hasStock\": true,\n    \"stockQuantity\": 50,\n    \"isExternal\": false,\n    \"externalProvider\": null,\n    \"externalId\": null,\n    \"externalMetadata\": null,\n    \"commissionRate\": null,\n    \"commissionConfirmed\": false,\n    \"images\": [],\n    \"priceAfterDiscount\": 1170,\n    \"createdAt\": \"2026-02-24T03:56:42.808Z\",\n    \"updatedAt\": \"2026-02-24T03:56:42.808Z\"\n  },\n  \"timestamp\": \"2026-02-24T03:56:42.837Z\",\n  \"path\": \"/api/v1/products\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Products (Filter & Search)",
+          "description": "Each product response includes priceAfterDiscount (integer) = effective price after discount. Supports filters: categoryId, merchantId, minPrice, maxPrice, minRating, search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products?page=1&limit=10&categoryId=1&merchantId=1&minPrice=1000&maxPrice=5000&minRating=4&search=burger",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1",
+                  "description": "Filter by category ID"
+                },
+                {
+                  "key": "merchantId",
+                  "value": "1",
+                  "description": "Filter by merchant ID"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "1000",
+                  "description": "Minimum price (integer)"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "5000",
+                  "description": "Maximum price (integer)"
+                },
+                {
+                  "key": "minRating",
+                  "value": "4",
+                  "description": "Minimum rating (1-5)"
+                },
+                {
+                  "key": "search",
+                  "value": "burger",
+                  "description": "Search by name (Arabic/English)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/products?page=1&limit=2",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1510"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5e6-EN+LAIqL+lQCd2JQf7KsqoNexuw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 04:06:07 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": [\n    {\n      \"id\": 3,\n      \"merchantId\": 2,\n      \"categoryId\": 2,\n      \"name\": \"Delicious Burger\",\n      \"shortDescription\": \"Beef burger\",\n      \"description\": \"Juicy beef burger with cheese\",\n      \"price\": 1299,\n      \"discount\": 10,\n      \"discountType\": \"PERCENTAGE\",\n      \"isAvailable\": true,\n      \"hasStock\": true,\n      \"stockQuantity\": 50,\n      \"isExternal\": false,\n      \"externalProvider\": null,\n      \"externalId\": null,\n      \"externalMetadata\": null,\n      \"images\": [],\n      \"createdAt\": \"2026-02-24T03:56:42.808Z\",\n      \"updatedAt\": \"2026-02-24T03:56:42.808Z\"\n    },\n    {\n      \"id\": 1,\n      \"merchantId\": 2,\n      \"categoryId\": 2,\n      \"name\": \"Delicious Burger\",\n      \"shortDescription\": {},\n      \"description\": \"Juicy beef burger with cheese\",\n      \"price\": 1299,\n      \"discount\": null,\n      \"discountType\": null,\n      \"isAvailable\": true,\n      \"hasStock\": true,\n      \"stockQuantity\": 50,\n      \"isExternal\": false,\n      \"externalProvider\": null,\n      \"externalId\": null,\n      \"externalMetadata\": null,\n      \"images\": [\n        {\n          \"id\": 6,\n          \"entityType\": \"PRODUCT\",\n          \"entityId\": 1,\n          \"url\": \"http://localhost:3000/uploads/products/1/1771904672314_cv.webp\",\n          \"mobileUrl\": \"http://localhost:3000/uploads/products/1/1771904672314_cv_mobile.webp\",\n          \"thumbnailUrl\": \"http://localhost:3000/uploads/products/1/1771904672314_cv_thumb.webp\",\n          \"isMain\": true,\n          \"displayOrder\": 0,\n          \"createdAt\": \"2026-02-24T03:44:32.457Z\",\n          \"updatedAt\": \"2026-02-24T03:44:32.457Z\"\n        }\n      ],\n      \"createdAt\": \"2026-02-24T03:44:32.303Z\",\n      \"updatedAt\": \"2026-02-24T03:44:32.303Z\"\n    }\n  ],\n  \"pagination\": {\n    \"total\": 2,\n    \"page\": 1,\n    \"limit\": 2,\n    \"totalPages\": 1,\n    \"hasNextPage\": false,\n    \"hasPreviousPage\": false\n  },\n  \"timestamp\": \"2026-02-24T04:06:07.625Z\",\n  \"path\": \"/api/v1/products?page=1&limit=2\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get One Product",
+          "description": "Product response includes priceAfterDiscount (integer) derived from discount/discountType",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products/3",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "3"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/products/3",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "3"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1180"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"49c-bsv1RkxxewpLZCom+qLhoiCDXWg\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 03:59:16 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 3,\n    \"merchantId\": 2,\n    \"categoryId\": 2,\n    \"category\": {\n      \"id\": 2,\n      \"name\": \"وجبات سريعة\",\n      \"description\": \"Burgers, fries, and more\",\n      \"isActive\": true,\n      \"displayOrder\": 1,\n      \"createdAt\": \"2026-02-23T17:57:48.269Z\",\n      \"updatedAt\": \"2026-02-23T17:57:48.269Z\"\n    },\n    \"name\": \"Delicious Burger\",\n    \"shortDescription\": \"Beef burger\",\n    \"description\": \"Juicy beef burger with cheese\",\n    \"price\": 1299,\n    \"discount\": 10,\n    \"discountType\": \"PERCENTAGE\",\n    \"isAvailable\": true,\n    \"hasStock\": true,\n    \"stockQuantity\": 50,\n    \"isExternal\": false,\n    \"externalProvider\": null,\n    \"externalId\": null,\n    \"externalMetadata\": null,\n    \"images\": [],\n    \"createdAt\": \"2026-02-24T03:56:42.808Z\",\n    \"updatedAt\": \"2026-02-24T03:56:42.808Z\"\n  },\n  \"timestamp\": \"2026-02-24T03:59:16.022Z\",\n  \"path\": \"/api/v1/products/3\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Product",
+          "description": "Updated product response includes priceAfterDiscount (integer) reflecting new discount values",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Delicious Burger",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated description",
+                  "type": "text"
+                },
+                {
+                  "key": "shortDescription",
+                  "value": "Updated short",
+                  "type": "text"
+                },
+                {
+                  "key": "personCount",
+                  "value": "6",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "1499",
+                  "type": "text"
+                },
+                {
+                  "key": "stockQuantity",
+                  "value": "45",
+                  "type": "text"
+                },
+                {
+                  "key": "isAvailable",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "hasStock",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "discount",
+                  "value": "15",
+                  "type": "text"
+                },
+                {
+                  "key": "discountType",
+                  "value": "FIXED",
+                  "type": "text"
+                },
+                {
+                  "key": "isExternal",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "externalProvider",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "externalId",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "imagesMetadata",
+                  "value": "[{\"id\":10,\"isMain\":true,\"displayOrder\":0}]",
+                  "type": "text"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "deleteImageIds",
+                  "value": "[10, 12]",
+                  "type": "text",
+                  "description": "Array of image IDs to delete"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "2"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Delicious Burger",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Updated description",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shortDescription",
+                      "value": "Updated short",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "1499",
+                      "type": "text"
+                    },
+                    {
+                      "key": "stockQuantity",
+                      "value": "45",
+                      "type": "text"
+                    },
+                    {
+                      "key": "isAvailable",
+                      "value": "true",
+                      "type": "text"
+                    },
+                    {
+                      "key": "hasStock",
+                      "value": "true",
+                      "type": "text"
+                    },
+                    {
+                      "key": "categoryId",
+                      "value": "1",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "discount",
+                      "value": "15",
+                      "type": "text"
+                    },
+                    {
+                      "key": "discountType",
+                      "value": "FIXED",
+                      "type": "text"
+                    },
+                    {
+                      "key": "isExternal",
+                      "value": "false",
+                      "type": "text"
+                    },
+                    {
+                      "key": "externalProvider",
+                      "value": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "externalId",
+                      "value": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "imagesMetadata",
+                      "value": "[{\"id\":10,\"isMain\":true,\"displayOrder\":0}]",
+                      "type": "text"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": []
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/2",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "2"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1534"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5fe-jf3eBaUYpkvxsTfnvuYYcQn/Jzw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 03:59:46 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 2,\n    \"merchantId\": 2,\n    \"categoryId\": 5,\n    \"category\": {\n      \"id\": 5,\n      \"name\": \"إيطالي\",\n      \"description\": {},\n      \"isActive\": true,\n      \"displayOrder\": 0,\n      \"createdAt\": \"2026-02-23T18:07:25.886Z\",\n      \"updatedAt\": \"2026-02-23T18:07:25.886Z\"\n    },\n    \"name\": \"Delicious Burger\",\n    \"shortDescription\": \"Updated short\",\n    \"description\": \"Updated description\",\n    \"price\": 1499,\n    \"discount\": 15,\n    \"discountType\": \"FIXED\",\n    \"isAvailable\": true,\n    \"hasStock\": true,\n    \"stockQuantity\": 45,\n    \"isExternal\": false,\n    \"externalProvider\": null,\n    \"externalId\": null,\n    \"externalMetadata\": null,\n    \"images\": [\n      {\n        \"id\": 7,\n        \"entityType\": \"PRODUCT\",\n        \"entityId\": 2,\n        \"url\": \"http://localhost:3000/uploads/products/2/1771905052263_cv.webp\",\n        \"mobileUrl\": \"http://localhost:3000/uploads/products/2/1771905052263_cv_mobile.webp\",\n        \"thumbnailUrl\": \"http://localhost:3000/uploads/products/2/1771905052263_cv_thumb.webp\",\n        \"isMain\": true,\n        \"displayOrder\": 0,\n        \"createdAt\": \"2026-02-24T03:50:52.409Z\",\n        \"updatedAt\": \"2026-02-24T03:50:52.409Z\"\n      }\n    ],\n    \"createdAt\": \"2026-02-24T03:50:52.241Z\",\n    \"updatedAt\": \"2026-02-24T03:59:46.099Z\"\n  },\n  \"timestamp\": \"2026-02-24T03:59:46.113Z\",\n  \"path\": \"/api/v1/products/2\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "2"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/products/2",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "2"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "128"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"80-xRu7c/AYGX/11J1myQhikA2Ujbc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 04:00:46 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {},\n  \"timestamp\": \"2026-02-24T04:00:46.161Z\",\n  \"path\": \"/api/v1/products/2\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Product Image",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products/images/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "images", "6"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/products/images/6",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "images", "6"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "135"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"87-AjpiIWe0pGdWpJWLVQwqHwyLFus\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 24 Feb 2026 04:09:29 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {},\n  \"timestamp\": \"2026-02-24T04:09:29.748Z\",\n  \"path\": \"/api/v1/products/images/6\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.jeeb2.com/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

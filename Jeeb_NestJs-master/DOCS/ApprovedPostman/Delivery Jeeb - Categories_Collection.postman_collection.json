@@ -1,0 +1,1022 @@
+{
+	"info": {
+		"_postman_id": "18c88fe9-6451-4893-8f41-869af887a595",
+		"name": "Jeeb_Categories_Collection",
+		"description": "Collection for Categories API - Create, Read, Update, Delete categories (Admin only)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46725728",
+		"_collection_link": "https://assemhabib.postman.co/workspace/My-Workspace~e8ecb1f6-b28c-414e-8872-ce787ba90138/collection/46725728-18c88fe9-6451-4893-8f41-869af887a595?action=share&source=collection_link&creator=46725728"
+	},
+	"item": [
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Create Category (Admin Only)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (pm.response.code === 201) {",
+									"    pm.collectionVariables.set(\"categoryId\", jsonData.data.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Fast Food",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Burgers, fries, and more",
+									"type": "text"
+								},
+								{
+									"key": "isActive",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "displayOrder",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/RYZEN/Pictures/Screenshots/Screenshot (573).png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Error - Forbidden (Not Admin)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{merchant_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Fast Food",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/categories",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Only Admins can create categories\",\n    \"error\": \"Forbidden\",\n    \"statusCode\": 403\n}"
+						},
+						{
+							"name": "Create Category (Admin Only)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Fast Food",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Burgers, fries, and more",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "displayOrder",
+											"value": "1",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/RYZEN/Pictures/Screenshots/Screenshot (573).png"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/categories",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 07:50:31 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "761"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-RateLimit-Limit-short",
+									"value": "100"
+								},
+								{
+									"key": "X-RateLimit-Remaining-short",
+									"value": "99"
+								},
+								{
+									"key": "X-RateLimit-Reset-short",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Limit-medium",
+									"value": "500"
+								},
+								{
+									"key": "X-RateLimit-Remaining-medium",
+									"value": "498"
+								},
+								{
+									"key": "X-RateLimit-Reset-medium",
+									"value": "489"
+								},
+								{
+									"key": "X-RateLimit-Limit-long",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining-long",
+									"value": "1998"
+								},
+								{
+									"key": "X-RateLimit-Reset-long",
+									"value": "3489"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2f9-zkyQNr3u6OA2XhtOzbDfKYHs6So\""
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "Permissions-Policy",
+									"value": "geolocation=(), microphone=(), camera=()"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 4,\n        \"name\": \"Fast Food\",\n        \"description\": \"Burgers, fries, and more\",\n        \"images\": [\n            {\n                \"id\": 15,\n                \"entityType\": \"CATEGORY\",\n                \"entityId\": 4,\n                \"url\": \"https://api.jeeb2.com/uploads/categories/4/1773129030633_Screenshot (573).webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/categories/4/1773129030633_Screenshot (573)_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/categories/4/1773129030633_Screenshot (573)_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T07:50:30.997Z\",\n                \"updatedAt\": \"2026-03-10T07:50:30.997Z\"\n            }\n        ],\n        \"isActive\": true,\n        \"displayOrder\": 0,\n        \"createdAt\": \"2026-03-10T07:50:30.626Z\",\n        \"updatedAt\": \"2026-03-10T07:50:30.626Z\"\n    },\n    \"timestamp\": \"2026-03-10T07:50:31.002Z\",\n    \"path\": \"/api/v1/categories\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/categories?page=1&limit=10&search=Fast&isActive=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "Fast",
+									"description": "Search by category name (Arabic or English)"
+								},
+								{
+									"key": "isActive",
+									"value": "true",
+									"description": "Filter by active status"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success - Empty List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/categories",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [],\n    \"pagination\": {\n        \"total\": 0,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 0,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-02-23T18:00:00.000Z\",\n    \"path\": \"/api/v1/categories\"\n}"
+						},
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/categories?page=1&limit=10&search=Fast&isActive=true",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "search",
+											"value": "Fast",
+											"description": "Search by category name (Arabic or English)"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"description": "Filter by active status"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 07:49:29 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "909"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-RateLimit-Limit-short",
+									"value": "100"
+								},
+								{
+									"key": "X-RateLimit-Remaining-short",
+									"value": "98"
+								},
+								{
+									"key": "X-RateLimit-Reset-short",
+									"value": "39"
+								},
+								{
+									"key": "X-RateLimit-Limit-medium",
+									"value": "500"
+								},
+								{
+									"key": "X-RateLimit-Remaining-medium",
+									"value": "498"
+								},
+								{
+									"key": "X-RateLimit-Reset-medium",
+									"value": "579"
+								},
+								{
+									"key": "X-RateLimit-Limit-long",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining-long",
+									"value": "1998"
+								},
+								{
+									"key": "X-RateLimit-Reset-long",
+									"value": "3579"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"38d-z5LeIlMXf6RmmOEppsZx4LixNKQ\""
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "Permissions-Policy",
+									"value": "geolocation=(), microphone=(), camera=()"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 3,\n            \"name\": \"Fast Food\",\n            \"description\": \"Burgers, fries, and more\",\n            \"images\": [\n                {\n                    \"id\": 14,\n                    \"entityType\": \"CATEGORY\",\n                    \"entityId\": 3,\n                    \"url\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573).webp\",\n                    \"mobileUrl\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573)_mobile.webp\",\n                    \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573)_thumb.webp\",\n                    \"isMain\": true,\n                    \"displayOrder\": 0,\n                    \"createdAt\": \"2026-03-10T07:48:40.021Z\",\n                    \"updatedAt\": \"2026-03-10T07:48:40.021Z\"\n                }\n            ],\n            \"isActive\": true,\n            \"displayOrder\": 0,\n            \"createdAt\": \"2026-03-10T07:48:39.644Z\",\n            \"updatedAt\": \"2026-03-10T07:48:39.644Z\"\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T07:49:29.852Z\",\n    \"path\": \"/api/v1/categories?page=1&limit=10&search=Fast&isActive=true\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get One Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/categories/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories",
+								"3"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Error - Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/categories/999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"999"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Category with ID 999 not found\",\n    \"error\": \"Not Found\",\n    \"statusCode\": 404\n}"
+						},
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/categories/3",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 07:50:08 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "763"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-RateLimit-Limit-short",
+									"value": "100"
+								},
+								{
+									"key": "X-RateLimit-Remaining-short",
+									"value": "98"
+								},
+								{
+									"key": "X-RateLimit-Reset-short",
+									"value": "35"
+								},
+								{
+									"key": "X-RateLimit-Limit-medium",
+									"value": "500"
+								},
+								{
+									"key": "X-RateLimit-Remaining-medium",
+									"value": "498"
+								},
+								{
+									"key": "X-RateLimit-Reset-medium",
+									"value": "575"
+								},
+								{
+									"key": "X-RateLimit-Limit-long",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining-long",
+									"value": "1998"
+								},
+								{
+									"key": "X-RateLimit-Reset-long",
+									"value": "3575"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2fb-IuIgEm/t59zD418LPs1qb3Zd824\""
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "Permissions-Policy",
+									"value": "geolocation=(), microphone=(), camera=()"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 3,\n        \"name\": \"Fast Food\",\n        \"description\": \"Burgers, fries, and more\",\n        \"images\": [\n            {\n                \"id\": 14,\n                \"entityType\": \"CATEGORY\",\n                \"entityId\": 3,\n                \"url\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573).webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573)_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573)_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T07:48:40.021Z\",\n                \"updatedAt\": \"2026-03-10T07:48:40.021Z\"\n            }\n        ],\n        \"isActive\": true,\n        \"displayOrder\": 0,\n        \"createdAt\": \"2026-03-10T07:48:39.644Z\",\n        \"updatedAt\": \"2026-03-10T07:48:39.644Z\"\n    },\n    \"timestamp\": \"2026-03-10T07:50:08.992Z\",\n    \"path\": \"/api/v1/categories/3\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Category (Admin Only)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Updated Fast Food",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Updated description",
+									"type": "text"
+								},
+								{
+									"key": "isActive",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "displayOrder",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/path/to/new-category-image.jpg",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories",
+								"3"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Error - Forbidden (Not Admin)",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Hacked Name",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/categories/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"1"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Only Admins can update categories\",\n    \"error\": \"Forbidden\",\n    \"statusCode\": 403\n}"
+						},
+						{
+							"name": "Error - Not Found",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/categories/999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"999"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Category with ID 999 not found\",\n    \"error\": \"Not Found\",\n    \"statusCode\": 404\n}"
+						},
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Updated Fast Food",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Updated description",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "false",
+											"type": "text"
+										},
+										{
+											"key": "displayOrder",
+											"value": "2",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/path/to/new-category-image.jpg",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/categories/3",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Mar 2026 07:50:20 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "767"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-RateLimit-Limit-short",
+									"value": "100"
+								},
+								{
+									"key": "X-RateLimit-Remaining-short",
+									"value": "99"
+								},
+								{
+									"key": "X-RateLimit-Reset-short",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Limit-medium",
+									"value": "500"
+								},
+								{
+									"key": "X-RateLimit-Remaining-medium",
+									"value": "499"
+								},
+								{
+									"key": "X-RateLimit-Reset-medium",
+									"value": "600"
+								},
+								{
+									"key": "X-RateLimit-Limit-long",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining-long",
+									"value": "1999"
+								},
+								{
+									"key": "X-RateLimit-Reset-long",
+									"value": "3600"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2ff-V3Ap1dfawuCx65TzJ0DO0td4uS8\""
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "Permissions-Policy",
+									"value": "geolocation=(), microphone=(), camera=()"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 3,\n        \"name\": \"Updated Fast Food\",\n        \"description\": \"Updated description\",\n        \"images\": [\n            {\n                \"id\": 14,\n                \"entityType\": \"CATEGORY\",\n                \"entityId\": 3,\n                \"url\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573).webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573)_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/categories/3/1773128919648_Screenshot (573)_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T07:48:40.021Z\",\n                \"updatedAt\": \"2026-03-10T07:48:40.021Z\"\n            }\n        ],\n        \"isActive\": false,\n        \"displayOrder\": 2,\n        \"createdAt\": \"2026-03-10T07:48:39.644Z\",\n        \"updatedAt\": \"2026-03-10T07:50:20.843Z\"\n    },\n    \"timestamp\": \"2026-03-10T07:50:20.848Z\",\n    \"path\": \"/api/v1/categories/3\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Category (Admin Only)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/categories/4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categories",
+								"4"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/categories/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-23T18:10:00.000Z\",\n    \"path\": \"/api/v1/categories/1\"\n}"
+						},
+						{
+							"name": "Error - Forbidden (Not Admin)",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{merchant_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/categories/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"1"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Only Admins can delete categories\",\n    \"error\": \"Forbidden\",\n    \"statusCode\": 403\n}"
+						},
+						{
+							"name": "Error - Not Found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/categories/999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categories",
+										"999"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Category with ID 999 not found\",\n    \"error\": \"Not Found\",\n    \"statusCode\": 404\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://api.jeeb2.com/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "merchant_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "categoryId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,7 @@
+export enum ImageEntityType {
+  PRODUCT = 'PRODUCT',
+  USER = 'USER',
+  CATEGORY = 'CATEGORY',
+  OFFER = 'OFFER',
+  PAYMENT_RECEIPT = 'PAYMENT_RECEIPT',
+}

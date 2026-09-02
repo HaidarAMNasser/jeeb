@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "favorites-module-collection-id",
+		"name": "Jeeb Delivery - Favorites Module",
+		"description": "Favorites Management Endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Favorites Operations",
+			"item": [
+				{
+					"name": "Toggle Favorites (Bulk)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurants\": [1, 2],\n  \"products\": [10]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/favorites/toggle",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"favorites",
+								"toggle"
+							]
+						},
+						"description": "Toggle favorites in bulk. IDs under 'restaurants' are treated as Restaurants; IDs under 'products' are treated as Products."
+					},
+					"response": [
+						{
+							"name": "Success - Toggle Result",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"restaurants\": [1, 2],\n  \"products\": [10]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/favorites/toggle",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"favorites",
+										"toggle"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"restaurants\": [\n      { \"id\": 1, \"name\": \"Best Burger\", \"ownerName\": \"John Doe\", \"address\": \"123 Tasty St\", \"city\": \"دمشق\" }\n    ],\n    \"products\": [\n      { \"id\": 10, \"name\": \"Delicious Burger\", \"price\": 1299, \"category\": \"وجبات سريعة\" }\n    ]\n  },\n  \"timestamp\": \"2026-02-24T10:00:00.000Z\",\n  \"path\": \"/api/v1/favorites/toggle\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get My Favorites",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/favorites",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"favorites"
+							]
+						},
+						"description": "Get all favorites for the logged-in user."
+					},
+					"response": [
+						{
+							"name": "Success - Get All",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"userId\": 10,\n      \"entityId\": 1,\n      \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n      \"entity\": {\n        \"id\": 1,\n        \"name\": \"Tasty Burger\",\n        \"image\": \"http://...\"\n      }\n    }\n  ],\n  \"timestamp\": \"2026-02-24T10:00:00.000Z\",\n  \"path\": \"/api/v1/favorites\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login (Any Role)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"customer@jeeb.com\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.access_token) {",
+									"  pm.collectionVariables.set(\"token\", jsonData.data.access_token);",
+									"  pm.environment.set(\"token\", jsonData.data.access_token);",
+									"  console.log(\"Token updated\");",
+									"}"
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api/v1"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

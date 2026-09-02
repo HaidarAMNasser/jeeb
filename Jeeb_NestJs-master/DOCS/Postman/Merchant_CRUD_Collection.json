@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "c1f8e9a8-d3c5-5f2e-0g4b-6d7c8f9g0a1c",
+		"name": "Delivery Jeeb - Merchant CRUD",
+		"description": "Merchant Management Endpoints (Admin)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Merchants",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/users/merchants?page=1&limit=10&search=owner",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"merchants"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						},
+						{
+							"key": "search",
+							"value": "owner",
+							"description": "Search by name, email, phone"
+						},
+						{
+							"key": "cityId",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Merchant By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/users/merchants/5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"merchants",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Merchant",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"New\",\n    \"lastName\": \"Merchant\",\n    \"email\": \"new.merchant@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"+963955555555\",\n    \"countryId\": 1,\n    \"cityId\": 1,\n    \"notificationChannel\": \"WHATSAPP\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/users/merchants",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"merchants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Merchant",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Updated Merchant\",\n    \"phone\": \"+963966666666\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/users/merchants/5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"merchants",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Merchant",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/users/merchants/5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"merchants",
+						"5"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "YOUR_ADMIN_JWT_TOKEN",
+			"type": "string"
+		}
+	]
+}

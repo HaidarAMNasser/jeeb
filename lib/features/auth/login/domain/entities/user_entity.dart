@@ -64,6 +64,12 @@ class UserEntity extends Equatable {
 
   String get fullName => '$firstName $lastName';
 
+  /// Shadow guest accounts use `guest-{uid}@jeeb.local` (Guest_API).
+  bool get isGuest {
+    final value = email.trim().toLowerCase();
+    return value.startsWith('guest-') && value.endsWith('@jeeb.local');
+  }
+
   @override
   List<Object?> get props => [
         id,

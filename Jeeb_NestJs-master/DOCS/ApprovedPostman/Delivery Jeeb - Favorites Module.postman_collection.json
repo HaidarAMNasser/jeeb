@@ -1,0 +1,318 @@
+{
+	"info": {
+		"_postman_id": "19ec4f8e-beb3-4fd5-a5c4-d0be2730abfa",
+		"name": "Jeeb Delivery - Favorites Module",
+		"description": "Favorites Management Endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46725728",
+		"_collection_link": "https://assemhabib.postman.co/workspace/My-Workspace~e8ecb1f6-b28c-414e-8872-ce787ba90138/collection/46725728-19ec4f8e-beb3-4fd5-a5c4-d0be2730abfa?action=share&source=collection_link&creator=46725728"
+	},
+	"item": [
+		{
+			"name": "Favorites Operations",
+			"item": [
+				{
+					"name": "Toggle Favorites (Bulk)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"products\": [10, 11, 12]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/favorites/toggle",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"favorites",
+								"toggle"
+							]
+						},
+						"description": "Toggle favorites in bulk. Send product IDs to add/remove from favorites. If product exists in favorites, it will be removed. If not, it will be added."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"products\": [10, 11, 12]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/favorites/toggle",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"favorites",
+										"toggle"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "469"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1d5-ZQxGRJgyZhN9xrrk5Rc1vvMYzTA\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 24 Feb 2026 07:58:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"products\": [\n            {\n                \"id\": 10,\n                \"name\": \"Delicious Burger\",\n                \"price\": 1299,\n                \"category\": \"وجبات سريعة\"\n            },\n            {\n                \"id\": 11,\n                \"name\": \"Chicken Sandwich\",\n                \"price\": 899,\n                \"category\": \"وجبات سريعة\"\n            }\n        ]\n    },\n    \"timestamp\": \"2026-02-24T07:58:11.731Z\",\n    \"path\": \"/api/v1/favorites/toggle\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get My Favorites",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/favorites",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"favorites"
+							]
+						},
+						"description": "Get all favorites for the logged-in user."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "651"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"28b-z1jh8JKaYx/K3j/LNyEQTyT91Io\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 24 Feb 2026 07:57:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"products\": [\n                {\n                    \"id\": 10,\n                    \"name\": \"Delicious Burger\",\n                    \"price\": 1299,\n                    \"category\": \"وجبات سريعة\"\n                },\n                {\n                    \"id\": 11,\n                    \"name\": \"Chicken Sandwich\",\n                    \"price\": 899,\n                    \"category\": \"وجبات سريعة\"\n                },\n                {\n                    \"id\": 12,\n                    \"name\": \"French Fries\",\n                    \"price\": 299,\n                    \"category\": \"وجبات جانبية\"\n                }\n            ]\n        }\n    ],\n    \"total\": 3,\n    \"page\": 1,\n    \"limit\": 10,\n    \"timestamp\": \"2026-02-24T07:57:49.804Z\",\n    \"path\": \"/api/v1/favorites\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login (Any Role)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.access_token) {",
+									"  pm.collectionVariables.set(\"token\", jsonData.data.access_token);",
+									"  pm.environment.set(\"token\", jsonData.data.access_token);",
+									"  console.log(\"Token updated\");",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"customer@jeeb.com\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"customer@jeeb.com\",\n  \"password\": \"123456\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1008"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3f0-+qTR0id2R3+TUnB0oHhebUqv8/Q\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 24 Feb 2026 07:57:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiY3VzdG9tZXJAamVlYi5jb20iLCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NzE5MTk4NjQsImV4cCI6MTc3NDUxMTg2NH0.f6maVp_48Y5pIn82sHfArLH5thLTo4P2UM3V51_7qh0\",\n        \"user\": {\n            \"id\": 5,\n            \"firstName\": \"Test\",\n            \"lastName\": \"Customer\",\n            \"email\": \"customer@jeeb.com\",\n            \"phone\": \"+963933333333\",\n            \"role\": \"CUSTOMER\",\n            \"notificationChannel\": \"EMAIL\",\n            \"countryId\": 1,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\",\n                \"callingCode\": \"+963\",\n                \"currencyCode\": \"SYP\",\n                \"currencySymbol\": \"£\",\n                \"currencySmallestUnit\": \"Piastre\",\n                \"currencyFactor\": 100,\n                \"isActive\": true\n            },\n            \"cityId\": 1,\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"address\": \"Test Address, Damascus\",\n            \"isOnline\": true,\n            \"verifiedAt\": \"2026-02-23T18:05:25.743Z\",\n            \"currentLat\": null,\n            \"currentLng\": null,\n            \"createdAt\": \"2026-02-23T18:05:25.802Z\",\n            \"updatedAt\": \"2026-02-23T18:05:25.802Z\"\n        }\n    },\n    \"timestamp\": \"2026-02-24T07:57:44.856Z\",\n    \"path\": \"/api/v1/auth/login\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.jeeb2.com/api/v1"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

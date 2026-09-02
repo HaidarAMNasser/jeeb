@@ -16,14 +16,12 @@ class GuestBloc extends Bloc<GuestEvent, GuestState> {
     on<GuestLoginSubmitted>((event, emit) async {
       emit(const GuestLoading());
 
-      final firebaseToken = await _storageService.getFcmToken();
-      if (firebaseToken == null || firebaseToken.trim().isEmpty) {
-        emit(const GuestError(message: 'Missing firebase token.'));
-        return;
-      }
+      // Guest login no longer requires firebaseToken on the backend (Redis guest).
+      // Attach FCM token when available (Android usually has it; iOS often does not yet).
+      final firebaseToken = (await _storageService.getFcmToken())?.trim();
 
       final result = await _guestRepository.loginAsGuest(
-        firebaseToken: firebaseToken.trim(),
+        firebaseToken: firebaseToken?.isNotEmpty == true ? firebaseToken : null,
       );
 
       await result.fold(

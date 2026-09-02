@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.jeeb.app</string>
+	<string>com.zawada.customer</string>
 	<key>PROJECT_ID</key>
 	<string>jeeb-f64a4</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:242498010770:ios:3f3f9db20bbb2b8562704b</string>
+	<string>1:242498010770:ios:933894220c1a653862704b</string>
+	<key>DATABASE_URL</key>
+	<string>https://jeeb-f64a4-default-rtdb.europe-west1.firebasedatabase.app</string>
 </dict>
 </plist>

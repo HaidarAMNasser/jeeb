@@ -1,6 +1,6 @@
 {
-    "name": "jeeb_app",
-    "short_name": "jeeb_app",
+    "name": "Zawada",
+    "short_name": "Zawada",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

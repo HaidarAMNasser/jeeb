@@ -1,0 +1,187 @@
+{
+	"info": {
+		"_postman_id": "c4f5g6h7-i8j9-k0l1-m2n3-o4p5q6r7s8t9",
+		"name": "Jeeb Categories API",
+		"description": "Collection for Categories management (Cuisines and Menu Sections).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Cuisine (Admin)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{adminToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": {\n        \"ar\": \"إيطالي\",\n        \"en\": \"Italian\"\n    },\n    \"type\": \"CUISINE\",\n    \"imageUrl\": \"https://example.com/italian.jpg\",\n    \"displayOrder\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/categories",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Menu Section (Merchant)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{merchantToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": {\n        \"ar\": \"مقبلات\",\n        \"en\": \"Appetizers\"\n    },\n    \"type\": \"MENU\",\n    \"restaurantId\": 1,\n    \"displayOrder\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/categories",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Cuisines",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/categories?type=CUISINE",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"categories"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "CUISINE"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Restaurant Menu Sections",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/categories?type=MENU&restaurantId=1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"categories"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "MENU"
+						},
+						{
+							"key": "restaurantId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Category",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{merchantToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": {\n        \"ar\": \"مقبلات ساخنة\",\n        \"en\": \"Hot Appetizers\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/categories/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"categories",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Category",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{merchantToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/categories/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"categories",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1"
+		}
+	]
+}

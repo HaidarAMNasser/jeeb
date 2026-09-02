@@ -1,0 +1,429 @@
+{
+	"info": {
+		"_postman_id": "f5f5f5f5-f5f5-f5f5-f5f5-f5f5f5f5f5f5",
+		"name": "Jeeb_Restaurant_Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login (Merchant)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.environment.set(\"token\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"token\", jsonData.accessToken);",
+									"    console.log(\"Token updated\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"merchant@test.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"merchant@test.com\",\n    \"password\": \"123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n        \"id\": 1,\n        \"email\": \"merchant@test.com\",\n        \"role\": \"MERCHANT\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Restaurants",
+			"item": [
+				{
+					"name": "Create Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Best Burger\",\n    \"description\": \"The best burgers in town\",\n    \"address\": \"123 Tasty St\",\n    \"cityId\": 1,\n    \"lat\": 33.5138,\n    \"lng\": 36.2765\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/restaurants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Restaurant Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Best Burger\",\n    \"description\": \"The best burgers in town\",\n    \"address\": \"123 Tasty St\",\n    \"cityId\": 1,\n    \"lat\": 33.5138,\n    \"lng\": 36.2765\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/restaurants",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"restaurants"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Best Burger\",\n    \"description\": \"The best burgers in town\",\n    \"address\": \"123 Tasty St\",\n    \"cityId\": 1,\n    \"lat\": 33.5138,\n    \"lng\": 36.2765,\n    \"ownerId\": 1,\n    \"isActive\": false,\n    \"isApproved\": false,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:00:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Restaurants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "List of Restaurants",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/restaurants?page=1&limit=10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Best Burger\",\n            \"description\": \"The best burgers in town\",\n            \"address\": \"123 Tasty St\",\n            \"cityId\": 1,\n            \"lat\": 33.5138,\n            \"lng\": 36.2765,\n            \"ownerId\": 1,\n            \"isActive\": true,\n            \"isApproved\": true,\n            \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n            \"updatedAt\": \"2023-10-27T10:00:00.000Z\",\n            \"city\": {\n                \"id\": 1,\n                \"name\": \"Damascus\"\n            },\n            \"cuisines\": []\n        }\n    ],\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 10\n}"
+						}
+					]
+				},
+				{
+					"name": "Get One Restaurant",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Single Restaurant",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/restaurants/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"restaurants",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Best Burger\",\n    \"description\": \"The best burgers in town\",\n    \"address\": \"123 Tasty St\",\n    \"cityId\": 1,\n    \"lat\": 33.5138,\n    \"lng\": 36.2765,\n    \"ownerId\": 1,\n    \"isActive\": true,\n    \"isApproved\": true,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:00:00.000Z\",\n    \"city\": {\n        \"id\": 1,\n        \"name\": \"Damascus\"\n    },\n    \"cuisines\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Restaurant",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Best Burger Updated\",\n    \"isActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Restaurant Updated",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Best Burger Updated\",\n    \"isActive\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/restaurants/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"restaurants",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Best Burger Updated\",\n    \"description\": \"The best burgers in town\",\n    \"address\": \"123 Tasty St\",\n    \"cityId\": 1,\n    \"lat\": 33.5138,\n    \"lng\": 36.2765,\n    \"ownerId\": 1,\n    \"isActive\": true,\n    \"isApproved\": true,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:05:00.000Z\",\n    \"city\": {\n        \"id\": 1,\n        \"name\": \"Damascus\"\n    },\n    \"cuisines\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Restaurant",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Restaurant Deleted",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/restaurants/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"restaurants",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"raw\": [],\n    \"affected\": 1\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

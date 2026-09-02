@@ -1,0 +1,577 @@
+{
+	"info": {
+		"_postman_id": "jeeb-products-collection-id",
+		"name": "Jeeb_Products_Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login (Merchant)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.access_token) {",
+									"    pm.environment.set(\"token\", jsonData.data.access_token);",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.access_token);",
+									"    console.log(\"Token updated\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"merchant@jeeb.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Delicious Burger",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Juicy beef burger with cheese",
+									"type": "text"
+								},
+								{
+									"key": "shortDescription",
+									"value": "Beef burger",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "1299",
+									"type": "text"
+								},
+								{
+									"key": "restaurantId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "categoryId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "discount",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "discountType",
+									"value": "PERCENTAGE",
+									"type": "text"
+								},
+								{
+									"key": "hasStock",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "stockQuantity",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "isAvailable",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "isExternal",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "externalProvider",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "externalId",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Delicious Burger\",\n    \"description\": \"Juicy beef burger with cheese\",\n    \"price\": 12.99,\n    \"restaurantId\": 1,\n    \"categoryId\": 1,\n    \"hasStock\": true,\n    \"stockQuantity\": 50,\n    \"discount\": 1.5,\n    \"isAvailable\": true,\n    \"merchantId\": 1,\n    \"images\": [],\n    \"createdAt\": \"2024-02-23T10:00:00.000Z\",\n    \"updatedAt\": \"2024-02-23T10:00:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Products (Filter & Search)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products?page=1&limit=10&search=Burger&categoryId=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "Burger",
+									"description": "Search by product name"
+								},
+								{
+									"key": "categoryId",
+									"value": "1",
+									"description": "Filter by category"
+								},
+								{
+									"key": "restaurantId",
+									"value": "1",
+									"description": "Filter by restaurant"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products?page=1&limit=10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Delicious Burger\",\n            \"description\": \"Juicy beef burger with cheese\",\n            \"price\": 12.99,\n            \"restaurantId\": 1,\n            \"categoryId\": 1,\n            \"hasStock\": true,\n            \"stockQuantity\": 50,\n            \"isAvailable\": true,\n            \"merchantId\": 1,\n            \"images\": [\n                {\n                    \"id\": 10,\n                    \"url\": \"http://localhost:3000/uploads/products/burger.jpg\",\n                    \"isMain\": true,\n                    \"displayOrder\": 0\n                }\n            ],\n            \"createdAt\": \"2024-02-23T10:00:00.000Z\",\n            \"updatedAt\": \"2024-02-23T10:00:00.000Z\"\n        }\n    ],\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 10\n}"
+						}
+					]
+				},
+				{
+					"name": "Get One Product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Delicious Burger\",\n    \"description\": \"Juicy beef burger with cheese\",\n    \"price\": 12.99,\n    \"restaurantId\": 1,\n    \"categoryId\": 1,\n    \"hasStock\": true,\n    \"stockQuantity\": 50,\n    \"discount\": 1.5,\n    \"isAvailable\": true,\n    \"merchantId\": 1,\n    \"images\": [\n        {\n            \"id\": 10,\n            \"url\": \"http://localhost:3000/uploads/products/burger.jpg\",\n            \"isMain\": true,\n            \"displayOrder\": 0\n        }\n    ],\n    \"createdAt\": \"2024-02-23T10:00:00.000Z\",\n    \"updatedAt\": \"2024-02-23T10:00:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Delicious Burger",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Updated description",
+									"type": "text"
+								},
+								{
+									"key": "shortDescription",
+									"value": "Updated short",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "1499",
+									"type": "text"
+								},
+								{
+									"key": "stockQuantity",
+									"value": "45",
+									"type": "text"
+								},
+								{
+									"key": "isAvailable",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "hasStock",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "categoryId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "discount",
+									"value": "15",
+									"type": "text"
+								},
+								{
+									"key": "discountType",
+									"value": "FIXED",
+									"type": "text"
+								},
+								{
+									"key": "isExternal",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "externalProvider",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "externalId",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "imagesMetadata",
+									"value": "[{\"id\":10,\"isMain\":true,\"displayOrder\":0}]",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Delicious Burger\",\n    \"description\": \"Juicy beef burger with cheese\",\n    \"price\": 14.99,\n    \"restaurantId\": 1,\n    \"categoryId\": 1,\n    \"hasStock\": true,\n    \"stockQuantity\": 45,\n    \"isAvailable\": true,\n    \"merchantId\": 1,\n    \"images\": [\n        {\n            \"id\": 10,\n            \"url\": \"http://localhost:3000/uploads/products/burger.jpg\",\n            \"isMain\": true,\n            \"displayOrder\": 0\n        }\n    ],\n    \"createdAt\": \"2024-02-23T10:00:00.000Z\",\n    \"updatedAt\": \"2024-02-23T10:05:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"raw\": [],\n    \"affected\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Product Image",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/images/:imageId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"images",
+								":imageId"
+							],
+							"variable": [
+								{
+									"key": "imageId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/images/10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"images",
+										"10"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"raw\": [],\n    \"affected\": 1\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,483 @@
+{
+  "info": {
+    "_postman_id": "4b6a1aff-0914-401c-a59c-075a2d1ab566",
+    "name": "Jeeb_Offers_Collection",
+    "description": "Collection for Offers API - Create, Read, Update, Delete offers with products management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46725728",
+    "_collection_link": "https://assemhabib.postman.co/workspace/My-Workspace~e8ecb1f6-b28c-414e-8872-ce787ba90138/collection/46725728-4b6a1aff-0914-401c-a59c-075a2d1ab566?action=share&source=collection_link&creator=46725728"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Merchant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.access_token) {",
+                  "    pm.environment.set(\"token\", jsonData.data.access_token);",
+                  "    pm.collectionVariables.set(\"token\", jsonData.data.access_token);",
+                  "    console.log(\"Token updated\");",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"merchant4@example.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"merchant@example.com\",\n    \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"user\": {\n            \"id\": 2,\n            \"email\": \"merchant@example.com\",\n            \"firstName\": \"Merchant\",\n            \"lastName\": \"User\",\n            \"phone\": \"+963912345678\",\n            \"role\": \"MERCHANT\",\n            \"isVerified\": true\n        }\n    },\n    \"timestamp\": \"2026-03-08T10:00:00.000Z\",\n    \"path\": \"/api/v1/auth/login\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Offers",
+      "item": [
+        {
+          "name": "Create Offer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"عرض الصيف الخاص\",\n    \"description\": \"خصم كبير على المنتجات المختارة\",\n    \"discountType\": \"PERCENTAGE\",\n    \"discountValue\": 25,\n    \"startDate\": \"2026-03-01T00:00:00.000Z\",\n    \"endDate\": \"2026-03-30T23:59:59.000Z\",\n    \"isActive\": true,\n    \"products\": [\n        { \"productId\": 9, \"quantity\": 2 },\n        { \"productId\": 10, \"quantity\": 1 }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"عرض الصيف الخاص\",\n        \"description\": \"خصم كبير على المنتجات المختارة\",\n        \"discountType\": \"PERCENTAGE\",\n        \"discountValue\": 25,\n        \"startDate\": \"2026-03-01T00:00:00.000Z\",\n        \"endDate\": \"2026-03-30T23:59:59.000Z\",\n        \"isActive\": true,\n        \"merchantId\": 62,\n        \"images\": [],\n        \"offerProducts\": [\n            {\n                \"id\": 1,\n                \"offerId\": 1,\n                \"productId\": 9,\n                \"quantity\": 2,\n                \"isActive\": true,\n                \"product\": {\n                    \"id\": 9,\n                    \"name\": \"Delicious Burger\",\n                    \"price\": 5000,\n                    \"commissionRate\": 0,\n                    \"commissionAmount\": 0,\n                    \"offerQuantity\": 2,\n                    \"finalPrice\": 9000,\n                    \"images\": []\n                }\n            },\n            {\n                \"id\": 2,\n                \"offerId\": 1,\n                \"productId\": 10,\n                \"quantity\": 1,\n                \"isActive\": true,\n                \"product\": {\n                    \"id\": 10,\n                    \"name\": \"Pizza\",\n                    \"price\": 3000,\n                    \"commissionRate\": 0,\n                    \"commissionAmount\": 0,\n                    \"offerQuantity\": 1,\n                    \"finalPrice\": 3000,\n                    \"images\": []\n                }\n            }\n        ],\n        \"totalQuantity\": 3,\n        \"subtotal\": 13650,\n        \"productDiscountTotal\": 3412,\n        \"totalPrice\": 10237,\n        \"merchant\": {\n            \"id\": 62,\n            \"firstName\": \"محمد\",\n            \"lastName\": \"أحمد\"\n        }\n    },\n    \"timestamp\": \"2026-03-21T10:00:00.000Z\",\n    \"path\": \"/api/v1/offers\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Offers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/offers?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"عرض الصيف الخاص\",\n            \"description\": \"خصم كبير على المنتجات المختارة\",\n            \"discountType\": \"PERCENTAGE\",\n            \"discountValue\": 25,\n            \"startDate\": \"2026-03-01T00:00:00.000Z\",\n            \"endDate\": \"2026-03-30T23:59:59.000Z\",\n            \"isActive\": true,\n            \"merchantId\": 62,\n            \"images\": [],\n            \"offerProducts\": [\n                {\n                    \"id\": 1,\n                    \"offerId\": 1,\n                    \"productId\": 9,\n                    \"quantity\": 2,\n                    \"isActive\": true,\n                    \"product\": {\n                        \"id\": 9,\n                        \"name\": \"Delicious Burger\",\n                        \"price\": 5000,\n                        \"commissionRate\": 0,\n                        \"commissionAmount\": 0,\n                        \"offerQuantity\": 2,\n                        \"finalPrice\": 9000,\n                        \"images\": []\n                    }\n                }\n            ],\n            \"totalQuantity\": 2,\n            \"subtotal\": 10500,\n            \"productDiscountTotal\": 2625,\n            \"totalPrice\": 7875,\n            \"merchant\": {\n                \"id\": 62,\n                \"firstName\": \"محمد\",\n                \"lastName\": \"أحمد\"\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Offer by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"عرض الصيف الخاص\",\n        \"description\": \"خصم كبير على المنتجات المختارة\",\n        \"discountType\": \"PERCENTAGE\",\n        \"discountValue\": 25,\n        \"startDate\": \"2026-03-01T00:00:00.000Z\",\n        \"endDate\": \"2026-03-30T23:59:59.000Z\",\n        \"isActive\": true,\n        \"merchantId\": 62,\n        \"images\": [],\n        \"offerProducts\": [\n            {\n                \"id\": 1,\n                \"offerId\": 1,\n                \"productId\": 9,\n                \"quantity\": 2,\n                \"isActive\": true,\n                \"product\": {\n                    \"id\": 9,\n                    \"name\": \"Delicious Burger\",\n                    \"price\": 5000,\n                    \"commissionRate\": 0,\n                    \"commissionAmount\": 0,\n                    \"offerQuantity\": 2,\n                    \"finalPrice\": 9000,\n                    \"images\": []\n                }\n            }\n        ],\n        \"totalQuantity\": 2,\n        \"subtotal\": 10500,\n        \"productDiscountTotal\": 2625,\n        \"totalPrice\": 7875,\n        \"merchant\": {\n            \"id\": 62,\n            \"firstName\": \"محمد\",\n            \"lastName\": \"أحمد\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Offer with ID 999 not found\",\n    \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Offer (Update Data Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"isActive\": false,\n    \"discountValue\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"عرض الصيف الخاص\",\n        \"discountType\": \"PERCENTAGE\",\n        \"discountValue\": 30,\n        \"isActive\": false,\n        \"images\": [],\n        \"offerProducts\": [...],\n        \"totalQuantity\": 2,\n        \"subtotal\": 10500,\n        \"productDiscountTotal\": 3150,\n        \"totalPrice\": 7350,\n        \"merchant\": {\n            \"id\": 62,\n            \"firstName\": \"محمد\",\n            \"lastName\": \"أحمد\"\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Offer (Add Products)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"products\": [\n        { \"productId\": 15, \"quantity\": 3 },\n        { \"productId\": 16 }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"عرض الصيف الخاص\",\n        \"images\": [],\n        \"offerProducts\": [\n            {\n                \"id\": 1,\n                \"productId\": 9,\n                \"quantity\": 2,\n                \"isActive\": true,\n                \"product\": {...}\n            },\n            {\n                \"id\": 2,\n                \"productId\": 15,\n                \"quantity\": 3,\n                \"isActive\": true,\n                \"product\": {...}\n            },\n            {\n                \"id\": 3,\n                \"productId\": 16,\n                \"quantity\": 1,\n                \"isActive\": true,\n                \"product\": {...}\n            }\n        ],\n        \"totalQuantity\": 6,\n        \"subtotal\": 10006,\n        \"productDiscountTotal\": 2501,\n        \"totalPrice\": 7504,\n        \"merchant\": {...}\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Offer (Remove Products)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"removeProductIds\": [9, 15]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"عرض الصيف الخاص\",\n        \"images\": [],\n        \"offerProducts\": [\n            {\n                \"id\": 3,\n                \"productId\": 16,\n                \"quantity\": 1,\n                \"isActive\": true,\n                \"product\": {...}\n            }\n        ],\n        \"totalQuantity\": 1,\n        \"subtotal\": 840,\n        \"productDiscountTotal\": 210,\n        \"totalPrice\": 630,\n        \"merchant\": {...}\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Offer (Update Product Quantity)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"products\": [\n        { \"productId\": 16, \"quantity\": 5 }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"عرض الصيف الخاص\",\n        \"images\": [],\n        \"offerProducts\": [\n            {\n                \"id\": 3,\n                \"productId\": 16,\n                \"quantity\": 5,\n                \"isActive\": true,\n                \"product\": {...}\n            }\n        ],\n        \"totalQuantity\": 5,\n        \"subtotal\": 4200,\n        \"productDiscountTotal\": 1050,\n        \"totalPrice\": 3150,\n        \"merchant\": {...}\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Offer (Combined - All Operations)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"عرض جديد محدث\",\n    \"discountValue\": 20,\n    \"products\": [\n        { \"productId\": 15, \"quantity\": 3 },\n        { \"productId\": 16, \"quantity\": 5 }\n    ],\n    \"removeProductIds\": [9]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {...}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Offer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/offers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["offers", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {},\n    \"timestamp\": \"2026-03-08T12:00:00.000Z\",\n    \"path\": \"/api/v1/offers/1\"\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Offer with ID 1 not found\",\n    \"data\": null\n}"
+            },
+            {
+              "name": "Error - Forbidden (Not Owner)",
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 403,\n    \"message\": \"You do not own this offer\",\n    \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.jeeb2.com/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

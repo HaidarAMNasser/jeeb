@@ -59,6 +59,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
     on<RegisterRoleChanged>((event, emit) {
       selectedRole = event.role;
+      if (event.role == 'DELIVERY') {
+        selectedNotificationChannel = 'WHATSAPP';
+      }
       emit(_buildInitialState());
     });
 
@@ -132,7 +135,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
               cityId: selectedCity?.id,
               latitude: useLocationLat,
               longitude: useLocationLng,
-              notificationChannel: selectedNotificationChannel,
+              notificationChannel: selectedRole == 'DELIVERY'
+                  ? 'WHATSAPP'
+                  : selectedNotificationChannel,
               address: addressController.text.trim(),
               birthday: birthdayController.text.trim().isEmpty
                   ? null

@@ -69,7 +69,9 @@ class DioFactory {
     );
 
     // Chucker
-    // dio.interceptors.add(ChuckerDioInterceptor());
+    // if (kDebugMode || !AppConfig.isProduction) {
+    //   dio.interceptors.add(ChuckerDioInterceptor());
+    // }
     dio.interceptors.add(
       AppInterceptors(_storageService, _navigationService, cacheInterceptor),
     );

@@ -1,0 +1,23 @@
+export enum PaymentMethod {
+  CASH = 'CASH',
+  WALLET = 'WALLET',
+  ONLINE = 'ONLINE',
+}
+
+export enum PaymentProvider {
+  STRIPE = 'STRIPE',
+  SYRIATEL_CASH = 'SYRIATEL_CASH',
+  MTN_CASH = 'MTN_CASH',
+  USDT = 'USDT',
+  PAYPAL = 'PAYPAL',
+  LOCAL_BANK_TRANSFER = 'LOCAL_BANK_TRANSFER',
+  UNKNOWN = 'UNKNOWN',
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+  CANCELLED = 'CANCELLED',
+}

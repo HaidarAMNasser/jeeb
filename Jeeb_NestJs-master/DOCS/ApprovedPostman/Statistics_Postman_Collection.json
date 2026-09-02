@@ -1,0 +1,168 @@
+{
+  "info": {
+    "name": "Statistics",
+    "description": "Statistics API Endpoints - Merchant statistics for Admin Panel",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Merchant Statistics",
+      "description": "جلب إحصاءات المطاعم مع إمكانية التصفية والبحث والترتيب (Admin only)",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "GET",
+        "body": {},
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/statistics/merchants?page=1&limit=10&search=burger&from=2026-01-01&to=2026-06-08&merchantId=27",
+          "path": ["statistics", "merchants"],
+          "host": ["{{baseUrl}}"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "search",
+              "value": "burger"
+            },
+            {
+              "key": "from",
+              "value": "2026-01-01"
+            },
+            {
+              "key": "to",
+              "value": "2026-06-08"
+            },
+            {
+              "key": "merchantId",
+              "value": "27"
+            }
+          ],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/statistics/merchants?page=1&limit=10",
+              "path": ["statistics", "merchants"],
+              "host": ["{{baseUrl}}"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 5,\n            \"userId\": 27,\n            \"name\": \"Tasty Burger\",\n            \"type\": \"RESTAURANT\",\n            \"location\": {\n                \"country\": {\n                    \"id\": 1,\n                    \"name\": { \"ar\": \"سوريا\", \"en\": \"Syria\" }\n                },\n                \"city\": {\n                    \"id\": 1,\n                    \"name\": { \"ar\": \"دمشق\", \"en\": \"Damascus\" }\n                },\n                \"coordinates\": {\n                    \"lat\": 33.5138,\n                    \"lng\": 36.2765\n                }\n            },\n            \"stats\": {\n                \"totalOrders\": 150,\n                \"totalRevenue\": 1250000\n            }\n        },\n        {\n            \"id\": 8,\n            \"userId\": 34,\n            \"name\": \"Pizza House\",\n            \"type\": \"RESTAURANT\",\n            \"location\": {\n                \"country\": {\n                    \"id\": 1,\n                    \"name\": { \"ar\": \"سوريا\", \"en\": \"Syria\" }\n                },\n                \"city\": {\n                    \"id\": 2,\n                    \"name\": { \"ar\": \"حلب\", \"en\": \"Aleppo\" }\n                },\n                \"coordinates\": null\n            },\n            \"stats\": {\n                \"totalOrders\": 89,\n                \"totalRevenue\": 780000\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 25,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 3,\n        \"hasNextPage\": true,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-06-08T10:00:00.000Z\",\n    \"path\": \"/api/v1/statistics/merchants\"\n}"
+        },
+        {
+          "name": "Empty",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/statistics/merchants?search=zzzzz",
+              "path": ["statistics", "merchants"],
+              "host": ["{{baseUrl}}"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "zzzzz"
+                }
+              ]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [],\n    \"pagination\": {\n        \"total\": 0,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 0,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-06-08T10:00:00.000Z\",\n    \"path\": \"/api/v1/statistics/merchants\"\n}"
+        },
+        {
+          "name": "Error - Forbidden",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/statistics/merchants",
+              "path": ["statistics", "merchants"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "Forbidden",
+          "code": 403,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 403,\n    \"message\": \"Forbidden resource\",\n    \"timestamp\": \"2026-06-08T10:00:00.000Z\",\n    \"path\": \"/api/v1/statistics/merchants\"\n}"
+        },
+        {
+          "name": "Error - Unauthorized",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/statistics/merchants",
+              "path": ["statistics", "merchants"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 401,\n    \"message\": \"Unauthorized\",\n    \"timestamp\": \"2026-06-08T10:00:00.000Z\",\n    \"path\": \"/api/v1/statistics/merchants\"\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    }
+  ]
+}

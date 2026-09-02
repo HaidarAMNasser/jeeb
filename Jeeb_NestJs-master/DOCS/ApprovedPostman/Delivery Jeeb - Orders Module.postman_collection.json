@@ -1,0 +1,1914 @@
+{
+  "info": {
+    "_postman_id": "640ae614-d323-471e-894a-cd3626ceee15",
+    "name": "Delivery Jeeb - Orders Module",
+    "description": "Complete API collection for Order management with Customer, Merchant, Delivery Driver, and Admin workflows including authentication, order creation, status updates, notifications, delivery assignments, offers system, and restore cancelled orders.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46725728"
+  },
+
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.jeeb2.com/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_token_here",
+      "type": "string"
+    },
+    {
+      "key": "merchant_token",
+      "value": "your_merchant_token_here",
+      "type": "string"
+    },
+    {
+      "key": "delivery_token",
+      "value": "your_delivery_token_here",
+      "type": "string"
+    },
+    {
+      "key": "customer_token",
+      "value": "your_customer_token_here",
+      "type": "string"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@jeeb.com",
+      "type": "string"
+    },
+    {
+      "key": "admin_password",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "merchant_email",
+      "value": "khderhabib2016@gmail.com",
+      "type": "string"
+    },
+    {
+      "key": "merchant_password",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "delivery_email",
+      "value": "assem_driver2@jeeb.com",
+      "type": "string"
+    },
+    {
+      "key": "delivery_password",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "customer_email",
+      "value": "samacustomer@jeeb.com",
+      "type": "string"
+    },
+    {
+      "key": "customer_password",
+      "value": "password",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "1. Customer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (pm.response.code === 200 && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('customer_token', jsonData.data.access_token);",
+                  "    pm.collectionVariables.set('customer_id', jsonData.data.userId);",
+                  "    console.log('Customer token stored successfully');",
+                  "} else {",
+                  "    console.log('Failed to get customer token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{customer_email}}\",\n    \"password\": \"{{customer_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2. Merchant Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (pm.response.code === 200 && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('merchant_token', jsonData.data.access_token);",
+                  "    pm.collectionVariables.set('merchant_id', jsonData.data.userId);",
+                  "    console.log('Merchant token stored successfully');",
+                  "} else {",
+                  "    console.log('Failed to get merchant token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{merchant_email}}\",\n    \"password\": \"{{merchant_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3. Delivery Driver Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (pm.response.code === 200 && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('delivery_token', jsonData.data.access_token);",
+                  "    pm.collectionVariables.set('delivery_id', jsonData.data.userId);",
+                  "    console.log('Delivery driver token stored successfully');",
+                  "} else {",
+                  "    console.log('Failed to get delivery driver token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{delivery_email}}\",\n    \"password\": \"{{delivery_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4. Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (pm.response.code === 200 && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('admin_token', jsonData.data.access_token);",
+                  "    pm.collectionVariables.set('admin_id', jsonData.data.userId);",
+                  "    console.log('Admin token stored successfully');",
+                  "} else {",
+                  "    console.log('Failed to get admin token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛒 Customer Operations",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ownerId\": 1,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantity\": 2\n        },\n        {\n            \"productId\": 2,\n            \"quantity\": 1\n        }\n    ],\n    \"offers\": [\n        { \"offerId\": 1, \"quantity\": 1 },\n        { \"offerId\": 2, \"quantity\": 2 }\n    ],\n    \"deliveryCoordinates\": {\n        \"latitude\": 33.5138,\n        \"longitude\": 36.2765,\n        \"address\": \"123 Customer Street, Damascus, Syria\",\n        \"landmark\": \"Near the big mosque\",\n        \"specialInstructions\": \"Please call when arrive\"\n    },\n    \"deliveryFee\": 50,\n    \"tipAmount\": 20,\n    \"cityId\": 1,\n    \"paymentMethod\": \"CASH\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"ownerId\": 1,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantity\": 2\n        }\n    ],\n    \"deliveryCoordinates\": {\n        \"latitude\": 33.5138,\n        \"longitude\": 36.2765,\n        \"address\": \"123 Customer Street, Damascus, Syria\",\n        \"landmark\": \"Near the big mosque\",\n        \"specialInstructions\": \"Please call when arrive\"\n    },\n    \"deliveryFee\": 50,\n    \"tipAmount\": 20,\n    \"cityId\": 1,\n    \"paymentMethod\": \"CASH\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:00:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "800"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"order\": {\n            \"id\": 123,\n            \"customerId\": 15,\n            \"customer\": {\n                \"id\": 15,\n                \"firstName\": \"John\",\n                \"lastName\": \"Doe\",\n                \"email\": \"customer@example.com\",\n                \"phone\": \"+96391234567\"\n            },\n            \"ownerId\": 1,\n            \"owner\": {\n                \"id\": 1,\n                \"firstName\": \"Ahmad\",\n                \"lastName\": \"Ali\"\n            },\n            \"status\": \"PENDING\",\n            \"deliveryDeadline\": \"2026-03-10T16:45:00.000Z\",\n            \"mealPreparationTime\": 15,\n            \"deliveryTime\": 30,\n            \"items\": [\n                {\n                    \"id\": 45,\n                    \"productId\": 1,\n                    \"productName\": \"Shawarma Plate\",\n                    \"quantity\": 2,\n                    \"unitPrice\": 1500,\n                    \"totalPrice\": 3000\n                }\n            ],\n            \"offers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"خصم 10%\",\n                    \"discountType\": \"PERCENTAGE\",\n                    \"discountValue\": 10\n                }\n            ],\n            \"REMOVED\": \"SAVE10\",\n            \"priceBeforeDiscount\": 5000,\n            \"discountAmount\": 500,\n            \"priceAfterProductDiscount\": 4500,\n            \"paymentMethod\": \"CASH\",\n            \"totalAmount\": 4700,\n            \"deliveryFee\": 50,\n            \"tipAmount\": 20,\n            \"platformCommission\": 0,\n            \"ownerRevenue\": 4500,\n            \"currencyCode\": \"SAR\",\n            \"exchangeRate\": 1,\n            \"createdAt\": \"2026-03-10T16:00:00.000Z\",\n            \"updatedAt\": \"2026-03-10T16:00:00.000Z\"\n        }\n    },\n    \"timestamp\": \"2026-03-10T16:00:00.000Z\",\n    \"path\": \"/api/v1/orders\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "",
+                  "description": "Filter by product category",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:01:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 123,\n            \"status\": \"PENDING\",\n            \"totalAmount\": 100.00,\n            \"createdAt\": \"2026-03-10T16:00:00.000Z\",\n            \"items\": [\n                {\n                    \"id\": 45,\n                    \"productName\": \"Shawarma Plate\",\n                    \"quantity\": 2,\n                    \"unitPrice\": 15.00\n                }\n            ],\n            \"owner\": {\n                \"id\": 1,\n                \"restaurantName\": \"Ahmad's Restaurant\"\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T16:01:00.000Z\",\n    \"path\": \"/api/v1/orders?page=1&limit=10\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:02:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "800"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"customerId\": 15,\n        \"ownerId\": 1,\n        \"items\": [\n            {\n                \"id\": 45,\n                \"productId\": 1,\n                \"productName\": \"Shawarma Plate\",\n                \"quantity\": 2,\n                \"unitPrice\": 15.00,\n                \"totalPrice\": 30.00\n            }\n        ],\n        \"deliveryCoordinates\": {\n            \"latitude\": 33.5138,\n            \"longitude\": 36.2765,\n            \"address\": \"123 Customer Street, Damascus, Syria\",\n            \"landmark\": \"Near the big mosque\",\n            \"specialInstructions\": \"Please call when arrive\"\n        },\n        \"REMOVED\": \"SAVE10\",\n        \"paymentMethod\": \"CASH\",\n        \"totalAmount\": 100.00,\n        \"deliveryFee\": 50.00,\n        \"tipAmount\": 20.00,\n        \"createdAt\": \"2026-03-10T16:00:00.000Z\",\n        \"updatedAt\": \"2026-03-10T16:00:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:02:00.000Z\",\n    \"path\": \"/api/v1/orders/123\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cancel Order",
+          "description": "Cancel an order. When cancelled, stock is automatically restored for all products. The order can be restored within 3 minutes using the PATCH endpoint.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Changed my mind, sorry for the inconvenience\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "cancel"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reason\": \"Changed my mind, sorry for the inconvenience\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/123/cancel",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "cancel"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:03:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CANCELLED\",\n        \"previousStatus\": \"PENDING\",\n        \"cancelledAt\": \"2026-03-10T16:03:00.000Z\",\n        \"updatedAt\": \"2026-03-10T16:03:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:03:00.000Z\",\n    \"path\": \"/api/v1/orders/123/cancel\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Order Items",
+          "description": "Update the items in an order. Only allowed when order status is PENDING. All items must belong to the same merchant. Stock is reconciled automatically. Use quantity: 0 to remove an item from the order. At least one item must remain with quantity > 0.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"itemsByProductId\": [\n        {\n            \"productId\": 5,\n            \"quantity\": 2\n        },\n        {\n            \"productId\": 8,\n            \"quantity\": 1\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Item from Order",
+          "description": "Remove an item from the order by sending quantity: 0. At least one item must remain in the order with quantity > 0.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"itemsByProductId\": [\n        {\n            \"productId\": 5,\n            \"quantity\": 2\n        },\n        {\n            \"productId\": 8,\n            \"quantity\": 0\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏪 Merchant Operations",
+      "item": [
+        {
+          "name": "Get Merchant Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10&status=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "description": "Filter by order status"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "",
+                  "description": "Filter by product category",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{merchant_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders?page=1&limit=10&status=PENDING",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": "PENDING"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:10:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 123,\n            \"status\": \"PENDING\",\n            \"customerId\": 15,\n            \"totalAmount\": 100.00,\n            \"createdAt\": \"2026-03-10T16:00:00.000Z\",\n            \"customer\": {\n                \"id\": 15,\n                \"firstName\": \"John\",\n                \"lastName\": \"Doe\"\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T16:10:00.000Z\",\n    \"path\": \"/api/v1/orders?page=1&limit=10&status=PENDING\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Confirm Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"mealPreparationTime\": 15,\n    \"deliveryTime\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "confirm"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{merchant_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/confirm",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "confirm"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:11:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"CONFIRMED\",\n        \"mealPreparationTime\": 15,\n        \"deliveryTime\": 30,\n        \"deliveryDeadline\": \"2026-03-10T16:30:00.000Z\",\n        \"updatedAt\": \"2026-03-10T16:11:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:11:00.000Z\",\n    \"path\": \"/api/v1/orders/123/confirm\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Start Preparing Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Order is being prepared\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/preparing",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "preparing"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Restaurant is closed for maintenance\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/reject",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "reject"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{merchant_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reason\": \"Restaurant is closed for maintenance\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/123/reject",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "reject"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:12:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"REJECTED\",\n        \"updatedAt\": \"2026-03-10T16:12:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:12:00.000Z\",\n    \"path\": \"/api/v1/orders/123/reject\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark Order Ready for Pickup",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Order is prepared and ready for pickup\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/ready-for-pickup",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "ready-for-pickup"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{merchant_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reason\": \"Order is prepared and ready for pickup\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/123/ready-for-pickup",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "ready-for-pickup"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:13:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"READY_FOR_PICKUP\",\n        \"updatedAt\": \"2026-03-10T16:13:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:13:00.000Z\",\n    \"path\": \"/api/v1/orders/123/ready-for-pickup\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Restore Cancelled Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/pending",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "pending"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{merchant_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/pending",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "pending"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:14:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PENDING\",\n        \"previousStatus\": null,\n        \"cancelledAt\": null,\n        \"updatedAt\": \"2026-03-10T16:14:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:14:00.000Z\",\n    \"path\": \"/api/v1/orders/123/pending\"\n}"
+            },
+            {
+              "name": "Error - Time Expired",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{merchant_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/pending",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "pending"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:20:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 400,\n    \"message\": \"Cannot restore order - the 3-minute window has expired\",\n    \"error\": \"Bad Request\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Delivery Operations",
+      "item": [
+        {
+          "name": "Get Available Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10&status=READY_FOR_PICKUP",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "READY_FOR_PICKUP",
+                  "description": "Filter by order status"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{delivery_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders?page=1&limit=10&status=READY_FOR_PICKUP",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": "READY_FOR_PICKUP"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:20:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 123,\n            \"status\": \"READY_FOR_PICKUP\",\n            \"totalAmount\": 100.00,\n            \"deliveryCoordinates\": {\n                \"latitude\": 33.5138,\n                \"longitude\": 36.2765,\n                \"address\": \"123 Customer Street, Damascus, Syria\"\n            },\n            \"customer\": {\n                \"id\": 15,\n                \"firstName\": \"John\",\n                \"lastName\": \"Doe\"\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T16:20:00.000Z\",\n    \"path\": \"/api/v1/orders?page=1&limit=10&status=READY_FOR_PICKUP\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Accept Delivery Assignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/accept-delivery",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "accept-delivery"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{delivery_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/accept-delivery",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "accept-delivery"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:21:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "400"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 789,\n        \"orderId\": 123,\n        \"driverId\": 45,\n        \"status\": \"ASSIGNED\",\n        \"assignedAt\": \"2026-03-10T16:21:00.000Z\",\n        \"driver\": {\n            \"id\": 45,\n            \"firstName\": \"Mohammed\",\n            \"lastName\": \"Ali\",\n            \"phone\": \"+96391234568\"\n        }\n    },\n    \"timestamp\": \"2026-03-10T16:21:00.000Z\",\n    \"path\": \"/api/v1/orders/123/accept-delivery\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reject Delivery Assignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Vehicle broke down, cannot deliver\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/reject-delivery",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "reject-delivery"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{delivery_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reason\": \"Vehicle broke down, cannot deliver\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/123/reject-delivery",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "reject-delivery"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:22:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {},\n    \"timestamp\": \"2026-03-10T16:22:00.000Z\",\n    \"path\": \"/api/v1/orders/123/reject-delivery\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark Order Picked Up",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/picked-up",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "picked-up"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{delivery_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/picked-up",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "picked-up"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:23:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PICKED_UP\",\n        \"updatedAt\": \"2026-03-10T16:23:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:23:00.000Z\",\n    \"path\": \"/api/v1/orders/123/picked-up\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark Order On The Way",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/on-the-way",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "on-the-way"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{delivery_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/on-the-way",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "on-the-way"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:24:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"ON_THE_WAY\",\n        \"updatedAt\": \"2026-03-10T16:24:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:24:00.000Z\",\n    \"path\": \"/api/v1/orders/123/on-the-way\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark Order Delivered",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/delivered",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "delivered"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{delivery_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/delivered",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "delivered"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:25:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"DELIVERED\",\n        \"updatedAt\": \"2026-03-10T16:25:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:25:00.000Z\",\n    \"path\": \"/api/v1/orders/123/delivered\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👑 Admin Operations",
+      "item": [
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders?page=1&limit=50",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:30:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "2500"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 123,\n            \"status\": \"PENDING\",\n            \"customerId\": 15,\n            \"totalAmount\": 100.00,\n            \"customer\": {\n                \"id\": 15,\n                \"firstName\": \"John\",\n                \"lastName\": \"Doe\"\n            },\n            \"owner\": {\n                \"id\": 1,\n                \"restaurantName\": \"Ahmad's Restaurant\"\n            }\n        },\n        {\n            \"id\": 124,\n            \"status\": \"CONFIRMED\",\n            \"customerId\": 16,\n            \"totalAmount\": 150.00,\n            \"owner\": {\n                \"id\": 2,\n                \"restaurantName\": \"Sarah's Kitchen\"\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 2,\n        \"page\": 1,\n        \"limit\": 50,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T16:30:00.000Z\",\n    \"path\": \"/api/v1/orders?page=1&limit=50\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Order Status (Dynamic)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Admin override - customer requested priority delivery\",\n    \"finalLocation\": {\n        \"lat\": 33.5140,\n        \"lng\": 36.2770\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/123/preparing",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "preparing"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reason\": \"Admin override - customer requested priority delivery\",\n    \"finalLocation\": {\n        \"lat\": 33.5140,\n        \"lng\": 36.2770\n    }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/123/preparing",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "preparing"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:31:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 123,\n        \"status\": \"PREPARING\",\n        \"updatedAt\": \"2026-03-10T16:31:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:31:00.000Z\",\n    \"path\": \"/api/v1/orders/123/preparing\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Send Delivery Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/123/send-delivery-notifications",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "123", "send-delivery-notifications"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/123/send-delivery-notifications",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "123", "send-delivery-notifications"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:32:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"message\": \"Delivery notifications sent to 3 available drivers\",\n        \"notificationsSent\": 3\n    },\n    \"timestamp\": \"2026-03-10T16:32:00.000Z\",\n    \"path\": \"/api/v1/orders/123/send-delivery-notifications\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Force Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Admin cancellation - customer service issue\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/124/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "124", "cancel"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reason\": \"Admin cancellation - customer service issue\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/124/cancel",
+                  "host": ["{{base_url}}"],
+                  "path": ["orders", "124", "cancel"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 16:33:00 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "200"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 124,\n        \"status\": \"CANCELLED\",\n        \"updatedAt\": \"2026-03-10T16:33:00.000Z\"\n    },\n    \"timestamp\": \"2026-03-10T16:33:00.000Z\",\n    \"path\": \"/api/v1/orders/124/cancel\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [""],
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [""],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}

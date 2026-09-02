@@ -16,7 +16,7 @@ class GuestRepository {
   const GuestRepository(this._remoteDataSource, this._networkInfo);
 
   Future<Either<Failure, TokenEntity>> loginAsGuest({
-    required String firebaseToken,
+    String? firebaseToken,
   }) async {
     if (!await _networkInfo.isConnected) {
       return const Left(NetworkFailure());
