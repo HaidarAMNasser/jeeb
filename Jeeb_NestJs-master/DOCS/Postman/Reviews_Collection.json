@@ -1,0 +1,713 @@
+{
+	"info": {
+		"_postman_id": "review-module-collection-id",
+		"name": "Delivery Jeeb - Reviews Module",
+		"description": "Reviews Management Endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Customer Operations",
+			"item": [
+				{
+					"name": "Create Review (Order)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great service!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reviews",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great service!\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/reviews",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great service!\",\n    \"reviewerId\": 10,\n    \"id\": 1,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:00:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Review (Product)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entityType\": \"PRODUCT\",\n    \"entityId\": 10,\n    \"rating\": 4,\n    \"comment\": \"Delicious!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reviews",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"entityType\": \"PRODUCT\",\n    \"entityId\": 10,\n    \"rating\": 4,\n    \"comment\": \"Delicious!\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/reviews",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"entityType\": \"PRODUCT\",\n    \"entityId\": 10,\n    \"rating\": 4,\n    \"comment\": \"Delicious!\",\n    \"reviewerId\": 10,\n    \"id\": 2,\n    \"createdAt\": \"2023-10-27T10:05:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:05:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get My Review",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great service!\",\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"reviewerId\": 10,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:00:00.000Z\",\n    \"reviewer\": {\n        \"id\": 10,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update My Review",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rating\": 4,\n    \"comment\": \"Updated review - good but could be better\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reviews/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"rating\": 4,\n    \"comment\": \"Updated review - good but could be better\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/reviews/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"rating\": 4,\n    \"comment\": \"Updated review - good but could be better\",\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"reviewerId\": 10,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-28T15:30:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete My Review",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"rating\": 4,\n    \"comment\": \"Updated review - good but could be better\",\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"reviewerId\": 10,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-28T15:30:00.000Z\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Public Operations",
+			"item": [
+				{
+					"name": "Get Public Reviews (Restaurant)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews?type=restaurant&id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "restaurant"
+								},
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews?type=restaurant&id=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "restaurant"
+										},
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"rating\": 5,\n        \"comment\": \"Great food!\",\n        \"entityType\": \"ORDER\",\n        \"entityId\": 101,\n        \"createdAt\": \"2023-10-26T12:00:00.000Z\",\n        \"reviewer\": {\n            \"id\": 10,\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\"\n        }\n    },\n    {\n        \"id\": 3,\n        \"rating\": 4,\n        \"comment\": \"Good but spicy\",\n        \"entityType\": \"ORDER\",\n        \"entityId\": 105,\n        \"createdAt\": \"2023-10-25T14:30:00.000Z\",\n        \"reviewer\": {\n            \"id\": 12,\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Smith\"\n        }\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Get Public Reviews (Driver)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews?type=driver&id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "driver"
+								},
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews?type=driver&id=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "driver"
+										},
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 4,\n        \"rating\": 5,\n        \"comment\": \"Fast delivery!\",\n        \"entityType\": \"ORDER\",\n        \"entityId\": 200,\n        \"createdAt\": \"2023-10-26T13:00:00.000Z\",\n        \"reviewer\": {\n            \"id\": 10,\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\"\n        }\n    }\n]"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Admin/Merchant Operations",
+			"item": [
+				{
+					"name": "Get All Reviews (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews/list?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"list"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success (Admin)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews/list?page=1&limit=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 10,\n            \"rating\": 5,\n            \"comment\": \"Excellent\",\n            \"entityType\": \"PRODUCT\",\n            \"entityId\": 50,\n            \"createdAt\": \"2023-10-27T09:00:00.000Z\",\n            \"reviewer\": {\n                \"id\": 5,\n                \"firstName\": \"Alice\",\n                \"lastName\": \"Wonder\"\n            }\n        }\n    ],\n    \"total\": 50,\n    \"page\": 1,\n    \"limit\": 10\n}"
+						},
+						{
+							"name": "Success (Merchant)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews/list?page=1&limit=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 15,\n            \"rating\": 4,\n            \"comment\": \"Tasty pizza\",\n            \"entityType\": \"PRODUCT\",\n            \"entityId\": 60,\n            \"createdAt\": \"2023-10-27T11:00:00.000Z\",\n            \"reviewer\": {\n                \"id\": 20,\n                \"firstName\": \"Charlie\",\n                \"lastName\": \"Chocolate\"\n            }\n        }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"limit\": 10\n}"
+						}
+					]
+				},
+				{
+					"name": "Get One Review (Admin/Merchant/Customer)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great service!\",\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"reviewerId\": 10,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:00:00.000Z\",\n    \"reviewer\": {\n        \"id\": 10,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Review (Admin/Customer)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"Updated by Admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reviews/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"Updated by Admin\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/reviews/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"rating\": 5,\n    \"comment\": \"Updated by Admin\",\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"reviewerId\": 10,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-28T10:00:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Review (Admin/Customer)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reviews/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/reviews/list/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"reviews",
+										"list",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great service!\",\n    \"entityType\": \"ORDER\",\n    \"entityId\": 1,\n    \"reviewerId\": 10,\n    \"createdAt\": \"2023-10-27T10:00:00.000Z\",\n    \"updatedAt\": \"2023-10-27T10:00:00.000Z\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "customer_token",
+			"value": "YOUR_CUSTOMER_JWT_TOKEN",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "YOUR_ADMIN_JWT_TOKEN",
+			"type": "string"
+		},
+		{
+			"key": "merchant_token",
+			"value": "YOUR_MERCHANT_JWT_TOKEN",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,360 @@
+{
+	"info": {
+		"_postman_id": "delivery-jeeb-merchants-module",
+		"name": "Delivery Jeeb - Merchants Module",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "delivery-jeeb-system"
+	},
+	"item": [
+		{
+			"name": "Create Merchant (Admin Only)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "merchant@example.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "text"
+						},
+						{
+							"key": "firstName",
+							"value": "Ahmed",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Mohammed",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "+966501234567",
+							"type": "text"
+						},
+						{
+							"key": "countryId",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "cityId",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "Riyadh, Saudi Arabia",
+							"type": "text"
+						},
+						{
+							"key": "birthday",
+							"value": "1990-01-01",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/users/merchants",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"merchants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Merchants (Admin Only)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/users/merchants?page=1&limit=10&search=ahmed&countryId=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"merchants"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Page number for pagination"
+						},
+						{
+							"key": "limit",
+							"value": "10",
+							"description": "Number of items per page"
+						},
+						{
+							"key": "search",
+							"value": "ahmed",
+							"description": "Search by name, email, or phone"
+						},
+						{
+							"key": "countryId",
+							"value": "1",
+							"description": "Filter by country ID"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Merchants (Admin Only)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/users/merchants/search?query=john",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"merchants",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "john",
+							"description": "Search query for merchant name, email, or phone"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Merchant by ID (Admin Only)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/users/merchants/{{merchant_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"merchants",
+						"{{merchant_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Merchant (Admin Only)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "firstName",
+							"value": "Updated Name",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Updated Last Name",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "+966507654321",
+							"type": "text"
+						},
+						{
+							"key": "countryId",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "cityId",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "Updated Address",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/users/merchants/{{merchant_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"merchants",
+						"{{merchant_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Merchant (Admin Only)",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/users/merchants/{{merchant_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"merchants",
+						"{{merchant_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "your_admin_jwt_token_here",
+			"type": "string"
+		},
+		{
+			"key": "merchant_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Log request details for debugging",
+					"console.log('Request URL: ' + request.url);",
+					"console.log('Request Method: ' + request.method);",
+					"console.log('Request Headers: ' + JSON.stringify(request.headers));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Basic response validation",
+					"pm.test('Status code is successful', function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+					"});",
+					"",
+					"pm.test('Response has proper structure', function () {",
+					"    const responseJson = pm.response.json();",
+					"    pm.expect(responseJson).to.have.property('statusCode');",
+					"    pm.expect(responseJson).to.have.property('message');",
+					"    pm.expect(responseJson).to.have.property('timestamp');",
+					"});",
+					"",
+					"// Store merchant ID from create response for use in other requests",
+					"if (pm.response.code === 201 && responseJson.data && responseJson.data.id) {",
+					"    pm.globals.set('merchant_id', responseJson.data.id);",
+					"    console.log('Stored merchant_id: ' + responseJson.data.id);",
+					"}"
+				]
+			}
+		}
+	]
+}

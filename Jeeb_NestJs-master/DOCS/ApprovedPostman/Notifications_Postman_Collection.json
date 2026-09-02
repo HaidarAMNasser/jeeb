@@ -1,0 +1,663 @@
+{
+  "info": {
+    "name": "Notifications",
+    "description": "Notifications API Endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Send Notification to User",
+      "description": "إرسال إشعار لمستخدم محدد",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": 5,\n    \"type\": \"ORDER_UPDATE\",\n    \"title\": \"تم تأكيد طلبك\",\n    \"body\": \"تم تأكيد طلبك #123 وهو قيد التجهيز\",\n    \"channel\": \"FIREBASE\",\n    \"metadata\": {\n        \"orderId\": 123,\n        \"orderStatus\": \"CONFIRMED\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/send-to-user",
+          "path": ["notifications", "send-to-user"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "description": "",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/send-to-user",
+              "path": ["notifications", "send-to-user"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": 5,\n    \"type\": \"ORDER_UPDATE\",\n    \"title\": \"تم تأكيد طلبك\",\n    \"body\": \"تم تأكيد طلبك #123 وهو قيد التجهيز\",\n    \"channel\": \"FIREBASE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 45,\n        \"userId\": 5,\n        \"recipient\": \"fcm_token_xxx\",\n        \"channel\": \"FIREBASE\",\n        \"type\": \"ORDER_UPDATE\",\n        \"title\": \"تم تأكيد طلبك\",\n        \"body\": \"تم تأكيد طلبك #123 وهو قيد التجهيز\",\n        \"topic\": null,\n        \"status\": \"SENT\",\n        \"orderId\": 123,\n        \"sentAt\": \"2024-01-15T10:30:00Z\",\n        \"createdAt\": \"2024-01-15T10:29:00Z\"\n    }\n}"
+        },
+        {
+          "name": "Error - User Not Found",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/send-to-user",
+              "path": ["notifications", "send-to-user"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 404,\n    \"message\": \"User not found for notification\",\n    \"error\": \"ERROR_5117\",\n    \"timestamp\": \"2024-01-15T10:29:00Z\",\n    \"path\": \"/api/v1/notifications/send-to-user\"\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Send Notification to All",
+      "description": "إرسال إشعار لجميع المستخدمين في موضوع محدد",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"topic\": \"ALL_CUSTOMERS\",\n    \"type\": \"OFFER\",\n    \"title\": \"عرض جديد\",\n    \"body\": \"خصم 20% على جميع الطلبات اليوم\",\n    \"channel\": \"FIREBASE\",\n    \"metadata\": {\n        \"offerId\": 15,\n        \"discount\": \"20%\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/send-to-all",
+          "path": ["notifications", "send-to-all"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/send-to-all",
+              "path": ["notifications", "send-to-all"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 46,\n        \"channel\": \"FIREBASE\",\n        \"type\": \"OFFER\",\n        \"title\": \"عرض جديد\",\n        \"body\": \"خصم 20% على جميع الطلبات اليوم\",\n        \"topic\": \"ALL_CUSTOMERS\",\n        \"status\": \"SENT\",\n        \"sentAt\": \"2024-01-15T10:30:00Z\",\n        \"scheduledAt\": null,\n        \"createdAt\": \"2024-01-15T10:29:00Z\"\n    }\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Send Scheduled Notification",
+      "description": "إرسال إشعار مجدول",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"topic\": \"ALL_CUSTOMERS\",\n    \"type\": \"MARKETING\",\n    \"title\": \"عرض خاص\",\n    \"body\": \"خصم نهاية الأسبوع\",\n    \"channel\": \"FIREBASE\",\n    \"scheduledAt\": \"2024-01-20T09:00:00Z\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/send-to-all",
+          "path": ["notifications", "send-to-all"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/send-to-all",
+              "path": ["notifications", "send-to-all"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 47,\n        \"channel\": \"FIREBASE\",\n        \"type\": \"MARKETING\",\n        \"title\": \"عرض خاص\",\n        \"body\": \"خصم نهاية الأسبوع\",\n        \"topic\": \"ALL_CUSTOMERS\",\n        \"status\": \"PENDING\",\n        \"sentAt\": null,\n        \"scheduledAt\": \"2024-01-20T09:00:00Z\",\n        \"createdAt\": \"2024-01-15T10:29:00Z\"\n    }\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Send Notification to All Customers",
+      "description": "إرسال إشعار لجميع العملاء عبر Firebase",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"عرض خاص للعملاء\",\n    \"body\": \"خصم 15% على طلبك القادم\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/send-to-customers",
+          "path": ["notifications", "send-to-customers"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/send-to-customers",
+              "path": ["notifications", "send-to-customers"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 47,\n        \"channel\": \"FIREBASE\",\n        \"type\": \"CUSTOM\",\n        \"title\": \"عرض خاص للعملاء\",\n        \"body\": \"خصم 15% على طلبك القادم\",\n        \"topic\": \"ALL_CUSTOMERS\",\n        \"sentAt\": \"2024-01-15T10:30:00Z\",\n        \"createdAt\": \"2024-01-15T10:29:00Z\",\n        \"totalTargeted\": 150,\n        \"deliveredCount\": 120,\n        \"undeliveredCount\": 30\n    }\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Get User Notifications",
+      "description": "الحصول على إشعارات المستخدم الحالي",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "GET",
+        "body": {},
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications?page=1&limit=20",
+          "path": ["notifications"],
+          "host": ["{{baseUrl}}"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "20"
+            }
+          ],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications?page=1&limit=20",
+              "path": ["notifications"],
+              "host": ["{{baseUrl}}"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 45,\n            \"type\": \"ORDER_UPDATE\",\n            \"title\": \"تم تأكيد طلبك\",\n            \"body\": \"تم تأكيد طلبك #123 وهو قيد التجهيز\",\n            \"topic\": null,\n            \"channel\": \"FIREBASE\",\n            \"status\": \"SENT\",\n            \"readAt\": null,\n            \"createdAt\": \"2024-01-15T10:29:00Z\"\n        },\n        {\n            \"id\": 44,\n            \"type\": \"OFFER\",\n            \"title\": \"عرض جديد\",\n            \"body\": \"خصم 20% على جميع الطلبات\",\n            \"topic\": \"ALL_CUSTOMERS\",\n            \"channel\": \"FIREBASE\",\n            \"status\": \"SENT\",\n            \"readAt\": \"2024-01-14T15:00:00Z\",\n            \"createdAt\": \"2024-01-14T10:00:00Z\"\n        }\n    ],\n    \"total\": 45,\n    \"page\": 1,\n    \"limit\": 20,\n    \"totalPages\": 3,\n    \"hasNextPage\": true,\n    \"hasPreviousPage\": false\n}"
+        },
+        {
+          "name": "Empty",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "path": ["notifications"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": [],\n    \"total\": 0,\n    \"page\": 1,\n    \"limit\": 20,\n    \"totalPages\": 0,\n    \"hasNextPage\": false,\n    \"hasPreviousPage\": false\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Get Notification by ID",
+      "description": "الحصول على إشعار محدد",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "GET",
+        "body": {},
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/45",
+          "path": ["notifications", "45"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/45",
+              "path": ["notifications", "45"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 45,\n        \"type\": \"ORDER_UPDATE\",\n        \"title\": \"تم تأكيد طلبك\",\n        \"body\": \"تم تأكيد طلبك #123 وهو قيد التجهيز\",\n        \"topic\": null,\n        \"channel\": \"FIREBASE\",\n        \"status\": \"SENT\",\n        \"readAt\": null,\n        \"createdAt\": \"2024-01-15T10:29:00Z\"\n    }\n}"
+        },
+        {
+          "name": "Error - Not Found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/999",
+              "path": ["notifications", "999"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Notification recipient not found\",\n    \"error\": \"ERROR_5112\",\n    \"timestamp\": \"2024-01-15T10:29:00Z\",\n    \"path\": \"/api/v1/notifications/999\"\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Mark Notifications as Read",
+      "description": "تعليم عدة إشعارات كمقروءة",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"notificationIds\": [45, 44, 43]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/mark-read",
+          "path": ["notifications", "mark-read"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/mark-read",
+              "path": ["notifications", "mark-read"],
+              "host": ["{{baseUrl}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notificationIds\": [45, 44, 43]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Notifications marked as read\"\n}"
+        },
+        {
+          "name": "Error - Bad Request",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/mark-read",
+              "path": ["notifications", "mark-read"],
+              "host": ["{{baseUrl}}"]
+            }
+          },
+          "cookie": [],
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"statusCode\": 400,\n    \"message\": \"notificationIds must be a non-empty array\",\n    \"error\": \"ERROR_6001\",\n    \"timestamp\": \"2024-01-15T10:29:00Z\",\n    \"path\": \"/api/v1/notifications/mark-read\"\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    },
+    {
+      "name": "Update Firebase Token",
+      "description": "تحديث Firebase Token للمستخدم الحالي",
+      "event": [],
+      "auth": {},
+      "request": {
+        "auth": {},
+        "method": "PATCH",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"firebaseToken\": \"fcm_token_new_xxx\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "string"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "string"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/firebase-token",
+          "path": ["users", "firebase-token"],
+          "host": ["{{baseUrl}}"],
+          "query": [],
+          "variable": []
+        }
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/firebase-token",
+              "path": ["users", "firebase-token"],
+              "host": ["{{baseUrl}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firebaseToken\": \"fcm_token_new_xxx\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "cookie": [],
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Firebase token updated successfully\"\n}"
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false,
+        "followRedirects": true
+      }
+    }
+  ]
+}

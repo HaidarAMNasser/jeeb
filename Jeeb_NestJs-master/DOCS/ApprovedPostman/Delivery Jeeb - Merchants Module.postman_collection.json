@@ -1,0 +1,1518 @@
+{
+  "info": {
+    "_postman_id": "99b322a1-952c-40bf-8876-8ae809dd2206",
+    "name": "Delivery Jeeb - Merchants Module",
+    "description": "Complete API collection for managing merchants with image upload support",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46725728",
+    "_collection_link": "https://assemhabib.postman.co/workspace/My-Workspace~e8ecb1f6-b28c-414e-8872-ce787ba90138/collection/46725728-99b322a1-952c-40bf-8876-8ae809dd2206?action=share&source=collection_link&creator=46725728"
+  },
+  "item": [
+    {
+      "name": "Admin Operations",
+      "item": [
+        {
+          "name": "Create Merchant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "merchant5@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "firstName",
+                  "value": "John",
+                  "type": "text"
+                },
+                {
+                  "key": "lastName",
+                  "value": "Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "+96391234552",
+                  "type": "text"
+                },
+                {
+                  "key": "countryId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "cityId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "Damascus, Merchant Street 123",
+                  "type": "text"
+                },
+                {
+                  "key": "birthday",
+                  "value": "1990-05-15",
+                  "type": "text"
+                },
+                {
+                  "key": "restaurantName",
+                  "value": "Tasty Burger Restaurant",
+                  "description": "Restaurant name for merchant",
+                  "type": "text"
+                },
+                {
+                  "key": "type",
+                  "value": "RESTAURANT",
+                  "description": "Merchant type: RESTAURANT or STORE",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "{\"lat\": 33.5138, \"lng\": 36.2765}",
+                  "description": "Restaurant location as JSON",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/C:/Users/RYZEN/Pictures/Screenshots/Screenshot (558).png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/merchants",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants"]
+            }
+          },
+          "response": [
+            {
+              "name": "Erorr Same Email",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"merchant2@example.com\",\n    \"password\": \"strongPassword123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+96391234568\",\n    \"countryId\": 1,\n    \"cityId\": 1,\n    \"address\": \"Damascus, Merchant Street 123\",\n    \"birthday\": \"1990/05/15\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "133"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"85-Y6rS+x/Bj93wMRRVrKNBmJTrefM\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 26 Feb 2026 06:11:29 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 409,\n    \"message\": \"Email already exists\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T06:11:29.408Z\",\n    \"path\": \"/api/v1/users/merchants\"\n}"
+            },
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "merchant5@example.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "password",
+                      "type": "text"
+                    },
+                    {
+                      "key": "firstName",
+                      "value": "John",
+                      "type": "text"
+                    },
+                    {
+                      "key": "lastName",
+                      "value": "Doe",
+                      "type": "text"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "+96391234552",
+                      "type": "text"
+                    },
+                    {
+                      "key": "countryId",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cityId",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "address",
+                      "value": "Damascus, Merchant Street 123",
+                      "type": "text"
+                    },
+                    {
+                      "key": "birthday",
+                      "value": "1990-05-15",
+                      "type": "text"
+                    },
+                    {
+                      "key": "restaurantName",
+                      "value": "Tasty Burger Restaurant",
+                      "description": "Restaurant name for merchant",
+                      "type": "text"
+                    },
+                    {
+                      "key": "location",
+                      "value": "{\"lat\": 33.5138, \"lng\": 36.2765}",
+                      "description": "Restaurant location as JSON",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": "/C:/Users/RYZEN/Pictures/Screenshots/Screenshot (558).png"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 10:59:22 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1489"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "X-RateLimit-Limit-short",
+                  "value": "100"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-short",
+                  "value": "99"
+                },
+                {
+                  "key": "X-RateLimit-Reset-short",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Limit-medium",
+                  "value": "500"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-medium",
+                  "value": "499"
+                },
+                {
+                  "key": "X-RateLimit-Reset-medium",
+                  "value": "600"
+                },
+                {
+                  "key": "X-RateLimit-Limit-long",
+                  "value": "2000"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-long",
+                  "value": "1999"
+                },
+                {
+                  "key": "X-RateLimit-Reset-long",
+                  "value": "3600"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5d1-C1DMu3W+8d31RpRh45sei+wnlZo\""
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "Permissions-Policy",
+                  "value": "geolocation=(), microphone=(), camera=()"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Merchant created successfully\",\n    \"data\": {\n        \"currentLat\": null,\n        \"currentLng\": null,\n        \"id\": 28,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"merchant5@example.com\",\n        \"phone\": \"+96391234552\",\n        \"role\": \"MERCHANT\",\n        \"type\": \"RESTAURANT\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"country\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"سوريا\",\n                \"en\": \"Syria\"\n            },\n            \"code\": \"SY\",\n            \"callingCode\": \"+963\",\n            \"currencyCode\": \"SYP\",\n            \"currencySymbol\": \"£\",\n            \"currencySmallestUnit\": \"Piastre\",\n            \"currencyFactor\": 100,\n            \"isActive\": true\n        },\n        \"cityId\": 1,\n        \"city\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"دمشق\",\n                \"en\": \"Damascus\"\n            },\n            \"countryId\": 1\n        },\n        \"address\": \"Damascus, Merchant Street 123\",\n        \"isOnline\": true,\n        \"verifiedAt\": \"2026-03-10T10:59:21.770Z\",\n        \"location\": {\n            \"lat\": 33.5138,\n            \"lng\": 36.2765\n        },\n        \"birthday\": \"1990-05-15\",\n        \"createdAt\": \"2026-03-10T10:59:21.772Z\",\n        \"updatedAt\": \"2026-03-10T10:59:22.045Z\",\n        \"deletedAt\": null,\n        \"officeOwnerId\": null,\n        \"imageId\": 28,\n        \"image\": {\n            \"id\": 28,\n            \"entityType\": \"USER\",\n            \"entityId\": 28,\n            \"url\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558).webp\",\n            \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558)_mobile.webp\",\n            \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558)_thumb.webp\",\n            \"isMain\": true,\n            \"displayOrder\": 0,\n            \"createdAt\": \"2026-03-10T10:59:22.039Z\",\n            \"updatedAt\": \"2026-03-10T10:59:22.039Z\"\n        },\n        \"restaurantName\": \"Tasty Burger Restaurant\",\n        \"isOpen\": false,\n        \"description\": null,\n        \"estimatedDeliveryMinutes\": 30,\n        \"merchantIsActive\": true\n    },\n    \"timestamp\": \"2026-03-10T10:59:22.551Z\",\n    \"path\": \"/api/v1/users/merchants\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Merchants (Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/merchants?page=1&limit=10&search=&countryId=&cityId=&isActive=&type=",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name, email, or phone"
+                },
+                {
+                  "key": "countryId",
+                  "value": "",
+                  "description": "Filter by country"
+                },
+                {
+                  "key": "cityId",
+                  "value": "",
+                  "description": "Filter by city"
+                },
+                {
+                  "key": "isActive",
+                  "value": "",
+                  "description": "Filter by active status (isActive)"
+                },
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "Filter by type: RESTAURANT or STORE"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/merchants?page=1&limit=10&search=&countryId=&cityId=&isActive=&type=",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search by name, email, or phone"
+                    },
+                    {
+                      "key": "countryId",
+                      "value": "",
+                      "description": "Filter by country"
+                    },
+                    {
+                      "key": "cityId",
+                      "value": "",
+                      "description": "Filter by city"
+                    },
+                    {
+                      "key": "isActive",
+                      "value": "",
+                      "description": "Filter by active status (isActive)"
+                    },
+                    {
+                      "key": "type",
+                      "value": "",
+                      "description": "Filter by type: RESTAURANT or STORE"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 11:00:05 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "2965"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "X-RateLimit-Limit-short",
+                  "value": "100"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-short",
+                  "value": "99"
+                },
+                {
+                  "key": "X-RateLimit-Reset-short",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Limit-medium",
+                  "value": "500"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-medium",
+                  "value": "499"
+                },
+                {
+                  "key": "X-RateLimit-Reset-medium",
+                  "value": "600"
+                },
+                {
+                  "key": "X-RateLimit-Limit-long",
+                  "value": "2000"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-long",
+                  "value": "1999"
+                },
+                {
+                  "key": "X-RateLimit-Reset-long",
+                  "value": "3600"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"b95-zPNgODAt5/i3sL2Nf+zf7U2X7bo\""
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "Permissions-Policy",
+                  "value": "geolocation=(), microphone=(), camera=()"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"currentLat\": null,\n            \"currentLng\": null,\n            \"id\": 28,\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\",\n            \"email\": \"merchant5@example.com\",\n            \"phone\": \"+96391234552\",\n            \"role\": \"MERCHANT\",\n            \"type\": \"RESTAURANT\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\",\n                \"callingCode\": \"+963\",\n                \"currencyCode\": \"SYP\",\n                \"currencySymbol\": \"£\",\n                \"currencySmallestUnit\": \"Piastre\",\n                \"currencyFactor\": 100,\n                \"isActive\": true\n            },\n            \"cityId\": 1,\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"address\": \"Damascus, Merchant Street 123\",\n            \"isOnline\": true,\n            \"verifiedAt\": \"2026-03-10T10:59:21.770Z\",\n            \"location\": {\n                \"lat\": 33.5138,\n                \"lng\": 36.2765\n            },\n            \"birthday\": \"1990-05-15\",\n            \"createdAt\": \"2026-03-10T10:59:21.772Z\",\n            \"updatedAt\": \"2026-03-10T10:59:22.045Z\",\n            \"deletedAt\": null,\n            \"officeOwnerId\": null,\n            \"imageId\": 28,\n            \"image\": {\n                \"id\": 28,\n                \"entityType\": \"USER\",\n                \"entityId\": 28,\n                \"url\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558).webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558)_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558)_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T10:59:22.039Z\",\n                \"updatedAt\": \"2026-03-10T10:59:22.039Z\"\n            },\n            \"restaurantName\": \"Tasty Burger Restaurant\",\n            \"isOpen\": false,\n            \"description\": null,\n            \"estimatedDeliveryMinutes\": 30,\n            \"merchantIsActive\": true\n        },\n        {\n            \"currentLat\": null,\n            \"currentLng\": null,\n            \"id\": 27,\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\",\n            \"email\": \"merchant4@example.com\",\n            \"phone\": \"+9639123455\",\n            \"role\": \"MERCHANT\",\n            \"type\": \"RESTAURANT\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\",\n                \"callingCode\": \"+963\",\n                \"currencyCode\": \"SYP\",\n                \"currencySymbol\": \"£\",\n                \"currencySmallestUnit\": \"Piastre\",\n                \"currencyFactor\": 100,\n                \"isActive\": true\n            },\n            \"cityId\": 1,\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"address\": \"Damascus, Merchant Street 123\",\n            \"isOnline\": true,\n            \"verifiedAt\": \"2026-03-10T10:39:17.846Z\",\n            \"location\": {\n                \"lat\": 33.5138,\n                \"lng\": 36.2765\n            },\n            \"birthday\": \"1990-05-15\",\n            \"createdAt\": \"2026-03-10T10:39:17.846Z\",\n            \"updatedAt\": \"2026-03-10T10:39:18.088Z\",\n            \"deletedAt\": null,\n            \"officeOwnerId\": null,\n            \"imageId\": 27,\n            \"image\": {\n                \"id\": 27,\n                \"entityType\": \"USER\",\n                \"entityId\": 27,\n                \"url\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2.webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T10:51:25.168Z\",\n                \"updatedAt\": \"2026-03-10T10:51:25.168Z\"\n            },\n            \"restaurantName\": \"Tasty Burger Restaurant\",\n            \"isOpen\": false,\n            \"description\": null,\n            \"estimatedDeliveryMinutes\": 30,\n            \"merchantIsActive\": true\n        }\n    ],\n    \"pagination\": {\n        \"total\": 2,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T11:00:05.329Z\",\n    \"path\": \"/api/v1/users/merchants?page=1&limit=10&search=&countryId=&cityId=&isActive=true\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Merchants",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/merchants?search=John",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "John"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/merchants?search=John",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "John"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 11:00:40 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "2920"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "X-RateLimit-Limit-short",
+                  "value": "100"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-short",
+                  "value": "98"
+                },
+                {
+                  "key": "X-RateLimit-Reset-short",
+                  "value": "25"
+                },
+                {
+                  "key": "X-RateLimit-Limit-medium",
+                  "value": "500"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-medium",
+                  "value": "498"
+                },
+                {
+                  "key": "X-RateLimit-Reset-medium",
+                  "value": "565"
+                },
+                {
+                  "key": "X-RateLimit-Limit-long",
+                  "value": "2000"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-long",
+                  "value": "1998"
+                },
+                {
+                  "key": "X-RateLimit-Reset-long",
+                  "value": "3565"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"b68-SK7zC+qkoGkC40J9A5hG5r4AvUk\""
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "Permissions-Policy",
+                  "value": "geolocation=(), microphone=(), camera=()"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"currentLat\": null,\n            \"currentLng\": null,\n            \"id\": 28,\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\",\n            \"email\": \"merchant5@example.com\",\n            \"phone\": \"+96391234552\",\n            \"role\": \"MERCHANT\",\n            \"type\": \"RESTAURANT\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\",\n                \"callingCode\": \"+963\",\n                \"currencyCode\": \"SYP\",\n                \"currencySymbol\": \"£\",\n                \"currencySmallestUnit\": \"Piastre\",\n                \"currencyFactor\": 100,\n                \"isActive\": true\n            },\n            \"cityId\": 1,\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"address\": \"Damascus, Merchant Street 123\",\n            \"isOnline\": true,\n            \"verifiedAt\": \"2026-03-10T10:59:21.770Z\",\n            \"location\": {\n                \"lat\": 33.5138,\n                \"lng\": 36.2765\n            },\n            \"birthday\": \"1990-05-15\",\n            \"createdAt\": \"2026-03-10T10:59:21.772Z\",\n            \"updatedAt\": \"2026-03-10T10:59:22.045Z\",\n            \"deletedAt\": null,\n            \"officeOwnerId\": null,\n            \"imageId\": 28,\n            \"image\": {\n                \"id\": 28,\n                \"entityType\": \"USER\",\n                \"entityId\": 28,\n                \"url\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558).webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558)_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/28/1773140361782_Screenshot (558)_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T10:59:22.039Z\",\n                \"updatedAt\": \"2026-03-10T10:59:22.039Z\"\n            },\n            \"restaurantName\": \"Tasty Burger Restaurant\",\n            \"isOpen\": false,\n            \"description\": null,\n            \"estimatedDeliveryMinutes\": 30,\n            \"merchantIsActive\": true\n        },\n        {\n            \"currentLat\": null,\n            \"currentLng\": null,\n            \"id\": 27,\n            \"firstName\": \"John\",\n            \"lastName\": \"Doe\",\n            \"email\": \"merchant4@example.com\",\n            \"phone\": \"+9639123455\",\n            \"role\": \"MERCHANT\",\n            \"type\": \"RESTAURANT\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\",\n                \"callingCode\": \"+963\",\n                \"currencyCode\": \"SYP\",\n                \"currencySymbol\": \"£\",\n                \"currencySmallestUnit\": \"Piastre\",\n                \"currencyFactor\": 100,\n                \"isActive\": true\n            },\n            \"cityId\": 1,\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"address\": \"Damascus, Merchant Street 123\",\n            \"isOnline\": true,\n            \"verifiedAt\": \"2026-03-10T10:39:17.846Z\",\n            \"location\": {\n                \"lat\": 33.5138,\n                \"lng\": 36.2765\n            },\n            \"birthday\": \"1990-05-15\",\n            \"createdAt\": \"2026-03-10T10:39:17.846Z\",\n            \"updatedAt\": \"2026-03-10T10:39:18.088Z\",\n            \"deletedAt\": null,\n            \"officeOwnerId\": null,\n            \"imageId\": 27,\n            \"image\": {\n                \"id\": 27,\n                \"entityType\": \"USER\",\n                \"entityId\": 27,\n                \"url\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2.webp\",\n                \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_mobile.webp\",\n                \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_thumb.webp\",\n                \"isMain\": true,\n                \"displayOrder\": 0,\n                \"createdAt\": \"2026-03-10T10:51:25.168Z\",\n                \"updatedAt\": \"2026-03-10T10:51:25.168Z\"\n            },\n            \"restaurantName\": \"Tasty Burger Restaurant\",\n            \"isOpen\": false,\n            \"description\": null,\n            \"estimatedDeliveryMinutes\": 30,\n            \"merchantIsActive\": true\n        }\n    ],\n    \"pagination\": {\n        \"total\": 2,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-03-10T11:00:40.854Z\",\n    \"path\": \"/api/v1/users/merchants?search=John\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get One Merchant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/merchants/27",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants", "27"]
+            }
+          },
+          "response": [
+            {
+              "name": "Error not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/19",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "19"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "145"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"91-spAvhwAyJW2LY+ogVSr3WVyF1BY\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 26 Feb 2026 06:13:10 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Merchant with ID 19 not found\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T06:13:10.328Z\",\n    \"path\": \"/api/v1/users/merchants/19\"\n}"
+            },
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/27",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "27"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 11:01:01 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1455"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "X-RateLimit-Limit-short",
+                  "value": "100"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-short",
+                  "value": "99"
+                },
+                {
+                  "key": "X-RateLimit-Reset-short",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Limit-medium",
+                  "value": "500"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-medium",
+                  "value": "498"
+                },
+                {
+                  "key": "X-RateLimit-Reset-medium",
+                  "value": "388"
+                },
+                {
+                  "key": "X-RateLimit-Limit-long",
+                  "value": "2000"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-long",
+                  "value": "1998"
+                },
+                {
+                  "key": "X-RateLimit-Reset-long",
+                  "value": "3388"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5af-CLFMO0X+P+ILMwlEaPBfAkGTVM4\""
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "Permissions-Policy",
+                  "value": "geolocation=(), microphone=(), camera=()"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"currentLat\": null,\n        \"currentLng\": null,\n        \"id\": 27,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"merchant4@example.com\",\n        \"phone\": \"+9639123455\",\n        \"role\": \"MERCHANT\",\n        \"type\": \"RESTAURANT\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"country\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"سوريا\",\n                \"en\": \"Syria\"\n            },\n            \"code\": \"SY\",\n            \"callingCode\": \"+963\",\n            \"currencyCode\": \"SYP\",\n            \"currencySymbol\": \"£\",\n            \"currencySmallestUnit\": \"Piastre\",\n            \"currencyFactor\": 100,\n            \"isActive\": true\n        },\n        \"cityId\": 1,\n        \"city\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"دمشق\",\n                \"en\": \"Damascus\"\n            },\n            \"countryId\": 1\n        },\n        \"address\": \"Damascus, Merchant Street 123\",\n        \"isOnline\": true,\n        \"verifiedAt\": \"2026-03-10T10:39:17.846Z\",\n        \"location\": {\n            \"lat\": 33.5138,\n            \"lng\": 36.2765\n        },\n        \"birthday\": \"1990-05-15\",\n        \"createdAt\": \"2026-03-10T10:39:17.846Z\",\n        \"updatedAt\": \"2026-03-10T10:39:18.088Z\",\n        \"deletedAt\": null,\n        \"officeOwnerId\": null,\n        \"imageId\": 27,\n        \"image\": {\n            \"id\": 27,\n            \"entityType\": \"USER\",\n            \"entityId\": 27,\n            \"url\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2.webp\",\n            \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_mobile.webp\",\n            \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_thumb.webp\",\n            \"isMain\": true,\n            \"displayOrder\": 0,\n            \"createdAt\": \"2026-03-10T10:51:25.168Z\",\n            \"updatedAt\": \"2026-03-10T10:51:25.168Z\"\n        },\n        \"restaurantName\": \"Tasty Burger Restaurant\",\n        \"isOpen\": false,\n        \"description\": null,\n        \"estimatedDeliveryMinutes\": 30,\n        \"merchantIsActive\": true\n    },\n    \"timestamp\": \"2026-03-10T11:01:01.502Z\",\n    \"path\": \"/api/v1/users/merchants/27\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Merchant",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "firstName",
+                  "value": "John Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "lastName",
+                  "value": "Doe Updated",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "phone",
+                  "value": "+963987654321",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "address",
+                  "value": "New Address Street",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "birthday",
+                  "value": "1990-05-15",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "RESTAURANT",
+                  "description": "Merchant type: RESTAURANT or STORE",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/C:/Users/RYZEN/Pictures/Screenshots/images2.png",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/merchants/27",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants", "27"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "firstName",
+                      "value": "John Updated",
+                      "type": "text"
+                    },
+                    {
+                      "key": "lastName",
+                      "value": "Doe Updated",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "phone",
+                      "value": "+963987654321",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "address",
+                      "value": "New Address Street",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "birthday",
+                      "value": "1990-05-15",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "type",
+                      "value": "RESTAURANT",
+                      "description": "Merchant type: RESTAURANT or STORE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": "/C:/Users/RYZEN/Pictures/Screenshots/images2.png",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/27",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "27"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Mar 2026 11:01:37 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1472"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "X-RateLimit-Limit-short",
+                  "value": "100"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-short",
+                  "value": "99"
+                },
+                {
+                  "key": "X-RateLimit-Reset-short",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Limit-medium",
+                  "value": "500"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-medium",
+                  "value": "499"
+                },
+                {
+                  "key": "X-RateLimit-Reset-medium",
+                  "value": "600"
+                },
+                {
+                  "key": "X-RateLimit-Limit-long",
+                  "value": "2000"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-long",
+                  "value": "1999"
+                },
+                {
+                  "key": "X-RateLimit-Reset-long",
+                  "value": "3600"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5c0-unSnjUn/pQKWKMVym4CqALjnIg0\""
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "1; mode=block"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "Permissions-Policy",
+                  "value": "geolocation=(), microphone=(), camera=()"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Merchant updated successfully\",\n    \"data\": {\n        \"currentLat\": null,\n        \"currentLng\": null,\n        \"id\": 27,\n        \"firstName\": \"John Updated\",\n        \"lastName\": \"Doe\",\n        \"email\": \"merchant4@example.com\",\n        \"phone\": \"+9639123455\",\n        \"role\": \"MERCHANT\",\n        \"type\": \"RESTAURANT\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"country\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"سوريا\",\n                \"en\": \"Syria\"\n            },\n            \"code\": \"SY\",\n            \"callingCode\": \"+963\",\n            \"currencyCode\": \"SYP\",\n            \"currencySymbol\": \"£\",\n            \"currencySmallestUnit\": \"Piastre\",\n            \"currencyFactor\": 100,\n            \"isActive\": true\n        },\n        \"cityId\": 1,\n        \"city\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"دمشق\",\n                \"en\": \"Damascus\"\n            },\n            \"countryId\": 1\n        },\n        \"address\": \"Damascus, Merchant Street 123\",\n        \"isOnline\": true,\n        \"verifiedAt\": \"2026-03-10T10:39:17.846Z\",\n        \"location\": {\n            \"lat\": 33.5138,\n            \"lng\": 36.2765\n        },\n        \"birthday\": \"1990-05-15\",\n        \"createdAt\": \"2026-03-10T10:39:17.846Z\",\n        \"updatedAt\": \"2026-03-10T11:01:36.896Z\",\n        \"deletedAt\": null,\n        \"officeOwnerId\": null,\n        \"imageId\": 27,\n        \"image\": {\n            \"id\": 27,\n            \"entityType\": \"USER\",\n            \"entityId\": 27,\n            \"url\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2.webp\",\n            \"mobileUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_mobile.webp\",\n            \"thumbnailUrl\": \"https://api.jeeb2.com/uploads/users/27/1773139884918_images2_thumb.webp\",\n            \"isMain\": true,\n            \"displayOrder\": 0,\n            \"createdAt\": \"2026-03-10T10:51:25.168Z\",\n            \"updatedAt\": \"2026-03-10T10:51:25.168Z\"\n        },\n        \"restaurantName\": \"Tasty Burger Restaurant\",\n        \"isOpen\": false,\n        \"description\": null,\n        \"estimatedDeliveryMinutes\": 30,\n        \"merchantIsActive\": true\n    },\n    \"timestamp\": \"2026-03-10T11:01:37.409Z\",\n    \"path\": \"/api/v1/users/merchants/27\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Merchant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/merchants/24",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants", "24"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/9",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "9"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "144"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"90-UDxD1S9SLo452nsOxCZTk7C58Po\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 26 Feb 2026 06:14:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Merchant deleted successfully\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T06:14:14.957Z\",\n    \"path\": \"/api/v1/users/merchants/9\"\n}"
+            },
+            {
+              "name": "Error not found",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/9",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "9"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "Text",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "143"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"8f-Ieid4n/oauZnhn4XcZPW62fAJ1Y\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 26 Feb 2026 06:14:24 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Merchant with ID 9 not found\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T06:14:24.514Z\",\n    \"path\": \"/api/v1/users/merchants/9\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Confirm Merchant",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/users/merchants/{{merchant_id}}/confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "merchants",
+                "{{merchant_id}}",
+                "confirm"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success - Merchant Activated",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/27/confirm",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "merchants",
+                    "27",
+                    "confirm"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"تم تفعيل حساب التاجر بنجاح\",\n    \"data\": {\n        \"id\": 27,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"merchant4@example.com\",\n        \"phone\": \"+9639123455\",\n        \"role\": \"MERCHANT\",\n        \"isActive\": true,\n        \"restaurantName\": \"Tasty Burger Restaurant\",\n        \"merchantIsActive\": true\n    }\n}"
+            },
+            {
+              "name": "Error - Already Active",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/27/confirm",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "merchants",
+                    "27",
+                    "confirm"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 400,\n    \"message\": \"Merchant account is already active\",\n    \"error\": \"Bad Request\"\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/999/confirm",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "merchants",
+                    "999",
+                    "confirm"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Merchant with ID 999 not found\",\n    \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Merchant Password (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/merchants/27/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["users", "merchants", "27", "reset-password"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/27/reset-password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "27", "reset-password"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Password reset successfully\",\n    \"data\": {\n        \"id\": 27,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"merchant4@example.com\",\n        \"phone\": \"+9639123455\",\n        \"role\": \"MERCHANT\"\n    },\n    \"timestamp\": \"2026-04-03T19:00:00.000Z\",\n    \"path\": \"/api/v1/users/merchants/27/reset-password\"\n}"
+            },
+            {
+              "name": "Error - Forbidden",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/27/reset-password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "27", "reset-password"]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"message\": \"Forbidden resource\",\n    \"error\": \"Forbidden\",\n    \"statusCode\": 403\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/merchants/999/reset-password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "merchants", "999", "reset-password"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"message\": \"User with ID 999 not found\",\n    \"error\": \"Not Found\",\n    \"statusCode\": 404\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.jeeb2.com/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_jwt_token_here",
+      "type": "string"
+    }
+  ]
+}

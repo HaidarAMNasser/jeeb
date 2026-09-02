@@ -1,0 +1,74 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "skills": {
+    "paths": [
+      "C:\\Users\\RYZEN\\.agents\\skills"
+    ]
+  },
+
+  "instructions": [
+    ".opencode/instructions.md"
+  ],
+
+  "command": {
+    "dev:start": {
+      "template": "npm run start:dev",
+      "description": "Start NestJS dev server with watch mode",
+      "agent": "backend-architect"
+    },
+    "dev:build": {
+      "template": "npm run build",
+      "description": "Build the NestJS project"
+    },
+    "db:migrate": {
+      "template": "npm run db:migrate",
+      "description": "Run TypeORM migrations",
+      "agent": "database-optimizer"
+    },
+    "db:sync": {
+      "template": "npm run db:sync",
+      "description": "Sync database schema",
+      "agent": "database-optimizer"
+    },
+    "db:fix-notification-firebase": {
+      "template": "npm run db:set-notification-firebase",
+      "description": "Set all users notificationChannel to FIREBASE"
+    },
+    "script:run": {
+      "template": "npx ts-node scripts/{{name}}.ts",
+      "description": "Run any script from scripts/ folder",
+      "subtask": true
+    }
+  },
+
+  "agent": {
+    "backend-architect": {
+      "description": "Senior backend architect for NestJS, TypeORM, PostgreSQL, Redis"
+    },
+    "api-tester": {
+      "description": "Test API endpoints for the delivery-jeeb project"
+    },
+    "senior-developer": {
+      "description": "Implementation specialist for NestJS/Laravel features"
+    },
+    "technical-writer": {
+      "description": "Project documentation writer"
+    },
+    "database-optimizer": {
+      "description": "Database schema and query optimization"
+    },
+    "code-reviewer": {
+      "description": "Code quality review"
+    },
+    "software-architect": {
+      "description": "System architecture and design decisions"
+    },
+    "test-results-analyzer": {
+      "description": "Test analysis and quality metrics"
+    },
+    "devops-automator": {
+      "description": "CI/CD and deployment automation"
+    }
+  }
+}

@@ -1,0 +1,848 @@
+<!doctype html>
+<html dir="rtl" lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#6366f1" />
+    <title>Delivery Jeeb - نظام إدارة الطلبات</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#6366f1',
+              'primary-dark': '#4f46e5',
+            },
+            fontFamily: {
+              sans: ['IBM Plex Sans Arabic', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+        background: #f8fafc;
+        min-height: 100dvh;
+        overflow-x: hidden;
+      }
+      .dark body {
+        background: #0f172a;
+      }
+      /* Status Colors */
+      .status-PENDING {
+        background: #9ca3af;
+      }
+      .status-CONFIRMED {
+        background: #3b82f6;
+      }
+      .status-PREPARING {
+        background: #f97316;
+      }
+      .status-READY_FOR_PICKUP {
+        background: #f59e0b;
+      }
+      .status-SEARCHING {
+        background: #8b5cf6;
+      }
+      .status-ASSIGNED {
+        background: #06b6d4;
+      }
+      .status-NOTIFIED {
+        background: #06b6d4;
+      }
+      .status-ACCEPTED {
+        background: #a855f7;
+      }
+      .status-PICKED {
+        background: #ec4899;
+      }
+      .status-PICKED_UP {
+        background: #ec4899;
+      }
+      .status-ON_THE_WAY {
+        background: #f97316;
+      }
+      .status-DELIVERED {
+        background: #10b981;
+      }
+      .status-CANCELLED {
+        background: #ef4444;
+      }
+      .status-REJECTED {
+        background: #ef4444;
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      /* Active States */
+      .btn-touch:active {
+        transform: scale(0.97);
+        opacity: 0.9;
+      }
+      /* Bottom Nav Safe Area */
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header
+      class="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800"
+    >
+      <div class="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-icons-round text-primary text-2xl"
+            >local_shipping</span
+          >
+          <h1 class="text-lg font-bold text-slate-800 dark:text-white">
+            Delivery Jeeb
+          </h1>
+        </div>
+        <button
+          class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors btn-touch"
+        >
+          <span class="material-icons-round text-slate-500 dark:text-slate-400"
+            >notifications_none</span
+          >
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 pt-14 pb-20 overflow-y-auto">
+      <div class="max-w-lg mx-auto px-4 py-4">
+        <!-- Login Section -->
+        <div id="loginSection">
+          <div
+            class="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-6 mb-4"
+          >
+            <div class="text-center text-white mb-6">
+              <h2 class="text-2xl font-bold mb-2">مرحباً بك! 👋</h2>
+              <p class="text-white/80 text-sm">اختر دورك للبدء</p>
+            </div>
+
+            <div class="space-y-3">
+              <button
+                onclick="login('delivery')"
+                class="btn-touch w-full flex items-center justify-between p-4 bg-white/20 hover:bg-white/30 backdrop-blur rounded-2xl transition-all"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">🛵</span>
+                  <div class="text-right">
+                    <span class="block text-white font-semibold"
+                      >سائق توصيل</span
+                    >
+                    <span class="text-white/70 text-xs"
+                      >توصيل الطلبات للزبائن</span
+                    >
+                  </div>
+                </div>
+                <span class="material-icons-round text-white/60"
+                  >chevron_left</span
+                >
+              </button>
+
+              <button
+                onclick="login('merchant')"
+                class="btn-touch w-full flex items-center justify-between p-4 bg-white/20 hover:bg-white/30 backdrop-blur rounded-2xl transition-all"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">🍔</span>
+                  <div class="text-right">
+                    <span class="block text-white font-semibold"
+                      >صاحب مطعم</span
+                    >
+                    <span class="text-white/70 text-xs">إدارة طلبات مطعمك</span>
+                  </div>
+                </div>
+                <span class="material-icons-round text-white/60"
+                  >chevron_left</span
+                >
+              </button>
+
+              <button
+                onclick="login('customer')"
+                class="btn-touch w-full flex items-center justify-between p-4 bg-white/20 hover:bg-white/30 backdrop-blur rounded-2xl transition-all"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">👤</span>
+                  <div class="text-right">
+                    <span class="block text-white font-semibold">عميل</span>
+                    <span class="text-white/70 text-xs">طلب الطعام بسهولة</span>
+                  </div>
+                </div>
+                <span class="material-icons-round text-white/60"
+                  >chevron_left</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Section -->
+        <div id="customerSection" class="hidden">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-800 dark:text-white">
+                طلباتي
+              </h2>
+              <p class="text-slate-500 text-xs">
+                مرحباً <span id="customerName"></span>
+              </p>
+            </div>
+            <button
+              onclick="logout()"
+              class="btn-touch px-3 py-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+            >
+              خروج
+            </button>
+          </div>
+
+          <button
+            onclick="createOrder()"
+            class="btn-touch w-full flex items-center justify-center gap-2 p-4 bg-primary hover:bg-primary-dark text-white rounded-2xl font-semibold mb-4 transition-colors shadow-lg shadow-primary/30"
+          >
+            <span class="material-icons-round">add_shopping_cart</span>
+            إنشاء طلب جديد
+          </button>
+
+          <div id="customerOrders" class="space-y-3"></div>
+        </div>
+
+        <!-- Merchant Section -->
+        <div id="merchantSection" class="hidden">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-800 dark:text-white">
+                طلبات المطعم
+              </h2>
+              <p class="text-slate-500 text-xs">إدارة الطلبات الواردة</p>
+            </div>
+            <button
+              onclick="logout()"
+              class="btn-touch px-3 py-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+            >
+              خروج
+            </button>
+          </div>
+
+          <!-- Merchant Filter Buttons -->
+          <div
+            class="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4 scrollbar-hide"
+          >
+            <button
+              onclick="filterMerchantOrders('ALL')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              الكل
+            </button>
+            <button
+              onclick="filterMerchantOrders('PENDING')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              بانتظار
+            </button>
+            <button
+              onclick="filterMerchantOrders('CONFIRMED')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              مؤكدة
+            </button>
+            <button
+              onclick="filterMerchantOrders('PREPARING')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              قيد التحضير
+            </button>
+            <button
+              onclick="filterMerchantOrders('READY_FOR_PICKUP')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              جاهزة
+            </button>
+          </div>
+
+          <div id="merchantOrders" class="space-y-3"></div>
+        </div>
+
+        <!-- Delivery Section -->
+        <div id="deliverySection" class="hidden">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-800 dark:text-white">
+                طلباتي للتوصيل
+              </h2>
+              <p class="text-slate-500 text-xs">
+                السائق: <span id="deliveryName"></span>
+              </p>
+            </div>
+            <button
+              onclick="logout()"
+              class="btn-touch px-3 py-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+            >
+              خروج
+            </button>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div
+            class="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4 scrollbar-hide"
+          >
+            <button
+              onclick="filterDeliveryOrders('ALL')"
+              class="btn-filter active flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              الكل
+            </button>
+            <button
+              onclick="filterDeliveryOrders('SEARCHING')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              بانتظار
+            </button>
+            <button
+              onclick="filterDeliveryOrders('ASSIGNED')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              معين علي
+            </button>
+            <button
+              onclick="filterDeliveryOrders('ACCEPTED')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              تم القبول
+            </button>
+            <button
+              onclick="filterDeliveryOrders('PICKED_UP')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              تم الاستلام
+            </button>
+            <button
+              onclick="filterDeliveryOrders('READY_FOR_PICKUP')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              جاهز
+            </button>
+            <button
+              onclick="filterDeliveryOrders('ON_THE_WAY')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              في الطريق
+            </button>
+            <button
+              onclick="filterDeliveryOrders('DELIVERED')"
+              class="btn-filter flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-touch transition-colors"
+            >
+              مكتمل
+            </button>
+          </div>
+
+          <div id="deliveryOrders" class="space-y-3"></div>
+        </div>
+
+        <!-- Messages -->
+        <div
+          id="message"
+          class="hidden fixed top-16 left-4 right-4 max-w-lg mx-auto z-50 p-4 rounded-2xl shadow-lg"
+        ></div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav
+      id="bottomNav"
+      class="hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe"
+    >
+      <div class="max-w-lg mx-auto px-4 h-16 flex items-center justify-around">
+        <button
+          onclick="switchTab('orders')"
+          class="nav-tab flex flex-col items-center gap-1 text-primary"
+          data-tab="orders"
+        >
+          <span class="material-icons-round text-2xl">receipt_long</span>
+          <span class="text-xs font-medium">طلباتي</span>
+        </button>
+        <button
+          onclick="switchTab('home')"
+          class="nav-tab flex flex-col items-center gap-1 text-slate-400"
+          data-tab="home"
+        >
+          <span class="material-icons-round text-2xl">home</span>
+          <span class="text-xs">الرئيسية</span>
+        </button>
+        <button
+          onclick="switchTab('profile')"
+          class="nav-tab flex flex-col items-center gap-1 text-slate-400"
+          data-tab="profile"
+        >
+          <span class="material-icons-round text-2xl">person_outline</span>
+          <span class="text-xs">حسابي</span>
+        </button>
+        <button
+          onclick="switchTab('settings')"
+          class="nav-tab flex flex-col items-center gap-1 text-slate-400"
+          data-tab="settings"
+        >
+          <span class="material-icons-round text-2xl">settings</span>
+          <span class="text-xs">إعدادات</span>
+        </button>
+      </div>
+    </nav>
+
+    <script>
+      const BASE_URL = window.location.origin + '/api/v1';
+      let currentUser = null;
+      let currentRole = null;
+      let currentDeliveryFilter = 'ALL';
+      let currentMerchantFilter = 'ALL';
+
+      const ACCOUNTS = {
+        customer: { email: 'customer@gmail.com', password: 'password' },
+        merchant: { email: 'merchant@gmail.com', password: 'password' },
+        delivery: { email: 'delivery@gmail.com', password: 'password' },
+      };
+
+      // Dark mode
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+
+      function showMessage(text, isError = false) {
+        const msg = document.getElementById('message');
+        msg.className = isError
+          ? 'fixed top-16 left-4 right-4 max-w-lg mx-auto z-50 p-4 rounded-2xl shadow-lg bg-red-50 dark:bg-red-900/50 text-red-600 dark:text-red-400 text-sm font-medium'
+          : 'fixed top-16 left-4 right-4 max-w-lg mx-auto z-50 p-4 rounded-2xl shadow-lg bg-green-50 dark:bg-green-900/50 text-green-600 dark:text-green-400 text-sm font-medium';
+        msg.textContent = text;
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 3000);
+      }
+
+      function showLoading(containerId) {
+        document.getElementById(containerId).innerHTML = `
+        <div class="flex items-center justify-center py-12">
+          <div class="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          <span class="mr-3 text-slate-500">جاري التحميل...</span>
+        </div>
+      `;
+      }
+
+      function showOrders(containerId, orders) {
+        const container = document.getElementById(containerId);
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
+          <div class="text-center py-12">
+            <span class="material-icons-round text-6xl text-slate-300 dark:text-slate-600">inbox</span>
+            <p class="text-slate-500 mt-4">لا توجد طلبات</p>
+          </div>
+        `;
+          return;
+        }
+
+        container.innerHTML = orders
+          .map(
+            (order) => `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-lg font-bold text-primary">#${order.id}</span>
+              <span class="px-3 py-1 rounded-full text-xs text-white font-medium status-${order.status}">${getStatusText(order.status)}</span>
+            </div>
+            <div class="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+              <p><span class="text-slate-800 dark:text-slate-200 font-medium">العميل:</span> ${order.customer?.firstName || '-'} ${order.customer?.lastName || ''}</p>
+              <p><span class="text-slate-800 dark:text-slate-200 font-medium">الإجمالي:</span> ${order.grandTotal || order.total || 0} ${order.currencySymbol || ''}</p>
+              ${order.deliveryAddress ? `<p class="text-xs"><span class="text-slate-800 dark:text-slate-200 font-medium">العنوان:</span> ${order.deliveryAddress}</p>` : ''}
+            </div>
+          </div>
+          <div class="px-4 pb-4 flex flex-wrap gap-2">
+            ${getMerchantActions(order)}
+            ${getDeliveryActions(order)}
+          </div>
+        </div>
+      `,
+          )
+          .join('');
+      }
+
+      function getStatusText(status) {
+        const statuses = {
+          PENDING: 'قيد الانتظار',
+          CONFIRMED: 'تم التأكيد',
+          PREPARING: 'جارٍ التحضير',
+          READY_FOR_PICKUP: 'جاهز للاستلام',
+          SEARCHING: 'جارٍ البحث عن سائق',
+          ASSIGNED: 'تم التعيين',
+          NOTIFIED: 'تم الإشعار',
+          ACCEPTED: 'تم القبول',
+          PICKED: 'تم الاستلام',
+          PICKED_UP: 'تم الاستلام',
+          ON_THE_WAY: 'في الطريق',
+          DELIVERED: 'تم التوصيل',
+          CANCELLED: 'ملغي',
+          REJECTED: 'مرفوض',
+        };
+        return statuses[status] || status;
+      }
+
+      function getMerchantActions(order) {
+        if (currentRole !== 'merchant') return '';
+        let actions = '';
+        if (order.status === 'PENDING') {
+          actions += `<button onclick="confirmOrder(${order.id})" class="btn-touch px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm rounded-xl font-medium">✓ تأكيد</button>`;
+          actions += `<button onclick="rejectDelivery(${order.id})" class="btn-touch px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-xl font-medium">✗ رفض</button>`;
+        }
+        if (order.status === 'ASSIGNED') {
+          actions += `<span class="text-sm text-blue-600 dark:text-blue-400">📍 جارٍ البحث عن سائق...</span>`;
+        }
+        if (order.status === 'ASSIGNED') {
+          actions += `<button onclick="startPreparing(${order.id})" class="btn-touch px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-xl font-medium">🔄 بدء التحضير</button>`;
+        }
+        if (order.status === 'PREPARING') {
+          actions += `<button onclick="readyForPickup(${order.id})" class="btn-touch px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm rounded-xl font-medium">📦 جاهز للاستلام</button>`;
+        }
+        return actions;
+      }
+
+      function getDeliveryActions(order) {
+        if (currentRole !== 'delivery') return '';
+        let actions = '';
+        if (order.status === 'READY_FOR_PICKUP') {
+          actions += `<button onclick="pickedUp(${order.id})" class="btn-touch px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-xl font-medium">🛵 استلام</button>`;
+        }
+        if (order.status === 'PICKED_UP') {
+          actions += `<button onclick="onTheWay(${order.id})" class="btn-touch px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded-xl font-medium">🚴 في الطريق</button>`;
+        }
+        if (order.status === 'ON_THE_WAY') {
+          actions += `<button onclick="delivered(${order.id})" class="btn-touch px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm rounded-xl font-medium">✅ تم التوصيل</button>`;
+        }
+        return actions;
+      }
+
+      function updateFilterButtons() {
+        document.querySelectorAll('.btn-filter').forEach((btn) => {
+          btn.classList.remove('bg-primary', 'text-white', 'active');
+          btn.classList.add(
+            'bg-slate-100',
+            'dark:bg-slate-800',
+            'text-slate-600',
+            'dark:text-slate-300',
+          );
+        });
+        const activeBtn = Array.from(
+          document.querySelectorAll('.btn-filter'),
+        ).find((btn) =>
+          btn.getAttribute('onclick').includes(`'${currentDeliveryFilter}'`),
+        );
+        if (activeBtn) {
+          activeBtn.classList.add('bg-primary', 'text-white', 'active');
+          activeBtn.classList.remove(
+            'bg-slate-100',
+            'dark:bg-slate-800',
+            'text-slate-600',
+            'dark:text-slate-300',
+          );
+        }
+      }
+
+      function filterDeliveryOrders(status) {
+        currentDeliveryFilter = status;
+        updateFilterButtons();
+        loadDeliveryOrders();
+      }
+
+      function switchTab(tab) {
+        document.querySelectorAll('.nav-tab').forEach((t) => {
+          t.classList.remove('text-primary');
+          t.classList.add('text-slate-400');
+        });
+        document
+          .querySelector(`[data-tab="${tab}"]`)
+          ?.classList.add('text-primary');
+        document
+          .querySelector(`[data-tab="${tab}"]`)
+          ?.classList.remove('text-slate-400');
+      }
+
+      async function login(role) {
+        currentRole = role;
+        const account = ACCOUNTS[role];
+        try {
+          const response = await fetch(`${BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(account),
+          });
+          if (!response.ok) throw new Error('فشل تسجيل الدخول');
+          const data = await response.json();
+          currentUser = data.data || data;
+
+          document.getElementById('loginSection').classList.add('hidden');
+          document.getElementById('bottomNav').classList.remove('hidden');
+
+          if (role === 'customer') {
+            document
+              .getElementById('customerSection')
+              .classList.remove('hidden');
+            document.getElementById('customerName').textContent =
+              currentUser.firstName;
+            loadCustomerOrders();
+          } else if (role === 'merchant') {
+            document
+              .getElementById('merchantSection')
+              .classList.remove('hidden');
+            loadMerchantOrders();
+          } else if (role === 'delivery') {
+            document
+              .getElementById('deliverySection')
+              .classList.remove('hidden');
+            document.getElementById('deliveryName').textContent =
+              currentUser.firstName;
+            updateFilterButtons();
+            loadDeliveryOrders();
+          }
+
+          showMessage(`مرحباً ${currentUser.firstName}!`);
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      function logout() {
+        currentUser = null;
+        currentRole = null;
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('bottomNav').classList.add('hidden');
+        document.getElementById('customerSection').classList.add('hidden');
+        document.getElementById('merchantSection').classList.add('hidden');
+        document.getElementById('deliverySection').classList.add('hidden');
+      }
+
+      async function apiCall(url, method = 'GET', body = null) {
+        const token = currentUser.access_token || currentUser.accessToken;
+        const options = {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        if (body) options.body = JSON.stringify(body);
+        const response = await fetch(`${BASE_URL}${url}`, options);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'حدث خطأ');
+        return data;
+      }
+
+      // Customer Functions
+      async function loadCustomerOrders() {
+        showLoading('customerOrders');
+        try {
+          const data = await apiCall('/orders');
+          showOrders('customerOrders', data.data);
+        } catch (error) {
+          document.getElementById('customerOrders').innerHTML =
+            `<div class="text-center py-8 text-red-500">${error.message}</div>`;
+        }
+      }
+
+      async function createOrder() {
+        try {
+          await apiCall('/orders', 'POST', {
+            ownerId: 30114,
+            items: [{ productId: 5114, quantity: 2 }],
+            deliveryCoordinates: {
+              latitude: 33.5138,
+              longitude: 36.2765,
+              address: '123 Street, Damascus',
+            },
+            deliveryFee: 0,
+            paymentMethod: 'CASH',
+          });
+          showMessage('تم إنشاء الطلب بنجاح!');
+          loadCustomerOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      // Merchant Functions
+      async function loadMerchantOrders() {
+        showLoading('merchantOrders');
+        try {
+          let url = '/orders?page=1&limit=50';
+          if (currentMerchantFilter !== 'ALL') {
+            url += `&status=${currentMerchantFilter}`;
+          }
+          const data = await apiCall(url);
+          showOrders('merchantOrders', data.data);
+        } catch (error) {
+          document.getElementById('merchantOrders').innerHTML =
+            `<div class="text-center py-8 text-red-500">${error.message}</div>`;
+        }
+      }
+
+      function updateMerchantFilterButtons() {
+        document
+          .querySelectorAll('#merchantSection .btn-filter')
+          .forEach((btn) => {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add(
+              'bg-slate-100',
+              'dark:bg-slate-800',
+              'text-slate-600',
+              'dark:text-slate-300',
+            );
+          });
+        const activeBtn = Array.from(
+          document.querySelectorAll('#merchantSection .btn-filter'),
+        ).find((btn) =>
+          btn.getAttribute('onclick').includes(`'${currentMerchantFilter}'`),
+        );
+        if (activeBtn) {
+          activeBtn.classList.add('bg-primary', 'text-white');
+          activeBtn.classList.remove(
+            'bg-slate-100',
+            'dark:bg-slate-800',
+            'text-slate-600',
+            'dark:text-slate-300',
+          );
+        }
+      }
+
+      function filterMerchantOrders(status) {
+        currentMerchantFilter = status;
+        updateMerchantFilterButtons();
+        loadMerchantOrders();
+      }
+
+      async function confirmOrder(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/confirm`, 'PATCH', {
+            mealPreparationTime: 15,
+            deliveryTime: 30,
+          });
+          showMessage(`تم تأكيد الطلب #${orderId}`);
+          loadMerchantOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      async function rejectDelivery(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/reject`, 'PATCH');
+          showMessage(`تم رفض الطلب #${orderId}`);
+          loadMerchantOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      async function startPreparing(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/preparing`, 'PATCH');
+          showMessage(`تم بدء تحضير الطلب #${orderId}`);
+          loadMerchantOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      async function readyForPickup(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/ready-for-pickup`, 'PATCH');
+          showMessage(`الطلب #${orderId} جاهز للاستلام`);
+          loadMerchantOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      // Delivery Functions
+      async function loadDeliveryOrders() {
+        showLoading('deliveryOrders');
+        try {
+          let url = '/orders?page=1&limit=50';
+          if (currentDeliveryFilter !== 'ALL')
+            url += `&status=${currentDeliveryFilter}`;
+          const data = await apiCall(url);
+          showOrders('deliveryOrders', data.data);
+        } catch (error) {
+          document.getElementById('deliveryOrders').innerHTML =
+            `<div class="text-center py-8 text-red-500">${error.message}</div>`;
+        }
+      }
+
+      async function acceptDelivery(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/accept-delivery`, 'POST');
+          showMessage(`تم قبول الطلب #${orderId}`);
+          loadDeliveryOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      async function pickedUp(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/picked-up`, 'PATCH');
+          showMessage(`تم استلام الطلب #${orderId}`);
+          loadDeliveryOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      async function onTheWay(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/on-the-way`, 'PATCH');
+          showMessage(`الطلب #${orderId} في الطريق!`);
+          loadDeliveryOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+
+      async function delivered(orderId) {
+        try {
+          await apiCall(`/orders/${orderId}/delivered`, 'PATCH');
+          showMessage(`تم توصيل الطلب #${orderId}!`);
+          loadDeliveryOrders();
+        } catch (error) {
+          showMessage('خطأ: ' + error.message, true);
+        }
+      }
+    </script>
+  </body>
+</html>

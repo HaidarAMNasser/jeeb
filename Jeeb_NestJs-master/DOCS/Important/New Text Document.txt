@@ -1,0 +1,8 @@
+
+العنص	القرار
+Architecture	Modular Monolith
+Pattern	Lightweight DDD
+Database	PostgreSQL
+Real-time	WebSocket
+Queue	BullMQ
+Redis	للـ caching و jobs

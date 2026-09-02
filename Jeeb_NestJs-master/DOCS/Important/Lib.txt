@@ -1,0 +1,8 @@
+npm install @nestjs/config
+npm install @nestjs/websockets
+npm install @nestjs/jwt
+npm install @nestjs/passport
+npm install @nestjs/typeorm pg
+npm install ioredis
+npm install bullmq
+npm install firebase-admin

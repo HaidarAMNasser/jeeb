@@ -3,7 +3,7 @@ import 'package:jeeb_app/core/infrastructure/api/api_service.dart';
 
 abstract class GuestRemoteDataSource {
   Future<Response> guestLogin({
-    required String firebaseToken,
+    String? firebaseToken,
   });
 }
 
@@ -14,10 +14,12 @@ class GuestRemoteDataSourceImpl implements GuestRemoteDataSource {
 
   @override
   Future<Response> guestLogin({
-    required String firebaseToken,
+    String? firebaseToken,
   }) {
-    return _appApiServiceClient.guestLogin({
-      'firebaseToken': firebaseToken,
-    });
+    final body = <String, dynamic>{};
+    if (firebaseToken != null && firebaseToken.isNotEmpty) {
+      body['firebaseToken'] = firebaseToken;
+    }
+    return _appApiServiceClient.guestLogin(body);
   }
 }

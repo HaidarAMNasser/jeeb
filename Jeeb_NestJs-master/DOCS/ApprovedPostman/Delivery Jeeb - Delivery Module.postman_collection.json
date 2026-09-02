@@ -1,0 +1,1366 @@
+{
+  "info": {
+    "_postman_id": "71b075cd-e131-474e-a201-59161c33772e",
+    "name": "Delivery Jeeb - Delivery Module",
+    "description": "Complete API collection for managing delivery drivers with image upload support (Office Owner & ADMIN roles)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46725728",
+    "_collection_link": "https://assemhabib.postman.co/workspace/My-Workspace~e8ecb1f6-b28c-414e-8872-ce787ba90138/collection/46725728-71b075cd-e131-474e-a201-59161c33772e?action=share&source=collection_link&creator=46725728"
+  },
+  "item": [
+    {
+      "name": "Office Owner Operations",
+      "item": [
+        {
+          "name": "Create Delivery Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{office_owner_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "delivery1@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "strongPassword123",
+                  "type": "text"
+                },
+                {
+                  "key": "firstName",
+                  "value": "Ahmed",
+                  "type": "text"
+                },
+                {
+                  "key": "lastName",
+                  "value": "Ali",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "+966501234567",
+                  "type": "text"
+                },
+                {
+                  "key": "countryId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "cityId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "Riyadh, Saudi Arabia",
+                  "type": "text"
+                },
+                {
+                  "key": "birthday",
+                  "value": "1990-05-15",
+                  "type": "text"
+                },
+                {
+                  "key": "notificationChannel",
+                  "value": "WHATSAPP",
+                  "type": "text"
+                },
+                {
+                  "key": "officeOwnerId",
+                  "value": "",
+                  "description": "Optional - Office owner ID to assign the driver to (defaults to authenticated user)",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/delivery/profile1.jpg"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/delivery/profile2.jpg"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/delivery/profile3.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/deliveries",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "delivery1@example.com",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Delivery driver created successfully\",\n    \"data\": {\n        \"id\": 15,\n        \"email\": \"delivery1@example.com\",\n        \"firstName\": \"Ahmed\",\n        \"lastName\": \"Ali\",\n        \"phone\": \"+966501234567\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"Riyadh, Saudi Arabia\",\n        \"birthday\": \"1990-05-15\",\n        \"isOnline\": true,\n        \"officeOwnerId\": 5,\n        \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n        \"updatedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"image\": {\n            \"id\": 5,\n            \"url\": \"users/15/1234567890_profile.webp\",\n            \"mobileUrl\": \"users/15/1234567890_profile_mobile.webp\",\n            \"thumbnailUrl\": \"users/15/1234567890_profile_thumb.webp\",\n            \"isMain\": true\n        }\n    },\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            },
+            {
+              "name": "Error - Email/Phone Exists",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 409,\n    \"message\": \"Email or phone already exists\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Delivery Drivers (Own Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{office_owner_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries?page=1&limit=10&search=ahmed&isOnline=true",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "ahmed"
+                },
+                {
+                  "key": "isOnline",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 15,\n            \"email\": \"delivery1@example.com\",\n            \"firstName\": \"Ahmed\",\n            \"lastName\": \"Ali\",\n            \"phone\": \"+966501234567\",\n            \"role\": \"DELIVERY\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"cityId\": 1,\n            \"address\": \"Riyadh, Saudi Arabia\",\n            \"isOnline\": true,\n            \"officeOwnerId\": 5,\n            \"birthday\": \"1990-05-15\",\n            \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n            \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n            \"updatedAt\": \"2026-02-26T10:00:00.000Z\",\n            \"image\": {\n                \"id\": 5,\n                \"url\": \"users/15/1234567890_profile.webp\",\n                \"mobileUrl\": \"users/15/1234567890_profile_mobile.webp\",\n                \"thumbnailUrl\": \"users/15/1234567890_profile_thumb.webp\",\n                \"isMain\": true\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 5,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Delivery Drivers (Own Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{office_owner_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries?search=ahmed",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "ahmed"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 15,\n            \"email\": \"delivery1@example.com\",\n            \"firstName\": \"Ahmed\",\n            \"lastName\": \"Ali\",\n            \"phone\": \"+966501234567\",\n            \"role\": \"DELIVERY\",\n            \"isOnline\": true,\n            \"image\": {\n                \"id\": 5,\n                \"url\": \"users/15/1234567890_profile.webp\",\n                \"mobileUrl\": \"users/15/1234567890_profile_mobile.webp\",\n                \"thumbnailUrl\": \"users/15/1234567890_profile_thumb.webp\",\n                \"isMain\": true\n            }\n        }\n    ],\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get One Delivery Driver (Own Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{office_owner_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/15",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "15"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/15",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "15"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 15,\n        \"email\": \"delivery1@example.com\",\n        \"firstName\": \"Ahmed\",\n        \"lastName\": \"Ali\",\n        \"phone\": \"+966501234567\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"Riyadh, Saudi Arabia\",\n        \"isOnline\": true,\n        \"officeOwnerId\": 5,\n        \"birthday\": \"1990-05-15\",\n        \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n        \"updatedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"image\": {\n            \"id\": 5,\n            \"url\": \"users/15/1234567890_profile.webp\",\n            \"mobileUrl\": \"users/15/1234567890_profile_mobile.webp\",\n            \"thumbnailUrl\": \"users/15/1234567890_profile_thumb.webp\",\n            \"isMain\": true\n        }\n    },\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/15\"\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/999",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "999"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 404,\n    \"message\": \"Delivery driver with ID 999 not found\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/999\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Delivery Driver",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{office_owner_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "firstName",
+                  "value": "Ahmed Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "lastName",
+                  "value": "Ali Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "+966509876543",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "New Address Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/new_profile1.jpg"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/new_profile2.jpg"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/new_profile3.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/15",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "15"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/15",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "15"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Delivery driver updated successfully\",\n    \"data\": {\n        \"id\": 15,\n        \"email\": \"delivery1@example.com\",\n        \"firstName\": \"Ahmed Updated\",\n        \"lastName\": \"Ali Updated\",\n        \"phone\": \"+966509876543\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"New Address Updated\",\n        \"isOnline\": true,\n        \"officeOwnerId\": 5,\n        \"birthday\": \"1990-05-15\",\n        \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n        \"updatedAt\": \"2026-02-26T10:05:00.000Z\",\n        \"image\": {\n            \"id\": 6,\n            \"url\": \"users/15/1234567891_updated.webp\",\n            \"mobileUrl\": \"users/15/1234567891_updated_mobile.webp\",\n            \"thumbnailUrl\": \"users/15/1234567891_updated_thumb.webp\",\n            \"isMain\": true\n        }\n    },\n    \"timestamp\": \"2026-02-26T10:05:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/15\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Delivery Driver",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{office_owner_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/15",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "15"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/15",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "15"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Delivery driver deleted successfully\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T10:10:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/15\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations (All Deliveries)",
+      "item": [
+        {
+          "name": "Get All Delivery Drivers (All)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries?page=1&limit=10&officeOwnerId=5&isOnline=true",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "officeOwnerId",
+                  "value": "5"
+                },
+                {
+                  "key": "isOnline",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 15,\n            \"email\": \"delivery1@example.com\",\n            \"firstName\": \"Ahmed\",\n            \"lastName\": \"Ali\",\n            \"phone\": \"+966501234567\",\n            \"role\": \"DELIVERY\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"cityId\": 1,\n            \"address\": \"Riyadh, Saudi Arabia\",\n            \"isOnline\": true,\n            \"officeOwnerId\": 5,\n            \"officeOwner\": {\n                \"id\": 5,\n                \"firstName\": \"Mohammed\",\n                \"lastName\": \"Office\",\n                \"email\": \"office@example.com\"\n            },\n            \"birthday\": \"1990-05-15\",\n            \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n            \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n            \"updatedAt\": \"2026-02-26T10:00:00.000Z\",\n            \"image\": {\n                \"id\": 5,\n                \"url\": \"users/15/1234567890_profile.webp\",\n                \"mobileUrl\": \"users/15/1234567890_profile_mobile.webp\",\n                \"thumbnailUrl\": \"users/15/1234567890_profile_thumb.webp\",\n                \"isMain\": true\n            }\n        }\n    ],\n    \"pagination\": {\n        \"total\": 25,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 3,\n        \"hasNextPage\": true,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Delivery Drivers (All)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries?search=Ziad",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Ziad"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Succes",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries?search=Ziad",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "Ziad"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "999"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"3e7-y8/ZnJH3jZueQBRNA218DHv+H74\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 28 Feb 2026 05:46:22 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": [\n        {\n            \"id\": 29,\n            \"firstName\": \"Ziad\",\n            \"lastName\": \"Amir\",\n            \"email\": \"delivery20@jeeb.com\",\n            \"phone\": \"+963952222222\",\n            \"role\": \"DELIVERY\",\n            \"notificationChannel\": \"WHATSAPP\",\n            \"countryId\": 1,\n            \"country\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"سوريا\",\n                    \"en\": \"Syria\"\n                },\n                \"code\": \"SY\",\n                \"callingCode\": \"+963\",\n                \"currencyCode\": \"SYP\",\n                \"currencySymbol\": \"£\",\n                \"currencySmallestUnit\": \"Piastre\",\n                \"currencyFactor\": 100,\n                \"isActive\": true\n            },\n            \"cityId\": 1,\n            \"city\": {\n                \"id\": 1,\n                \"name\": {\n                    \"ar\": \"دمشق\",\n                    \"en\": \"Damascus\"\n                },\n                \"countryId\": 1\n            },\n            \"address\": \"Test Address, Damascus\",\n            \"isOnline\": true,\n            \"verifiedAt\": \"2026-02-28T05:13:32.775Z\",\n            \"currentLat\": 33.5145,\n            \"currentLng\": 36.2756,\n            \"birthday\": null,\n            \"createdAt\": \"2026-02-28T05:13:32.959Z\",\n            \"updatedAt\": \"2026-02-28T05:13:32.959Z\",\n            \"deletedAt\": null,\n            \"officeOwner\": null,\n            \"officeOwnerId\": null,\n            \"image\": null\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"page\": 1,\n        \"limit\": 10,\n        \"totalPages\": 1,\n        \"hasNextPage\": false,\n        \"hasPreviousPage\": false\n    },\n    \"timestamp\": \"2026-02-28T05:46:22.311Z\",\n    \"path\": \"/api/v1/users/deliveries?search=Ziad\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get One Delivery Driver (Any)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/35",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "35"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/15",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "15"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Operation successful\",\n    \"data\": {\n        \"id\": 15,\n        \"email\": \"delivery1@example.com\",\n        \"firstName\": \"Ahmed\",\n        \"lastName\": \"Ali\",\n        \"phone\": \"+966501234567\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"Riyadh, Saudi Arabia\",\n        \"isOnline\": true,\n        \"officeOwnerId\": 5,\n        \"officeOwner\": {\n            \"id\": 5,\n            \"firstName\": \"Mohammed\",\n            \"lastName\": \"Office\",\n            \"email\": \"office@example.com\"\n        },\n        \"birthday\": \"1990-05-15\",\n        \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n        \"updatedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"image\": {\n            \"id\": 5,\n            \"url\": \"users/15/1234567890_profile.webp\",\n            \"mobileUrl\": \"users/15/1234567890_profile_mobile.webp\",\n            \"thumbnailUrl\": \"users/15/1234567890_profile_thumb.webp\",\n            \"isMain\": true\n        }\n    },\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/15\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Delivery Driver (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "delivery_admin6@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "text"
+                },
+                {
+                  "key": "firstName",
+                  "value": "Ahmed",
+                  "type": "text"
+                },
+                {
+                  "key": "lastName",
+                  "value": "Ali",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "+96650999333",
+                  "type": "text"
+                },
+                {
+                  "key": "countryId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "cityId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "Riyadh, Saudi Arabia",
+                  "type": "text"
+                },
+                {
+                  "key": "birthday",
+                  "value": "1990-05-15",
+                  "type": "text"
+                },
+                {
+                  "key": "notificationChannel",
+                  "value": "EMAIL",
+                  "type": "text"
+                },
+                {
+                  "key": "officeOwnerId",
+                  "value": "5",
+                  "description": "Optional - Office owner ID to assign the driver to",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/C:/Users/RYZEN/Pictures/ERD.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/deliveries",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "delivery_admin@example.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "officeOwnerId",
+                      "value": "5",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Delivery driver created successfully\",\n    \"data\": {\n        \"id\": 16,\n        \"email\": \"delivery_admin@example.com\",\n        \"firstName\": \"Ahmed\",\n        \"lastName\": \"Ali\",\n        \"phone\": \"+966509998877\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"WHATSAPP\",\n        \"countryId\": 1,\n        \"cityId\": 1,\n        \"address\": \"Riyadh, Saudi Arabia\",\n        \"birthday\": \"1990-05-15\",\n        \"isOnline\": true,\n        \"officeOwnerId\": 5,\n        \"verifiedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"createdAt\": \"2026-02-26T10:00:00.000Z\",\n        \"updatedAt\": \"2026-02-26T10:00:00.000Z\",\n        \"image\": {\n            \"id\": 6,\n            \"url\": \"users/16/1234567892_profile.webp\",\n            \"mobileUrl\": \"users/16/1234567892_profile_mobile.webp\",\n            \"thumbnailUrl\": \"users/16/1234567892_profile_thumb.webp\",\n            \"isMain\": true\n        }\n    },\n    \"timestamp\": \"2026-02-26T10:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            },
+            {
+              "name": "Succcess",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "delivery_admin6@example.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "123456",
+                      "type": "text"
+                    },
+                    {
+                      "key": "firstName",
+                      "value": "Ahmed",
+                      "type": "text"
+                    },
+                    {
+                      "key": "lastName",
+                      "value": "Ali",
+                      "type": "text"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "+96650999333",
+                      "type": "text"
+                    },
+                    {
+                      "key": "countryId",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cityId",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "address",
+                      "value": "Riyadh, Saudi Arabia",
+                      "type": "text"
+                    },
+                    {
+                      "key": "birthday",
+                      "value": "1990-05-15",
+                      "type": "text"
+                    },
+                    {
+                      "key": "notificationChannel",
+                      "value": "EMAIL",
+                      "type": "text"
+                    },
+                    {
+                      "key": "officeOwnerId",
+                      "value": "5",
+                      "description": "Optional - Office owner ID to assign the driver to",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": "/C:/Users/RYZEN/Pictures/ERD.png"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1210"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"4ba-E6tjQQyMMPNv2+RNH3/DY1/zrvo\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 28 Feb 2026 06:17:04 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"message\": \"Delivery driver created successfully\",\n    \"data\": {\n        \"id\": 35,\n        \"firstName\": \"Ahmed\",\n        \"lastName\": \"Ali\",\n        \"email\": \"delivery_admin6@example.com\",\n        \"phone\": \"+96650999333\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"EMAIL\",\n        \"countryId\": 1,\n        \"country\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"سوريا\",\n                \"en\": \"Syria\"\n            },\n            \"code\": \"SY\",\n            \"callingCode\": \"+963\",\n            \"currencyCode\": \"SYP\",\n            \"currencySymbol\": \"£\",\n            \"currencySmallestUnit\": \"Piastre\",\n            \"currencyFactor\": 100,\n            \"isActive\": true\n        },\n        \"cityId\": 1,\n        \"city\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"دمشق\",\n                \"en\": \"Damascus\"\n            },\n            \"countryId\": 1\n        },\n        \"address\": \"Riyadh, Saudi Arabia\",\n        \"isOnline\": true,\n        \"verifiedAt\": \"2026-02-28T06:17:03.905Z\",\n        \"currentLat\": null,\n        \"currentLng\": null,\n        \"birthday\": \"1990-05-15\",\n        \"createdAt\": \"2026-02-28T06:17:03.913Z\",\n        \"updatedAt\": \"2026-02-28T06:17:04.085Z\",\n        \"deletedAt\": null,\n        \"officeOwner\": null,\n        \"officeOwnerId\": null,\n        \"imageId\": 13,\n        \"image\": {\n            \"id\": 13,\n            \"entityType\": \"USER\",\n            \"entityId\": 35,\n            \"url\": \"users/35/1772259423938_ERD.webp\",\n            \"mobileUrl\": \"users/35/1772259423938_ERD_mobile.webp\",\n            \"thumbnailUrl\": \"users/35/1772259423938_ERD_thumb.webp\",\n            \"isMain\": true,\n            \"displayOrder\": 0,\n            \"createdAt\": \"2026-02-28T06:17:04.074Z\",\n            \"updatedAt\": \"2026-02-28T06:17:04.074Z\"\n        }\n    },\n    \"timestamp\": \"2026-02-28T06:17:04.122Z\",\n    \"path\": \"/api/v1/users/deliveries\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Delivery Driver (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "firstName",
+                  "value": "Ahmed Updated by Admin",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "+966508221",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/C:/Users/RYZEN/Pictures/Class.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/35",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "35"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "firstName",
+                      "value": "Ahmed Updated by Admin",
+                      "type": "text"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "+966508221",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": "/C:/Users/RYZEN/Pictures/Class.png"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/35",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "35"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1234"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"4d2-/rEa7/YYYUCrirJIVeeo9xSz8s0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 28 Feb 2026 06:25:32 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Delivery driver updated successfully\",\n    \"data\": {\n        \"id\": 35,\n        \"firstName\": \"Ahmed Updated by Admin\",\n        \"lastName\": \"Ali\",\n        \"email\": \"delivery_admin6@example.com\",\n        \"phone\": \"+966508221\",\n        \"role\": \"DELIVERY\",\n        \"notificationChannel\": \"EMAIL\",\n        \"countryId\": 1,\n        \"country\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"سوريا\",\n                \"en\": \"Syria\"\n            },\n            \"code\": \"SY\",\n            \"callingCode\": \"+963\",\n            \"currencyCode\": \"SYP\",\n            \"currencySymbol\": \"£\",\n            \"currencySmallestUnit\": \"Piastre\",\n            \"currencyFactor\": 100,\n            \"isActive\": true\n        },\n        \"cityId\": 1,\n        \"city\": {\n            \"id\": 1,\n            \"name\": {\n                \"ar\": \"دمشق\",\n                \"en\": \"Damascus\"\n            },\n            \"countryId\": 1\n        },\n        \"address\": \"Riyadh, Saudi Arabia\",\n        \"isOnline\": true,\n        \"verifiedAt\": \"2026-02-28T06:17:03.905Z\",\n        \"currentLat\": null,\n        \"currentLng\": null,\n        \"birthday\": \"1990-05-15\",\n        \"createdAt\": \"2026-02-28T06:17:03.913Z\",\n        \"updatedAt\": \"2026-02-28T06:25:32.313Z\",\n        \"deletedAt\": null,\n        \"officeOwner\": null,\n        \"officeOwnerId\": null,\n        \"imageId\": 15,\n        \"image\": {\n            \"id\": 15,\n            \"entityType\": \"USER\",\n            \"entityId\": 35,\n            \"url\": \"users/35/1772259932072_Class.webp\",\n            \"mobileUrl\": \"users/35/1772259932072_Class_mobile.webp\",\n            \"thumbnailUrl\": \"users/35/1772259932072_Class_thumb.webp\",\n            \"isMain\": true,\n            \"displayOrder\": 0,\n            \"createdAt\": \"2026-02-28T06:25:32.298Z\",\n            \"updatedAt\": \"2026-02-28T06:25:32.298Z\"\n        }\n    },\n    \"timestamp\": \"2026-02-28T06:25:32.342Z\",\n    \"path\": \"/api/v1/users/deliveries/35\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Delivery Driver (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/35",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "35"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/15",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "15"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Delivery driver deleted successfully\",\n    \"data\": {},\n    \"timestamp\": \"2026-02-26T10:10:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/15\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Confirm/Activate Delivery Driver (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/75/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "75", "confirm"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/75/confirm",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "75", "confirm"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Delivery driver activated successfully\",\n    \"data\": {\n        \"id\": 75,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"john@example.com\",\n        \"phone\": \"+966509876543\",\n        \"role\": \"DELIVERY\",\n        \"isActive\": true,\n        \"isOnline\": false,\n        \"isVerified\": true,\n        \"createdAt\": \"2026-04-03T10:00:00.000Z\",\n        \"updatedAt\": \"2026-04-03T19:00:00.000Z\"\n    },\n    \"timestamp\": \"2026-04-03T19:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/75/confirm\"\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/999/confirm",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "999", "confirm"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"message\": \"Delivery driver with ID 999 not found\",\n    \"error\": \"Not Found\",\n    \"statusCode\": 404\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Delivery Driver Password (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/deliveries/75/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["users", "deliveries", "75", "reset-password"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/75/reset-password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "75", "reset-password"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"message\": \"Password reset successfully\",\n    \"data\": {\n        \"id\": 75,\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"john@example.com\",\n        \"phone\": \"+966509876543\",\n        \"role\": \"DELIVERY\"\n    },\n    \"timestamp\": \"2026-04-03T19:00:00.000Z\",\n    \"path\": \"/api/v1/users/deliveries/75/reset-password\"\n}"
+            },
+            {
+              "name": "Error - Forbidden",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{office_owner_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/75/reset-password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "75", "reset-password"]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"message\": \"Forbidden resource\",\n    \"error\": \"Forbidden\",\n    \"statusCode\": 403\n}"
+            },
+            {
+              "name": "Error - Not Found",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"newStrongPassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/deliveries/999/reset-password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "deliveries", "999", "reset-password"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n    \"message\": \"User with ID 999 not found\",\n    \"error\": \"Not Found\",\n    \"statusCode\": 404\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "office_owner_token",
+      "value": "your_office_owner_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_jwt_token_here",
+      "type": "string"
+    }
+  ]
+}
